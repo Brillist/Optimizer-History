@@ -1,0 +1,1 @@
+CC_SWITCHES	= $(CC_SWITCHES_COMMON) -fno-strict-aliasing

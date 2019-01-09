@@ -1,0 +1,30 @@
+#! /bin/sh
+
+if [ "$#" != "2"  ]; then
+    echo Usage: source-hdr-add \<source_path\> \<hdr_path\>
+    exit 1
+fi
+
+SRCPATH="$1"
+HDRPATH="$2"
+
+if [ ! -f "$HDRPATH" ]; then
+    exit 0
+fi
+
+if [ -d "$SRCPATH" ]; then
+    find "$SRCPATH" \! -type l -regex '.*\.h\|.*\.cpp' -print0 \
+        | xargs --null --max-args=1 --replace "$0" '{}' "$HDRPATH"
+    exit 0
+fi
+
+if [ -f "$SRCPATH" ]; then
+    TMP=/tmp/source-hdr-add.$$
+    cat "$HDRPATH" "$SRCPATH" > $TMP
+    mv "$TMP" "$SRCPATH"
+    exit 0
+fi
+
+echo "$SRCPATH" is not a directory or source file
+
+exit 1

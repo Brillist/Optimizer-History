@@ -1,0 +1,3 @@
+#! /bin/zsh
+
+cloc */*.h */*.cpp */*/*.h */*/*.cpp

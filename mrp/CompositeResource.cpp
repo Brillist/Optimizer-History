@@ -1,0 +1,51 @@
+#include "libmrp.h"
+#include "CompositeResource.h"
+
+//////////////////////////////////////////////////////////////////////////////
+
+UTL_NS_USE;
+LUT_NS_USE;
+
+//////////////////////////////////////////////////////////////////////////////
+
+UTL_CLASS_IMPL(mrp::CompositeResource, mrp::Resource);
+
+//////////////////////////////////////////////////////////////////////////////
+
+MRP_NS_BEGIN;
+
+//////////////////////////////////////////////////////////////////////////////
+
+void
+CompositeResource::copy(const Object& rhs)
+{
+    ASSERTD(rhs.isA(Resource));
+    const CompositeResource& cr = (const CompositeResource&)rhs;
+    Resource::copy(cr);
+    _resourceGroupId = cr._resourceGroupId;
+}
+
+//////////////////////////////////////////////////////////////////////////////
+
+void
+CompositeResource::serialize(Stream& stream, uint_t io, uint_t)
+{
+    Resource::serialize(stream, io);
+    utl::serialize(_resourceGroupId, stream, io);
+}
+
+//////////////////////////////////////////////////////////////////////////////
+
+cse::CompositeResource*
+CompositeResource::createCompositeResource()
+{
+    cse::CompositeResource* res = new cse::CompositeResource();
+    res->id() = _id;
+    res->name() = _name;
+    res->resourceGroupId() = _resourceGroupId;
+    return res;
+}
+
+//////////////////////////////////////////////////////////////////////////////
+
+MRP_NS_END;

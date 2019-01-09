@@ -1,0 +1,35 @@
+#include "libcse.h"
+#include "MakespanEvaluator.h"
+#include "SchedulingContext.h"
+
+//////////////////////////////////////////////////////////////////////////////
+
+LUT_NS_USE;
+GOP_NS_USE;
+
+//////////////////////////////////////////////////////////////////////////////
+
+UTL_CLASS_IMPL(cse::MakespanEvaluator, cse::ScheduleEvaluator);
+
+//////////////////////////////////////////////////////////////////////////////
+
+CSE_NS_BEGIN;
+
+//////////////////////////////////////////////////////////////////////////////
+
+double
+MakespanEvaluator::calcScore(const IndBuilderContext* p_context) const
+{
+   ASSERTD(dynamic_cast<const SchedulingContext*>(p_context) != nullptr);
+   const SchedulingContext* context = (const SchedulingContext*)p_context;
+
+   //DEBUG_CODE
+   //static uint_t res = 0x0fffffff;
+   //return res--;
+
+   return context->makespanTimeSlot();
+}
+
+//////////////////////////////////////////////////////////////////////////////
+
+CSE_NS_END;

@@ -1,0 +1,58 @@
+#ifndef CLP_INTEXPDOMAINRISCIT_H
+#define CLP_INTEXPDOMAINRISCIT_H
+
+//////////////////////////////////////////////////////////////////////////////
+
+#include <clp/IntExpDomainIt.h>
+
+//////////////////////////////////////////////////////////////////////////////
+
+CLP_NS_BEGIN;
+
+//////////////////////////////////////////////////////////////////////////////
+
+class IntExpDomainRISC;
+class IntSpan;
+
+//////////////////////////////////////////////////////////////////////////////
+
+/**
+   Integer expression domain.
+
+   \author Adam McKee
+*/
+
+//////////////////////////////////////////////////////////////////////////////
+
+class IntExpDomainRISCit : public IntExpDomainIt
+{
+    UTL_CLASS_DECL(IntExpDomainRISCit);
+    UTL_CLASS_DEFID;
+public:
+    /** Constructor. */
+    IntExpDomainRISCit(
+        const IntExpDomainRISC* domain,
+        const IntSpan* span, 
+        int val)
+    { _domain = domain; _span = span; _val = val; }
+
+    /** Copy another instance. */
+    virtual void copy(const utl::Object& rhs);
+
+    /** Move forward. */
+    virtual void next();
+
+    /** Move backward. */
+    virtual void prev();
+private:
+    const IntExpDomainRISC* _domain;
+    const IntSpan* _span;
+};
+
+//////////////////////////////////////////////////////////////////////////////
+
+CLP_NS_END;
+
+//////////////////////////////////////////////////////////////////////////////
+
+#endif

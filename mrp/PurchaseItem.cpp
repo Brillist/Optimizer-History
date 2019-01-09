@@ -1,0 +1,66 @@
+#include "libmrp.h"
+#include <libutl/MemStream.h>
+#include "PurchaseItem.h"
+
+//////////////////////////////////////////////////////////////////////////////
+
+UTL_NS_USE;
+LUT_NS_USE;
+
+//////////////////////////////////////////////////////////////////////////////
+
+UTL_CLASS_IMPL(mrp::PurchaseItem, mrp::Item);
+
+//////////////////////////////////////////////////////////////////////////////
+
+MRP_NS_BEGIN;
+
+//////////////////////////////////////////////////////////////////////////////
+
+void
+PurchaseItem::copy(const Object& rhs)
+{
+    ASSERTD(rhs.isA(PurchaseItem));
+    const PurchaseItem& pi = (const PurchaseItem&)rhs;
+    Item::copy(pi);
+    _leadTime = pi._leadTime;
+    _eoq = pi._eoq;
+}
+
+//////////////////////////////////////////////////////////////////////////////
+
+void
+PurchaseItem::serialize(Stream& stream, uint_t io, uint_t)
+{
+    Item::serialize(stream, io);
+    utl::serialize(_leadTime, stream, io);
+    utl::serialize(_eoq, stream, io);
+}
+
+//////////////////////////////////////////////////////////////////////////////
+
+String
+PurchaseItem::toString() const
+{
+    MemStream str;
+    str << Item::toString()
+        << '\n' << "   "
+        << "itemType:Purchase"
+        << ", leadTime:" << _leadTime
+        << ", eoq:" << _eoq
+        << '\0';
+    return String((char*)str.get());
+}
+
+//////////////////////////////////////////////////////////////////////////////
+
+void
+PurchaseItem::init()
+{
+    _leadTime = uint_t_max;
+    _eoq = uint_t_max;
+}
+
+//////////////////////////////////////////////////////////////////////////////
+
+MRP_NS_END;

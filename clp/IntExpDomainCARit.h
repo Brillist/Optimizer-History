@@ -1,0 +1,57 @@
+#ifndef CLP_INTEXPDOMAINCARIT_H
+#define CLP_INTEXPDOMAINCARIT_H
+
+//////////////////////////////////////////////////////////////////////////////
+
+#include <clp/IntExpDomainIt.h>
+
+//////////////////////////////////////////////////////////////////////////////
+
+CLP_NS_BEGIN;
+
+//////////////////////////////////////////////////////////////////////////////
+
+class IntExpDomainCAR;
+
+//////////////////////////////////////////////////////////////////////////////
+
+/**
+   Integer expression domain.
+
+   \author Adam McKee
+*/
+
+//////////////////////////////////////////////////////////////////////////////
+
+class IntExpDomainCARit : public IntExpDomainIt
+{
+    UTL_CLASS_DECL(IntExpDomainCARit);
+    UTL_CLASS_DEFID;
+public:
+    /** Constructor. */
+    IntExpDomainCARit(
+        const IntExpDomainCAR* domain,
+        utl::uint_t idx,
+        utl::uint_t val)
+    { _domain = domain; _idx = idx; _val = val; }
+
+    /** Copy another instance. */
+    virtual void copy(const utl::Object& rhs);
+
+    /** Move forward. */
+    virtual void next();
+
+    /** Move backward. */
+    virtual void prev();
+private:
+    const IntExpDomainCAR* _domain;
+    utl::uint_t _idx;
+};
+
+//////////////////////////////////////////////////////////////////////////////
+
+CLP_NS_END;
+
+//////////////////////////////////////////////////////////////////////////////
+
+#endif

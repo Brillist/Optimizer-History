@@ -1,0 +1,2 @@
+SRCROOT = ../../
+include ../Makefile.abstract

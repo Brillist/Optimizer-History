@@ -1,0 +1,46 @@
+#ifndef CSE_OPERATORFACTORY_H
+#define CSE_OPERATORFACTORY_H
+
+//////////////////////////////////////////////////////////////////////////////
+
+#include <lut/Factory.h>
+#include <gop/Operator.h>
+
+//////////////////////////////////////////////////////////////////////////////
+
+CSE_NS_BEGIN;
+
+//////////////////////////////////////////////////////////////////////////////
+
+/**
+   Operator factory.
+
+   OperatorFactory can make instances of named Operator-derived classes.
+
+   \see gop::Operator
+   \author Adam McKee
+*/
+
+//////////////////////////////////////////////////////////////////////////////
+
+class OperatorFactory : public lut::Factory<gop::Operator>
+{
+   UTL_CLASS_DECL(OperatorFactory);
+   UTL_CLASS_DEFID;
+public:
+   /**
+      Make an instance of the named operator class.
+      \return newly created object (nullptr if invalid name given)
+   */
+   virtual gop::Operator* make(
+      void* param = nullptr,
+      void* param1 = nullptr) const;
+};
+
+//////////////////////////////////////////////////////////////////////////////
+
+CSE_NS_END;
+
+//////////////////////////////////////////////////////////////////////////////
+
+#endif

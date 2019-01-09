@@ -1,0 +1,57 @@
+#ifndef CLS_LFBOUNDTIMETABLE_H
+#define CLS_LFBOUNDTIMETABLE_H
+
+//////////////////////////////////////////////////////////////////////////////
+
+#include <cls/TimetableBound.h>
+
+//////////////////////////////////////////////////////////////////////////////
+
+CLS_NS_BEGIN;
+
+//////////////////////////////////////////////////////////////////////////////
+
+class LFbound;
+
+//////////////////////////////////////////////////////////////////////////////
+
+/**
+   An activity's execution time cannot overlap with any period of
+   insufficient available resource capacity.
+
+   \author Adam McKee
+*/
+
+//////////////////////////////////////////////////////////////////////////////
+
+class LFboundTimetable : public TimetableBound
+{
+    UTL_CLASS_DECL(LFboundTimetable);
+public:
+    /** Constructor. */
+    LFboundTimetable(
+        BrkActivity* act,
+        ResourceCapPts* rcp,
+        const CapPt* capPt,
+        int ub)
+        : TimetableBound(act, rcp, capPt, clp::bound_ub, ub) {}
+
+    virtual void allocateCapacity();
+
+    virtual void deallocateCapacity();
+protected:
+    virtual int find();
+private:
+    void init()
+    { ABORT(); }
+
+    void deInit() {}
+};
+
+//////////////////////////////////////////////////////////////////////////////
+
+CLS_NS_END;
+
+//////////////////////////////////////////////////////////////////////////////
+
+#endif

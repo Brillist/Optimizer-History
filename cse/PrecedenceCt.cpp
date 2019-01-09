@@ -1,0 +1,54 @@
+#include "libcse.h"
+#include "PrecedenceCt.h"
+
+//////////////////////////////////////////////////////////////////////////////
+
+UTL_NS_USE;
+LUT_NS_USE;
+
+//////////////////////////////////////////////////////////////////////////////
+
+UTL_CLASS_IMPL(cse::PrecedenceCt, utl::Object);
+
+//////////////////////////////////////////////////////////////////////////////
+
+CSE_NS_BEGIN;
+
+//////////////////////////////////////////////////////////////////////////////
+
+void
+PrecedenceCt::copy(const Object& rhs)
+{
+    ASSERTD(rhs.isA(PrecedenceCt));
+    const PrecedenceCt& pct = (const PrecedenceCt&)rhs;
+    _lhsOpId = pct._lhsOpId;
+    _rhsOpId = pct._rhsOpId;
+    _type = pct._type;
+    _delay = pct._delay;
+}
+
+//////////////////////////////////////////////////////////////////////////////
+
+void
+PrecedenceCt::serialize(Stream& stream, uint_t io, uint_t)
+{
+    utl::serialize(_lhsOpId, stream, io);
+    utl::serialize(_rhsOpId, stream, io);
+    utl::serialize((uint_t&)_type, stream, io);
+    utl::serialize(_delay, stream, io);
+}
+
+//////////////////////////////////////////////////////////////////////////////
+
+void
+PrecedenceCt::init()
+{
+   _lhsOpId = uint_t_max;
+   _rhsOpId = uint_t_max;
+   _type = pct_undefined;
+   _delay = 0;
+}
+
+//////////////////////////////////////////////////////////////////////////////
+
+CSE_NS_END;

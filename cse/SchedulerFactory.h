@@ -1,0 +1,46 @@
+#ifndef CSE_SCHEDULERFACTORY_H
+#define CSE_SCHEDULERFACTORY_H
+
+//////////////////////////////////////////////////////////////////////////////
+
+#include <lut/Factory.h>
+#include <cse/Scheduler.h>
+
+//////////////////////////////////////////////////////////////////////////////
+
+CSE_NS_BEGIN;
+
+//////////////////////////////////////////////////////////////////////////////
+
+/**
+   Scheduler factory.
+
+   SchedulerFactory can make instances of named Scheduler-derived classes.
+
+   \see Scheduler
+   \author Adam McKee
+*/
+
+//////////////////////////////////////////////////////////////////////////////
+
+class SchedulerFactory : public lut::Factory<Scheduler>
+{
+    UTL_CLASS_DECL(SchedulerFactory);
+    UTL_CLASS_DEFID;
+public:
+   /**
+      Make an instance of the named scheduler class.
+      \return newly created object (nullptr if invalid name given)
+   */
+   virtual Scheduler* make(
+      void* param = nullptr,
+      void* param1 = nullptr) const;
+};
+
+//////////////////////////////////////////////////////////////////////////////
+
+CSE_NS_END;
+
+//////////////////////////////////////////////////////////////////////////////
+
+#endif

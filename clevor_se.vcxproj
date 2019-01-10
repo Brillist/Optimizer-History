@@ -1,0 +1,360 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="clp\And.cpp" />
+    <ClCompile Include="clp\Bound.cpp" />
+    <ClCompile Include="clp\BoundCt.cpp" />
+    <ClCompile Include="clp\BoundPropagator.cpp" />
+    <ClCompile Include="clp\ChoicePoint.cpp" />
+    <ClCompile Include="clp\ConstrainedBound.cpp" />
+    <ClCompile Include="clp\ConstrainedVar.cpp" />
+    <ClCompile Include="clp\Constraint.cpp" />
+    <ClCompile Include="clp\CountedIntVar.cpp" />
+    <ClCompile Include="clp\CycleGroup.cpp" />
+    <ClCompile Include="clp\FailEx.cpp" />
+    <ClCompile Include="clp\Goal.cpp" />
+    <ClCompile Include="clp\IntExp.cpp" />
+    <ClCompile Include="clp\IntExpArray.cpp" />
+    <ClCompile Include="clp\IntExpDomain.cpp" />
+    <ClCompile Include="clp\IntExpDomainAR.cpp" />
+    <ClCompile Include="clp\IntExpDomainARit.cpp" />
+    <ClCompile Include="clp\IntExpDomainCAR.cpp" />
+    <ClCompile Include="clp\IntExpDomainCARit.cpp" />
+    <ClCompile Include="clp\IntExpDomainIt.cpp" />
+    <ClCompile Include="clp\IntExpDomainRISC.cpp" />
+    <ClCompile Include="clp\IntExpDomainRISCit.cpp" />
+    <ClCompile Include="clp\IntSpan.cpp" />
+    <ClCompile Include="clp\IntSpanArray.cpp" />
+    <ClCompile Include="clp\IntVar.cpp" />
+    <ClCompile Include="clp\Invalidatible.cpp" />
+    <ClCompile Include="clp\Manager.cpp" />
+    <ClCompile Include="clp\Or.cpp" />
+    <ClCompile Include="clp\RangeVar.cpp" />
+    <ClCompile Include="clp\RevIntSpanCol.cpp" />
+    <ClCompile Include="clp\RevSetDelta.cpp" />
+    <ClCompile Include="cls\Activity.cpp" />
+    <ClCompile Include="cls\BrkActivity.cpp" />
+    <ClCompile Include="cls\CapExpMgr.cpp" />
+    <ClCompile Include="cls\CompositeResource.cpp" />
+    <ClCompile Include="cls\CompositeResourceRequirement.cpp" />
+    <ClCompile Include="cls\CompositeSpan.cpp" />
+    <ClCompile Include="cls\CompositeTimetable.cpp" />
+    <ClCompile Include="cls\CompositeTimetableDomain.cpp" />
+    <ClCompile Include="cls\DiscreteResource.cpp" />
+    <ClCompile Include="cls\DiscreteResourceRequirement.cpp" />
+    <ClCompile Include="cls\DiscreteTimetable.cpp" />
+    <ClCompile Include="cls\DiscreteTimetableDomain.cpp" />
+    <ClCompile Include="cls\EFbound.cpp" />
+    <ClCompile Include="cls\EFboundInt.cpp" />
+    <ClCompile Include="cls\ESbound.cpp" />
+    <ClCompile Include="cls\ESboundCalendar.cpp" />
+    <ClCompile Include="cls\ESboundInt.cpp" />
+    <ClCompile Include="cls\ESboundTimetable.cpp" />
+    <ClCompile Include="cls\IntActivity.cpp" />
+    <ClCompile Include="cls\LFbound.cpp" />
+    <ClCompile Include="cls\LFboundCalendar.cpp" />
+    <ClCompile Include="cls\LFboundTimetable.cpp" />
+    <ClCompile Include="cls\LSbound.cpp" />
+    <ClCompile Include="cls\PreferredResources.cpp" />
+    <ClCompile Include="cls\PtActivity.cpp" />
+    <ClCompile Include="cls\Resource.cpp" />
+    <ClCompile Include="cls\ResourceCalendar.cpp" />
+    <ClCompile Include="cls\ResourceCalendarMgr.cpp" />
+    <ClCompile Include="cls\ResourceCalendarSpan.cpp" />
+    <ClCompile Include="cls\ResourceCapPts.cpp" />
+    <ClCompile Include="cls\SchedulableBound.cpp" />
+    <ClCompile Include="cls\Schedule.cpp" />
+    <ClCompile Include="cls\TimetableBound.cpp" />
+    <ClCompile Include="cse\AltJobMutate.cpp" />
+    <ClCompile Include="cse\AltJobSelector.cpp" />
+    <ClCompile Include="cse\AltResMutate.cpp" />
+    <ClCompile Include="cse\AltResSelector.cpp" />
+    <ClCompile Include="cse\AuditReport.cpp" />
+    <ClCompile Include="cse\CapMutate.cpp" />
+    <ClCompile Include="cse\CapSelector.cpp" />
+    <ClCompile Include="cse\ClevorDataSet.cpp" />
+    <ClCompile Include="cse\CompositeResource.cpp" />
+    <ClCompile Include="cse\DiscreteResource.cpp" />
+    <ClCompile Include="cse\EvaluatorFactory.cpp" />
+    <ClCompile Include="cse\ForwardScheduler.cpp" />
+    <ClCompile Include="cse\ItemRequirement.cpp" />
+    <ClCompile Include="cse\Job.cpp" />
+    <ClCompile Include="cse\JobGroup.cpp" />
+    <ClCompile Include="cse\JobOp.cpp" />
+    <ClCompile Include="cse\JobOpOrdering.cpp" />
+    <ClCompile Include="cse\JobOpSeqMutate.cpp" />
+    <ClCompile Include="cse\JobOpSeqSelector.cpp" />
+    <ClCompile Include="cse\JobSeqMutate.cpp" />
+    <ClCompile Include="cse\JobSeqSelector.cpp" />
+    <ClCompile Include="cse\MakespanEvaluator.cpp" />
+    <ClCompile Include="cse\MinCostHeuristics.cpp" />
+    <ClCompile Include="cse\MinCostResourcePtSelector.cpp" />
+    <ClCompile Include="cse\OperatorFactory.cpp" />
+    <ClCompile Include="cse\OpSeqMutate.cpp" />
+    <ClCompile Include="cse\OpSeqSelector.cpp" />
+    <ClCompile Include="cse\OptimizerFactory.cpp" />
+    <ClCompile Include="cse\PrecedenceCt.cpp" />
+    <ClCompile Include="cse\Propagator.cpp" />
+    <ClCompile Include="cse\PtMutate.cpp" />
+    <ClCompile Include="cse\PtSelector.cpp" />
+    <ClCompile Include="cse\ReleaseTimeMutate.cpp" />
+    <ClCompile Include="cse\ReleaseTimeSelector.cpp" />
+    <ClCompile Include="cse\ResCapMutate.cpp" />
+    <ClCompile Include="cse\ResCapSelector.cpp" />
+    <ClCompile Include="cse\Resource.cpp" />
+    <ClCompile Include="cse\ResourceCost.cpp" />
+    <ClCompile Include="cse\ResourceGroup.cpp" />
+    <ClCompile Include="cse\ResourceGroupRequirement.cpp" />
+    <ClCompile Include="cse\ResourceRequirement.cpp" />
+    <ClCompile Include="cse\ResourceSequenceDelays.cpp" />
+    <ClCompile Include="cse\ResourceSequenceList.cpp" />
+    <ClCompile Include="cse\RuleBasedScheduler.cpp" />
+    <ClCompile Include="cse\RunningThread.cpp" />
+    <ClCompile Include="cse\ScheduleEvaluator.cpp" />
+    <ClCompile Include="cse\ScheduleEvaluatorConfiguration.cpp" />
+    <ClCompile Include="cse\Scheduler.cpp" />
+    <ClCompile Include="cse\SchedulerConfiguration.cpp" />
+    <ClCompile Include="cse\SchedulerFactory.cpp" />
+    <ClCompile Include="cse\SchedulingContext.cpp" />
+    <ClCompile Include="cse\SchedulingRun.cpp" />
+    <ClCompile Include="cse\SEclient.cpp" />
+    <ClCompile Include="cse\Server.cpp" />
+    <ClCompile Include="cse\SummaryOp.cpp" />
+    <ClCompile Include="cse\templates.cpp" />
+    <ClCompile Include="cse\TimeSlot.cpp" />
+    <ClCompile Include="cse\TotalCostEvaluator.cpp" />
+    <ClCompile Include="cse\TotalCostEvaluatorConfiguration.cpp" />
+    <ClCompile Include="cse\UnaryCt.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="clp\And.h" />
+    <ClInclude Include="clp\Bound.h" />
+    <ClInclude Include="clp\BoundCt.h" />
+    <ClInclude Include="clp\BoundPropagator.h" />
+    <ClInclude Include="clp\ChoicePoint.h" />
+    <ClInclude Include="clp\ConstrainedBound.h" />
+    <ClInclude Include="clp\ConstrainedVar.h" />
+    <ClInclude Include="clp\Constraint.h" />
+    <ClInclude Include="clp\CountedIntVar.h" />
+    <ClInclude Include="clp\CycleGroup.h" />
+    <ClInclude Include="clp\FailEx.h" />
+    <ClInclude Include="clp\Goal.h" />
+    <ClInclude Include="clp\IntExp.h" />
+    <ClInclude Include="clp\IntExpArray.h" />
+    <ClInclude Include="clp\IntExpDomain.h" />
+    <ClInclude Include="clp\IntExpDomainAR.h" />
+    <ClInclude Include="clp\IntExpDomainARit.h" />
+    <ClInclude Include="clp\IntExpDomainCAR.h" />
+    <ClInclude Include="clp\IntExpDomainCARit.h" />
+    <ClInclude Include="clp\IntExpDomainIt.h" />
+    <ClInclude Include="clp\IntExpDomainRISC.h" />
+    <ClInclude Include="clp\IntExpDomainRISCit.h" />
+    <ClInclude Include="clp\IntSpan.h" />
+    <ClInclude Include="clp\IntSpanArray.h" />
+    <ClInclude Include="clp\IntVar.h" />
+    <ClInclude Include="clp\Invalidatible.h" />
+    <ClInclude Include="clp\libclp.h" />
+    <ClInclude Include="clp\Manager.h" />
+    <ClInclude Include="clp\Or.h" />
+    <ClInclude Include="clp\RangeVar.h" />
+    <ClInclude Include="clp\RevArray.h" />
+    <ClInclude Include="clp\RevIntSpanCol.h" />
+    <ClInclude Include="clp\RevSet.h" />
+    <ClInclude Include="clp\RevSetDelta.h" />
+    <ClInclude Include="clp\RevStack.h" />
+    <ClInclude Include="cls\Activity.h" />
+    <ClInclude Include="cls\BrkActivity.h" />
+    <ClInclude Include="cls\CapExpMgr.h" />
+    <ClInclude Include="cls\CompositeResource.h" />
+    <ClInclude Include="cls\CompositeResourceRequirement.h" />
+    <ClInclude Include="cls\CompositeSpan.h" />
+    <ClInclude Include="cls\CompositeTimetable.h" />
+    <ClInclude Include="cls\CompositeTimetableDomain.h" />
+    <ClInclude Include="cls\DiscreteResource.h" />
+    <ClInclude Include="cls\DiscreteResourceRequirement.h" />
+    <ClInclude Include="cls\DiscreteTimetable.h" />
+    <ClInclude Include="cls\DiscreteTimetableDomain.h" />
+    <ClInclude Include="cls\EFbound.h" />
+    <ClInclude Include="cls\EFboundInt.h" />
+    <ClInclude Include="cls\ESbound.h" />
+    <ClInclude Include="cls\ESboundCalendar.h" />
+    <ClInclude Include="cls\ESboundInt.h" />
+    <ClInclude Include="cls\ESboundTimetable.h" />
+    <ClInclude Include="cls\IntActivity.h" />
+    <ClInclude Include="cls\LFbound.h" />
+    <ClInclude Include="cls\LFboundCalendar.h" />
+    <ClInclude Include="cls\LFboundTimetable.h" />
+    <ClInclude Include="cls\libcls.h" />
+    <ClInclude Include="cls\LSbound.h" />
+    <ClInclude Include="cls\PreferredResources.h" />
+    <ClInclude Include="cls\PtActivity.h" />
+    <ClInclude Include="cls\Resource.h" />
+    <ClInclude Include="cls\ResourceCalendar.h" />
+    <ClInclude Include="cls\ResourceCalendarMgr.h" />
+    <ClInclude Include="cls\ResourceCalendarSpan.h" />
+    <ClInclude Include="cls\ResourceCapPts.h" />
+    <ClInclude Include="cls\SchedulableBound.h" />
+    <ClInclude Include="cls\Schedule.h" />
+    <ClInclude Include="cls\TimetableBound.h" />
+    <ClInclude Include="cse\AltJobMutate.h" />
+    <ClInclude Include="cse\AltJobSelector.h" />
+    <ClInclude Include="cse\AltResMutate.h" />
+    <ClInclude Include="cse\AltResSelector.h" />
+    <ClInclude Include="cse\AuditReport.h" />
+    <ClInclude Include="cse\CapMutate.h" />
+    <ClInclude Include="cse\CapSelector.h" />
+    <ClInclude Include="cse\ClevorDataSet.h" />
+    <ClInclude Include="cse\CompositeResource.h" />
+    <ClInclude Include="cse\DiscreteResource.h" />
+    <ClInclude Include="cse\EvaluatorFactory.h" />
+    <ClInclude Include="cse\ForwardScheduler.h" />
+    <ClInclude Include="cse\ItemRequirement.h" />
+    <ClInclude Include="cse\Job.h" />
+    <ClInclude Include="cse\JobGroup.h" />
+    <ClInclude Include="cse\JobOp.h" />
+    <ClInclude Include="cse\JobOpOrdering.h" />
+    <ClInclude Include="cse\JobOpSeqMutate.h" />
+    <ClInclude Include="cse\JobOpSeqSelector.h" />
+    <ClInclude Include="cse\JobSeqMutate.h" />
+    <ClInclude Include="cse\JobSeqSelector.h" />
+    <ClInclude Include="cse\libcse.h" />
+    <ClInclude Include="cse\MakespanEvaluator.h" />
+    <ClInclude Include="cse\MinCostHeuristics.h" />
+    <ClInclude Include="cse\MinCostResourcePtSelector.h" />
+    <ClInclude Include="cse\OperatorFactory.h" />
+    <ClInclude Include="cse\OpSeqMutate.h" />
+    <ClInclude Include="cse\OpSeqSelector.h" />
+    <ClInclude Include="cse\OptimizerFactory.h" />
+    <ClInclude Include="cse\PrecedenceCt.h" />
+    <ClInclude Include="cse\Propagator.h" />
+    <ClInclude Include="cse\PtMutate.h" />
+    <ClInclude Include="cse\PtSelector.h" />
+    <ClInclude Include="cse\ReleaseTimeMutate.h" />
+    <ClInclude Include="cse\ReleaseTimeSelector.h" />
+    <ClInclude Include="cse\ResCapMutate.h" />
+    <ClInclude Include="cse\ResCapSelector.h" />
+    <ClInclude Include="cse\Resource.h" />
+    <ClInclude Include="cse\ResourceCost.h" />
+    <ClInclude Include="cse\ResourceGroup.h" />
+    <ClInclude Include="cse\ResourceGroupRequirement.h" />
+    <ClInclude Include="cse\ResourceRequirement.h" />
+    <ClInclude Include="cse\ResourceSequenceDelays.h" />
+    <ClInclude Include="cse\ResourceSequenceList.h" />
+    <ClInclude Include="cse\RuleBasedScheduler.h" />
+    <ClInclude Include="cse\RunningThread.h" />
+    <ClInclude Include="cse\ScheduleEvaluator.h" />
+    <ClInclude Include="cse\ScheduleEvaluatorConfiguration.h" />
+    <ClInclude Include="cse\Scheduler.h" />
+    <ClInclude Include="cse\SchedulerConfiguration.h" />
+    <ClInclude Include="cse\SchedulerFactory.h" />
+    <ClInclude Include="cse\SchedulingContext.h" />
+    <ClInclude Include="cse\SchedulingRun.h" />
+    <ClInclude Include="cse\SEclient.h" />
+    <ClInclude Include="cse\Server.h" />
+    <ClInclude Include="cse\SummaryOp.h" />
+    <ClInclude Include="cse\TimeSlot.h" />
+    <ClInclude Include="cse\TotalCostEvaluator.h" />
+    <ClInclude Include="cse\TotalCostEvaluatorConfiguration.h" />
+    <ClInclude Include="cse\UnaryCt.h" />
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <VCProjectVersion>15.0</VCProjectVersion>
+    <ProjectGuid>{8BFCFC95-2046-47E6-B25E-E9B0D8385A2A}</ProjectGuid>
+    <Keyword>Win32Proj</Keyword>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v141</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v141</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v141</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v141</PlatformToolset>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="Shared">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <LinkIncremental>true</LinkIncremental>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <LinkIncremental>true</LinkIncremental>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;CONFIG=DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <Optimization>Disabled</Optimization>
+    </ClCompile>
+    <Link>
+      <TargetMachine>MachineX86</TargetMachine>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <SubSystem>Console</SubSystem>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;CONFIG=RELEASE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+    </ClCompile>
+    <Link>
+      <TargetMachine>MachineX86</TargetMachine>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <SubSystem>Console</SubSystem>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+    </Link>
+  </ItemDefinitionGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

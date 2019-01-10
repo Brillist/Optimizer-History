@@ -4,26 +4,26 @@
 #include "IntExpDomainARit.h"
 #include "IntExpDomainAR.h"
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 #ifdef DEBUG
 //#define DEBUG_UNIT
 #endif
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 UTL_NS_USE;
 LUT_NS_USE;
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 UTL_CLASS_IMPL(clp::IntExpDomainAR, clp::IntExpDomain);
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 CLP_NS_BEGIN;
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 IntExpDomainAR::IntExpDomainAR(Manager* mgr)
     : IntExpDomain(mgr)
@@ -31,23 +31,17 @@ IntExpDomainAR::IntExpDomainAR(Manager* mgr)
     init();
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
-IntExpDomainAR::IntExpDomainAR(
-    Manager* mgr,
-    const int_set_t& domain,
-    bool empty)
+IntExpDomainAR::IntExpDomainAR(Manager* mgr, const int_set_t& domain, bool empty)
     : IntExpDomain(mgr)
 {
     init(domain, empty);
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
-IntExpDomainAR::IntExpDomainAR(
-    Manager* mgr,
-    const uint_set_t& p_domain,
-    bool empty)
+IntExpDomainAR::IntExpDomainAR(Manager* mgr, const uint_set_t& p_domain, bool empty)
     : IntExpDomain(mgr)
 {
     // convert set<uint_t> => set<int>
@@ -62,20 +56,15 @@ IntExpDomainAR::IntExpDomainAR(
     init(domain, empty);
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
-IntExpDomainAR::IntExpDomainAR(
-    Manager* mgr,
-    uint_t num,
-    int* values,
-    bool valuesOwner,
-    bool empty)
+IntExpDomainAR::IntExpDomainAR(Manager* mgr, uint_t num, int* values, bool valuesOwner, bool empty)
     : IntExpDomain(mgr)
 {
     init(num, values, valuesOwner, empty);
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 IntExpDomainAR::copy(const Object& rhs)
@@ -84,9 +73,10 @@ IntExpDomainAR::copy(const Object& rhs)
     const IntExpDomainAR& dar = (const IntExpDomainAR&)rhs;
     IntExpDomain::copy(dar);
     _num = dar._num;
-    if (_valuesOwner) delete [] _values;
+    if (_valuesOwner)
+        delete[] _values;
     _valuesOwner = dar._valuesOwner;
-    delete [] _flags;
+    delete[] _flags;
     _flagsSize = dar._flagsSize;
 
     if (_num == 0)
@@ -109,11 +99,13 @@ IntExpDomainAR::copy(const Object& rhs)
         _flags = new utl::uint32_t[_flagsSize];
         memcpy(_flags, dar._flags, _flagsSize * 4);
     }
-    if (_mgr == nullptr) _stateDepth = 0;
-    else _stateDepth = _mgr->depth();
+    if (_mgr == nullptr)
+        _stateDepth = 0;
+    else
+        _stateDepth = _mgr->depth();
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 IntExpDomainAR::copyFlags(const IntExpDomainAR* rhs)
@@ -132,7 +124,7 @@ IntExpDomainAR::copyFlags(const IntExpDomainAR* rhs)
     }
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 bool
 IntExpDomainAR::has(int val) const
@@ -143,25 +135,22 @@ IntExpDomainAR::has(int val) const
     }
 
     uint_t idx = findValueIdx(val);
-    return
-        (idx != uint_t_max)
-        && (_values[idx] == val)
-        && getFlag(idx);
+    return (idx != uint_t_max) && (_values[idx] == val) && getFlag(idx);
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 IntExpDomainIt*
 IntExpDomainAR::begin() const
 {
-    if (_size == 0) return end();
-    IntExpDomainARit* it
-        = new IntExpDomainARit(this, uint_t_max, int_t_min);
+    if (_size == 0)
+        return end();
+    IntExpDomainARit* it = new IntExpDomainARit(this, uint_t_max, int_t_min);
     it->next();
     return it;
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 IntExpDomainIt*
 IntExpDomainAR::end() const
@@ -170,7 +159,7 @@ IntExpDomainAR::end() const
     return it;
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 int
 IntExpDomainAR::getPrev(int val) const
@@ -181,12 +170,13 @@ IntExpDomainAR::getPrev(int val) const
     }
 
     uint_t idx = findValueIdx(val);
-    if (val == _values[idx]) --idx;
+    if (val == _values[idx])
+        --idx;
     idx = findBackward(idx);
     return _values[idx];
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 int
 IntExpDomainAR::getNext(int val) const
@@ -197,12 +187,13 @@ IntExpDomainAR::getNext(int val) const
     }
 
     uint_t idx = findValueIdx(val);
-    if (val == _values[idx]) ++idx;
+    if (val == _values[idx])
+        ++idx;
     idx = findForward(idx);
     return _values[idx];
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 IntExpDomainAR::_saveState()
@@ -213,7 +204,7 @@ IntExpDomainAR::_saveState()
     _mgr->revSet(_flags, _flagsSize);
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 IntExpDomainAR::addRange(int min, int max)
@@ -223,7 +214,8 @@ IntExpDomainAR::addRange(int min, int max)
     max = utl::min(max, _values[_num - 1]);
 
     // nothing to do?
-    if (min > max) return;
+    if (min > max)
+        return;
 
     saveState();
 
@@ -235,13 +227,12 @@ IntExpDomainAR::addRange(int min, int max)
 
     // set flags to add values to the domain
     uint_t idx;
-    for (idx = minIdx;
-         (idx < _num) && (_values[idx] <= max);
-         ++idx)
+    for (idx = minIdx; (idx < _num) && (_values[idx] <= max); ++idx)
     {
         if (setFlag(idx))
         {
-            if (_size == oldSize) minIdx = idx;
+            if (_size == oldSize)
+                minIdx = idx;
             maxIdx = idx;
             _events |= ef_domain;
             ++_size;
@@ -273,7 +264,7 @@ IntExpDomainAR::addRange(int min, int max)
     }
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 IntExpDomainAR::removeRange(int min, int max)
@@ -302,13 +293,12 @@ IntExpDomainAR::removeRange(int min, int max)
 
     // find index of first value >= min
     uint_t idx, minIdx;
-    for (idx = findValueIdx(min);
-         (idx < _num) && (_values[idx] <= max);
-         ++idx)
+    for (idx = findValueIdx(min); (idx < _num) && (_values[idx] <= max); ++idx)
     {
         if (clearFlag(idx))
         {
-            if (_size == oldSize) minIdx = idx;
+            if (_size == oldSize)
+                minIdx = idx;
             _events |= ef_domain;
             --_size;
         }
@@ -351,7 +341,7 @@ IntExpDomainAR::removeRange(int min, int max)
     ASSERTD(_min <= _max);
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 IntExpDomainAR::init()
@@ -364,7 +354,7 @@ IntExpDomainAR::init()
     _flags = nullptr;
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 IntExpDomainAR::init(const std::set<int>& domain, bool empty)
@@ -379,7 +369,7 @@ IntExpDomainAR::init(const std::set<int>& domain, bool empty)
     init(domain.size(), values, true, empty);
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 IntExpDomainAR::init(uint_t num, int* values, bool valuesOwner, bool empty)
@@ -404,34 +394,40 @@ IntExpDomainAR::init(uint_t num, int* values, bool valuesOwner, bool empty)
         _size = 0;
         _min = int_t_max;
         _max = int_t_min;
-        if (_flagsSize == 1) *_flags = 0;
-        else memset(_flags, 0x00, _flagsSize * 4);
+        if (_flagsSize == 1)
+            *_flags = 0;
+        else
+            memset(_flags, 0x00, _flagsSize * 4);
     }
     else
     {
         _size = _num;
         _min = _values[0];
         _max = _values[_num - 1];
-        if (_flagsSize == 1) *_flags = uint32_t_max;
-        else memset(_flags, 0xff, _flagsSize * 4);
+        if (_flagsSize == 1)
+            *_flags = uint32_t_max;
+        else
+            memset(_flags, 0xff, _flagsSize * 4);
     }
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 IntExpDomainAR::deInit()
 {
-    if (_valuesOwner) delete [] _values;
-    delete [] _flags;
+    if (_valuesOwner)
+        delete[] _values;
+    delete[] _flags;
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 uint_t
 IntExpDomainAR::findValueIdx(int val) const
 {
-    if (val > _values[_num - 1]) return uint_t_max;
+    if (val > _values[_num - 1])
+        return uint_t_max;
 
     // |values| <= 32  ==>  linear search is faster
     if (_num <= 32)
@@ -440,29 +436,25 @@ IntExpDomainAR::findValueIdx(int val) const
         int* midPtr = _values + numDiv2;
         int* valuePtr = (val >= *midPtr) ? midPtr : _values;
 
-        while (*valuePtr < val) ++valuePtr;
+        while (*valuePtr < val)
+            ++valuePtr;
         return (valuePtr - _values);
     }
 
-    uint_t idx
-        = utl::binarySearch(
-            _values,
-            0,
-            _num,
-            val,
-            utl::subtract<int>(),
-            utl::find_ip);
+    uint_t idx = utl::binarySearch(_values, 0, _num, val, utl::subtract<int>(), utl::find_ip);
 
     return idx;
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 uint_t
 IntExpDomainAR::findForward(uint_t idx) const
 {
-    if (idx >= _num) return uint_t_max;
-    if (_values[idx] > _max) return uint_t_max;
+    if (idx >= _num)
+        return uint_t_max;
+    if (_values[idx] > _max)
+        return uint_t_max;
 
     uint_t* flagsPtr = _flags + (idx >> 5);
     uint_t flags = *flagsPtr;
@@ -480,13 +472,15 @@ IntExpDomainAR::findForward(uint_t idx) const
     return idx;
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 uint_t
 IntExpDomainAR::findBackward(uint_t idx) const
 {
-    if (idx >= _num) idx = _num - 1;
-    if (_values[idx] < _min) return uint_t_max;
+    if (idx >= _num)
+        idx = _num - 1;
+    if (_values[idx] < _min)
+        return uint_t_max;
 
     uint_t* flagsPtr = _flags + (idx >> 5);
     uint_t flags = *flagsPtr;
@@ -504,7 +498,7 @@ IntExpDomainAR::findBackward(uint_t idx) const
     return idx;
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 bool
 IntExpDomainAR::getFlag(utl::uint_t idx) const
@@ -517,7 +511,7 @@ IntExpDomainAR::getFlag(utl::uint_t idx) const
     return ((flags & mask) != 0);
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 bool
 IntExpDomainAR::setFlag(utl::uint_t idx)
@@ -526,12 +520,13 @@ IntExpDomainAR::setFlag(utl::uint_t idx)
     uint_t word = idx >> 5;
     uint_t bit = idx & 0x1f;
     utl::uint32_t mask = (0x80000000U >> bit);
-    if ((_flags[word] & mask) != 0) return false;
+    if ((_flags[word] & mask) != 0)
+        return false;
     _flags[word] |= mask;
     return true;
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 bool
 IntExpDomainAR::clearFlag(utl::uint_t idx)
@@ -540,11 +535,12 @@ IntExpDomainAR::clearFlag(utl::uint_t idx)
     uint_t word = idx >> 5;
     uint_t bit = idx & 0x1f;
     utl::uint32_t mask = (0x80000000U >> bit);
-    if ((_flags[word] & mask) == 0) return false;
+    if ((_flags[word] & mask) == 0)
+        return false;
     _flags[word] &= ~mask;
     return true;
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 CLP_NS_END;

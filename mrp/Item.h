@@ -1,22 +1,22 @@
 #ifndef MRP_ITEM_H
 #define MRP_ITEM_H
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 #include <libutl/String.h>
 #include <mrp/BOM.h>
 #include <mrp/InventoryTransaction.h>
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 MRP_NS_BEGIN;
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 // use forward declaration to avoid a circular dependency
 class InventoryRecord;
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
    Item (abstract).
@@ -24,89 +24,117 @@ class InventoryRecord;
    \author Adam McKee
 */
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 class Item : public utl::Object
 {
     UTL_CLASS_DECL_ABC(Item);
+
 public:
     virtual void copy(const utl::Object& rhs);
 
     virtual int compare(const utl::Object& rhs) const;
 
-    virtual void serialize(
-        utl::Stream& stream,
-        utl::uint_t io,
-        utl::uint_t mode = utl::ser_default);
+    virtual void
+    serialize(utl::Stream& stream, utl::uint_t io, utl::uint_t mode = utl::ser_default);
 
     /// \name Accessors
     //@{
     /** Id. */
-    utl::uint_t id() const
-    { return _id; }
+    utl::uint_t
+    id() const
+    {
+        return _id;
+    }
 
     /** Id. */
-    utl::uint_t& id()
-    { return _id; }
+    utl::uint_t&
+    id()
+    {
+        return _id;
+    }
 
     /** Name. */
-    const std::string& name() const
-    { return _name; }
+    const std::string&
+    name() const
+    {
+        return _name;
+    }
 
     /** Name. */
-    std::string& name()
-    { return _name; }
+    std::string&
+    name()
+    {
+        return _name;
+    }
 
     /** MPS-item flag. */
-    bool MPSitem() const
-    { return _MPSitem; }
+    bool
+    MPSitem() const
+    {
+        return _MPSitem;
+    }
 
     /** MPS-item flag. */
-    bool& MPSitem()
-    { return _MPSitem; }
+    bool&
+    MPSitem()
+    {
+        return _MPSitem;
+    }
 
     /** BOMs. */
-    const bom_vector_t& boms() const
-    { return _boms; }
+    const bom_vector_t&
+    boms() const
+    {
+        return _boms;
+    }
 
     /** BOMs. */
-    bom_vector_t& boms()
-    { return _boms; }
+    bom_vector_t&
+    boms()
+    {
+        return _boms;
+    }
 
     /** Inventory Record. */
-    const InventoryRecord* inventoryRecord() const
-    { return _inventoryRecord; }
+    const InventoryRecord*
+    inventoryRecord() const
+    {
+        return _inventoryRecord;
+    }
 
     /** Inventory Record. */
-    InventoryRecord*& inventoryRecord()
-    { return _inventoryRecord; }
+    InventoryRecord*&
+    inventoryRecord()
+    {
+        return _inventoryRecord;
+    }
     //@}
 
-    utl::uint_t checkAndConsumeInventory(
-        inv_transaction_op_type_t opType,
-        utl::uint_t opId,
-        time_t t,
-        utl::uint_t reqQuantity,
-        inv_transaction_status_t status);
+    utl::uint_t checkAndConsumeInventory(inv_transaction_op_type_t opType,
+                                         utl::uint_t opId,
+                                         time_t t,
+                                         utl::uint_t reqQuantity,
+                                         inv_transaction_status_t status);
 
-    void consumeInventory(
-        inv_transaction_op_type_t opType,
-        utl::uint_t opId,
-        time_t t,
-        utl::uint_t reqQuantity,
-        inv_transaction_status_t status);
+    void consumeInventory(inv_transaction_op_type_t opType,
+                          utl::uint_t opId,
+                          time_t t,
+                          utl::uint_t reqQuantity,
+                          inv_transaction_status_t status);
 
-    void produceInventory(
-        inv_transaction_op_type_t opType,
-        utl::uint_t opId,
-        time_t t,
-        utl::uint_t quantity,
-        inv_transaction_status_t status);
+    void produceInventory(inv_transaction_op_type_t opType,
+                          utl::uint_t opId,
+                          time_t t,
+                          utl::uint_t quantity,
+                          inv_transaction_status_t status);
 
     utl::String toString() const;
+
 private:
     void init();
     void deInit();
+
 private:
     utl::uint_t _id;
     std::string _name;
@@ -115,22 +143,22 @@ private:
     InventoryRecord* _inventoryRecord;
 };
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /** Order item objects by id. */
-struct ItemOrderingIncId : public std::binary_function<Item*,Item*,bool>
+struct ItemOrderingIncId : public std::binary_function<Item*, Item*, bool>
 {
     bool operator()(const Item* lhs, const Item* rhs) const;
 };
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 typedef std::set<Item*, ItemOrderingIncId> item_set_id_t;
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 MRP_NS_END;
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 #endif

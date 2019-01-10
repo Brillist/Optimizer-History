@@ -4,13 +4,13 @@
 #include "OpSeqMutate.h"
 #include "DiscreteResource.h"
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 #ifdef DEBUG
 // #define DEBUG_UNIT
 #endif
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 UTL_NS_USE;
 LUT_NS_USE;
@@ -18,15 +18,15 @@ GOP_NS_USE;
 CLP_NS_USE;
 CLS_NS_USE;
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 UTL_CLASS_IMPL(cse::OpSeqMutate, gop::RevOperator);
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 CSE_NS_BEGIN;
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 OpSeqMutate::copy(const Object& rhs)
@@ -43,7 +43,7 @@ OpSeqMutate::copy(const Object& rhs)
     _moveOpIdxs = jsmutate._moveOpIdxs;
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 OpSeqMutate::initialize(const gop::DataSet* p_dataSet)
@@ -64,11 +64,11 @@ OpSeqMutate::initialize(const gop::DataSet* p_dataSet)
         uint_t numSwapOps = numActiveSwapOps(opVect);
         if (numSwapOps == 0)
         {
-            addOperatorVar(i,0,2,op->job()->activeP());
+            addOperatorVar(i, 0, 2, op->job()->activeP());
         }
         else
         {
-            addOperatorVar(i,1,2,op->job()->activeP());
+            addOperatorVar(i, 1, 2, op->job()->activeP());
         }
         if (op->job()->active())
         {
@@ -80,13 +80,10 @@ OpSeqMutate::initialize(const gop::DataSet* p_dataSet)
     setNumChoices(numChoices / 2);
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 bool
-OpSeqMutate::execute(
-    gop::Ind* ind,
-    gop::IndBuilderContext* p_context,
-    bool singleStep)
+OpSeqMutate::execute(gop::Ind* ind, gop::IndBuilderContext* p_context, bool singleStep)
 {
     ASSERTD(dynamic_cast<SchedulingContext*>(p_context) != nullptr);
     ASSERTD(dynamic_cast<StringInd<uint_t>*>(ind) != nullptr);
@@ -118,10 +115,11 @@ OpSeqMutate::execute(
     ASSERTD(opMapIt != _swapOpsMap.end());
     jobop_vector_t* swapOps = (*opMapIt).second;
     JobOp* swapOp = selectActiveSwapOp(swapOps);
-    if (swapOp == nullptr) swapOp = op;
-//     ASSERTD(swapOps->size() > 0);
-//     uint_t swapOpIdx = _rng->evali(swapOps->size());
-//     JobOp* swapOp = (*swapOps)[swapOpIdx];
+    if (swapOp == nullptr)
+        swapOp = op;
+    //     ASSERTD(swapOps->size() > 0);
+    //     uint_t swapOpIdx = _rng->evali(swapOps->size());
+    //     JobOp* swapOp = (*swapOps)[swapOpIdx];
 
     //swap two ops
     uint_t opSid = op->serialId();
@@ -154,8 +152,7 @@ OpSeqMutate::execute(
     jobop_vector_t::iterator startIt = changedOps.begin();
     while (nextOp != lastOp)
     {
-        if ((nextOp == firstOp)
-            || (allSuccCGs.find(nextOp->esCG()) != allSuccCGs.end()))
+        if ((nextOp == firstOp) || (allSuccCGs.find(nextOp->esCG()) != allSuccCGs.end()))
         {
             changedOps.erase(startIt);
             changedOps.push_back(nextOp);
@@ -168,23 +165,20 @@ OpSeqMutate::execute(
     }
     ////re-assign sid
     uint_t newSid = minOpSid;
-    for (jobop_vector_t::iterator it = changedOps.begin();
-         it != changedOps.end();
-         ++it)
+    for (jobop_vector_t::iterator it = changedOps.begin(); it != changedOps.end(); ++it)
     {
         JobOp* op1 = *it;
         op1->serialId() = newSid++;
     }
     ////update string
-    for (uint_vector_t::iterator it = _moveOpIdxs.begin();
-         it != _moveOpIdxs.end(); it++)
+    for (uint_vector_t::iterator it = _moveOpIdxs.begin(); it != _moveOpIdxs.end(); it++)
     {
         uint_t idx = *it;
         JobOp* op1 = _ops[idx];
         string[_stringBase + idx] = op1->serialId();
     }
-//     ASSERTD((op->serialId() - swapOp->serialId() == 1) ||
-//             (swapOp->serialId() - op->serialId() == 1));
+    //     ASSERTD((op->serialId() - swapOp->serialId() == 1) ||
+    //             (swapOp->serialId() - op->serialId() == 1));
     ////selectResource(resId)
     ASSERTD(op->breakable() || op->interruptible());
     ASSERTD(swapOp->breakable() || swapOp->interruptible());
@@ -193,45 +187,41 @@ OpSeqMutate::execute(
     const uint_set_t& opResIds = act1->allResIds();
     const uint_set_t& swapOpResIds = act2->allResIds();
     uint_set_t commonResIds;
-    std::set_intersection(
-        opResIds.begin(), opResIds.end(),
-        swapOpResIds.begin(), swapOpResIds.end(),
-        std::inserter(commonResIds, commonResIds.begin()));
+    std::set_intersection(opResIds.begin(), opResIds.end(), swapOpResIds.begin(),
+                          swapOpResIds.end(), std::inserter(commonResIds, commonResIds.begin()));
     ASSERT(commonResIds.size() > 0);
     uint_t resIdx = _rng->evali(commonResIds.size());
     uint_t resId = uint_t_max;
 
     uint_set_t::iterator resIt = commonResIds.begin();
-    for (uint_t i = 0; i != resIdx; i++) ++resIt;
+    for (uint_t i = 0; i != resIdx; i++)
+        ++resIt;
     resId = *resIt;
     ASSERT(resId != uint_t_max);
     act1->selectResource(resId);
     act2->selectResource(resId);
     mgr->propagate();
 #ifdef DEBUG_UNIT
-    utl::cout
-        << "                                                   "
-        << "job1:" << op->job()->id()
-        << ", op1:" << op->id() << "("
-        << opSid << "->" << op->serialId()
-        << "), job2:" << swapOp->job()->id()
-        << ", op2:" << swapOp->id() << "("
-        << swapOpSid << "->" << swapOp->serialId()
-        << "), seleRes:" << resId << utl::endl;
+    utl::cout << "                                                   "
+              << "job1:" << op->job()->id() << ", op1:" << op->id() << "(" << opSid << "->"
+              << op->serialId() << "), job2:" << swapOp->job()->id() << ", op2:" << swapOp->id()
+              << "(" << swapOpSid << "->" << swapOp->serialId() << "), seleRes:" << resId
+              << utl::endl;
 #endif
     return true;
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 OpSeqMutate::accept()
 {
     ASSERTD(_moveSchedule != nullptr);
-    if (_moveSchedule->newString()) _moveSchedule->acceptNewString();
+    if (_moveSchedule->newString())
+        _moveSchedule->acceptNewString();
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 OpSeqMutate::undo()
@@ -239,7 +229,8 @@ OpSeqMutate::undo()
     ASSERTD(_moveSchedule != nullptr);
     ASSERTD(_moveOps.size() != 0);
     ASSERTD(_moveOpIdxs.size() != 0);
-    if (_moveSchedule->newString()) _moveSchedule->deleteNewString();
+    if (_moveSchedule->newString())
+        _moveSchedule->deleteNewString();
     gop::String<uint_t>& string = _moveSchedule->string();
     uint_t startSid = _moveOpSid;
     for (uint_t i = 0; i < _moveOps.size(); i++)
@@ -247,8 +238,7 @@ OpSeqMutate::undo()
         JobOp* op = _moveOps[i];
         op->serialId() = startSid++;
     }
-    for (uint_vector_t::iterator it = _moveOpIdxs.begin();
-         it != _moveOpIdxs.end(); it++)
+    for (uint_vector_t::iterator it = _moveOpIdxs.begin(); it != _moveOpIdxs.end(); it++)
     {
         uint_t idx = *it;
         JobOp* op = _ops[idx];
@@ -256,7 +246,7 @@ OpSeqMutate::undo()
     }
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 typedef std::set<utl::uint_t> uint_set_t;
 
 void
@@ -272,8 +262,7 @@ OpSeqMutate::setOps(const ClevorDataSet* dataSet)
         JobOp* op = *opIt;
         _ops.push_back(op);
         jobop_vector_t* opVect = new jobop_vector_t();
-        _swapOpsMap.insert(jobop_jobopvector_map_t::
-                           value_type(op, opVect));
+        _swapOpsMap.insert(jobop_jobopvector_map_t::value_type(op, opVect));
     }
 
     // iterate over resources in the data-set
@@ -281,16 +270,15 @@ OpSeqMutate::setOps(const ClevorDataSet* dataSet)
     res_set_id_t::const_iterator it;
     for (it = resources.begin(); it != resources.end(); ++it)
     {
-        DiscreteResource* res
-            = dynamic_cast<DiscreteResource*>(*it);
+        DiscreteResource* res = dynamic_cast<DiscreteResource*>(*it);
 
         // skip non-discrete resource or disRes with no cap
         // or disRes with 0 maxResCap
-        if (res == nullptr ||
-            res->maxCap() == 0) continue;
-        cls::DiscreteResource* clsRes =
-            (cls::DiscreteResource*)res->clsResource();
-        if (clsRes->maxReqCap() == 0) continue;
+        if (res == nullptr || res->maxCap() == 0)
+            continue;
+        cls::DiscreteResource* clsRes = (cls::DiscreteResource*)res->clsResource();
+        if (clsRes->maxReqCap() == 0)
+            continue;
 
         // resOps = {all ops that may require this resource}
         jobop_set_id_t resOps;
@@ -300,8 +288,7 @@ OpSeqMutate::setOps(const ClevorDataSet* dataSet)
 
             //skip if (op.frozen()) or (act != ptAct  and act != intAct)
             //or (op.pt == 0)
-            if (op->frozen() ||
-                (!op->breakable() && !op->interruptible()))
+            if (op->frozen() || (!op->breakable() && !op->interruptible()))
             {
                 continue;
             }
@@ -326,18 +313,19 @@ OpSeqMutate::setOps(const ClevorDataSet* dataSet)
         }
 
         //check code DO NOT DELETE
-//         jobop_set_id_t::iterator it;
-//         utl::cout << "RES:" << res->id() << ", resOps:";
-//         for (it = resOps.begin(); it != resOps.end(); it++)
-//         {
-//            utl::cout << (*it)->id()
-//                      << "(" << ((JobOp*)(*it))->job()->id()
-//                      << "), ";
-//         }
-//         utl::cout << utl::endl << utl::endl;
+        //         jobop_set_id_t::iterator it;
+        //         utl::cout << "RES:" << res->id() << ", resOps:";
+        //         for (it = resOps.begin(); it != resOps.end(); it++)
+        //         {
+        //            utl::cout << (*it)->id()
+        //                      << "(" << ((JobOp*)(*it))->job()->id()
+        //                      << "), ";
+        //         }
+        //         utl::cout << utl::endl << utl::endl;
 
         uint_t numOps = resOps.size();
-        if (numOps < 2) continue;
+        if (numOps < 2)
+            continue;
         jobop_set_id_t::iterator it1;
         jobop_set_id_t::iterator it2;
         for (it1 = resOps.begin(); it1 != resOps.end(); it1++)
@@ -359,8 +347,10 @@ OpSeqMutate::setOps(const ClevorDataSet* dataSet)
                 CycleGroup* candCG = candOp->esCG();
 
                 // skip candCG if it has precedence relationship with cg
-                if (allPredCGs.find(candCG) != allPredCGs.end()) continue;
-                if (allSuccCGs.find(candCG) != allSuccCGs.end()) continue;
+                if (allPredCGs.find(candCG) != allPredCGs.end())
+                    continue;
+                if (allSuccCGs.find(candCG) != allSuccCGs.end())
+                    continue;
 
                 jobop_jobopvector_map_t::iterator candOpMapIt;
                 candOpMapIt = _swapOpsMap.find(candOp);
@@ -372,7 +362,7 @@ OpSeqMutate::setOps(const ClevorDataSet* dataSet)
         }
     }
 
-//     uint_t i = 0;
+    //     uint_t i = 0;
     jobop_jobopvector_map_t::iterator mapIt;
     for (mapIt = _swapOpsMap.begin(); mapIt != _swapOpsMap.end(); mapIt++)
     {
@@ -392,19 +382,19 @@ OpSeqMutate::setOps(const ClevorDataSet* dataSet)
             prevOp = op;
         }
         //check code. DO NOT DELETE
-//         utl::cout << "i:" << i++
-//                   << ", op(job):" << (*mapIt).first->id()
-//                   << "(" << ((JobOp*)(*mapIt).first)->job()->id() << ")"
-//                   << ", #swapOps:" << Uint(opVect->size())
-//                   << ", swapOps:";
-//         for (it = opVect->begin(); it != opVect->end(); it++)
-//            utl::cout << (*it)->id()
-//                      << "(" << ((JobOp*)(*it))->job()->id() << "), ";
-//         utl::cout << utl::endl << utl::endl;
+        //         utl::cout << "i:" << i++
+        //                   << ", op(job):" << (*mapIt).first->id()
+        //                   << "(" << ((JobOp*)(*mapIt).first)->job()->id() << ")"
+        //                   << ", #swapOps:" << Uint(opVect->size())
+        //                   << ", swapOps:";
+        //         for (it = opVect->begin(); it != opVect->end(); it++)
+        //            utl::cout << (*it)->id()
+        //                      << "(" << ((JobOp*)(*it))->job()->id() << "), ";
+        //         utl::cout << utl::endl << utl::endl;
     }
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 uint_t
 OpSeqMutate::numActiveSwapOps(const jobop_vector_t* opVect)
@@ -414,12 +404,13 @@ OpSeqMutate::numActiveSwapOps(const jobop_vector_t* opVect)
     for (it = opVect->begin(); it != opVect->end(); it++)
     {
         JobOp* op = (*it);
-        if (op->job()->active()) n++;
+        if (op->job()->active())
+            n++;
     }
     return n;
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 JobOp*
 OpSeqMutate::selectActiveSwapOp(const jobop_vector_t* opVect)
@@ -429,14 +420,16 @@ OpSeqMutate::selectActiveSwapOp(const jobop_vector_t* opVect)
     for (it = opVect->begin(); it != opVect->end(); it++)
     {
         JobOp* op = (*it);
-        if (op->job()->active()) ops.push_back(op);
+        if (op->job()->active())
+            ops.push_back(op);
     }
-    if (ops.size() == 0) return nullptr;
+    if (ops.size() == 0)
+        return nullptr;
     uint_t idx = _rng->evali(ops.size());
     return ops[idx];
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 OpSeqMutate::init()
@@ -444,7 +437,7 @@ OpSeqMutate::init()
     _moveOpSid = uint_t_max;
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 OpSeqMutate::deInit()
@@ -452,6 +445,6 @@ OpSeqMutate::deInit()
     deleteMapSecond(_swapOpsMap);
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 CSE_NS_END;

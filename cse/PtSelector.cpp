@@ -7,13 +7,13 @@
 #include "ForwardScheduler.h"
 #include "PtSelector.h"
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 #ifdef DEBUG
 #define DEBUG_UNIT
 #endif
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 UTL_NS_USE;
 LUT_NS_USE;
@@ -21,15 +21,15 @@ CLP_NS_USE;
 CLS_NS_USE;
 GOP_NS_USE;
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 UTL_CLASS_IMPL(cse::PtSelector, cse::Scheduler);
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 CSE_NS_BEGIN;
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 PtSelector::copy(const Object& rhs)
@@ -40,7 +40,7 @@ PtSelector::copy(const Object& rhs)
     _acts = ps._acts;
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 PtSelector::setStringBase(Operator* op) const
@@ -57,7 +57,7 @@ PtSelector::setStringBase(Operator* op) const
     _nestedScheduler->setStringBase(op);
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 uint_t
 PtSelector::stringSize(const ClevorDataSet& dataSet) const
@@ -68,12 +68,10 @@ PtSelector::stringSize(const ClevorDataSet& dataSet) const
     return stringSize;
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
-PtSelector::initialize(
-    const gop::DataSet* p_dataSet,
-    uint_t stringBase)
+PtSelector::initialize(const gop::DataSet* p_dataSet, uint_t stringBase)
 {
     ASSERTD(_nestedScheduler != nullptr);
     ASSERTD(dynamic_cast<const ClevorDataSet*>(p_dataSet) != nullptr);
@@ -84,14 +82,10 @@ PtSelector::initialize(
     _nestedScheduler->initialize(dataSet, _stringBase + _acts.size());
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
-PtSelector::initializeInd(
-    Ind* p_ind,
-    const gop::DataSet* p_dataSet,
-    RandNumGen* rng,
-    void*)
+PtSelector::initializeInd(Ind* p_ind, const gop::DataSet* p_dataSet, RandNumGen* rng, void*)
 {
     ASSERTD(dynamic_cast<StringInd<uint_t>*>(p_ind) != nullptr);
     StringInd<uint_t>* ind = (StringInd<uint_t>*)p_ind;
@@ -99,8 +93,7 @@ PtSelector::initializeInd(
 
     ASSERTD(dynamic_cast<const ClevorDataSet*>(p_dataSet) != nullptr);
     const ClevorDataSet* dataSet = (const ClevorDataSet*)p_dataSet;
-    const MinCostHeuristics* minCostHeuristics
-        = dataSet->minCostHeuristics();
+    const MinCostHeuristics* minCostHeuristics = dataSet->minCostHeuristics();
 
     uint_t numActs = _acts.size();
     if (_stringBase == 0)
@@ -111,27 +104,21 @@ PtSelector::initializeInd(
     {
         PtActivity* act = _acts[i];
         JobOp* op = (JobOp*)(act->owner());
-        const MinCostAltResPt* minCostAltResPt
-            = minCostHeuristics->getMinCostAltResPt(op);
-        string[_stringBase +i] = minCostAltResPt->pt();
+        const MinCostAltResPt* minCostAltResPt = minCostHeuristics->getMinCostAltResPt(op);
+        string[_stringBase + i] = minCostAltResPt->pt();
     }
 
-//     for (uint_t i = 0; i < numActs; ++i)
-//     {
-//         string[_stringBase + i] = 0;
-//     }
-    _nestedScheduler->initializeInd(
-        ind, dataSet, rng, (void*)size_t_max);
+    //     for (uint_t i = 0; i < numActs; ++i)
+    //     {
+    //         string[_stringBase + i] = 0;
+    //     }
+    _nestedScheduler->initializeInd(ind, dataSet, rng, (void*)size_t_max);
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
-PtSelector::initializeRandomInd(
-    Ind* p_ind,
-    const gop::DataSet* p_dataSet,
-    RandNumGen* rng,
-    void*)
+PtSelector::initializeRandomInd(Ind* p_ind, const gop::DataSet* p_dataSet, RandNumGen* rng, void*)
 {
     ASSERTD(dynamic_cast<StringInd<uint_t>*>(p_ind) != nullptr);
     StringInd<uint_t>* ind = (StringInd<uint_t>*)p_ind;
@@ -159,14 +146,10 @@ PtSelector::initializeRandomInd(
             string[_stringBase + i] = ptExp.getNext(minPt);
         }
     }
-    _nestedScheduler->initializeRandomInd(
-        ind,
-        dataSet,
-        rng,
-        (void*)size_t_max);
+    _nestedScheduler->initializeRandomInd(ind, dataSet, rng, (void*)size_t_max);
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 PtSelector::run(Ind* p_ind, IndBuilderContext* p_context) const
@@ -181,7 +164,7 @@ PtSelector::run(Ind* p_ind, IndBuilderContext* p_context) const
     _nestedScheduler->run(ind, context);
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 PtSelector::init()
@@ -189,7 +172,7 @@ PtSelector::init()
     _nestedScheduler = new ForwardScheduler();
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 PtSelector::setActs(const ClevorDataSet* dataSet)
@@ -201,10 +184,12 @@ PtSelector::setActs(const ClevorDataSet* dataSet)
     for (it = ops.begin(); it != ops.end(); ++it)
     {
         JobOp* jobOp = *it;
-        if (jobOp->frozen()) continue;
+        if (jobOp->frozen())
+            continue;
         Activity* act = jobOp->activity();
         ASSERTD(act != nullptr);
-        if (!act->isA(PtActivity)) continue;
+        if (!act->isA(PtActivity))
+            continue;
         PtActivity* ptact = (PtActivity*)act;
         const IntExp* ptExp = ptact->possiblePts();
         if (!ptExp->isBound())
@@ -214,12 +199,10 @@ PtSelector::setActs(const ClevorDataSet* dataSet)
     }
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
-PtSelector::setPts(
-    StringInd<uint_t>* ind,
-    SchedulingContext* context) const
+PtSelector::setPts(StringInd<uint_t>* ind, SchedulingContext* context) const
 {
     ASSERTD(_config != nullptr);
     gop::String<uint_t>& string = ind->string();
@@ -229,7 +212,8 @@ PtSelector::setPts(
     {
         PtActivity* act = _acts[i];
         JobOp* op = (JobOp*)act->owner();
-        if (!op->job()->active()) continue;
+        if (!op->job()->active())
+            continue;
         const IntExp& ptExp = act->possiblePts();
         uint_t pt = string[_stringBase + i];
         if (ptExp.has(pt))
@@ -238,7 +222,8 @@ PtSelector::setPts(
         }
         else
         {
-            if (ind->newString() == nullptr) ind->createNewString();
+            if (ind->newString() == nullptr)
+                ind->createNewString();
             gop::String<uint_t>& newStr = *(ind->newString());
             int prevPt = ptExp.getPrev(pt);
             int nextPt = ptExp.getNext(pt);
@@ -259,8 +244,7 @@ PtSelector::setPts(
             {
                 utl::cout << "Warning(PtSelector.cpp): " << pt
                           << " is not a valid pt. the new pt is set to "
-                          << act->possiblePts().toString().get()
-                          << utl::endl;
+                          << act->possiblePts().toString().get() << utl::endl;
             }
 #endif
         }
@@ -268,6 +252,6 @@ PtSelector::setPts(
     }
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 CSE_NS_END;

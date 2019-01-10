@@ -8,13 +8,13 @@
 
 #include <clp/BoundPropagator.h>
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 #ifdef DEBUG
 #define DEBUG_UNIT
 #endif
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 UTL_NS_USE;
 LUT_NS_USE;
@@ -22,15 +22,15 @@ CLP_NS_USE;
 CLS_NS_USE;
 GOP_NS_USE;
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 UTL_CLASS_IMPL(cse::AltJobSelector, cse::Scheduler);
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 CSE_NS_BEGIN;
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 AltJobSelector::copy(const Object& rhs)
@@ -41,7 +41,7 @@ AltJobSelector::copy(const Object& rhs)
     _jobGroups = pps._jobGroups;
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 AltJobSelector::setStringBase(Operator* op) const
@@ -58,7 +58,7 @@ AltJobSelector::setStringBase(Operator* op) const
     _nestedScheduler->setStringBase(op);
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 uint_t
 AltJobSelector::stringSize(const ClevorDataSet& dataSet) const
@@ -69,12 +69,10 @@ AltJobSelector::stringSize(const ClevorDataSet& dataSet) const
     return stringSize;
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
-AltJobSelector::initialize(
-    const gop::DataSet* p_dataSet,
-    uint_t stringBase)
+AltJobSelector::initialize(const gop::DataSet* p_dataSet, uint_t stringBase)
 {
     ASSERTD(_nestedScheduler != nullptr);
     ASSERTD(dynamic_cast<const ClevorDataSet*>(p_dataSet) != nullptr);
@@ -85,14 +83,10 @@ AltJobSelector::initialize(
     _nestedScheduler->initialize(dataSet, _stringBase + _jobGroups.size());
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
-AltJobSelector::initializeInd(
-    Ind* p_ind,
-    const gop::DataSet* p_dataSet,
-    RandNumGen* rng,
-    void*)
+AltJobSelector::initializeInd(Ind* p_ind, const gop::DataSet* p_dataSet, RandNumGen* rng, void*)
 {
     ASSERTD(dynamic_cast<StringInd<uint_t>*>(p_ind) != nullptr);
     StringInd<uint_t>* ind = (StringInd<uint_t>*)p_ind;
@@ -111,11 +105,10 @@ AltJobSelector::initializeInd(
         string[_stringBase + i] = 0;
     }
 
-    _nestedScheduler->initializeInd(
-        ind, dataSet, rng, (void*)size_t_max);
+    _nestedScheduler->initializeInd(ind, dataSet, rng, (void*)size_t_max);
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 AltJobSelector::run(Ind* p_ind, IndBuilderContext* p_context) const
@@ -130,7 +123,7 @@ AltJobSelector::run(Ind* p_ind, IndBuilderContext* p_context) const
     _nestedScheduler->run(ind, context);
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 AltJobSelector::init()
@@ -138,46 +131,44 @@ AltJobSelector::init()
     _nestedScheduler = new ForwardScheduler();
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 AltJobSelector::setAltJobGroups(const ClevorDataSet* dataSet)
 {
     ASSERT(dataSet != nullptr);
     jobgroup_set_id_t::const_iterator jobgroupIt;
-    for (jobgroupIt = dataSet->jobGroups().begin();
-         jobgroupIt != dataSet->jobGroups().end(); jobgroupIt++)
+    for (jobgroupIt = dataSet->jobGroups().begin(); jobgroupIt != dataSet->jobGroups().end();
+         jobgroupIt++)
     {
         JobGroup* jobGroup = *jobgroupIt;
         _jobGroups.push_back(jobGroup);
     }
-//     const MRPdataSet* mrpDataSet = (const MRPdataSet*)dataSet;
+    //     const MRPdataSet* mrpDataSet = (const MRPdataSet*)dataSet;
 
-//     _jobGroups.clear();
-//     item_set_id_t::const_iterator itemIt;
-//     for (itemIt = mrpDataSet->items().begin();
-//          itemIt != mrpDataSet->items().end(); itemIt++)
-//     {
-//         Item* item = *itemIt;
-//         if (dynamic_cast<ManufactureItem*>(item) == nullptr)
-//             continue;
-//         ManufactureItem* mitem = (ManufactureItem*)item;
-//         altjobsgroup_vector_t::const_iterator jobgroupIt;
-//         for (jobgroupIt = mitem->jobGroups().begin();
-//              jobgroupIt != mitem->jobGroups().end(); jobgroupIt++)
-//         {
-//             AltJobsGroup* jobGroup = *jobgroupIt;
-//             _jobGroups.push_back(jobGroup);
-//         }
-//     }
+    //     _jobGroups.clear();
+    //     item_set_id_t::const_iterator itemIt;
+    //     for (itemIt = mrpDataSet->items().begin();
+    //          itemIt != mrpDataSet->items().end(); itemIt++)
+    //     {
+    //         Item* item = *itemIt;
+    //         if (dynamic_cast<ManufactureItem*>(item) == nullptr)
+    //             continue;
+    //         ManufactureItem* mitem = (ManufactureItem*)item;
+    //         altjobsgroup_vector_t::const_iterator jobgroupIt;
+    //         for (jobgroupIt = mitem->jobGroups().begin();
+    //              jobgroupIt != mitem->jobGroups().end(); jobgroupIt++)
+    //         {
+    //             AltJobsGroup* jobGroup = *jobgroupIt;
+    //             _jobGroups.push_back(jobGroup);
+    //         }
+    //     }
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
-AltJobSelector::setJobs(
-    StringInd<uint_t>* ind,
-    SchedulingContext* context) const
+AltJobSelector::setJobs(StringInd<uint_t>* ind, SchedulingContext* context) const
 {
     ASSERTD(_config != nullptr);
     gop::String<uint_t>& string = ind->string();
@@ -191,24 +182,23 @@ AltJobSelector::setJobs(
         group->setActiveJob(jobIdx);
 
         const job_set_pref_t& jobs = group->jobs();
-        for (job_set_pref_t::const_iterator it = jobs.begin();
-             it != jobs.end(); it++)
+        for (job_set_pref_t::const_iterator it = jobs.begin(); it != jobs.end(); it++)
         {
             Job* job = (*it);
             if (!job->active())
             {
-//                 utl::cout << "AltJobSelector::setProcessPlan starts to relase job:"
-//                           << job->id()
-//                           << utl::endlf;
+                //                 utl::cout << "AltJobSelector::setProcessPlan starts to relase job:"
+                //                           << job->id()
+                //                           << utl::endlf;
                 job->finalize(mgr);
-//                 utl::cout << "End of release job:"
-//                           << job->id()
-//                           << utl::endlf;
+                //                 utl::cout << "End of release job:"
+                //                           << job->id()
+                //                           << utl::endlf;
             }
         }
     }
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 CSE_NS_END;

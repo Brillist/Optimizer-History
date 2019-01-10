@@ -8,21 +8,21 @@
 #define DEBUG_UNIT
 #endif
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 UTL_NS_USE;
 LUT_NS_USE;
 GOP_NS_USE;
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 UTL_CLASS_IMPL_ABC(cse::ScheduleEvaluator, gop::IndEvaluator);
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 CSE_NS_BEGIN;
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 ScheduleEvaluator::copy(const Object& rhs)
@@ -34,30 +34,27 @@ ScheduleEvaluator::copy(const Object& rhs)
     _schedulerConfig = lut::clone(se._schedulerConfig);
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 ScheduleEvaluator::initialize(const gop::IndEvaluatorConfiguration* p_cf)
 {
     ASSERTD(dynamic_cast<const ScheduleEvaluatorConfiguration*>(p_cf) != nullptr);
-    const ScheduleEvaluatorConfiguration& cf =
-        (const ScheduleEvaluatorConfiguration&)*p_cf;
+    const ScheduleEvaluatorConfiguration& cf = (const ScheduleEvaluatorConfiguration&)*p_cf;
     IndEvaluator::initialize(cf);
     delete _schedulerConfig;
     _schedulerConfig = lut::clone(cf.getSchedulerConfig());
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 Score*
-ScheduleEvaluator::eval(
-    const gop::IndBuilderContext* p_context) const
+ScheduleEvaluator::eval(const gop::IndBuilderContext* p_context) const
 {
     ASSERTD(dynamic_cast<const SchedulingContext*>(p_context) != nullptr);
     const SchedulingContext* context = (const SchedulingContext*)p_context;
     Score* score = new Score();
-    uint_t numUnscheduledOps = context->clevorDataSet()->sops().size()
-        - context->numScheduledOps();
+    uint_t numUnscheduledOps = context->clevorDataSet()->sops().size() - context->numScheduledOps();
 
     // construction failed?
     if (context->failed())
@@ -77,8 +74,7 @@ ScheduleEvaluator::eval(
                 cls::Activity* act = op->activity();
                 if (!act->esBound().finalized())
                 {
-                    utl::cout << "(" << job->id() << ","
-                              << op->id() << ") ";
+                    utl::cout << "(" << job->id() << "," << op->id() << ") ";
                     BREAKPOINT;
                 }
             }
@@ -105,6 +101,6 @@ ScheduleEvaluator::eval(
     return score;
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 CSE_NS_END;

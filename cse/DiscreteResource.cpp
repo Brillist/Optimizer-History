@@ -3,43 +3,42 @@
 #include <libutl/BufferedFDstream.h>
 #include "DiscreteResource.h"
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 #ifdef DEBUG
 //#define DEBUG_UNIT
 //static const utl::uint_t debugResId = 55;
 #endif
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 UTL_NS_USE;
 LUT_NS_USE;
 CLS_NS_USE;
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 UTL_CLASS_IMPL(cse::ResourceSequenceRuleApplication, utl::Object);
 UTL_CLASS_IMPL(cse::DiscreteResource, cse::Resource);
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 CSE_NS_BEGIN;
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 ResourceSequenceRuleApplication::copy(const Object& rhs)
 {
     ASSERTD(rhs.isA(ResourceSequenceRuleApplication));
-    const ResourceSequenceRuleApplication& rsra
-        = (const ResourceSequenceRuleApplication&)rhs;
+    const ResourceSequenceRuleApplication& rsra = (const ResourceSequenceRuleApplication&)rhs;
     Object::copy(rsra);
     _lhsOp = rsra._lhsOp;
     _rhsOp = rsra._rhsOp;
     _rsr = rsra._rsr;
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 DiscreteResource::copy(const Object& rhs)
@@ -61,7 +60,7 @@ DiscreteResource::copy(const Object& rhs)
     _detailedCalendar = lut::clone(dr._detailedCalendar);
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 DiscreteResource::serialize(Stream& stream, uint_t io, uint_t)
@@ -92,11 +91,10 @@ DiscreteResource::serialize(Stream& stream, uint_t io, uint_t)
     }
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 ResourceCalendar*
-DiscreteResource::makeCurrentCalendar(
-    const SchedulerConfiguration* config) const
+DiscreteResource::makeCurrentCalendar(const SchedulerConfiguration* config) const
 {
 #ifdef DEBUG_UNIT
     if (_id == debugResId)
@@ -119,7 +117,7 @@ DiscreteResource::makeCurrentCalendar(
     return currentCal;
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /*ResourceCalendar*
 DiscreteResource::makeCurrentCalendar(
@@ -218,20 +216,19 @@ DiscreteResource::makeCurrentCalendar(
     return currentCal;
 }*/
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 DiscreteResource::init()
 {
     _sequenceId = uint_t_max;
     _rsl = nullptr;
-    _minCap = _existingCap = _maxCap = _stepCap = _selectedCap
-        = utl::uint_t_max;
+    _minCap = _existingCap = _maxCap = _stepCap = _selectedCap = utl::uint_t_max;
     _cost = nullptr;
     _defaultCalendar = _detailedCalendar = nullptr;
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 DiscreteResource::deInit()
@@ -241,13 +238,12 @@ DiscreteResource::deInit()
     delete _detailedCalendar;
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
-DiscreteResource::applyDefaultCalendar(
-    const SchedulerConfiguration* config,
-    cls::ResourceCalendar* outSched,
-    cls::ResourceCalendar* inSched) const
+DiscreteResource::applyDefaultCalendar(const SchedulerConfiguration* config,
+                                       cls::ResourceCalendar* outSched,
+                                       cls::ResourceCalendar* inSched) const
 {
     time_t originTime = config->originTime();
     time_t roundedOriginTime = Time(originTime).roundDown(tm_day);
@@ -256,8 +252,7 @@ DiscreteResource::applyDefaultCalendar(
     ResourceCalendar::iterator it;
     for (it = inSched->begin(); it != inSched->end(); ++it)
     {
-        cls::ResourceCalendarSpan* rss =
-            static_cast<cls::ResourceCalendarSpan*>(*it);
+        cls::ResourceCalendarSpan* rss = static_cast<cls::ResourceCalendarSpan*>(*it);
 
         // only apply dayOfWeek spans
         if (rss->type() != rcs_dayOfWeek)
@@ -268,7 +263,8 @@ DiscreteResource::applyDefaultCalendar(
         time_t rssBegin = rss->getBegin();
         time_t rssEnd = rss->getEnd();
         uint_t rssCap = rss->capacity();
-        if (rssCap == uint_t_max) rssCap = _maxCap;
+        if (rssCap == uint_t_max)
+            rssCap = _maxCap;
         ASSERTD(rssCap != uint_t_max);
         for (; rssBegin < rssEnd; rssBegin = time_date(rssBegin) + 86400)
         {
@@ -305,13 +301,10 @@ DiscreteResource::applyDefaultCalendar(
             // apply the span to same weekday until horizon
             while (begin < horizonTime)
             {
-                cls::ResourceCalendarSpan* newRSS = new
-                    cls::ResourceCalendarSpan(
-                        config->timeToTimeSlot(max(begin, originTime)),
-                        config->timeToTimeSlot(min(end, horizonTime)),
-                        rcs_exception,
-                        rss->status(),
-                        rssCap);
+                cls::ResourceCalendarSpan* newRSS =
+                    new cls::ResourceCalendarSpan(config->timeToTimeSlot(max(begin, originTime)),
+                                                  config->timeToTimeSlot(min(end, horizonTime)),
+                                                  rcs_exception, rss->status(), rssCap);
                 outSched->add(newRSS);
                 begin += 7 * 86400;
                 end += 7 * 86400;
@@ -320,24 +313,23 @@ DiscreteResource::applyDefaultCalendar(
     }
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
-DiscreteResource::overrideCalendar(
-    const SchedulerConfiguration* config,
-    cls::ResourceCalendar* outSched,
-    cls::ResourceCalendar* inSched,
-    rcs_t type) const
+DiscreteResource::overrideCalendar(const SchedulerConfiguration* config,
+                                   cls::ResourceCalendar* outSched,
+                                   cls::ResourceCalendar* inSched,
+                                   rcs_t type) const
 {
     time_t originTime = config->originTime();
     time_t horizonTime = config->horizonTime();
     ResourceCalendar::iterator it;
     for (it = inSched->begin(); it != inSched->end(); ++it)
     {
-        cls::ResourceCalendarSpan* rss =
-            static_cast<cls::ResourceCalendarSpan*>(*it);
+        cls::ResourceCalendarSpan* rss = static_cast<cls::ResourceCalendarSpan*>(*it);
         uint_t rssCap = rss->capacity();
-        if (rssCap == uint_t_max) rssCap = _maxCap;
+        if (rssCap == uint_t_max)
+            rssCap = _maxCap;
         ASSERTD(rssCap != uint_t_max);
 
         if ((type != rcs_undefined) && (rss->type() != type))
@@ -364,19 +356,13 @@ DiscreteResource::overrideCalendar(
             int endTS = config->timeToTimeSlot(end);
             if (beginTS < endTS)
             {
-                rss = new
-                    ResourceCalendarSpan(
-                        beginTS,
-                        endTS,
-                        rss->type(),
-                        rss->status(),
-                        rssCap);
+                rss = new ResourceCalendarSpan(beginTS, endTS, rss->type(), rss->status(), rssCap);
                 outSched->add(rss);
             }
         }
     }
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 CSE_NS_END;

@@ -9,21 +9,21 @@
 #include "SchedulableBound.h"
 #include "TimetableBound.h"
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 UTL_NS_USE;
 LUT_NS_USE;
 CLP_NS_USE;
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 UTL_CLASS_IMPL(cls::BrkActivity, cls::PtActivity);
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 CLS_NS_BEGIN;
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 BrkActivity::add(DiscreteResourceRequirement* drr)
@@ -31,7 +31,7 @@ BrkActivity::add(DiscreteResourceRequirement* drr)
     _discreteReqs += drr;
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 BrkActivity::initRequirements()
@@ -47,24 +47,20 @@ BrkActivity::initRequirements()
     }
 
     // get processing-times and resource-ids from requirements
-    forEachIt(Array, _discreteReqs, DiscreteResourceRequirement, rr)
-        if (possiblePtsDomain.empty())
-        {
-            rr.getAllPts(possiblePtsDomain);
-        }
-        else
-        {
-            uint_set_t curPts, isect;
-            rr.getAllPts(curPts);
-            std::set_intersection(
-                possiblePtsDomain.begin(), possiblePtsDomain.end(),
-                curPts.begin(), curPts.end(),
-                std::insert_iterator<uint_set_t>(
-                    isect, isect.begin()));
-            possiblePtsDomain = isect;
-        }
-        rr.getAllResIds(this->allResIds());
-        rr.getAllResIds(selectedResourcesDomain);
+    forEachIt(Array, _discreteReqs, DiscreteResourceRequirement, rr) if (possiblePtsDomain.empty())
+    {
+        rr.getAllPts(possiblePtsDomain);
+    }
+    else
+    {
+        uint_set_t curPts, isect;
+        rr.getAllPts(curPts);
+        std::set_intersection(possiblePtsDomain.begin(), possiblePtsDomain.end(), curPts.begin(),
+                              curPts.end(), std::insert_iterator<uint_set_t>(isect, isect.begin()));
+        possiblePtsDomain = isect;
+    }
+    rr.getAllResIds(this->allResIds());
+    rr.getAllResIds(selectedResourcesDomain);
     endForEach;
 
     // no possible pts?
@@ -76,26 +72,14 @@ BrkActivity::initRequirements()
     }
 
     // make possible-pts var
-    _possiblePts
-        = new IntVar(
-            mgr,
-            new IntExpDomainAR(
-                mgr,
-                possiblePtsDomain));
+    _possiblePts = new IntVar(mgr, new IntExpDomainAR(mgr, possiblePtsDomain));
 
     // make selected-resources var
-    _selectedResources
-        = new IntVar(
-            mgr,
-            new IntExpDomainAR(
-                mgr,
-                selectedResourcesDomain,
-                true));
+    _selectedResources = new IntVar(mgr, new IntExpDomainAR(mgr, selectedResourcesDomain, true));
 
     // initialize requirements
     _numUnknownReqs = _discreteReqs.size();
-    forEachIt(Array, _discreteReqs, DiscreteResourceRequirement, rr)
-        rr.initialize(this);
+    forEachIt(Array, _discreteReqs, DiscreteResourceRequirement, rr) rr.initialize(this);
     endForEach;
 
     // pt bound?
@@ -105,30 +89,30 @@ BrkActivity::initRequirements()
     }
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 bool
 BrkActivity::selectResource(utl::uint_t resId)
 {
-    forEachIt(Array, _discreteReqs, DiscreteResourceRequirement, rr)
-        if (rr.selectResource(resId))
-        {
-            return true;
-        }
+    forEachIt(Array, _discreteReqs, DiscreteResourceRequirement, rr) if (rr.selectResource(resId))
+    {
+        return true;
+    }
     endForEach;
     return false;
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 IntExp*
 BrkActivity::breakList() const
 {
-    if (_calendar == nullptr) return nullptr;
+    if (_calendar == nullptr)
+        return nullptr;
     return _calendar->breakList();
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 BrkActivity::selectPt(uint_t pt)
@@ -136,24 +120,24 @@ BrkActivity::selectPt(uint_t pt)
     _possiblePts->setValue(pt);
 
     // notify res-reqs of the pt selection
-    forEachIt(Array, _discreteReqs, DiscreteResourceRequirement, rr)
-        rr.selectPt(pt);
+    forEachIt(Array, _discreteReqs, DiscreteResourceRequirement, rr) rr.selectPt(pt);
     endForEach;
 
     addTimetableBounds();
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 bool
 BrkActivity::forward() const
 {
-    if (esBound().isA(SchedulableBound)) return true;
+    if (esBound().isA(SchedulableBound))
+        return true;
     ASSERTD(lfBound().isA(SchedulableBound));
     return false;
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 BrkActivity::init()
@@ -164,7 +148,7 @@ BrkActivity::init()
     _addedTimetableBounds = false;
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 BrkActivity::deInit()
@@ -172,7 +156,7 @@ BrkActivity::deInit()
     delete _selectedResources;
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 BrkActivity::decrementUnknownReqs()
@@ -182,12 +166,10 @@ BrkActivity::decrementUnknownReqs()
     addTimetableBounds();
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
-BrkActivity::selectResource(
-    uint_t resId,
-    DiscreteResourceRequirement* p_rr)
+BrkActivity::selectResource(uint_t resId, DiscreteResourceRequirement* p_rr)
 {
     bool ptsWasBound = _possiblePts->isBound();
 
@@ -204,7 +186,8 @@ BrkActivity::selectResource(
     {
         CapPt* capPt = (CapPt*)capPtsArray[i];
         TimetableBound* ttb = (TimetableBound*)capPt->object();
-        if ((ttb == nullptr) || !ttb->possible()) continue;
+        if ((ttb == nullptr) || !ttb->possible())
+            continue;
         int pt = capPt->processingTime();
         if ((last + 1) < pt)
         {
@@ -216,11 +199,10 @@ BrkActivity::selectResource(
     _possiblePts->remove(last + 1, int_t_max);
 
     // resource is not possible for any other requirement
-    forEachIt(Array, _discreteReqs, DiscreteResourceRequirement, rr)
-        if (&rr != p_rr)
-        {
-            rr.excludeResource(resId);
-        }
+    forEachIt(Array, _discreteReqs, DiscreteResourceRequirement, rr) if (&rr != p_rr)
+    {
+        rr.excludeResource(resId);
+    }
     endForEach;
 
     // notify requirements if pt was bound
@@ -230,15 +212,13 @@ BrkActivity::selectResource(
     }
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 BrkActivity::addTimetableBounds()
 {
     // OK to proceed?
-    if (_addedTimetableBounds
-        || (_numUnknownReqs > 0)
-        || (!_possiblePts->isBound()))
+    if (_addedTimetableBounds || (_numUnknownReqs > 0) || (!_possiblePts->isBound()))
     {
         return;
     }
@@ -255,14 +235,13 @@ BrkActivity::addTimetableBounds()
     _calendar = calendarMgr->add(calendarSpec);
 
     // add timetable bounds to ES or LF bound
-    forEachIt(Array, _discreteReqs, DiscreteResourceRequirement, rr)
-        rr.addTimetableBounds();
+    forEachIt(Array, _discreteReqs, DiscreteResourceRequirement, rr) rr.addTimetableBounds();
     endForEach;
 
     // remember that we did this
     manager()->revToggle(_addedTimetableBounds);
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 CLS_NS_END;

@@ -1,18 +1,18 @@
 #ifndef LUT_OVERLAPFINDER_H
 #define LUT_OVERLAPFINDER_H
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 #include <libutl/BufferedFDstream.h>
 #include <libutl/Span.h>
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 LUT_NS_BEGIN;
 
-//////////////////////////////////////////////////////////////////////////////
-/// OverlapDeltas ////////////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
+/// OverlapDeltas //////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
    Added/removed objects from previous overlap-set.
@@ -20,18 +20,22 @@ LUT_NS_BEGIN;
    \author Adam McKee
 */
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
-template <class T>
-class OverlapDeltas : public utl::Object
+template <class T> class OverlapDeltas : public utl::Object
 {
     UTL_CLASS_DECL_TPL(OverlapDeltas, T);
+
 public:
-    typedef std_hash_set< T, HashUint<T> > set_t;
+    typedef std_hash_set<T, HashUint<T>> set_t;
+
 public:
     /** Constructor. */
     OverlapDeltas(utl::uint_t t)
-    { init(); _t = t; }
+    {
+        init();
+        _t = t;
+    }
 
     /** Copy another instance. */
     virtual void copy(const utl::Object& rhs);
@@ -40,35 +44,56 @@ public:
     virtual void dump(std::ostream& os) const;
 
     /** Get time. */
-    utl::uint_t t() const
-    { return _t; }
+    utl::uint_t
+    t() const
+    {
+        return _t;
+    }
 
     /** Get time. */
-    utl::uint_t& t()
-    { return _t; }
+    utl::uint_t&
+    t()
+    {
+        return _t;
+    }
 
     /** Empty? */
-    bool empty() const
-    { return (_addObjects->empty() && _remObjects->empty()); }
+    bool
+    empty() const
+    {
+        return (_addObjects->empty() && _remObjects->empty());
+    }
 
     /** Get add-objects. */
-    const set_t& addObjects() const
-    { return *_addObjects; }
+    const set_t&
+    addObjects() const
+    {
+        return *_addObjects;
+    }
 
     /** Get rem-objects. */
-    const set_t& remObjects() const
-    { return *_remObjects; }
+    const set_t&
+    remObjects() const
+    {
+        return *_remObjects;
+    }
 
     /** Get add-objects. */
     set_t& addObjects();
 
     /** Get rem-objects. */
     set_t& remObjects();
+
 private:
-    void init()
-    { _t = 0; _addObjects = _remObjects = &_emptySet; }
+    void
+    init()
+    {
+        _t = 0;
+        _addObjects = _remObjects = &_emptySet;
+    }
     void deInit();
     void dump(std::ostream& os, const set_t& set) const;
+
 private:
     utl::uint_t _t;
     set_t* _addObjects;
@@ -76,7 +101,7 @@ private:
     static set_t _emptySet;
 };
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 template <class T>
 void
@@ -89,18 +114,20 @@ OverlapDeltas<T>::copy(const utl::Object& rhs)
     _remObjects = od._remObjects;
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 template <class T>
 void
 OverlapDeltas<T>::dump(std::ostream& os) const
 {
     os << "t: " << _t << std::endl;
-    os << "add: "; dump(os, *_addObjects);
-    os << "rem: "; dump(os, *_remObjects);
+    os << "add: ";
+    dump(os, *_addObjects);
+    os << "rem: ";
+    dump(os, *_remObjects);
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 template <class T>
 void
@@ -119,7 +146,7 @@ OverlapDeltas<T>::dump(std::ostream& os, const set_t& objects) const
     os << std::endl;
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 template <class T>
 typename OverlapDeltas<T>::set_t&
@@ -132,7 +159,7 @@ OverlapDeltas<T>::addObjects()
     return *_addObjects;
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 template <class T>
 typename OverlapDeltas<T>::set_t&
@@ -145,7 +172,7 @@ OverlapDeltas<T>::remObjects()
     return *_remObjects;
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 template <class T>
 void
@@ -161,14 +188,13 @@ OverlapDeltas<T>::deInit()
     }
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
-template <class T>
-typename OverlapDeltas<T>::set_t OverlapDeltas<T>::_emptySet;
+template <class T> typename OverlapDeltas<T>::set_t OverlapDeltas<T>::_emptySet;
 
-//////////////////////////////////////////////////////////////////////////////
-/// OverlapDeltasOrdering ////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
+/// OverlapDeltasOrdering //////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
    Order OverlapDeltas by time.
@@ -177,28 +203,23 @@ typename OverlapDeltas<T>::set_t OverlapDeltas<T>::_emptySet;
    \author Adam McKee
 */
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 template <class T>
 struct OverlapDeltasOrdering
-    : public
-      std::binary_function<
-         OverlapDeltas<T>*,
-         OverlapDeltas<T>*,
-         bool>
+    : public std::binary_function<OverlapDeltas<T>*, OverlapDeltas<T>*, bool>
 {
     /** Compare two nodes. */
-    bool operator()(
-        const OverlapDeltas<T>* lhs,
-        const OverlapDeltas<T>* rhs) const
+    bool
+    operator()(const OverlapDeltas<T>* lhs, const OverlapDeltas<T>* rhs) const
     {
         return (lhs->t() < rhs->t());
     }
 };
 
-//////////////////////////////////////////////////////////////////////////////
-/// OverlapFinder ////////////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
+/// OverlapFinder //////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
    Find spans that overlap with a given span.
@@ -206,17 +227,19 @@ struct OverlapDeltasOrdering
    \author Adam McKee
 */
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
-template <class T>
-class OverlapFinder : public utl::Object
+template <class T> class OverlapFinder : public utl::Object
 {
     UTL_CLASS_DECL_TPL(OverlapFinder, T);
     UTL_CLASS_NO_COPY;
+
 public:
     /** Constructor. */
     OverlapFinder(utl::uint_t interval, utl::uint_t numIntervals)
-    { init(interval, numIntervals); }
+    {
+        init(interval, numIntervals);
+    }
 
     /** Initialize. */
     void initialize(utl::uint_t interval, utl::uint_t numIntervals);
@@ -228,11 +251,7 @@ public:
     virtual void dump(std::ostream& os) const;
 
     /** What objects overlap with the given span? */
-    utl::uint_t find(
-        utl::uint_t min,
-        utl::uint_t max,
-        T*& array,
-        utl::uint_t& arraySize) const;
+    utl::uint_t find(utl::uint_t min, utl::uint_t max, T*& array, utl::uint_t& arraySize) const;
 
     /** Add a span. */
     void add(const T& object, int min, int max);
@@ -241,53 +260,51 @@ public:
     void remove(const T& object, int min, int max);
 
     /** Move a previously added span. */
-    void move(
-        const T& object,
-        int oldMin, int oldMax,
-        int newMin, int newMax);
+    void move(const T& object, int oldMin, int oldMax, int newMin, int newMax);
 
     /** Merge two spans into a single span. */
-    void merge(
-        const T& object,
-        int lhsMin, int lhsMax,
-        int rhsMin, int rhsMax,
-        int newMin, int newMax);
+    void
+    merge(const T& object, int lhsMin, int lhsMax, int rhsMin, int rhsMax, int newMin, int newMax);
 
     /** Split a span into two spans. */
-    void split(
-        const T& object,
-        int oldMin, int oldMax,
-        int lhsMin, int lhsMax,
-        int rhsMin, int rhsMax);
+    void
+    split(const T& object, int oldMin, int oldMax, int lhsMin, int lhsMax, int rhsMin, int rhsMax);
+
 private:
-    typedef std_hash_set< T, HashUint<T> > set_t;
-    typedef
-        std::set< OverlapDeltas<T>*,
-        OverlapDeltasOrdering<T> > od_set_t;
+    typedef std_hash_set<T, HashUint<T>> set_t;
+    typedef std::set<OverlapDeltas<T>*, OverlapDeltasOrdering<T>> od_set_t;
+
 private:
-    void init()
-    { _interval = 0; _numIntervals = 0; _overlapSets = nullptr; }
+    void
+    init()
+    {
+        _interval = 0;
+        _numIntervals = 0;
+        _overlapSets = nullptr;
+    }
 
     void init(utl::uint_t interval, utl::uint_t numIntervals);
 
     void deInit();
 
-    void findOverlapSet(
-        set_t& os,
-        typename od_set_t::const_iterator& deltaIt,
-        utl::uint_t t) const;
+    void findOverlapSet(set_t& os, typename od_set_t::const_iterator& deltaIt, utl::uint_t t) const;
 
-    typename od_set_t::const_iterator deltaFind(utl::uint_t t) const
-    { _searchOD.t() = t; return _deltas.find(&_searchOD); }
+    typename od_set_t::const_iterator
+    deltaFind(utl::uint_t t) const
+    {
+        _searchOD.t() = t;
+        return _deltas.find(&_searchOD);
+    }
 
-    typename od_set_t::const_iterator deltaFindLB(utl::uint_t t) const
-    { _searchOD.t() = t; return _deltas.lower_bound(&_searchOD); }
+    typename od_set_t::const_iterator
+    deltaFindLB(utl::uint_t t) const
+    {
+        _searchOD.t() = t;
+        return _deltas.lower_bound(&_searchOD);
+    }
 
-    void addFound(
-        const set_t& foundObjects,
-        utl::uint_t& idx,
-        T*& array,
-        utl::uint_t& arraySize) const;
+    void
+    addFound(const set_t& foundObjects, utl::uint_t& idx, T*& array, utl::uint_t& arraySize) const;
 
     void addMin(const T& object, utl::uint_t min);
 
@@ -297,21 +314,20 @@ private:
 
     void remMax(const T& object, utl::uint_t max);
 
-    void addOverlap(
-        const T& object,
-        const utl::Span<int>& span,
-        const utl::Span<int>** notSpans,
-        const utl::Span<int>** notSpansLim);
+    void addOverlap(const T& object,
+                    const utl::Span<int>& span,
+                    const utl::Span<int>** notSpans,
+                    const utl::Span<int>** notSpansLim);
 
     void addOverlap(const T& object, utl::uint_t begin, utl::uint_t end);
 
-    void remOverlap(
-        const T& object,
-        const utl::Span<int>& span,
-        const utl::Span<int>** notSpans,
-        const utl::Span<int>** notSpansLim);
+    void remOverlap(const T& object,
+                    const utl::Span<int>& span,
+                    const utl::Span<int>** notSpans,
+                    const utl::Span<int>** notSpansLim);
 
     void remOverlap(const T& object, utl::uint_t begin, utl::uint_t end);
+
 private:
     utl::uint_t _interval;
     utl::uint_t _numIntervals;
@@ -320,7 +336,7 @@ private:
     mutable OverlapDeltas<T> _searchOD;
 };
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 template <class T>
 void
@@ -335,7 +351,7 @@ OverlapFinder<T>::initialize(utl::uint_t interval, utl::uint_t numIntervals)
     init(interval, numIntervals);
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 template <class T>
 void
@@ -350,15 +366,11 @@ OverlapFinder<T>::dump(std::ostream& os) const
     }
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 template <class T>
 utl::uint_t
-OverlapFinder<T>::find(
-    utl::uint_t min,
-    utl::uint_t max,
-    T*& array,
-    utl::uint_t& arraySize) const
+OverlapFinder<T>::find(utl::uint_t min, utl::uint_t max, T*& array, utl::uint_t& arraySize) const
 {
     return 0;
     if ((min > max) || (_interval == 0))
@@ -381,14 +393,15 @@ OverlapFinder<T>::find(
     {
         OverlapDeltas<T>* deltas = *deltaIt;
         utl::uint_t dt = deltas->t();
-        if (dt > max) break;
+        if (dt > max)
+            break;
         addFound(deltas->addObjects(), foundIdx, array, arraySize);
     }
 
     return foundIdx;
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 template <class T>
 void
@@ -401,7 +414,7 @@ OverlapFinder<T>::add(const T& object, int min, int max)
     addOverlap(object, min, max + 1);
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 template <class T>
 void
@@ -414,14 +427,11 @@ OverlapFinder<T>::remove(const T& object, int min, int max)
     remOverlap(object, min, max + 1);
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 template <class T>
 void
-OverlapFinder<T>::move(
-    const T& object,
-    int oldMin, int oldMax,
-    int newMin, int newMax)
+OverlapFinder<T>::move(const T& object, int oldMin, int oldMax, int newMin, int newMax)
 {
     return;
     //DEBUG_CODE
@@ -499,15 +509,12 @@ OverlapFinder<T>::move(
     }
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 template <class T>
 void
 OverlapFinder<T>::merge(
-   const T& object,
-   int lhsMin, int lhsMax,
-   int rhsMin, int rhsMax,
-   int newMin, int newMax)
+    const T& object, int lhsMin, int lhsMax, int rhsMin, int rhsMax, int newMin, int newMax)
 {
     return;
     ASSERTD(lhsMin <= lhsMax);
@@ -543,51 +550,48 @@ OverlapFinder<T>::merge(
     addOverlap(object, newSpan, spans, spansLim);
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 template <class T>
 void
 OverlapFinder<T>::split(
-   const T& object,
-   int oldMin, int oldMax,
-   int lhsMin, int lhsMax,
-   int rhsMin, int rhsMax)
+    const T& object, int oldMin, int oldMax, int lhsMin, int lhsMax, int rhsMin, int rhsMax)
 {
     return;
-   ASSERTD(oldMin <= oldMax);
-   ASSERTD(lhsMin <= lhsMax);
-   ASSERTD(rhsMin <= rhsMax);
+    ASSERTD(oldMin <= oldMax);
+    ASSERTD(lhsMin <= lhsMax);
+    ASSERTD(rhsMin <= rhsMax);
 
-   remMin(object, oldMin);
-   remMax(object, oldMax);
-   addMin(object, lhsMin);
-   addMax(object, lhsMax);
-   addMin(object, rhsMin);
-   addMax(object, rhsMax);
+    remMin(object, oldMin);
+    remMax(object, oldMax);
+    addMin(object, lhsMin);
+    addMax(object, lhsMax);
+    addMin(object, rhsMin);
+    addMax(object, rhsMax);
 
-   utl::Span<int> oldSpan(oldMin, oldMax + 1);
-   utl::Span<int> lhsSpan(lhsMin, lhsMax + 1);
-   utl::Span<int> rhsSpan(rhsMin, rhsMax + 1);
+    utl::Span<int> oldSpan(oldMin, oldMax + 1);
+    utl::Span<int> lhsSpan(lhsMin, lhsMax + 1);
+    utl::Span<int> rhsSpan(rhsMin, rhsMax + 1);
 
-   const utl::Span<int>* spans[2];
-   const utl::Span<int>** spansLim = spans + 2;
-   spans[0] = &lhsSpan;
-   spans[1] = &rhsSpan;
+    const utl::Span<int>* spans[2];
+    const utl::Span<int>** spansLim = spans + 2;
+    spans[0] = &lhsSpan;
+    spans[1] = &rhsSpan;
 
-   // remove part of oldSpan that doesn't overlap with lhsSpan or rhsSpan
-   remOverlap(object, oldSpan, spans, spansLim);
+    // remove part of oldSpan that doesn't overlap with lhsSpan or rhsSpan
+    remOverlap(object, oldSpan, spans, spansLim);
 
-   spans[0] = &oldSpan;
-   spansLim = spans + 1;
+    spans[0] = &oldSpan;
+    spansLim = spans + 1;
 
-   // add part of lhsSpan that doesn't overlap with oldSpan
-   addOverlap(object, lhsSpan, spans, spansLim);
+    // add part of lhsSpan that doesn't overlap with oldSpan
+    addOverlap(object, lhsSpan, spans, spansLim);
 
-   // add part of rhsSpan that doesn't overlap with oldSpan
-   addOverlap(object, rhsSpan, spans, spansLim);
+    // add part of rhsSpan that doesn't overlap with oldSpan
+    addOverlap(object, rhsSpan, spans, spansLim);
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 template <class T>
 void
@@ -600,7 +604,7 @@ OverlapFinder<T>::init(utl::uint_t interval, utl::uint_t numIntervals)
     memset(_overlapSets, 0, _numIntervals * sizeof(set_t*));
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 template <class T>
 void
@@ -608,19 +612,18 @@ OverlapFinder<T>::deInit()
 {
     set_t** overlapSetsEnd = _overlapSets + _numIntervals;
     deleteArray(_overlapSets, overlapSetsEnd);
-    delete [] _overlapSets;
+    delete[] _overlapSets;
 
     deleteCont(_deltas);
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 template <class T>
 void
-OverlapFinder<T>::findOverlapSet(
-    set_t& os,
-    typename od_set_t::const_iterator& deltaIt,
-    utl::uint_t t) const
+OverlapFinder<T>::findOverlapSet(set_t& os,
+                                 typename od_set_t::const_iterator& deltaIt,
+                                 utl::uint_t t) const
 {
     // os_t : time of last overlap-set
     utl::uint_t os_t = t - (t % _interval);
@@ -647,16 +650,14 @@ OverlapFinder<T>::findOverlapSet(
     {
         const OverlapDeltas<T>* deltas = (*deltaIt);
         utl::uint_t dt = deltas->t();
-        if (dt > t) break;
+        if (dt > t)
+            break;
 
         // remove objects s.t. (obj.max < t)
         const set_t& remSet = deltas->remObjects();
         typename set_t::const_iterator remSetIt;
         typename set_t::const_iterator remSetEnd = remSet.end();
-        for (
-            remSetIt = remSet.begin();
-            remSetIt != remSetEnd;
-            ++remSetIt)
+        for (remSetIt = remSet.begin(); remSetIt != remSetEnd; ++remSetIt)
         {
             T remObj = *remSetIt;
             os.erase(remObj);
@@ -666,10 +667,7 @@ OverlapFinder<T>::findOverlapSet(
         const set_t& addSet = deltas->addObjects();
         typename set_t::const_iterator addSetIt;
         typename set_t::const_iterator addSetEnd = addSet.end();
-        for (
-            addSetIt = addSet.begin();
-            addSetIt != addSetEnd;
-            ++addSetIt)
+        for (addSetIt = addSet.begin(); addSetIt != addSetEnd; ++addSetIt)
         {
             T addObj = *addSetIt;
             os.insert(addObj);
@@ -677,15 +675,14 @@ OverlapFinder<T>::findOverlapSet(
     }
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 template <class T>
 void
-OverlapFinder<T>::addFound(
-    const set_t& foundObjects,
-    utl::uint_t& idx,
-    T*& array,
-    utl::uint_t& arraySize) const
+OverlapFinder<T>::addFound(const set_t& foundObjects,
+                           utl::uint_t& idx,
+                           T*& array,
+                           utl::uint_t& arraySize) const
 {
     utl::uint_t minSize = (idx + foundObjects.size());
     if (arraySize < minSize)
@@ -701,7 +698,7 @@ OverlapFinder<T>::addFound(
     }
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 template <class T>
 void
@@ -721,7 +718,7 @@ OverlapFinder<T>::addMin(const T& object, utl::uint_t min)
     deltas->addObjects().insert(object);
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 template <class T>
 void
@@ -741,7 +738,7 @@ OverlapFinder<T>::addMax(const T& object, utl::uint_t max)
     deltas->remObjects().insert(object);
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 template <class T>
 void
@@ -758,7 +755,7 @@ OverlapFinder<T>::remMin(const T& object, utl::uint_t min)
     }
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 template <class T>
 void
@@ -775,15 +772,14 @@ OverlapFinder<T>::remMax(const T& object, utl::uint_t max)
     }
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 template <class T>
 void
-OverlapFinder<T>::addOverlap(
-    const T& object,
-    const utl::Span<int>& span,
-    const utl::Span<int>** notSpans,
-    const utl::Span<int>** notSpansLim)
+OverlapFinder<T>::addOverlap(const T& object,
+                             const utl::Span<int>& span,
+                             const utl::Span<int>** notSpans,
+                             const utl::Span<int>** notSpansLim)
 {
     const utl::Span<int>** notPtr = notSpans;
     const utl::Span<int>* notSpan = (notPtr == notSpansLim) ? nullptr : *notPtr;
@@ -813,16 +809,14 @@ OverlapFinder<T>::addOverlap(
     }
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 template <class T>
 void
-OverlapFinder<T>::addOverlap(
-    const T& object,
-    utl::uint_t begin,
-    utl::uint_t end)
+OverlapFinder<T>::addOverlap(const T& object, utl::uint_t begin, utl::uint_t end)
 {
-    if (begin >= end) return;
+    if (begin >= end)
+        return;
 
     // find index of first and last overlap
     utl::uint_t osIdxBegin = begin / _interval;
@@ -845,15 +839,14 @@ OverlapFinder<T>::addOverlap(
     }
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 template <class T>
 void
-OverlapFinder<T>::remOverlap(
-    const T& object,
-    const utl::Span<int>& span,
-    const utl::Span<int>** notSpans,
-    const utl::Span<int>** notSpansLim)
+OverlapFinder<T>::remOverlap(const T& object,
+                             const utl::Span<int>& span,
+                             const utl::Span<int>** notSpans,
+                             const utl::Span<int>** notSpansLim)
 {
     const utl::Span<int>** notPtr = notSpans;
     const utl::Span<int>* notSpan = (notPtr == notSpansLim) ? nullptr : *notPtr;
@@ -883,16 +876,14 @@ OverlapFinder<T>::remOverlap(
     }
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 template <class T>
 void
-OverlapFinder<T>::remOverlap(
-    const T& object,
-    utl::uint_t begin,
-    utl::uint_t end)
+OverlapFinder<T>::remOverlap(const T& object, utl::uint_t begin, utl::uint_t end)
 {
-    if (begin >= end) return;
+    if (begin >= end)
+        return;
 
     // find index of first and last overlap
     utl::uint_t osIdxBegin = begin / _interval;
@@ -912,15 +903,15 @@ OverlapFinder<T>::remOverlap(
     }
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 LUT_NS_END;
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 UTL_CLASS_IMPL_TPL(lut::OverlapDeltas, T, utl::Object);
 UTL_CLASS_IMPL_TPL(lut::OverlapFinder, T, utl::Object);
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 #endif

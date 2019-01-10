@@ -10,31 +10,30 @@
 #include <libutl/Uint.h>
 #include <cse/SEclient.h>
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 UTL_NS_USE;
 UTL_APP(BT);
 UTL_MAIN_RL(BT);
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 usage()
 {
-    utl::cerr <<
-        "usage: bt [-h <cse_host>] [-p <cse_port>] <cmd>\n"
-        "           <cmd> := exit\n"
-        "                 |  run <in_path> [out_path]\n"
-        "                 |  strip <in_path> <out_path> <regex>+\n";;
+    utl::cerr << "usage: bt [-h <cse_host>] [-p <cse_port>] <cmd>\n"
+                 "           <cmd> := exit\n"
+                 "                 |  run <in_path> [out_path]\n"
+                 "                 |  strip <in_path> <out_path> <regex>+\n";
+    ;
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 bool
 connect(TCPsocket& server, InetHostname host, uint_t port)
 {
-    utl::cerr << "connect to CSE server: " << host << ":" << Uint(port)
-         << " => " << flush;
+    utl::cerr << "connect to CSE server: " << host << ":" << Uint(port) << " => " << flush;
     try
     {
         InetHostAddress hostAddr = host.address();
@@ -47,7 +46,8 @@ connect(TCPsocket& server, InetHostname host, uint_t port)
             utl::cerr << "OK" << endl;
 
             // get the challenge and response
-            Uint challenge; challenge.serializeIn(server);
+            Uint challenge;
+            challenge.serializeIn(server);
             utl::uint32_t response = cse::SEclient::response(challenge);
 
             // send authorizeClient command
@@ -74,7 +74,7 @@ connect(TCPsocket& server, InetHostname host, uint_t port)
     return true;
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 int
 BT::run(int argc, char** argv)
@@ -119,11 +119,12 @@ BT::run(int argc, char** argv)
     // for server connection
     TCPsocket server;
 
-    //// EXIT /////////////////////////////////////////////////////////////////
+    //// EXIT ///////////////////////////////////////////////////////////////////////////////////////
 
     if ((cmd == "exit") && (numArgs == 1))
     {
-        if (!connect(server, cseHost, csePort)) return 1;
+        if (!connect(server, cseHost, csePort))
+            return 1;
         Array cmd;
         cmd += new String("exit");
         cmd.serializeOut(server);
@@ -131,7 +132,7 @@ BT::run(int argc, char** argv)
         return 0;
     }
 
-    //// STRIP ////////////////////////////////////////////////////////////////
+    //// STRIP //////////////////////////////////////////////////////////////////////////////////////
 
     if ((cmd == "strip") && (numArgs >= 4))
     {
@@ -142,8 +143,7 @@ BT::run(int argc, char** argv)
         {
             Regex* regex = new Regex(args(argIdx++));
             stripCommands += regex;
-        }
-        while (argIdx < args.items());
+        } while (argIdx < args.items());
 
         BufferedFileStream inFile(inPath, io_rd);
         BufferedFileStream outFile(outPath, io_wr | fs_create | fs_trunc);
@@ -164,14 +164,12 @@ BT::run(int argc, char** argv)
 
             String command = (const String&)cmd(0);
             bool filtered = false;
-            forEachIt(Array, stripCommands, Regex, regex)
-                if (command == regex)
-                {
-                    filtered = true;
-                    break;
-                }
-            endForEach
-            if (filtered)
+            forEachIt(Array, stripCommands, Regex, regex) if (command == regex)
+            {
+                filtered = true;
+                break;
+            }
+            endForEach if (filtered)
             {
                 continue;
             }
@@ -181,9 +179,10 @@ BT::run(int argc, char** argv)
         return 0;
     }
 
-    //// RUN //////////////////////////////////////////////////////////////////
+    //// RUN ////////////////////////////////////////////////////////////////////////////////////////
 
-    if (!connect(server, cseHost, csePort)) return 1;
+    if (!connect(server, cseHost, csePort))
+        return 1;
 
     if (!((cmd == "run") && (numArgs >= 2) && (numArgs <= 3)))
     {
@@ -244,8 +243,10 @@ BT::run(int argc, char** argv)
         ASSERTD(cmd(0).isA(String));
         const String& cmdName = (const String&)cmd(0);
 
-        if (cmdName == "initOptimizerRun") initOptRun = true;
-        else if (cmdName == "initSimpleRun") initOptRun = false;
+        if (cmdName == "initOptimizerRun")
+            initOptRun = true;
+        else if (cmdName == "initSimpleRun")
+            initOptRun = false;
         run = (initOptRun && (run || (cmdName == "run")));
 
         // print the command name

@@ -5,68 +5,74 @@
 #include <libutl/Duration.h>
 #include "Optimizer.h"
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 #ifdef DEBUG
 #define DEBUG_UNIT
 #endif
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 UTL_NS_USE;
 LUT_NS_USE;
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 UTL_CLASS_IMPL_ABC(gop::Optimizer, utl::Object);
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 GOP_NS_BEGIN;
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 bool
 Optimizer::complete() const
 {
-    if (_iteration == 0) return false;
-    if (_iteration < _minIterations) return false;
-    if (_iteration >= _maxIterations) return true;
+    if (_iteration == 0)
+        return false;
+    if (_iteration < _minIterations)
+        return false;
+    if (_iteration >= _maxIterations)
+        return true;
     // note: _minIterations <= _iteration < _maxIterations
     return (((_iteration - 1) - _improvementIteration) >= _improvementGap);
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 Optimizer::stop()
 {
-//     _iteration = _maxIterations;
+    //     _iteration = _maxIterations;
     // this change is to show correct total iterations
     // when the optimizer is stopped. JZ, April 11, 2008
     _maxIterations = _iteration;
     _minIterations = utl::min(_minIterations, _maxIterations);
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 static time_t startTime;
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 Optimizer::initialize(const OptimizerConfiguration* config)
 {
-//     _timer->start();
-    startTime = time(0);//get current time
+    //     _timer->start();
+    startTime = time(0); //get current time
     _iteration = 0;
     _improvementIteration = 0;
     _minIterations = config->minIterations();
     _maxIterations = config->maxIterations();
     _improvementGap = config->improvementGap();
-    if (_improvementGap == 0) _improvementGap = 1;
-    delete _ind; _ind = lut::clone(config->ind());
-    delete _indBuilder; _indBuilder = lut::clone(config->indBuilder());
+    if (_improvementGap == 0)
+        _improvementGap = 1;
+    delete _ind;
+    _ind = lut::clone(config->ind());
+    delete _indBuilder;
+    _indBuilder = lut::clone(config->indBuilder());
     _context = config->context();
     copyVector(_objectives, config->objectives());
     copyVector(_ops, config->getOperators());
@@ -80,15 +86,15 @@ Optimizer::initialize(const OptimizerConfiguration* config)
     ASSERTD(_ops.size() >= 1);
 
     _indBuilder->initialize(config->dataSet());
-//     if (_calcStatsEnable)
-//     {
-//         initializeStats();
-//     }
+    //     if (_calcStatsEnable)
+    //     {
+    //         initializeStats();
+    //     }
     initializeObjectives();
     initializeOps(config->ind());
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 bool
 Optimizer::iterationRun(Operator* op, bool audit)
@@ -123,19 +129,15 @@ Optimizer::iterationRun(Operator* op, bool audit)
             (_newScore->getType() == score_ct_violated));
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 Optimizer::updateRunStatus(bool complete)
 {
-    _runStatus->update(
-        complete,
-        _iteration,
-        _improvementIteration,
-        _bestScore);
+    _runStatus->update(complete, _iteration, _improvementIteration, _bestScore);
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 Score*
 Optimizer::bestScore(utl::uint_t objectiveIdx) const
@@ -144,7 +146,7 @@ Optimizer::bestScore(utl::uint_t objectiveIdx) const
     return _objectives[objectiveIdx]->getBestScore();
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 Score*
 Optimizer::bestScore(const std::string& objectiveName) const
@@ -160,12 +162,11 @@ Optimizer::bestScore(const std::string& objectiveName) const
     return nullptr;
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 int
-Optimizer::bestScoreComponent(
-    const std::string& objectiveName,
-    const std::string& componentName) const
+Optimizer::bestScoreComponent(const std::string& objectiveName,
+                              const std::string& componentName) const
 {
     for (uint_t i = 0; i < _objectives.size(); ++i)
     {
@@ -178,7 +179,7 @@ Optimizer::bestScoreComponent(
     return uint_t_max;
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 const std::string&
 Optimizer::bestScoreAudit() const
@@ -189,32 +190,24 @@ Optimizer::bestScoreAudit() const
     return objective->indEvaluator()->auditText();
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 utl::String
 Optimizer::iterationString() const
 {
     // single objective only function
     utl::MemStream str;
-    str << "iteration:" << _iteration
-        << ", lastImprv:" << _improvementIteration
-        << ", bestScore:" << _bestScore->toString()
-        << ", newScore:" << _newScore->toString();
+    str << "iteration:" << _iteration << ", lastImprv:" << _improvementIteration
+        << ", bestScore:" << _bestScore->toString() << ", newScore:" << _newScore->toString();
     const char* failstr = _fail ? ":failure" : ":success";
     const char* acceptstr = _accept ? ":accepted" : ":rejected";
-    const char* sameScorestr = (_accept && _sameScore)
-        ? ":same_score" : "";
-    const char* newBeststr = (_accept && _newBest)
-        ? ":new_best!" : "";
-    str << ", "
-        << failstr
-        << acceptstr
-        << sameScorestr
-        << newBeststr << '\0';
+    const char* sameScorestr = (_accept && _sameScore) ? ":same_score" : "";
+    const char* newBeststr = (_accept && _newBest) ? ":new_best!" : "";
+    str << ", " << failstr << acceptstr << sameScorestr << newBeststr << '\0';
     return utl::String((char*)str.get());
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 utl::String
 Optimizer::initString(bool feasible) const
@@ -227,38 +220,37 @@ Optimizer::initString(bool feasible) const
     return utl::String((char*)str.get());
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 utl::String
 Optimizer::finalString(bool feasible) const
 {
     // single objective only function
-//     _timer->stop();
+    //     _timer->stop();
     time_t endTime = time(0);
-   utl::MemStream str;
-   str << getClassName();
+    utl::MemStream str;
+    str << getClassName();
 
-   // find whether it uses OpSeqOnly
-   bool opSeqOnly = false;
-   uint_t numOps = _ops.size();
-   for (uint_t i = 0; i < numOps; ++i)
-   {
-       Operator* op = _ops[i];
-       if (op->name() == "OpSeqMutate")
-       {
-           opSeqOnly = true;
-           break;
-       }
-   }
-   if (opSeqOnly) str << "(OpSeq_Only)";
+    // find whether it uses OpSeqOnly
+    bool opSeqOnly = false;
+    uint_t numOps = _ops.size();
+    for (uint_t i = 0; i < numOps; ++i)
+    {
+        Operator* op = _ops[i];
+        if (op->name() == "OpSeqMutate")
+        {
+            opSeqOnly = true;
+            break;
+        }
+    }
+    if (opSeqOnly)
+        str << "(OpSeq_Only)";
 
-   str << ", "
-        << _improvementIteration << "/"
-        << _maxIterations;
+    str << ", " << _improvementIteration << "/" << _maxIterations;
     if (feasible)
     {
         str << ", ";
-        switch(_initScore->getType())
+        switch (_initScore->getType())
         {
         case score_failed:
             str << "(failed)";
@@ -278,9 +270,9 @@ Optimizer::finalString(bool feasible) const
         if ((_initScore->getType() == score_succeeded) &&
             (_bestScore->getType() == score_succeeded))
             str << ", "
-                <<Float(100.0 *
-                         (_initScore->getValue() - _bestScore->getValue())
-                         / _initScore->getValue()).toString("precision:2")
+                << Float(100.0 * (_initScore->getValue() - _bestScore->getValue()) /
+                         _initScore->getValue())
+                       .toString("precision:2")
                 << "%";
     }
     else
@@ -288,16 +280,14 @@ Optimizer::finalString(bool feasible) const
         str << ", NO SOLUTION CAN BE FOUND.";
     }
     //Joe added 100000.0 because there seems to a bug in OStime class
-//     str << ", "
-//         << Float(_timer->getTotalTime() * 10000.0).toString("precision:2")
-//         << "sec" << '\0';
-    str << ", "
-        << Duration(difftime(endTime, startTime)).toString()
-        << '\0';
+    //     str << ", "
+    //         << Float(_timer->getTotalTime() * 10000.0).toString("precision:2")
+    //         << "sec" << '\0';
+    str << ", " << Duration(difftime(endTime, startTime)).toString() << '\0';
     return utl::String((char*)str.get());
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 // void
 // Optimizer::initializeStats()
@@ -310,7 +300,7 @@ Optimizer::finalString(bool feasible) const
 //     }
 // }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 Optimizer::initializeObjectives()
@@ -326,7 +316,7 @@ Optimizer::initializeObjectives()
     setNewScore(_objectives[0]->worstPossibleScore());
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 Optimizer::initializeOps(StringInd<utl::uint_t>* ind)
@@ -334,31 +324,31 @@ Optimizer::initializeOps(StringInd<utl::uint_t>* ind)
     uint_t numOps = _ops.size();
 
     // set operator cumulative percentages
-//     delete [] _opsCumPct;
-//     _opsCumPct = nullptr;
-//     if (numOps > 0)
-//     {
-//         uint_t i;
-//         double totP = 0.0;
-//         for (i = 0; i < numOps; ++i)
-//         {
-//             totP += _ops[i]->getP();
-//         }
-//         if (totP == 0.0)
-//         {
-//             double p = 1.0 / (double)numOps;
-//             for (i = 0; i < numOps; ++i)
-//             {
-//                 _ops[i]->setP(p);
-//             }
-//         }
-//         _opsCumPct = new double[_ops.size()];
-//         _opsCumPct[0] = _ops[0]->getP() / totP;
-//         for (uint_t i = 1; i < _ops.size(); i++)
-//         {
-//             _opsCumPct[i] = _opsCumPct[i - 1] + (_ops[i]->getP() / totP);
-//         }
-//     }
+    //     delete [] _opsCumPct;
+    //     _opsCumPct = nullptr;
+    //     if (numOps > 0)
+    //     {
+    //         uint_t i;
+    //         double totP = 0.0;
+    //         for (i = 0; i < numOps; ++i)
+    //         {
+    //             totP += _ops[i]->getP();
+    //         }
+    //         if (totP == 0.0)
+    //         {
+    //             double p = 1.0 / (double)numOps;
+    //             for (i = 0; i < numOps; ++i)
+    //             {
+    //                 _ops[i]->setP(p);
+    //             }
+    //         }
+    //         _opsCumPct = new double[_ops.size()];
+    //         _opsCumPct[0] = _ops[0]->getP() / totP;
+    //         for (uint_t i = 1; i < _ops.size(); i++)
+    //         {
+    //             _opsCumPct[i] = _opsCumPct[i - 1] + (_ops[i]->getP() / totP);
+    //         }
+    //     }
 
     for (uint_t i = 0; i < numOps; ++i)
     {
@@ -371,7 +361,7 @@ Optimizer::initializeOps(StringInd<utl::uint_t>* ind)
     }
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 Operator*
 Optimizer::chooseSuccessOp() const
@@ -383,7 +373,8 @@ Optimizer::chooseSuccessOp() const
     for (uint_t i = 0; i < numOps; i++)
     {
         uint_t opNumChoices = _ops[i]->getNumChoices();
-        if (opNumChoices == 0) continue;
+        if (opNumChoices == 0)
+            continue;
         double opSuccessRate = _ops[i]->p();
         if (opSuccessRate >= bestSuccessRate)
         {
@@ -391,7 +382,8 @@ Optimizer::chooseSuccessOp() const
             {
                 uint_t totalNumChoices = opNumChoices + numChoices;
                 uint_t randomNum = _rng->evali(totalNumChoices);
-                if (randomNum >= opNumChoices) continue;
+                if (randomNum >= opNumChoices)
+                    continue;
             }
             bestSuccessRate = opSuccessRate;
             opIdx = i;
@@ -406,13 +398,12 @@ Optimizer::chooseSuccessOp() const
     }
     else
     {
-        std::cout << "WARNING: This problem has no optimization opportunity!"
-                  << std::endl;
+        std::cout << "WARNING: This problem has no optimization opportunity!" << std::endl;
         return nullptr;
     }
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 Operator*
 Optimizer::chooseRandomOp() const
@@ -439,12 +430,11 @@ Optimizer::chooseRandomOp() const
             return op;
         }
     }
-    std::cout << "WARNING: This problem has no optimization opportunity!"
-              << std::endl;
+    std::cout << "WARNING: This problem has no optimization opportunity!" << std::endl;
     return nullptr;
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 Operator*
 Optimizer::chooseRandomStepOp() const
@@ -471,13 +461,11 @@ Optimizer::chooseRandomStepOp() const
             return op;
         }
     }
-    std::cout << "WARNING: This problem has no optimization opportunity!"
-              << std::endl;
+    std::cout << "WARNING: This problem has no optimization opportunity!" << std::endl;
     return nullptr;
-
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 // void
 // Optimizer::calcStats(const Population& pop) const
@@ -510,7 +498,7 @@ Optimizer::chooseRandomStepOp() const
 //     }
 // }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 Optimizer::init()
@@ -533,10 +521,10 @@ Optimizer::init()
     _ind = nullptr;
     _indBuilder = nullptr;
     _singleStep = false;
-//     _timer = new OStimer();
-//     _opsCumPct = nullptr;
-//     _calcStatsEnable = false;
-//     _opStats = nullptr;
+    //     _timer = new OStimer();
+    //     _opsCumPct = nullptr;
+    //     _calcStatsEnable = false;
+    //     _opStats = nullptr;
 
     _fail = false;
     _accept = false;
@@ -544,7 +532,7 @@ Optimizer::init()
     _newBest = false;
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 Optimizer::deInit()
@@ -556,13 +544,13 @@ Optimizer::deInit()
     delete _initScore;
     delete _bestScore;
     delete _newScore;
-//     delete _timer;
+    //     delete _timer;
     deleteCont(_objectives);
     deleteCont(_ops);
-//     delete [] _opsCumPct;
-//     delete [] _opStats;
+    //     delete [] _opsCumPct;
+    //     delete [] _opStats;
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 GOP_NS_END;

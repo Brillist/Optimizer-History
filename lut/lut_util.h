@@ -1,20 +1,21 @@
 #ifndef LUT_UTIL_H
 #define LUT_UTIL_H
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 #include <libutl/algorithms_inl.h>
 #include <libutl/RandNumGen.h>
 #include <lut/RCobject.h>
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 LUT_NS_BEGIN;
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 template <class T>
-void serializeNullable(T* object, utl::Stream& stream, utl::uint_t io)
+void
+serializeNullable(T* object, utl::Stream& stream, utl::uint_t io)
 {
     if (io == utl::io_rd)
     {
@@ -26,10 +27,11 @@ void serializeNullable(T* object, utl::Stream& stream, utl::uint_t io)
     }
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 template <class T>
-void serializeInNullable(T*& object, utl::Stream& is)
+void
+serializeInNullable(T*& object, utl::Stream& is)
 {
     bool objectExists;
     utl::serialize(objectExists, is, utl::io_rd);
@@ -43,10 +45,11 @@ void serializeInNullable(T*& object, utl::Stream& is)
     }
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 template <class T>
-void serializeOutNullable(T* object, utl::Stream& os)
+void
+serializeOutNullable(T* object, utl::Stream& os)
 {
     bool objectExists = (object != nullptr);
     utl::serialize(objectExists, os, utl::io_wr);
@@ -56,10 +59,11 @@ void serializeOutNullable(T* object, utl::Stream& os)
     }
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
-template < class ST1, class ST2, class F, class S >
-void serialize(std::map<F,S>& map, utl::Stream& stream, utl::uint_t io)
+template <class ST1, class ST2, class F, class S>
+void
+serialize(std::map<F, S>& map, utl::Stream& stream, utl::uint_t io)
 {
     if (io == utl::io_rd)
     {
@@ -71,13 +75,13 @@ void serialize(std::map<F,S>& map, utl::Stream& stream, utl::uint_t io)
             ST1 first = 0;
             utl::serialize(first, stream, io, utl::ser_default);
 
-/*             F first; */
-/*             utl::serialize(first, stream, io, utl::ser_default); */
+            /*             F first; */
+            /*             utl::serialize(first, stream, io, utl::ser_default); */
 
             ST2 second = 0;
             utl::serialize(second, stream, io, utl::ser_default);
-            typename std::map<F,S>::value_type pair((F&)first, (S&)second);
-/*             typename std::map<F,S>::value_type pair(first, (S&)second); */
+            typename std::map<F, S>::value_type pair((F&)first, (S&)second);
+            /*             typename std::map<F,S>::value_type pair(first, (S&)second); */
             map.insert(pair);
         }
     }
@@ -85,10 +89,10 @@ void serialize(std::map<F,S>& map, utl::Stream& stream, utl::uint_t io)
     {
         utl::uint_t items = map.size();
         utl::serialize(items, stream, io);
-        typename std::map<F,S>::iterator it;
+        typename std::map<F, S>::iterator it;
         for (it = map.begin(); it != map.end(); ++it)
         {
-/*             F first = (*it).first; */
+            /*             F first = (*it).first; */
             ST1 first = (*it).first;
             utl::serialize(first, stream, io, utl::ser_default);
             ST2 second = (*it).second;
@@ -97,10 +101,11 @@ void serialize(std::map<F,S>& map, utl::Stream& stream, utl::uint_t io)
     }
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
-template < class ST, class T, class L >
-void serialize(std::set<T,L>& set, utl::Stream& stream, utl::uint_t io)
+template <class ST, class T, class L>
+void
+serialize(std::set<T, L>& set, utl::Stream& stream, utl::uint_t io)
 {
     if (io == utl::io_rd)
     {
@@ -110,11 +115,7 @@ void serialize(std::set<T,L>& set, utl::Stream& stream, utl::uint_t io)
         for (utl::uint_t i = 0; i < items; ++i)
         {
             ST object = 0;
-            utl::serialize(
-                object,
-                stream,
-                io,
-                utl::ser_default);
+            utl::serialize(object, stream, io, utl::ser_default);
             set.insert((T&)object);
         }
     }
@@ -122,23 +123,20 @@ void serialize(std::set<T,L>& set, utl::Stream& stream, utl::uint_t io)
     {
         utl::uint_t items = set.size();
         utl::serialize(items, stream, io);
-        typename std::set<T,L>::iterator it;
+        typename std::set<T, L>::iterator it;
         for (it = set.begin(); it != set.end(); ++it)
         {
             ST object = *it;
-            utl::serialize(
-                object,
-                stream,
-                io,
-                utl::ser_default);
+            utl::serialize(object, stream, io, utl::ser_default);
         }
     }
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 template <class ST, class T>
-void serialize(std::vector<T>& vector, utl::Stream& stream, utl::uint_t io)
+void
+serialize(std::vector<T>& vector, utl::Stream& stream, utl::uint_t io)
 {
     if (io == utl::io_rd)
     {
@@ -149,11 +147,7 @@ void serialize(std::vector<T>& vector, utl::Stream& stream, utl::uint_t io)
         for (utl::uint_t i = 0; i < items; ++i)
         {
             ST object = 0;
-            utl::serialize(
-                object,
-                stream,
-                io,
-                utl::ser_default);
+            utl::serialize(object, stream, io, utl::ser_default);
             vector.push_back((T&)object);
         }
     }
@@ -165,132 +159,130 @@ void serialize(std::vector<T>& vector, utl::Stream& stream, utl::uint_t io)
         for (it = vector.begin(); it != vector.end(); ++it)
         {
             ST object = *it;
-            utl::serialize(
-                object,
-                stream,
-                io,
-                utl::ser_default);
+            utl::serialize(object, stream, io, utl::ser_default);
         }
     }
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void serialize(std::string& str, utl::Stream& stream, utl::uint_t io);
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void serialize(time_t& t, utl::Stream& stream, utl::uint_t io);
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 class FlagToggle
 {
 public:
     FlagToggle(bool& b)
-        : _b(b) { _b = !_b; }
+        : _b(b)
+    {
+        _b = !_b;
+    }
 
-        ~FlagToggle()
-        { _b = !_b; }
+    ~FlagToggle()
+    {
+        _b = !_b;
+    }
+
 private:
-        bool& _b;
+    bool& _b;
 };
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
-template <class T>
-class HashUint
+template <class T> class HashUint
 {
 public:
-    size_t operator()(T val) const
-    { return (size_t)val; }
+    size_t
+    operator()(T val) const
+    {
+        return (size_t)val;
+    }
 };
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 std::string heading(const std::string& title, char ch, utl::uint_t width);
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 std::string getTimeString(time_t t);
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
    Convert a string to the corresponding period_t value.
 */
 period_t stringToPeriod(const std::string& str);
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
    Convert a period_t value to a human-readable string.
 */
 std::string periodToString(period_t period);
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
    Get the number of seconds that correspond to a period_t value.
 */
 utl::uint_t periodToSeconds(period_t period);
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
    Grow an array that was previously allocated with malloc.
 */
 void* realloc(void* ptr, utl::uint_t oldSize, utl::uint_t newSize);
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
    Get date for a given time.
 */
-time_t
-time_date(time_t t);
+time_t time_date(time_t t);
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
    Get number of seconds since start of day for given time.
 */
-utl::uint_t
-time_timeOfDay(time_t t);
+utl::uint_t time_timeOfDay(time_t t);
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
    Get day-of-week (sunday=0) for given time.
 */
-utl::uint_t
-time_dayOfWeek(time_t t);
+utl::uint_t time_dayOfWeek(time_t t);
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
    Get a string representation of a date/time.
 */
-std::string
-time_str(time_t t);
+std::string time_str(time_t t);
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
    Get the flag at the given bit-position.
 */
-bool
-getFlag(utl::uint32_t flags, utl::uint32_t bit);
+bool getFlag(utl::uint32_t flags, utl::uint32_t bit);
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
    Set the flag at the given bit-position.
 */
-void
-setFlag(utl::uint32_t& flags, utl::uint32_t bit, bool val);
+void setFlag(utl::uint32_t& flags, utl::uint32_t bit, bool val);
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
    Create and return a copy of the given object.
@@ -310,7 +302,7 @@ clone(const T* ptr)
     }
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
    Create a managed copy of the given object.
@@ -330,7 +322,7 @@ mclone(T* ptr)
     }
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
    Compare the two given objects.
@@ -355,33 +347,31 @@ compare(const T& lhs, const T& rhs)
     }
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
    Specialization of compare() for floating-point.
    \author Adam McKee
 */
-template <>
-int
-compare(const double& lhs, const double& rhs);
+template <> int compare(const double& lhs, const double& rhs);
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
    STL less-than ordering based on compare() method of objects.
    \author Adam McKee
 */
-template <class Object>
-struct ObjectSTLordering
+template <class Object> struct ObjectSTLordering
 {
     /** Compare two objects. */
-    bool operator()(const Object* lhs, const Object* rhs) const
+    bool
+    operator()(const Object* lhs, const Object* rhs) const
     {
         return (lhs->compare(*rhs) < 0);
     }
 };
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
    Compare the two sorted collections.
@@ -393,25 +383,25 @@ int
 compareContValues(const Cont& lhs, const Cont& rhs)
 {
     int res = compare(lhs.size(), rhs.size());
-    if (res != 0) return res;
+    if (res != 0)
+        return res;
 
     typename Cont::const_iterator lhsIt;
     typename Cont::const_iterator rhsIt;
     typename Cont::const_iterator lhsEnd = lhs.end();
-    for (lhsIt = lhs.begin(), rhsIt = rhs.begin();
-         lhsIt != lhsEnd;
-         ++lhsIt, ++rhsIt)
+    for (lhsIt = lhs.begin(), rhsIt = rhs.begin(); lhsIt != lhsEnd; ++lhsIt, ++rhsIt)
     {
         const typename Cont::value_type& lhsVal = *lhsIt;
         const typename Cont::value_type& rhsVal = *rhsIt;
         int res = compare(lhsVal, rhsVal);
-        if (res != 0) return res;
+        if (res != 0)
+            return res;
     }
 
     return 0;
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
    Compare objects in two sorted collections (using their compare() method).
@@ -423,32 +413,33 @@ int
 compareContObjects(const Cont& lhs, const Cont& rhs)
 {
     int res = compare(lhs.size(), rhs.size());
-    if (res != 0) return res;
+    if (res != 0)
+        return res;
 
     typename Cont::const_iterator lhsIt;
     typename Cont::const_iterator rhsIt;
     typename Cont::const_iterator lhsEnd = lhs.end();
-    for (lhsIt = lhs.begin(), rhsIt = rhs.begin();
-         lhsIt != lhsEnd;
-         ++lhsIt, ++rhsIt)
+    for (lhsIt = lhs.begin(), rhsIt = rhs.begin(); lhsIt != lhsEnd; ++lhsIt, ++rhsIt)
     {
         const typename Cont::value_type& lhsObject = *lhsIt;
         const typename Cont::value_type& rhsObject = *rhsIt;
         int res = lhsObject->compare(*rhsObject);
-        if (res != 0) return res;
+        if (res != 0)
+            return res;
     }
 
     return 0;
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
    Delete all objects in the given container, and clear the container.
    \author Adam McKee
 */
 template <class Cont>
-void deleteCont(Cont& cont)
+void
+deleteCont(Cont& cont)
 {
     typename Cont::iterator it;
     for (it = cont.begin(); it != cont.end(); ++it)
@@ -459,43 +450,45 @@ void deleteCont(Cont& cont)
     cont.clear();
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
    Delete all objects in the given container, and clear the container.
    \author Adam McKee
 */
 template <class K, class V>
-    void deleteMapSecond(std_hash_map<K,V>& map)
+void
+deleteMapSecond(std_hash_map<K, V>& map)
 {
-    typename std_hash_map<K,V>::iterator it;
+    typename std_hash_map<K, V>::iterator it;
     for (it = map.begin(); it != map.end(); ++it)
     {
-        typename std_hash_map<K,V>::value_type object = *it;
+        typename std_hash_map<K, V>::value_type object = *it;
         delete object.second;
     }
     map.clear();
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
    Delete all objects in the given container, and clear the container.
    \author Adam McKee
 */
 template <class K, class V, class Ord>
-    void deleteMapSecond(std::map<K,V,Ord>& map)
+void
+deleteMapSecond(std::map<K, V, Ord>& map)
 {
-    typename std::map<K,V,Ord>::iterator it;
+    typename std::map<K, V, Ord>::iterator it;
     for (it = map.begin(); it != map.end(); ++it)
     {
-        typename std::map<K,V,Ord>::value_type object = *it;
+        typename std::map<K, V, Ord>::value_type object = *it;
         delete object.second;
     }
     map.clear();
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /*template <class Map>
   void deleteMapSecond(Map& map)
@@ -509,14 +502,15 @@ template <class K, class V, class Ord>
   map.clear();
   }*/
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
    Delete all objects in the given array.
    \author Adam McKee
 */
 template <class T>
-void deleteArray(T** array, T**& ptr)
+void
+deleteArray(T** array, T**& ptr)
 {
     while (ptr-- > array)
     {
@@ -525,7 +519,7 @@ void deleteArray(T** array, T**& ptr)
     }
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
    Determine whether two objects are equal.
@@ -550,7 +544,7 @@ equals(const T* lhs, const T* rhs)
     return res;
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
    Erase the object referred to by the given iterator,
@@ -558,12 +552,13 @@ equals(const T* lhs, const T* rhs)
    \author Adam McKee
 */
 template <class Cont, class Iter>
-    void erase(Cont& cont, Iter& it)
+void
+erase(Cont& cont, Iter& it)
 {
     cont.erase(it++);
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
    Add copies of objects in the src vector to the dst vector.
@@ -571,7 +566,8 @@ template <class Cont, class Iter>
    \author Adam McKee
 */
 template <class T>
-void copyVector(std::vector<T>& dst, const std::vector<T>& src)
+void
+copyVector(std::vector<T>& dst, const std::vector<T>& src)
 {
     deleteCont(dst);
     typename std::vector<T>::const_iterator it;
@@ -582,7 +578,7 @@ void copyVector(std::vector<T>& dst, const std::vector<T>& src)
     }
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
    Add copies of objects in the src-set to the dst-set.
@@ -590,7 +586,8 @@ void copyVector(std::vector<T>& dst, const std::vector<T>& src)
    \author Adam McKee
 */
 template <class Set>
-void copySet(Set& dst, const Set& src)
+void
+copySet(Set& dst, const Set& src)
 {
     deleteCont(dst);
     typename Set::const_iterator it;
@@ -602,10 +599,11 @@ void copySet(Set& dst, const Set& src)
     }
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 template <class T, class C>
-    void copyCollection(std::vector<T>& vect, const C& col)
+void
+copyCollection(std::vector<T>& vect, const C& col)
 {
     vect.clear();
     typename C::iterator it;
@@ -616,14 +614,15 @@ template <class T, class C>
     }
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
    Copy items from one collection into another.
    \author Adam McKee
 */
 template <class Cont>
-void addItems(Cont& dst, const Cont& src)
+void
+addItems(Cont& dst, const Cont& src)
 {
     typename Cont::const_iterator it;
     for (it = src.begin(); it != src.end(); ++it)
@@ -633,45 +632,48 @@ void addItems(Cont& dst, const Cont& src)
     }
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
    Copy all objects in the given container.
    \author Howard Lee
 */
 template <class Map>
-void copyMap(Map& dst, const Map& src)
+void
+copyMap(Map& dst, const Map& src)
 {
     deleteMapSecond(dst);
     typename Map::const_iterator it;
     for (it = src.begin(); it != src.end(); ++it)
     {
         typename Map::value_type object = *it;
-        dst.insert(std::make_pair(object.first,object.second->clone()));
+        dst.insert(std::make_pair(object.first, object.second->clone()));
     }
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
    Find a unique key in the given map.
    \author Adam McKee
 */
 template <class Map>
-utl::uint_t uniqueKey(const Map& map)
+utl::uint_t
+uniqueKey(const Map& map)
 {
     utl::uint_t v = 1;
     typename Map::const_iterator it;
     for (it = map.begin(); it != map.end(); ++it)
     {
         utl::uint_t itKey = (*it).first;
-        if (itKey == v) return v;
+        if (itKey == v)
+            return v;
         v = (itKey + 1);
     }
     return v;
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 template <class T>
 void
@@ -685,7 +687,7 @@ addRef(T* object)
     rcobject->addRef();
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 template <class T>
 void
@@ -699,7 +701,7 @@ removeRef(T* object)
     rcobject->removeRef();
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
    Decrement the reference count of all objects in the given container,
@@ -707,7 +709,8 @@ removeRef(T* object)
    \author Adam McKee
 */
 template <class Cont>
-void removeRefCont(Cont& cont)
+void
+removeRefCont(Cont& cont)
 {
     typename Cont::iterator it;
     for (it = cont.begin(); it != cont.end(); ++it)
@@ -718,14 +721,15 @@ void removeRefCont(Cont& cont)
     cont.clear();
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
    Decrement the reference count of all objects in the given array.
    \author Adam McKee
 */
 template <class T>
-void removeRefArray(T** array, T**& ptr)
+void
+removeRefArray(T** array, T**& ptr)
 {
     while (ptr-- > array)
     {
@@ -734,7 +738,7 @@ void removeRefArray(T** array, T**& ptr)
     }
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
    Decrement the reference count of the key values in the given map,
@@ -742,7 +746,8 @@ void removeRefArray(T** array, T**& ptr)
    \author Adam McKee
 */
 template <class Map>
-void removeRefMapFirst(Map& map)
+void
+removeRefMapFirst(Map& map)
 {
     typename Map::iterator it;
     for (it = map.begin(); it != map.end(); ++it)
@@ -752,7 +757,7 @@ void removeRefMapFirst(Map& map)
     map.clear();
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
    Dump a human-readable representation of the objects in the given container
@@ -760,7 +765,8 @@ void removeRefMapFirst(Map& map)
    \author Adam McKee
 */
 template <class Cont>
-void dumpCont(Cont& cont, std::ostream& os)
+void
+dumpCont(Cont& cont, std::ostream& os)
 {
     typename Cont::iterator it;
     for (it = cont.begin(); it != cont.end(); ++it)
@@ -770,7 +776,7 @@ void dumpCont(Cont& cont, std::ostream& os)
     }
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
    Randomly shuffle the objects in the given vector,
@@ -778,7 +784,8 @@ void dumpCont(Cont& cont, std::ostream& os)
    \author Adam McKee
 */
 template <class T>
-void shuffle(std::vector<T>& vect, utl::RandNumGen& rng)
+void
+shuffle(std::vector<T>& vect, utl::RandNumGen& rng)
 {
     utl::uint_t size = vect.size();
     // randomly shuffle
@@ -789,7 +796,7 @@ void shuffle(std::vector<T>& vect, utl::RandNumGen& rng)
     }
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
    Randomly shuffle the objects in the given array,
@@ -797,7 +804,8 @@ void shuffle(std::vector<T>& vect, utl::RandNumGen& rng)
    \author Adam McKee
 */
 template <class T>
-void shuffle(T* array, utl::uint_t size, utl::RandNumGen& rng)
+void
+shuffle(T* array, utl::uint_t size, utl::RandNumGen& rng)
 {
     // randomly shuffle
     for (utl::uint_t i = 1; i < size; i++)
@@ -807,7 +815,7 @@ void shuffle(T* array, utl::uint_t size, utl::RandNumGen& rng)
     }
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
    Read a line of input from the given stream.
@@ -815,7 +823,7 @@ void shuffle(T* array, utl::uint_t size, utl::RandNumGen& rng)
 */
 std::string readLine(std::istream& is);
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
    Return a copy of the given string, with all alphabetic characters
@@ -824,93 +832,89 @@ std::string readLine(std::istream& is);
 */
 std::string tolower(const std::string& str);
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
    Ordering via utl::Object::compare().
    \author Adam McKee
 */
 
-struct UTLordering
-    : public std::binary_function<utl::Object*, utl::Object*, bool>
+struct UTLordering : public std::binary_function<utl::Object*, utl::Object*, bool>
 {
-    bool operator()(
-        const utl::Object* lhs,
-        const utl::Object* rhs) const
+    bool
+    operator()(const utl::Object* lhs, const utl::Object* rhs) const
     {
         return (lhs->compare(*rhs) < 0);
     }
 };
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
    Ordering by first element of a pair.
    \author Adam McKee
 */
 template <class X, class Y>
-struct PairFirstOrdering
-    : public std::binary_function<std::pair<X,Y>*,std::pair<X,Y>*,bool>
+struct PairFirstOrdering : public std::binary_function<std::pair<X, Y>*, std::pair<X, Y>*, bool>
 {
-    bool operator()(
-        const std::pair<X,Y>* lhs,
-        const std::pair<X,Y>* rhs) const
+    bool
+    operator()(const std::pair<X, Y>* lhs, const std::pair<X, Y>* rhs) const
     {
         return (lhs->first < rhs->first);
     }
 };
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
    Ordering by second element of a pair.
    \author Adam McKee
 */
 template <class X, class Y>
-struct PairSecondOrdering
-    : public std::binary_function<std::pair<X,Y>*,std::pair<X,Y>*,bool>
+struct PairSecondOrdering : public std::binary_function<std::pair<X, Y>*, std::pair<X, Y>*, bool>
 {
-    bool operator()(
-        const std::pair<X,Y>* lhs,
-        const std::pair<X,Y>* rhs) const
+    bool
+    operator()(const std::pair<X, Y>* lhs, const std::pair<X, Y>* rhs) const
     {
         return (lhs->second < rhs->second);
     }
 };
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
-template < class T, class L >
-T setFind(std::set<T,L>& set, T t)
+template <class T, class L>
+T
+setFind(std::set<T, L>& set, T t)
 {
-    typename std::set<T>::iterator it
-        = set.find(t);
-    if (it == set.end()) return nullptr;
+    typename std::set<T>::iterator it = set.find(t);
+    if (it == set.end())
+        return nullptr;
     return *it;
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
-#define forEachIt(colType, col, itemType, item)                         \
-    {                                                                   \
-        colType::iterator it__ = col.begin();                           \
-        for (it__ = col.begin(); ; ++it__)                              \
-        {                                                               \
-            utl::Object* obj__ = *it__;                                 \
-            if (obj__ == nullptr) break;                                \
-            ASSERTD(obj__->isA(itemType));                              \
+#define forEachIt(colType, col, itemType, item)                                                    \
+    {                                                                                              \
+        colType::iterator it__ = col.begin();                                                      \
+        for (it__ = col.begin();; ++it__)                                                          \
+        {                                                                                          \
+            utl::Object* obj__ = *it__;                                                            \
+            if (obj__ == nullptr)                                                                  \
+                break;                                                                             \
+            ASSERTD(obj__->isA(itemType));                                                         \
             itemType& item = (itemType&)*obj__;
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
-#define endForEach                                                      \
-        }                                                               \
+#define endForEach                                                                                 \
+    }                                                                                              \
     }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 LUT_NS_END;
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 #endif

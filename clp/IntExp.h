@@ -1,7 +1,7 @@
 #ifndef CLP_INTEXP_H
 #define CLP_INTEXP_H
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 #include <libutl/Span.h>
 #include <clp/ConstrainedBound.h>
@@ -9,11 +9,11 @@
 #include <clp/IntSpanArray.h>
 #include <clp/RevSet.h>
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 CLP_NS_BEGIN;
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 class Bound;
 class Constraint;
@@ -23,7 +23,7 @@ class IntExpDomainIt;
 class IntSpan;
 class Manager;
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
    Constrained integer expression (abstract).
@@ -38,13 +38,15 @@ class Manager;
    \author Adam McKee
 */
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 class IntExp : public ConstrainedVar
 {
     UTL_CLASS_DECL_ABC(IntExp);
+
 public:
     typedef IntExpDomainIt* iterator;
+
 public:
     /** Constructor. */
     IntExp(Manager* mgr, IntExpDomain* domain = nullptr);
@@ -53,17 +55,26 @@ public:
     virtual void copy(const utl::Object& rhs);
 
     /** Backtrack. */
-    virtual void backtrack()
-    { ABORT(); }
+    virtual void
+    backtrack()
+    {
+        ABORT();
+    }
 
     /** Return a fully managed copy of self. */
     virtual IntExp* mclone();
 
     /** Make managed copies of unmanaged referenced objects. */
-    virtual void mcopy() {}
+    virtual void
+    mcopy()
+    {
+    }
 
     /** Post constraints. */
-    virtual void postConstraints() {}
+    virtual void
+    postConstraints()
+    {
+    }
 
     /// \name Accessors
     //@{
@@ -71,63 +82,106 @@ public:
     virtual utl::String toString() const;
 
     /** Get the manager. */
-    Manager* manager() const
-    { return _mgr; }
+    Manager*
+    manager() const
+    {
+        return _mgr;
+    }
 
     /** Set the manager. */
     void setManager(Manager* mgr);
 
     /** Get the name. */
-    const std::string& getName() const
-    { return _name; }
+    const std::string&
+    getName() const
+    {
+        return _name;
+    }
 
     /** Set the name. */
-    void setName(const std::string& name)
-    { _name = name; }
+    void
+    setName(const std::string& name)
+    {
+        _name = name;
+    }
 
     /** Fail-on-empty? */
-    bool failOnEmpty() const
-    { return _failOnEmpty; }
+    bool
+    failOnEmpty() const
+    {
+        return _failOnEmpty;
+    }
 
     /** Fail-on-empty? */
-    bool& failOnEmpty()
-    { return _failOnEmpty; }
+    bool&
+    failOnEmpty()
+    {
+        return _failOnEmpty;
+    }
 
     /** Get the domain span. */
-    utl::Span<int> span() const
-    { return utl::Span<int>(min(), max() + 1); }
+    utl::Span<int>
+    span() const
+    {
+        return utl::Span<int>(min(), max() + 1);
+    }
 
     /** Get the smallest value in the domain. */
-    int min() const
-    { return _domain->min(); }
+    int
+    min() const
+    {
+        return _domain->min();
+    }
 
     /** Get the largest value in the domain. */
-    int max() const
-    { return _domain->max(); }
+    int
+    max() const
+    {
+        return _domain->max();
+    }
 
     /** Get the single value in the domain. */
-    int getValue() const
-    { ASSERTD(isBound()); return _domain->min(); }
+    int
+    getValue() const
+    {
+        ASSERTD(isBound());
+        return _domain->min();
+    }
 
     /** Get the size of the domain. */
-    virtual utl::uint_t size() const
-    { return _domain->size(); }
+    virtual utl::uint_t
+    size() const
+    {
+        return _domain->size();
+    }
 
     /** Empty domain? */
-    bool empty()
-    { return _domain->empty(); }
+    bool
+    empty()
+    {
+        return _domain->empty();
+    }
 
     /** Does the domain contain a single value? */
-    virtual bool isBound() const
-    { return (size() == 1); }
+    virtual bool
+    isBound() const
+    {
+        return (size() == 1);
+    }
 
     /** Does the domain include the given value? */
-    bool has(int val) const
-    { return _domain->has(val); }
+    bool
+    has(int val) const
+    {
+        return _domain->has(val);
+    }
 
     /** Get the domain. */
-    const IntExpDomain* domain() const
-    { return _domain; }
+    const IntExpDomain*
+    domain() const
+    {
+        return _domain;
+    }
 
     /** Get the IntExpDomainRISC. */
     const IntExpDomainRISC* domainRISC() const;
@@ -139,42 +193,66 @@ public:
     const IntSpan* tail() const;
 
     /** Get begin iterator. */
-    iterator begin() const
-    { return _domain->begin(); }
+    iterator
+    begin() const
+    {
+        return _domain->begin();
+    }
 
     /** Get end iterator. */
-    iterator end() const
-    { return _domain->end(); }
+    iterator
+    end() const
+    {
+        return _domain->end();
+    }
 
     /**
        If \b val is less than or equal to min(), return utl::int_t_min.
        Otherwise, return the first domain value that is less than val.
     */
-    int getPrev(int val) const
-    { return _domain->getPrev(val); }
+    int
+    getPrev(int val) const
+    {
+        return _domain->getPrev(val);
+    }
 
     /**
        If \b val is greater than or equal to max(), return utl::int_t_max.
        Otherwise, return the first domain value that is greater than val.
     */
-    int getNext(int val) const
-    { return _domain->getNext(val); }
+    int
+    getNext(int val) const
+    {
+        return _domain->getNext(val);
+    }
 
     /** Get the \b managed flag. */
-    bool isManaged() const
-    { return _managed; }
+    bool
+    isManaged() const
+    {
+        return _managed;
+    }
 
     /** Set the \b managed flag. */
-    void setManaged(bool managed)
-    { _managed = managed; }
+    void
+    setManaged(bool managed)
+    {
+        _managed = managed;
+    }
 
     /** Get the associated object. */
-    void* getObject() const
-    { return _object; }
+    void*
+    getObject() const
+    {
+        return _object;
+    }
 
     /** Set the associated object. */
-    void setObject(void* object)
-    { _object = object; }
+    void
+    setObject(void* object)
+    {
+        _object = object;
+    }
     //@}
 
     /// \name Domain Modification
@@ -183,23 +261,30 @@ public:
     void set(int min, int max);
 
     /** Remove all domain values smaller than min. */
-    void setMin(int min)
+    void
+    setMin(int min)
     {
-        if (min <= _domain->min()) return;
+        if (min <= _domain->min())
+            return;
         _domain->remove(utl::int_t_min, min - 1);
-        if (_domain->anyEvent()) raiseEvents();
+        if (_domain->anyEvent())
+            raiseEvents();
     }
 
     /** Remove all domain values larger than max. */
-    void setMax(int max)
+    void
+    setMax(int max)
     {
-        if (max >= _domain->max()) return;
+        if (max >= _domain->max())
+            return;
         _domain->remove(max + 1, utl::int_t_max);
-        if (_domain->anyEvent()) raiseEvents();
+        if (_domain->anyEvent())
+            raiseEvents();
     }
 
     /** Remove from the domain all values except \b val. */
-    void setValue(int val)
+    void
+    setValue(int val)
     {
         setRange(val, val);
         ASSERTD(_domain->empty() || (getValue() == val));
@@ -236,10 +321,13 @@ public:
     utl::uint_t remove(int min, int max);
 
     /** Remove domain values less than \b min or greater than \b max. */
-    void setRange(int min, int max)
+    void
+    setRange(int min, int max)
     {
-        if (min > _domain->min()) _domain->remove(utl::int_t_min, min - 1);
-        if (max < _domain->max()) _domain->remove(max + 1, utl::int_t_max);
+        if (min > _domain->min())
+            _domain->remove(utl::int_t_min, min - 1);
+        if (max < _domain->max())
+            _domain->remove(max + 1, utl::int_t_max);
         if (_domain->anyEvent())
         {
             raiseEvents();
@@ -247,37 +335,56 @@ public:
     }
     //@}
 
-    void addIntersectExp(IntExp* exp)
-    { _intersectExps.add(exp); }
+    void
+    addIntersectExp(IntExp* exp)
+    {
+        _intersectExps.add(exp);
+    }
 
     /// \name Events
     //@{
     /** Add a domain-bound. */
-    void addDomainBound(ConstrainedBound* bound)
-    { _domainBounds.add(bound); }
+    void
+    addDomainBound(ConstrainedBound* bound)
+    {
+        _domainBounds.add(bound);
+    }
 
     /** Remove a domain-bound. */
-    void removeDomainBound(ConstrainedBound* bound)
-    { _domainBounds.remove(bound); }
+    void
+    removeDomainBound(ConstrainedBound* bound)
+    {
+        _domainBounds.remove(bound);
+    }
 
     /** Add a value-bound. */
-    void addValueBound(ConstrainedBound* bound)
-    { _valueBounds.add(bound); }
+    void
+    addValueBound(ConstrainedBound* bound)
+    {
+        _valueBounds.add(bound);
+    }
 
     /** Remove a value-bound. */
-    void removeValueBound(ConstrainedBound* bound)
-    { _valueBounds.remove(bound); }
+    void
+    removeValueBound(ConstrainedBound* bound)
+    {
+        _valueBounds.remove(bound);
+    }
     //@}
 protected:
     void raiseEvents();
+
 protected:
     IntExpDomain* _domain;
+
 private:
     void init();
     void deInit();
+
 private:
     typedef RevSet<ConstrainedBound> cb_set_t;
     typedef RevArray<IntExp*> intexp_array_t;
+
 private:
     Manager* _mgr;
     bool _managed;
@@ -297,10 +404,10 @@ private:
     size_t _deferredRemovesSize;
 };
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 CLP_NS_END;
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 #endif

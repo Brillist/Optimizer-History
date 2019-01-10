@@ -6,27 +6,27 @@
 #include <libutl/Time.h>
 #include "InventoryRecord.h"
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 UTL_NS_USE;
 LUT_NS_USE;
 CSE_NS_USE;
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 UTL_CLASS_IMPL(mrp::InventoryRecord, utl::Object);
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 MRP_NS_BEGIN;
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 // initialize method used after all data are populated,
 // e.g. after serialization
-void InventoryRecord::initialize()
+void
+InventoryRecord::initialize()
 {
-
     //init the first Inventory Interval based on onHand
     int_t availQuantity = (int_t)_onHand - (int_t)_safetyStock;
     if (availQuantity > 0)
@@ -42,18 +42,17 @@ void InventoryRecord::initialize()
         utl::cout << invInterval->toString() << utl::endlf;
     }
     inventorytransaction_set_time_t::const_iterator it;
-     for (it = _invTransactions.begin();
-         it != _invTransactions.end(); ++it)
+    for (it = _invTransactions.begin(); it != _invTransactions.end(); ++it)
     {
-        InventoryInterval* invInterval =
-            new InventoryInterval(*it);
+        InventoryInterval* invInterval = new InventoryInterval(*it);
         insertNode(invInterval);
     }
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
-void InventoryRecord::copy(const Object& rhs)
+void
+InventoryRecord::copy(const Object& rhs)
 {
     ASSERTD(rhs.isA(InventoryRecord));
     const InventoryRecord& ir = (const InventoryRecord&)rhs;
@@ -69,9 +68,10 @@ void InventoryRecord::copy(const Object& rhs)
     _intervals = ir._intervals;
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
-int InventoryRecord::compare(const utl::Object& rhs) const
+int
+InventoryRecord::compare(const utl::Object& rhs) const
 {
     if (!rhs.isA(InventoryRecord))
     {
@@ -81,9 +81,10 @@ int InventoryRecord::compare(const utl::Object& rhs) const
     return utl::compare(_id, ir._id);
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
-void InventoryRecord::serialize(Stream& stream, uint_t io, uint_t mode)
+void
+InventoryRecord::serialize(Stream& stream, uint_t io, uint_t mode)
 {
     utl::serialize(_id, stream, io);
     utl::serialize(_itemId, stream, io);
@@ -100,8 +101,7 @@ void InventoryRecord::serialize(Stream& stream, uint_t io, uint_t mode)
         array.serializeIn(stream);
         forEachIt(Array, array, InventoryTransaction, transaction)
             _invTransactions.insert(transaction);
-        endForEach
-        array.setOwner(false);
+        endForEach array.setOwner(false);
 
         // Initialize other fields
         initialize();
@@ -110,8 +110,7 @@ void InventoryRecord::serialize(Stream& stream, uint_t io, uint_t mode)
     {
         Array array(false);
         inventorytransaction_set_time_t::const_iterator it;
-        for (it = _invTransactions.begin();
-             it != _invTransactions.end(); ++it)
+        for (it = _invTransactions.begin(); it != _invTransactions.end(); ++it)
         {
             array += *it;
         }
@@ -119,77 +118,77 @@ void InventoryRecord::serialize(Stream& stream, uint_t io, uint_t mode)
     }
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
-inline int_t InventoryRecord::getNet(const InventoryInterval* intvl)
+inline int_t
+InventoryRecord::getNet(const InventoryInterval* intvl)
 {
-    if (intvl == nullptr) return 0;
+    if (intvl == nullptr)
+        return 0;
     return intvl->net();
 }
 
-
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 inline void
 InventoryRecord::setNet(InventoryInterval* intvl)
 {
     if (intvl != nullptr && intvl != _leaf)
     {
-        intvl->net() = intvl->cap() +
-            getNet((InventoryInterval*)intvl->left()) +
-            getNet((InventoryInterval*)intvl->right());
+        intvl->net() = intvl->cap() + getNet((InventoryInterval*)intvl->left()) +
+                       getNet((InventoryInterval*)intvl->right());
     }
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
-inline int_t InventoryRecord::getDebit(const InventoryInterval* intvl)
+inline int_t
+InventoryRecord::getDebit(const InventoryInterval* intvl)
 {
-    if (intvl == nullptr) return 0;
+    if (intvl == nullptr)
+        return 0;
     return intvl->debit();
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 inline void
 InventoryRecord::setDebit(InventoryInterval* intvl)
 {
-//     if (intvl != nullptr && intvl != _leaf)
-//     {
-//         if (intvl->left() == _leaf && intvl->right() == _leaf)
-//         {
-//             intvl->debit() = intvl->cap();
-//         }
-//         else
-//         {
-//             intvl->debit() =
-//                 min(0,
-//                     min(getDebit((InventoryInterval*)intvl->left()),
-//                         min(getNet((InventoryInterval*)intvl->left()) +
-//                             intvl->cap(),
-//                             getNet((InventoryInterval*)intvl->left()) +
-//                             intvl->cap() +
-//                             getDebit((InventoryInterval*)intvl->right()))));
-//         }
-//     }
+    //     if (intvl != nullptr && intvl != _leaf)
+    //     {
+    //         if (intvl->left() == _leaf && intvl->right() == _leaf)
+    //         {
+    //             intvl->debit() = intvl->cap();
+    //         }
+    //         else
+    //         {
+    //             intvl->debit() =
+    //                 min(0,
+    //                     min(getDebit((InventoryInterval*)intvl->left()),
+    //                         min(getNet((InventoryInterval*)intvl->left()) +
+    //                             intvl->cap(),
+    //                             getNet((InventoryInterval*)intvl->left()) +
+    //                             intvl->cap() +
+    //                             getDebit((InventoryInterval*)intvl->right()))));
+    //         }
+    //     }
     if (intvl != nullptr)
     {
-        intvl->debit() =
-            min(0,
-                min(getDebit((InventoryInterval*)intvl->left()),
-                    min(getNet((InventoryInterval*)intvl->left()) +
-                        intvl->cap(),
-                        getNet((InventoryInterval*)intvl->left()) +
-                        intvl->cap() +
-                        getDebit((InventoryInterval*)intvl->right()))));
+        intvl->debit() = min(0, min(getDebit((InventoryInterval*)intvl->left()),
+                                    min(getNet((InventoryInterval*)intvl->left()) + intvl->cap(),
+                                        getNet((InventoryInterval*)intvl->left()) + intvl->cap() +
+                                            getDebit((InventoryInterval*)intvl->right()))));
     }
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
-int_t InventoryRecord::availableCapacity(time_t t)
+int_t
+InventoryRecord::availableCapacity(time_t t)
 {
-    if (_root == nullptr) return 0;
+    if (_root == nullptr)
+        return 0;
 
     // step 1: find the node in which t falls
     //         plus calculate leftCap and rightCap on its way.
@@ -214,38 +213,37 @@ int_t InventoryRecord::availableCapacity(time_t t)
     return nodeAvailableCapacity(node, leftCap, rightCap);
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
-inline int_t InventoryRecord::netCapIncrement(InventoryInterval* intvl)
+inline int_t
+InventoryRecord::netCapIncrement(InventoryInterval* intvl)
 {
     return getNet((InventoryInterval*)intvl->left()) + intvl->cap();
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
-inline int_t InventoryRecord::minDebitCapacity(
-    InventoryInterval* intvl,
-    int_t prevDebit)
+inline int_t
+InventoryRecord::minDebitCapacity(InventoryInterval* intvl, int_t prevDebit)
 {
     return min(0, min(getDebit((InventoryInterval*)intvl->right()),
                       getNet((InventoryInterval*)intvl->right()) + prevDebit));
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
-inline int_t InventoryRecord::nodeAvailableCapacity(
-    InventoryInterval* intvl,
-    int_t leftCap,
-    int_t rightCap)
+inline int_t
+InventoryRecord::nodeAvailableCapacity(InventoryInterval* intvl, int_t leftCap, int_t rightCap)
 {
     utl::int_t leftCapacity = leftCap + netCapIncrement(intvl);
     utl::int_t rightCapacity = minDebitCapacity(intvl, rightCap);
     return (leftCapacity + rightCapacity);
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
-inline void InventoryRecord::propagateDebitChange(InventoryInterval* x)
+inline void
+InventoryRecord::propagateDebitChange(InventoryInterval* x)
 {
     ASSERT(x != nullptr);
     InventoryInterval* y = (InventoryInterval*)x->parent();
@@ -257,9 +255,10 @@ inline void InventoryRecord::propagateDebitChange(InventoryInterval* x)
     }
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
-inline void InventoryRecord::propagateNetChange(InventoryInterval* x)
+inline void
+InventoryRecord::propagateNetChange(InventoryInterval* x)
 {
     ASSERT(x != nullptr);
     InventoryInterval* y = (InventoryInterval*)x->parent();
@@ -270,9 +269,10 @@ inline void InventoryRecord::propagateNetChange(InventoryInterval* x)
     }
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
-void InventoryRecord::leftRotate(lut::RBtreeNode* x)
+void
+InventoryRecord::leftRotate(lut::RBtreeNode* x)
 {
     // call standard leftRoate method
     RBtree::leftRotate(x);
@@ -284,9 +284,10 @@ void InventoryRecord::leftRotate(lut::RBtreeNode* x)
     propagateDebitChange(z);
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
-void InventoryRecord::rightRotate(lut::RBtreeNode* y)
+void
+InventoryRecord::rightRotate(lut::RBtreeNode* y)
 {
     // call standard rightRotate method
     RBtree::rightRotate(y);
@@ -298,9 +299,10 @@ void InventoryRecord::rightRotate(lut::RBtreeNode* y)
     propagateDebitChange(z);
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
-void InventoryRecord::insertNode(InventoryInterval* intvl)
+void
+InventoryRecord::insertNode(InventoryInterval* intvl)
 {
     // tempory code
     intvl->left() = _leaf;
@@ -316,8 +318,7 @@ void InventoryRecord::insertNode(InventoryInterval* intvl)
         if (intvl->startTime() == x->startTime())
         {
             x->cap() += intvl->cap();
-            for (jobop_set_id_t::iterator it = intvl->ops().begin();
-                 it != intvl->ops().end(); ++it)
+            for (jobop_set_id_t::iterator it = intvl->ops().begin(); it != intvl->ops().end(); ++it)
             {
                 x->addJobOp(*it);
             }
@@ -365,9 +366,10 @@ void InventoryRecord::insertNode(InventoryInterval* intvl)
     RBtree::afterInsert(intvl);
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
-void InventoryRecord::add(InventoryTransaction* trans)
+void
+InventoryRecord::add(InventoryTransaction* trans)
 {
     _invTransactions.insert(trans);
     InventoryInterval* node = new InventoryInterval(trans);
@@ -376,9 +378,10 @@ void InventoryRecord::add(InventoryTransaction* trans)
     insertNode(node);
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
-void InventoryRecord::add(JobOp* op)
+void
+InventoryRecord::add(JobOp* op)
 {
     InventoryInterval* node = new InventoryInterval(op);
     node->addJobOp(op);
@@ -388,9 +391,10 @@ void InventoryRecord::add(JobOp* op)
     insertNode(node);
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
-void InventoryRecord::add(PurchaseOrder* po)
+void
+InventoryRecord::add(PurchaseOrder* po)
 {
     InventoryInterval* node = new InventoryInterval(po);
     node->addPO(po);
@@ -400,15 +404,17 @@ void InventoryRecord::add(PurchaseOrder* po)
     insertNode(node);
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
-void InventoryRecord::deleteNode(InventoryInterval* z)
+void
+InventoryRecord::deleteNode(InventoryInterval* z)
 {
     ASSERTD(z != nullptr);
     // step 0: set y's predecessor's endTime
     //         this is a non-standard step
     InventoryInterval* w = (InventoryInterval*)predecessor(z);
-    if (w != nullptr) w->endTime() = z->endTime();
+    if (w != nullptr)
+        w->endTime() = z->endTime();
 
     InventoryInterval* y;
     InventoryInterval* x = nullptr;
@@ -466,9 +472,10 @@ void InventoryRecord::deleteNode(InventoryInterval* z)
     delete y;
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
-void InventoryRecord::checkTree()
+void
+InventoryRecord::checkTree()
 {
     // this function checks
     // 1. red-black properties of a RBtree
@@ -490,35 +497,30 @@ void InventoryRecord::checkTree()
             InventoryInterval* y = (InventoryInterval*)successor(x);
             if (y != nullptr && x->endTime() != y->startTime())
             {
-                utl::cout << "Error: node (" << x->toString()
-                          << ") and its successor (" << y->toString()
-                          << ") are not next to each other."
-                          << utl::endlf;
+                utl::cout << "Error: node (" << x->toString() << ") and its successor ("
+                          << y->toString() << ") are not next to each other." << utl::endlf;
             }
             x = y;
         }
     }
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
-void InventoryRecord::checkNode(
-    InventoryInterval* node,
-    uint_t numBlackNodes)
+void
+InventoryRecord::checkNode(InventoryInterval* node, uint_t numBlackNodes)
 {
     static uint_t pathNum = 1;
     if (node == _leaf)
     {
-        utl::cout << "# of black nodes on path " << pathNum++
-                  << " is " << numBlackNodes + 1
+        utl::cout << "# of black nodes on path " << pathNum++ << " is " << numBlackNodes + 1
                   << utl::endlf;
         return;
     }
 
     if (node->color() != nodecolor_red && node->color() != nodecolor_black)
     {
-        utl::cout << "Error: node (" << node->toString()
-                  << ") is neither red or black"
+        utl::cout << "Error: node (" << node->toString() << ") is neither red or black"
                   << utl::endlf;
         return;
     }
@@ -530,14 +532,12 @@ void InventoryRecord::checkNode(
     setDebit(node);
     if (net != getNet(node))
     {
-        utl::cout << "Error: node (" << node->toString()
-                  << ") had a wrong net value: " << net
+        utl::cout << "Error: node (" << node->toString() << ") had a wrong net value: " << net
                   << utl::endlf;
     }
     if (debit != getDebit(node))
     {
-        utl::cout << "Error: node (" << node->toString()
-                  << ") had a wrong debit value: " << debit
+        utl::cout << "Error: node (" << node->toString() << ") had a wrong debit value: " << debit
                   << utl::endlf;
     }
 
@@ -545,14 +545,12 @@ void InventoryRecord::checkNode(
     {
         if (node->left() != nullptr && node->left()->color() != nodecolor_black)
         {
-            utl::cout << "Error: node (" << node->toString()
-                      << ") has non-black left child."
+            utl::cout << "Error: node (" << node->toString() << ") has non-black left child."
                       << utl::endlf;
         }
         if (node->right() != nullptr && node->right()->color() != nodecolor_black)
         {
-            utl::cout << "Error: node (" << node->toString()
-                      << ") has non-black right child."
+            utl::cout << "Error: node (" << node->toString() << ") has non-black right child."
                       << utl::endlf;
         }
         checkNode((InventoryInterval*)node->left(), numBlackNodes);
@@ -565,36 +563,31 @@ void InventoryRecord::checkNode(
     }
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
-String InventoryRecord::toString() const
+String
+InventoryRecord::toString() const
 {
     MemStream str;
-    str << "id:" << _id
-        << ", itemId:" << _itemId
-        << ", name:" << _name.c_str()
-        << ", periodType:" << _periodType
-        << ", #periods:" << _numberOfPeriods
-        << ", safetyStock:" << _safetyStock
-        << ", onHand:" << _onHand
+    str << "id:" << _id << ", itemId:" << _itemId << ", name:" << _name.c_str()
+        << ", periodType:" << _periodType << ", #periods:" << _numberOfPeriods
+        << ", safetyStock:" << _safetyStock << ", onHand:" << _onHand
         << ", startDate:" << Time(_startDate).toString()
         << ", #transactions:" << _invTransactions.size();
     inventorytransaction_set_time_t::iterator it;
-    for (it = _invTransactions.begin();
-         it != _invTransactions.end();
-         ++it)
+    for (it = _invTransactions.begin(); it != _invTransactions.end(); ++it)
     {
         InventoryTransaction* transaction = *it;
-        str << '\n' << "    "
-            << transaction->toString();
+        str << '\n' << "    " << transaction->toString();
     }
     str << '\0';
     return String((char*)str.get());
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
-void InventoryRecord::dumpTree() const
+void
+InventoryRecord::dumpTree() const
 {
     if (_root != nullptr)
     {
@@ -603,9 +596,10 @@ void InventoryRecord::dumpTree() const
     }
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
-void InventoryRecord::init()
+void
+InventoryRecord::init()
 {
     _id = uint_t_max;
     _itemId = uint_t_max;
@@ -622,9 +616,10 @@ void InventoryRecord::init()
     _leaf->color() = nodecolor_black;
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
-void InventoryRecord::deInit()
+void
+InventoryRecord::deInit()
 {
     deleteCont(_invTransactions);
     deleteCont(_intervals);
@@ -632,6 +627,6 @@ void InventoryRecord::deInit()
     _leaf = nullptr;
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 MRP_NS_END;

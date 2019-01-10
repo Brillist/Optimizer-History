@@ -10,13 +10,13 @@
 #include <cse/ScheduleEvaluatorConfiguration.h>
 #include <cse/SchedulingRun.h>
 
-///////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////////
 
 #ifdef DEBUG
 #define DEBUG_UNIT
 #endif
 
-///////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////////
 
 UTL_NS_USE;
 LUT_NS_USE;
@@ -24,26 +24,24 @@ GOP_NS_USE;
 CSE_NS_USE;
 CLP_NS_USE;
 
-///////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////////
 
 UTL_CLASS_IMPL(mrp::MRPserver, cse::Server);
 
-///////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////////
 
 MRP_NS_BEGIN;
 
-///////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////////
 
 NetServerClient*
-MRPserver::clientMake(
-    FDstream* socket,
-    const InetHostAddress& addr)
+MRPserver::clientMake(FDstream* socket, const InetHostAddress& addr)
 {
     MRPserver* const server = this;
     return new MRPclient(server, socket, addr, _recording);
 }
 
-///////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 MRPserver::addHandler(const char* cmd, MRPhfn handler)
@@ -51,7 +49,7 @@ MRPserver::addHandler(const char* cmd, MRPhfn handler)
     Server::addHandler(cmd, (hfn)handler);
 }
 
-///////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 MRPserver::handle_initMRP(MRPclient* client, const Array& cmd)
@@ -59,46 +57,34 @@ MRPserver::handle_initMRP(MRPclient* client, const Array& cmd)
 #ifdef DEBUG_UNIT
     utl::cout << utl::endl
               << "MRPserver::handle_initMRP."
-              << "cmd.size():" << cmd.size()
-              << utl::endlf;
+              << "cmd.size():" << cmd.size() << utl::endlf;
 #endif
 
-    if ((cmd.size() != 11)
-        || !cmd(1).isA(Array)
-        || !allAre(cmd(1), CLASS(SetupGroup))
+    if ((cmd.size() != 11) || !cmd(1).isA(Array) || !allAre(cmd(1), CLASS(SetupGroup))
 
-        || !cmd(2).isA(Array)
-        || !allAre(cmd(2), CLASS(Resource))
+        || !cmd(2).isA(Array) || !allAre(cmd(2), CLASS(Resource))
 
-        || !cmd(3).isA(Array)
-        || !allAre(cmd(3), CLASS(ResourceGroup))
+        || !cmd(3).isA(Array) || !allAre(cmd(3), CLASS(ResourceGroup))
 
-        || !cmd(4).isA(Array)
-        || !allAre(cmd(4), CLASS(Item))
+        || !cmd(4).isA(Array) || !allAre(cmd(4), CLASS(Item))
 
-        || !cmd(5).isA(Array)
-        || !allAre(cmd(5), CLASS(InventoryRecord))
+        || !cmd(5).isA(Array) || !allAre(cmd(5), CLASS(InventoryRecord))
 
-        || !cmd(6).isA(Array)
-        || !allAre(cmd(6), CLASS(BOM))
+        || !cmd(6).isA(Array) || !allAre(cmd(6), CLASS(BOM))
 
-        || !cmd(7).isA(Array)
-        || !allAre(cmd(7), CLASS(ProcessPlan))
+        || !cmd(7).isA(Array) || !allAre(cmd(7), CLASS(ProcessPlan))
 
-        || !cmd(8).isA(Array)
-        || !allAre(cmd(8), CLASS(ItemPlanRelation))
+        || !cmd(8).isA(Array) || !allAre(cmd(8), CLASS(ItemPlanRelation))
 
-        || !cmd(9).isA(Array)
-        || !allAre(cmd(9), CLASS(ProcessStep))
+        || !cmd(9).isA(Array) || !allAre(cmd(9), CLASS(ProcessStep))
 
-        || !cmd(10).isA(Array)
-        || !allAre(cmd(10), CLASS(PlanStepRelation)))
+        || !cmd(10).isA(Array) || !allAre(cmd(10), CLASS(PlanStepRelation)))
     {
         Bool(false).serializeOut(client->socket());
         utl::String str = "initMRP error: wrong cmd.";
         str.serializeOut(client->socket());
         finishCmd(client);
-        clientDisconnect(client);//?
+        clientDisconnect(client); //?
         return;
     }
     Array& setupGroups = (Array&)cmd(1);
@@ -125,17 +111,8 @@ MRPserver::handle_initMRP(MRPclient* client, const Array& cmd)
     }
     try
     {
-        dataSet->initialize(
-                setupGroups,
-                resources,
-                resourceGroups,
-                items,
-                records,
-                boms,
-                plans,
-                itemPlans,
-                steps,
-                planSteps);
+        dataSet->initialize(setupGroups, resources, resourceGroups, items, records, boms, plans,
+                            itemPlans, steps, planSteps);
         client->mrpRun()->initialize(dataSet);
     }
     catch (...)
@@ -157,7 +134,7 @@ MRPserver::handle_initMRP(MRPclient* client, const Array& cmd)
     return;
 }
 
-///////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 MRPserver::handle_generateJobs(MRPclient* client, const Array& cmd)
@@ -165,26 +142,19 @@ MRPserver::handle_generateJobs(MRPclient* client, const Array& cmd)
 #ifdef DEBUG_UNIT
     utl::cout << utl::endl
               << "MRPserver::handle_generateJobs."
-              << "cmd.size():" << cmd.size()
-              << utl::endlf;
+              << "cmd.size():" << cmd.size() << utl::endlf;
 #endif
 
     MRPdataSet* dataSet = client->mrpRun()->dataSet();
-    if ((cmd.size() != 6)
-        || !cmd(1).isA(Array)
-        || !allAre(cmd(1), CLASS(WorkOrder))
+    if ((cmd.size() != 6) || !cmd(1).isA(Array) || !allAre(cmd(1), CLASS(WorkOrder))
 
-        || !cmd(2).isA(Array)
-        || !allAre(cmd(2), CLASS(Uint))
+        || !cmd(2).isA(Array) || !allAre(cmd(2), CLASS(Uint))
 
-        || !cmd(3).isA(Array)
-        || !allAre(cmd(3), CLASS(Uint))
+        || !cmd(3).isA(Array) || !allAre(cmd(3), CLASS(Uint))
 
-        || !cmd(4).isA(Array)
-        || !allAre(cmd(4), CLASS(Uint))
+        || !cmd(4).isA(Array) || !allAre(cmd(4), CLASS(Uint))
 
-        || !cmd(5).isA(Array)
-        || !allAre(cmd(5), CLASS(Uint))
+        || !cmd(5).isA(Array) || !allAre(cmd(5), CLASS(Uint))
 
         || dataSet == nullptr)
     {
@@ -211,40 +181,23 @@ MRPserver::handle_generateJobs(MRPclient* client, const Array& cmd)
         dataSet->resetPurchaseOrderIds(purchaseOrderIds);
 
 #ifdef DEBUG_UNIT
-        utl::cout << "   Input Work Orders: size:"
-                  << workOrders.size()
-                  << utl::endlf;
-        forEachIt(Array, workOrders, WorkOrder, wo)
-            utl::cout << "   " << wo.toString() << utl::endlf;
-        endForEach
-        utl::cout << "   Input existing jobIds: size:"
-                  << jobIds.size()
+        utl::cout << "   Input Work Orders: size:" << workOrders.size() << utl::endlf;
+        forEachIt(Array, workOrders, WorkOrder, wo) utl::cout << "   " << wo.toString()
+                                                              << utl::endlf;
+        endForEach utl::cout << "   Input existing jobIds: size:" << jobIds.size() << ", Ids:";
+        forEachIt(Array, jobIds, Uint, jobId) utl::cout << jobId << ",";
+        endForEach utl::cout << utl::endlf;
+        utl::cout << "   Input existing opIds: size:" << opIds.size() << ", Ids:";
+        forEachIt(Array, opIds, Uint, opId) utl::cout << opId << ",";
+        endForEach utl::cout << utl::endlf;
+        utl::cout << "   Input existing jobGroupIds: size:" << jobGroupIds.size() << ", Ids:";
+        forEachIt(Array, jobGroupIds, Uint, jobGroupId) utl::cout << jobGroupId << ",";
+        endForEach utl::cout << utl::endl << utl::endlf;
+        utl::cout << "   Input existing purchaseOrderIds: size:" << purchaseOrderIds.size()
                   << ", Ids:";
-        forEachIt(Array, jobIds, Uint, jobId)
-            utl::cout << jobId << ",";
-        endForEach
-        utl::cout << utl::endlf;
-        utl::cout << "   Input existing opIds: size:"
-                  << opIds.size()
-                  << ", Ids:";
-        forEachIt(Array, opIds, Uint, opId)
-            utl::cout << opId << ",";
-        endForEach
-        utl::cout << utl::endlf;
-        utl::cout << "   Input existing jobGroupIds: size:"
-                  << jobGroupIds.size()
-                  << ", Ids:";
-        forEachIt(Array, jobGroupIds, Uint, jobGroupId)
-            utl::cout << jobGroupId << ",";
-        endForEach
-        utl::cout << utl::endl << utl::endlf;
-        utl::cout << "   Input existing purchaseOrderIds: size:"
-                  << purchaseOrderIds.size()
-                  << ", Ids:";
-        forEachIt(Array, purchaseOrderIds, Uint, purchaseOrderId)
-            utl::cout << purchaseOrderId << ",";
-        endForEach
-        utl::cout << utl::endl << utl::endlf;
+        forEachIt(Array, purchaseOrderIds, Uint, purchaseOrderId) utl::cout << purchaseOrderId
+                                                                            << ",";
+        endForEach utl::cout << utl::endl << utl::endlf;
 #endif
 
         client->mrpRun()->run();
@@ -260,7 +213,7 @@ MRPserver::handle_generateJobs(MRPclient* client, const Array& cmd)
         errStr += "unknown error.";
     }
     Bool(result).serializeOut(client->socket());
-    if(!result)
+    if (!result)
     {
         errStr.serializeOut(client->socket());
         finishCmd(client);
@@ -273,7 +226,7 @@ MRPserver::handle_generateJobs(MRPclient* client, const Array& cmd)
     return;
 }
 
-///////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 MRPserver::handle_getJobs(MRPclient* client, const Array& cmd)
@@ -281,8 +234,7 @@ MRPserver::handle_getJobs(MRPclient* client, const Array& cmd)
 #ifdef DEBUG_UNIT
     utl::cout << utl::endl
               << "MRPserver::handle_getJobs."
-              << "cmd.size():" << cmd.size()
-              << utl::endlf;
+              << "cmd.size():" << cmd.size() << utl::endlf;
 #endif
 
     if ((cmd.size() != 1))
@@ -291,18 +243,16 @@ MRPserver::handle_getJobs(MRPclient* client, const Array& cmd)
         utl::String str = "getJobs error: wrong cmd.";
         str.serializeOut(client->socket());
         finishCmd(client);
-        clientDisconnect(client);//?
+        clientDisconnect(client); //?
         return;
     }
     MRPdataSet* dataSet = client->mrpRun()->dataSet();
     ASSERTD(dataSet != nullptr);
 
 #ifdef DEBUG_UNIT
-    utl::cout << "   Output jobs: size:"
-              << Uint(dataSet->jobs().size())
-              << utl::endlf;
-    for (job_set_id_t::const_iterator it = dataSet->jobs().begin();
-         it != dataSet->jobs().end(); it++)
+    utl::cout << "   Output jobs: size:" << Uint(dataSet->jobs().size()) << utl::endlf;
+    for (job_set_id_t::const_iterator it = dataSet->jobs().begin(); it != dataSet->jobs().end();
+         it++)
     {
         utl::cout << (*it)->toString() << utl::endlf;
     }
@@ -318,19 +268,18 @@ MRPserver::handle_getJobs(MRPclient* client, const Array& cmd)
 
     lut::serialize<cse::Resource*>(dataSet->ClevorDataSet::resources(), client->socket(), io_wr);
 
-    lut::serialize<cse::ResourceGroup*>(dataSet->ClevorDataSet::resourceGroups(), client->socket(), io_wr);
+    lut::serialize<cse::ResourceGroup*>(dataSet->ClevorDataSet::resourceGroups(), client->socket(),
+                                        io_wr);
 
-    lut::serialize<ResourceSequenceList*>(dataSet->resourceSequenceLists(),
-                                          client->socket(), io_wr);
-    lut::serialize<InventoryRecord*>(dataSet->inventoryRecords(),
-                                     client->socket(), io_wr);
-    lut::serialize<PurchaseOrder*>(dataSet->purchaseOrders(),
-                                   client->socket(), io_wr);
+    lut::serialize<ResourceSequenceList*>(dataSet->resourceSequenceLists(), client->socket(),
+                                          io_wr);
+    lut::serialize<InventoryRecord*>(dataSet->inventoryRecords(), client->socket(), io_wr);
+    lut::serialize<PurchaseOrder*>(dataSet->purchaseOrders(), client->socket(), io_wr);
 
     finishCmd(client);
 }
 
-///////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////////
 
 // the main reason for MRPserver doesn't use cse::Server's initScheduler
 // is because MRPserver doesn't need to create a new dataSet.
@@ -340,8 +289,7 @@ MRPserver::handle_initScheduler(MRPclient* client, const Array& cmd)
 #ifdef DEBUG_UNIT
     utl::cout << utl::endl
               << "MRPserver::handle_initScheduler."
-              << "cmd.size():" << cmd.size()
-              << utl::endlf;
+              << "cmd.size():" << cmd.size() << utl::endlf;
 #endif
 
     if ((cmd.size() != 11)
@@ -350,29 +298,21 @@ MRPserver::handle_initScheduler(MRPclient* client, const Array& cmd)
 
         || !cmd(2).isA(Scheduler)
 
-        || !cmd(3).isA(Array)
-        || !allAre(cmd(3), CLASS(Objective))
+        || !cmd(3).isA(Array) || !allAre(cmd(3), CLASS(Objective))
 
-        || !cmd(4).isA(Array)
-        || !allAre(cmd(4), CLASS(ScheduleEvaluatorConfiguration))
+        || !cmd(4).isA(Array) || !allAre(cmd(4), CLASS(ScheduleEvaluatorConfiguration))
 
-        || !cmd(5).isA(Array)
-        || !allAre(cmd(5), CLASS(Job))
+        || !cmd(5).isA(Array) || !allAre(cmd(5), CLASS(Job))
 
-        || !cmd(6).isA(Array)
-        || !allAre(cmd(6), CLASS(JobGroup))
+        || !cmd(6).isA(Array) || !allAre(cmd(6), CLASS(JobGroup))
 
-        || !cmd(7).isA(Array)
-        || !allAre(cmd(7), CLASS(PrecedenceCt))
+        || !cmd(7).isA(Array) || !allAre(cmd(7), CLASS(PrecedenceCt))
 
-        || !cmd(8).isA(Array)
-        || !allAre(cmd(8), CLASS(cse::Resource))
+        || !cmd(8).isA(Array) || !allAre(cmd(8), CLASS(cse::Resource))
 
-        || !cmd(9).isA(Array)
-        || !allAre(cmd(9), CLASS(cse::ResourceGroup))
+        || !cmd(9).isA(Array) || !allAre(cmd(9), CLASS(cse::ResourceGroup))
 
-        || !cmd(10).isA(Array)
-        || !allAre(cmd(10), CLASS(ResourceSequenceList)))
+        || !cmd(10).isA(Array) || !allAre(cmd(10), CLASS(ResourceSequenceList)))
     {
         Bool(false).serializeOut(client->socket());
         utl::String str = "initScheduler error: wrong cmd.";
@@ -403,15 +343,8 @@ MRPserver::handle_initScheduler(MRPclient* client, const Array& cmd)
     MRPdataSet* dataSet = client->mrpRun()->dataSet();
     ASSERTD(dataSet != nullptr);
     dataSet->clearProblemData();
-    initClevorDataSet(
-        schedulerConfig,
-        jobs,
-        jobGroups,
-        precedenceCts,
-        resources,
-        resourceGroups,
-        resourceSequenceLists,
-        *dataSet);
+    initClevorDataSet(schedulerConfig, jobs, jobGroups, precedenceCts, resources, resourceGroups,
+                      resourceSequenceLists, *dataSet);
 
     // configure scheduler
     scheduler = scheduler->clone();
@@ -423,16 +356,13 @@ MRPserver::handle_initScheduler(MRPclient* client, const Array& cmd)
     initObjectives(schedulerConfig, objectiveVector, evalConfigs);
 
 #ifdef DEBUG_UNIT
-        utl::cout << "   Input Jobs: size:"
-                  << jobs.size()
-                  << utl::endlf;
-        forEachIt(Array, jobs, Job, job)
-            utl::cout << "   " << job.toString() << utl::endlf;
-        endForEach
+    utl::cout << "   Input Jobs: size:" << jobs.size() << utl::endlf;
+    forEachIt(Array, jobs, Job, job) utl::cout << "   " << job.toString() << utl::endlf;
+    endForEach
 #endif
 
-    // initialize simple run
-    bool result = true;
+        // initialize simple run
+        bool result = true;
     utl::String str;
     try
     {
@@ -449,7 +379,8 @@ MRPserver::handle_initScheduler(MRPclient* client, const Array& cmd)
     catch (FailEx& failEx)
     {
         result = false;
-        if (failEx.str() != nullptr) str = *failEx.str();
+        if (failEx.str() != nullptr)
+            str = *failEx.str();
     }
 
     // write result (and error message if initialization failed)
@@ -467,7 +398,7 @@ MRPserver::handle_initScheduler(MRPclient* client, const Array& cmd)
     return;
 }
 
-///////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 MRPserver::handle_initOptimizer(MRPclient* client, const Array& cmd)
@@ -475,8 +406,7 @@ MRPserver::handle_initOptimizer(MRPclient* client, const Array& cmd)
 #ifdef DEBUG_UNIT
     utl::cout << utl::endl
               << "MRPserver::handle_initOptimizer."
-              << "cmd.size():" << cmd.size()
-              << utl::endlf;
+              << "cmd.size():" << cmd.size() << utl::endlf;
 #endif
 
     if ((cmd.size() != 11)
@@ -487,26 +417,19 @@ MRPserver::handle_initOptimizer(MRPclient* client, const Array& cmd)
 
         || !cmd(3).isA(OptimizerConfiguration)
 
-        || !cmd(4).isA(Array)
-        || !allAre(cmd(4), CLASS(ScheduleEvaluatorConfiguration))
+        || !cmd(4).isA(Array) || !allAre(cmd(4), CLASS(ScheduleEvaluatorConfiguration))
 
-        || !cmd(5).isA(Array)
-        || !allAre(cmd(5), CLASS(Job))
+        || !cmd(5).isA(Array) || !allAre(cmd(5), CLASS(Job))
 
-        || !cmd(6).isA(Array)
-        || !allAre(cmd(6), CLASS(JobGroup))
+        || !cmd(6).isA(Array) || !allAre(cmd(6), CLASS(JobGroup))
 
-        || !cmd(7).isA(Array)
-        || !allAre(cmd(7), CLASS(PrecedenceCt))
+        || !cmd(7).isA(Array) || !allAre(cmd(7), CLASS(PrecedenceCt))
 
-        || !cmd(8).isA(Array)
-        || !allAre(cmd(8), CLASS(cse::Resource))
+        || !cmd(8).isA(Array) || !allAre(cmd(8), CLASS(cse::Resource))
 
-        || !cmd(9).isA(Array)
-        || !allAre(cmd(9), CLASS(cse::ResourceGroup))
+        || !cmd(9).isA(Array) || !allAre(cmd(9), CLASS(cse::ResourceGroup))
 
-        || !cmd(10).isA(Array)
-        || !allAre(cmd(10), CLASS(ResourceSequenceList)))
+        || !cmd(10).isA(Array) || !allAre(cmd(10), CLASS(ResourceSequenceList)))
     {
         Bool(false).serializeOut(client->socket());
         utl::String str = "initOptimizer error: wrong cmd.";
@@ -531,37 +454,24 @@ MRPserver::handle_initOptimizer(MRPclient* client, const Array& cmd)
     // schedulerConfig
     MRPdataSet* dataSet = client->mrpRun()->dataSet();
     ASSERTD(dataSet != nullptr);
-    initClevorDataSet(
-        schedulerConfig,
-        jobs,
-        jobGroups,
-        precedenceCts,
-        resources,
-        resourceGroups,
-        resourceSequenceLists,
-        *dataSet);
+    initClevorDataSet(schedulerConfig, jobs, jobGroups, precedenceCts, resources, resourceGroups,
+                      resourceSequenceLists, *dataSet);
 
     // init scheduler
     Scheduler* scheduler = (Scheduler*)optimizerConfig->indBuilder();
     scheduler->setConfig(schedulerConfig->clone());
 
     // init objectives
-    initObjectives(
-        schedulerConfig,
-        optimizerConfig->objectives(),
-        evalConfigs);
+    initObjectives(schedulerConfig, optimizerConfig->objectives(), evalConfigs);
 
 #ifdef DEBUG_UNIT
-        utl::cout << "   Input Jobs: size:"
-                  << jobs.size()
-                  << utl::endlf;
-        forEachIt(Array, jobs, Job, job)
-            utl::cout << "   " << job.toString() << utl::endlf;
-        endForEach
+    utl::cout << "   Input Jobs: size:" << jobs.size() << utl::endlf;
+    forEachIt(Array, jobs, Job, job) utl::cout << "   " << job.toString() << utl::endlf;
+    endForEach
 #endif
 
-    // initialize optimization run
-    bool res = true;
+        // initialize optimization run
+        bool res = true;
     utl::String str;
     try
     {
@@ -576,7 +486,8 @@ MRPserver::handle_initOptimizer(MRPclient* client, const Array& cmd)
     catch (FailEx& failEx)
     {
         res = false;
-        if (failEx.str() != nullptr) str = *failEx.str();
+        if (failEx.str() != nullptr)
+            str = *failEx.str();
     }
 
     Bool(res).serializeOut(client->socket());
@@ -593,7 +504,7 @@ MRPserver::handle_initOptimizer(MRPclient* client, const Array& cmd)
     return;
 }
 
-///////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////////
 
 // void
 // MRPserver::handle_initOptimizer(MRPclient* client, const Array& cmd)
@@ -663,7 +574,7 @@ MRPserver::handle_initOptimizer(MRPclient* client, const Array& cmd)
 //     finishCmd(client);
 // }
 
-///////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 MRPserver::init()
@@ -675,6 +586,6 @@ MRPserver::init()
     addHandler("initOptimizer", &MRPserver::handle_initOptimizer);
 }
 
-///////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////////
 
 MRP_NS_END;

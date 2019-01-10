@@ -1,11 +1,11 @@
 #ifndef GOP_STRING_H
 #define GOP_STRING_H
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 GOP_NS_BEGIN;
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
    Chromosome string.
@@ -20,16 +20,18 @@ GOP_NS_BEGIN;
    \author Adam McKee
 */
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
-template <class T>
-class String : public utl::Object
+template <class T> class String : public utl::Object
 {
     UTL_CLASS_DECL_TPL(String, T);
+
 public:
     /** Constructor. */
     String(utl::uint_t size)
-    { init(size); }
+    {
+        init(size);
+    }
 
     /** Copy another instance. */
     virtual void copy(const utl::Object& rhs);
@@ -38,27 +40,42 @@ public:
     virtual utl::String toString() const;
 
     /** Get the size. */
-    utl::uint_t size() const
-    { return _size; }
+    utl::uint_t
+    size() const
+    {
+        return _size;
+    }
 
     /** Clear. */
-    void clear()
-    { setSize(0); }
+    void
+    clear()
+    {
+        setSize(0);
+    }
 
     /** Set the size. */
     void setSize(utl::uint_t size);
 
     /** Get the array. */
-    const T* get() const
-    { return _vect; }
+    const T*
+    get() const
+    {
+        return _vect;
+    }
 
     /** Get the array. */
-    T* get()
-    { return _vect; }
+    T*
+    get()
+    {
+        return _vect;
+    }
 
     /** Randomly shuffle. */
-    void shuffle(utl::RandNumGen& rng)
-    { lut::shuffle(_vect, _size, rng); }
+    void
+    shuffle(utl::RandNumGen& rng)
+    {
+        lut::shuffle(_vect, _size, rng);
+    }
 
     /**
        Perform a crossover.
@@ -67,27 +84,36 @@ public:
        \param rhs rhs String (lhs is self)
        \param pos crossover position
     */
-    void crossover(
-        String<T>* off1,
-        String<T>* off2,
-        const String<T>& rhs,
-        utl::uint_t pos);
+    void crossover(String<T>* off1, String<T>* off2, const String<T>& rhs, utl::uint_t pos);
 
     /** Get the chromosome at the given index (const). */
     const T& operator[](int idx) const
-    { ASSERTD((idx >= 0) && ((utl::uint_t)idx < _size)); return _vect[idx]; }
+    {
+        ASSERTD((idx >= 0) && ((utl::uint_t)idx < _size));
+        return _vect[idx];
+    }
 
     /** Get the chromosome at the given index. */
     T& operator[](int idx)
-    { ASSERTD((idx >= 0) && ((utl::uint_t)idx < _size)); return _vect[idx]; }
+    {
+        ASSERTD((idx >= 0) && ((utl::uint_t)idx < _size));
+        return _vect[idx];
+    }
 
     /** Get the chromosome at the given index (const). */
     const T& operator[](utl::uint_t idx) const
-    { ASSERTD(idx < size()); return _vect[idx]; }
+    {
+        ASSERTD(idx < size());
+        return _vect[idx];
+    }
 
     /** Get the chromosome at the given index. */
     T& operator[](utl::uint_t idx)
-    { ASSERTD(idx < size()); return _vect[idx]; }
+    {
+        ASSERTD(idx < size());
+        return _vect[idx];
+    }
+
 private:
     void init(utl::uint_t size = 0);
     void deInit();
@@ -96,7 +122,7 @@ private:
     T* _vect;
 };
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 template <class T>
 void
@@ -111,7 +137,7 @@ String<T>::copy(const utl::Object& rhs)
     }
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 template <class T>
 utl::String
@@ -127,14 +153,14 @@ String<T>::toString() const
     return ss.str().c_str();
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 template <class T>
 void
 String<T>::setSize(utl::uint_t size)
 {
     _size = size;
-    delete [] _vect;
+    delete[] _vect;
     if (_size == 0)
     {
         _vect = nullptr;
@@ -145,15 +171,11 @@ String<T>::setSize(utl::uint_t size)
     }
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 template <class T>
 void
-String<T>::crossover(
-    String<T>* off1,
-    String<T>* off2,
-    const String<T>& rhs,
-    utl::uint_t pos)
+String<T>::crossover(String<T>* off1, String<T>* off2, const String<T>& rhs, utl::uint_t pos)
 {
     ASSERTD(size() == rhs.size());
 
@@ -192,7 +214,7 @@ String<T>::crossover(
     }
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 template <class T>
 void
@@ -202,23 +224,23 @@ String<T>::init(utl::uint_t size)
     _vect = new T[size];
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 template <class T>
 void
 String<T>::deInit()
 {
-    delete [] _vect;
+    delete[] _vect;
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 GOP_NS_END;
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 UTL_CLASS_IMPL_TPL(gop::String, T, utl::Object);
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 #endif

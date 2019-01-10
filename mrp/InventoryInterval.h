@@ -1,21 +1,20 @@
 #ifndef MRP_INVENTORYINTERVAL_H
 #define MRP_INVENTORYINTERVAL_H
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 #include <libutl/String.h>
 #include <cse/JobOp.h>
 #include <mrp/InventoryTransaction.h>
 #include <mrp/PurchaseOrder.h>
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 MRP_NS_BEGIN;
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
-
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
    Inventory Interval
@@ -29,11 +28,12 @@ MRP_NS_BEGIN;
    \author Joe Zhou
 */
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 class InventoryInterval : public lut::RBtreeNode
 {
     UTL_CLASS_DECL(InventoryInterval);
+
 public:
     /** Constructors. */
     InventoryInterval(InventoryTransaction* trans);
@@ -46,74 +46,116 @@ public:
 
     virtual int compare(const utl::Object& rhs) const;
 
-    virtual void serialize(
-        utl::Stream& stream,
-        utl::uint_t io,
-        utl::uint_t mode = utl::ser_default);
+    virtual void
+    serialize(utl::Stream& stream, utl::uint_t io, utl::uint_t mode = utl::ser_default);
 
     /// \name Accessors
     //@{
     /** Period start time. */
-    time_t startTime() const
-    { return _startTime; }
+    time_t
+    startTime() const
+    {
+        return _startTime;
+    }
 
     /** Period start time. */
-    time_t& startTime()
-    { return _startTime; }
+    time_t&
+    startTime()
+    {
+        return _startTime;
+    }
 
     /** Period end time. */
-    time_t endTime() const
-    { return _endTime; }
+    time_t
+    endTime() const
+    {
+        return _endTime;
+    }
 
     /** Period end time. */
-    time_t& endTime()
-    { return _endTime;}
+    time_t&
+    endTime()
+    {
+        return _endTime;
+    }
 
     /** Interval capacity. */
-    utl::int_t cap() const
-    { return _cap; }
+    utl::int_t
+    cap() const
+    {
+        return _cap;
+    }
 
     /** Interval capacity. */
-    utl::int_t& cap()
-    { return _cap; }
+    utl::int_t&
+    cap()
+    {
+        return _cap;
+    }
 
     /** Branch net capcity. */
-    utl::int_t net() const
-    { return _net; }
+    utl::int_t
+    net() const
+    {
+        return _net;
+    }
 
     /** Branch net capacity. */
-    utl::int_t& net()
-    { return _net; }
+    utl::int_t&
+    net()
+    {
+        return _net;
+    }
 
     /** Branch debit capacity. */
-    utl::int_t debit() const
-    { return _debit; }
+    utl::int_t
+    debit() const
+    {
+        return _debit;
+    }
 
     /** Branch debit capacity. */
-    utl::int_t& debit() 
-    { return _debit; }
+    utl::int_t&
+    debit()
+    {
+        return _debit;
+    }
 
     /** JobOps. */
-    const cse::jobop_set_id_t& ops() const
-    { return _ops; }
+    const cse::jobop_set_id_t&
+    ops() const
+    {
+        return _ops;
+    }
 
     /** Purchase orders. */
-    const purchaseorder_set_id_t& pos() const
-    { return _pos; }
+    const purchaseorder_set_id_t&
+    pos() const
+    {
+        return _pos;
+    }
     //@}
 
-    void addJobOp(cse::JobOp* op)
-    { _ops.insert(op); }
+    void
+    addJobOp(cse::JobOp* op)
+    {
+        _ops.insert(op);
+    }
 
-    void addPO(PurchaseOrder* po)
-    { _pos.insert(po); }
+    void
+    addPO(PurchaseOrder* po)
+    {
+        _pos.insert(po);
+    }
 
     void dump(utl::Stream& os, utl::uint_t level) const;
 
     utl::String toString() const;
+
 private:
     void init();
     void deInit();
+
 private:
     time_t _startTime;
     time_t _endTime;
@@ -124,29 +166,26 @@ private:
     purchaseorder_set_id_t _pos;
 };
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
-struct InventoryIntervalOrderingIncST 
-    : public std::binary_function<
-    InventoryInterval*, 
-    InventoryInterval*, 
-    bool>
+struct InventoryIntervalOrderingIncST
+    : public std::binary_function<InventoryInterval*, InventoryInterval*, bool>
 {
-    bool operator()(InventoryInterval* lhs, InventoryInterval* rhs) const
+    bool
+    operator()(InventoryInterval* lhs, InventoryInterval* rhs) const
     {
         return (lhs->startTime() < rhs->startTime());
     }
 };
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
-typedef std::set<InventoryInterval*, 
-    InventoryIntervalOrderingIncST> inventoryinterval_set_st_t;
+typedef std::set<InventoryInterval*, InventoryIntervalOrderingIncST> inventoryinterval_set_st_t;
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 MRP_NS_END;
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 #endif

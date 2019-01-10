@@ -3,29 +3,26 @@
 #include <libutl/BufferedFDstream.h>
 #include "SchedulerConfiguration.h"
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 UTL_NS_USE;
 LUT_NS_USE;
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 UTL_CLASS_IMPL(cse::SchedulerConfiguration, utl::Object);
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 CSE_NS_BEGIN;
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 SchedulerConfiguration::copy(const Object& rhs)
 {
-    ASSERTD(
-        dynamic_cast<const SchedulerConfiguration*>
-        (&rhs) != nullptr);
-    const SchedulerConfiguration& cf =
-        (const SchedulerConfiguration&)rhs;
+    ASSERTD(dynamic_cast<const SchedulerConfiguration*>(&rhs) != nullptr);
+    const SchedulerConfiguration& cf = (const SchedulerConfiguration&)rhs;
     _originTime = cf._originTime;
     _horizonTime = cf._horizonTime;
     _timeStep = cf._timeStep;
@@ -35,7 +32,7 @@ SchedulerConfiguration::copy(const Object& rhs)
     _backward = cf._backward;
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 SchedulerConfiguration::serialize(Stream& stream, uint_t io, uint_t)
@@ -57,14 +54,13 @@ SchedulerConfiguration::serialize(Stream& stream, uint_t io, uint_t)
             utl::cout << "WARNING: The horizonTime has been rounded up ("
                       << Time(_horizonTime).toString() << "->"
                       << Time(timeSlotToTime(ts)).toString()
-                      << "). [origin:" << Time(_originTime).toString()
-                      << ", step:" << _timeStep
+                      << "). [origin:" << Time(_originTime).toString() << ", step:" << _timeStep
                       << "s]" << utl::endlf;
 #endif
             _horizonTime = timeSlotToTime(ts);
         }
-//         _originTime = Time(_originTime).roundDown(tm_day);
-//         _horizonTime = Time(_horizonTime).roundUp(tm_day);
+        //         _originTime = Time(_originTime).roundDown(tm_day);
+        //         _horizonTime = Time(_horizonTime).roundUp(tm_day);
         if (_schedulingOriginTime == -1)
         {
             if (_backward)
@@ -79,7 +75,7 @@ SchedulerConfiguration::serialize(Stream& stream, uint_t io, uint_t)
     }
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 time_t
 SchedulerConfiguration::timeSlotToTime(int ts) const
@@ -87,17 +83,18 @@ SchedulerConfiguration::timeSlotToTime(int ts) const
     return _originTime + (ts * _timeStep);
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 int
 SchedulerConfiguration::timeToTimeSlot(time_t t) const
 {
     // at or before origin => origin
-    if (t <= _originTime) return 0;
+    if (t <= _originTime)
+        return 0;
 
     // at or after horizon => horizon
     t = utl::min(t, _horizonTime);
-//     t = ult::min(t, _horizonTime - 1);
+    //     t = ult::min(t, _horizonTime - 1);
 
     // note: _originTime < t < _horizonTime
     int ts = (t - _originTime) / _timeStep;
@@ -106,19 +103,17 @@ SchedulerConfiguration::timeToTimeSlot(time_t t) const
     int remainder = (t - _originTime) % _timeStep;
     if (remainder != 0)
     {
-        utl::cout << "WARNING: A time has been rounded down ("
-                  << Time(t).toString() << "->"
+        utl::cout << "WARNING: A time has been rounded down (" << Time(t).toString() << "->"
                   << Time(timeSlotToTime(ts)).toString()
                   << "). [origin:" << Time(_originTime).toString()
-                  << ", horizon:" << Time(_horizonTime).toString()
-                  << ", step:" << _timeStep
-                  << "s]" << utl::endlf;
+                  << ", horizon:" << Time(_horizonTime).toString() << ", step:" << _timeStep << "s]"
+                  << utl::endlf;
     }
 #endif
     return ts;
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 int
 SchedulerConfiguration::timeSlotToDuration(int ts) const
@@ -126,7 +121,7 @@ SchedulerConfiguration::timeSlotToDuration(int ts) const
     return (ts * _timeStep);
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 int
 SchedulerConfiguration::durationToTimeSlot(int d) const
@@ -151,20 +146,15 @@ SchedulerConfiguration::durationToTimeSlot(int d) const
     if (remainder != 0)
     {
         utl::cout << "WARNING: A duration"
-                  << " has been rounded down ("
-                  << d << "->"
-                  << timeSlotToDuration(ts)
-                  << "). [maxDur:"
-                  << (_horizonTime - _originTime)
-                  << ", step:" << _timeStep
-                  << "s]" << utl::endlf;
+                  << " has been rounded down (" << d << "->" << timeSlotToDuration(ts)
+                  << "). [maxDur:" << (_horizonTime - _originTime) << ", step:" << _timeStep << "s]"
+                  << utl::endlf;
     }
 #endif
     return ts;
 }
 
-//////////////////////////////////////////////////////////////////////////////
-
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 uint_t
 SchedulerConfiguration::timeSlotToDuration(uint_t ts) const
@@ -172,7 +162,7 @@ SchedulerConfiguration::timeSlotToDuration(uint_t ts) const
     return (ts * (uint_t)_timeStep);
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 uint_t
 SchedulerConfiguration::durationToTimeSlot(uint_t d) const
@@ -187,19 +177,15 @@ SchedulerConfiguration::durationToTimeSlot(uint_t d) const
     if (remainder != 0)
     {
         utl::cout << "WARNING: A duration"
-                  << " has been rounded down ("
-                  << d << "->"
-                  << timeSlotToDuration(ts)
-                  << "). [maxDur:"
-                  << (_horizonTime - _originTime)
-                  << ", step:" << _timeStep
-                  << "s]" << utl::endlf;
+                  << " has been rounded down (" << d << "->" << timeSlotToDuration(ts)
+                  << "). [maxDur:" << (_horizonTime - _originTime) << ", step:" << _timeStep << "s]"
+                  << utl::endlf;
     }
 #endif
     return ts;
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 SchedulerConfiguration::init()
@@ -213,6 +199,6 @@ SchedulerConfiguration::init()
     _backward = false;
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 CSE_NS_END;

@@ -16,36 +16,37 @@
 #include "CompositeResource.h"
 #include "DiscreteResource.h"
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 #ifdef DEBUG
 // #define DEBUG_UNIT
 #endif
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 UTL_NS_USE;
 LUT_NS_USE;
 CLP_NS_USE;
 CLS_NS_USE;
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 CSE_NS_BEGIN;
 
-//////////////////////////////////////////////////////////////////////////////
-/// JobOpIncSDordering ///////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
+/// JobOpIncSDordering /////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 class JobOpIncSDordering : public Ordering
 {
     UTL_CLASS_DECL(JobOpIncSDordering);
     UTL_CLASS_DEFID;
+
 public:
     virtual int cmp(const Object* lhs, const Object* rhs) const;
 };
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 int
 JobOpIncSDordering::cmp(const Object* lhs, const Object* rhs) const
@@ -55,28 +56,34 @@ JobOpIncSDordering::cmp(const Object* lhs, const Object* rhs) const
     JobOp* lhsOp = (JobOp*)lhs;
     JobOp* rhsOp = (JobOp*)rhs;
     uint_t lhsSD, rhsSD;
-    if (lhsOp->activity() == nullptr) lhsSD = 0;
-    else lhsSD = lhsOp->esCG()->successorDepth();
-    if (rhsOp->activity() == nullptr) rhsSD = 0;
-    else rhsSD = rhsOp->esCG()->successorDepth();
+    if (lhsOp->activity() == nullptr)
+        lhsSD = 0;
+    else
+        lhsSD = lhsOp->esCG()->successorDepth();
+    if (rhsOp->activity() == nullptr)
+        rhsSD = 0;
+    else
+        rhsSD = rhsOp->esCG()->successorDepth();
     int res = utl::compare(lhsSD, rhsSD);
-    if (res != 0) return res;
+    if (res != 0)
+        return res;
     return utl::compare(lhsOp->id(), rhsOp->id());
 }
 
-//////////////////////////////////////////////////////////////////////////////
-/// JobOpDecSDordering ///////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
+/// JobOpDecSDordering /////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 class JobOpDecSDordering : public Ordering
 {
     UTL_CLASS_DECL(JobOpDecSDordering);
     UTL_CLASS_DEFID;
+
 public:
     virtual int cmp(const Object* lhs, const Object* rhs) const;
 };
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 int
 JobOpDecSDordering::cmp(const Object* lhs, const Object* rhs) const
@@ -88,18 +95,23 @@ JobOpDecSDordering::cmp(const Object* lhs, const Object* rhs) const
     JobOp* lhsOp = (JobOp*)lhs;
     JobOp* rhsOp = (JobOp*)rhs;
     uint_t lhsSD, rhsSD;
-    if (lhsOp->activity() == nullptr) lhsSD = 0;
-    else lhsSD = lhsOp->esCG()->successorDepth();
-    if (rhsOp->activity() == nullptr) rhsSD = 0;
-    else rhsSD = rhsOp->esCG()->successorDepth();
+    if (lhsOp->activity() == nullptr)
+        lhsSD = 0;
+    else
+        lhsSD = lhsOp->esCG()->successorDepth();
+    if (rhsOp->activity() == nullptr)
+        rhsSD = 0;
+    else
+        rhsSD = rhsOp->esCG()->successorDepth();
     int res = utl::compare(rhsSD, lhsSD);
-    if (res != 0) return res;
+    if (res != 0)
+        return res;
     return utl::compare(lhsOp->id(), rhsOp->id());
 }
 
-//////////////////////////////////////////////////////////////////////////////
-/// ClevorDataSet ////////////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
+/// ClevorDataSet //////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 ClevorDataSet::copy(const Object& rhs)
@@ -107,7 +119,8 @@ ClevorDataSet::copy(const Object& rhs)
     ASSERTD(rhs.isA(ClevorDataSet));
     const ClevorDataSet& ds = (const ClevorDataSet&)rhs;
     DataSet::copy(ds);
-    delete _config; _config = lut::clone(ds._config);
+    delete _config;
+    _config = lut::clone(ds._config);
     copySet(_jobs, ds._jobs);
     copySet(_resources, ds._resources);
     copySet(_resGroups, ds._resGroups);
@@ -115,7 +128,7 @@ ClevorDataSet::copy(const Object& rhs)
     copyVector(_pcts, ds._pcts);
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 ClevorDataSet::modelBuild_0(Schedule* schedule)
@@ -154,21 +167,26 @@ ClevorDataSet::modelBuild_0(Schedule* schedule)
 #endif
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 ClevorDataSet::modelBuild_1()
 {
-    modelBuildActivities_1();           propagate();
+    modelBuildActivities_1();
+    propagate();
     createViews_1();
-    modelBuildPrecedenceCts_1();        propagate();
-    modelBuildUnaryCts();               propagate();
-    modelBuildResources();              propagate();
-    modelBuildResourceCts();            propagate();
+    modelBuildPrecedenceCts_1();
+    propagate();
+    modelBuildUnaryCts();
+    propagate();
+    modelBuildResources();
+    propagate();
+    modelBuildResourceCts();
+    propagate();
     modelBuildHeuristics();
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 uint_t
 ClevorDataSet::hardCtScore() const
@@ -212,7 +230,7 @@ ClevorDataSet::hardCtScore() const
     return score;
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 ClevorDataSet::set(SchedulerConfiguration* config)
@@ -221,7 +239,7 @@ ClevorDataSet::set(SchedulerConfiguration* config)
     _config = config;
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 ClevorDataSet::add(Job* job)
@@ -230,7 +248,7 @@ ClevorDataSet::add(Job* job)
     job->dataSet() = this;
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 ClevorDataSet::add(Resource* res)
@@ -238,7 +256,7 @@ ClevorDataSet::add(Resource* res)
     _resources.insert(res);
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 ClevorDataSet::add(ResourceGroup* resGroup)
@@ -246,7 +264,7 @@ ClevorDataSet::add(ResourceGroup* resGroup)
     _resGroups.insert(resGroup);
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 ClevorDataSet::add(ResourceSequenceList* rsl)
@@ -254,7 +272,7 @@ ClevorDataSet::add(ResourceSequenceList* rsl)
     _rsls.insert(rsl);
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 ClevorDataSet::add(PrecedenceCt* pct)
@@ -262,13 +280,13 @@ ClevorDataSet::add(PrecedenceCt* pct)
     _pcts.push_back(pct);
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 ClevorDataSet::add(JobGroup* jobGroup)
 {
     ASSERTD(jobGroup != nullptr);
-//     ASSERTD(jobGroup->activeJob() != nullptr);
+    //     ASSERTD(jobGroup->activeJob() != nullptr);
 
     // jobGroup's members are not dummy ones, then return.
     if (!jobGroup->jobsOwner())
@@ -281,14 +299,14 @@ ClevorDataSet::add(JobGroup* jobGroup)
         return;
     }
     // jobGroup has no members
-    if (jobGroup->jobs().size() == 0) return;
+    if (jobGroup->jobs().size() == 0)
+        return;
 
     job_set_pref_t jobs;
     Job* selectedJob = nullptr;
     Job* aJob = jobGroup->activeJob();
     job_set_pref_t::iterator it;
-    for (it = jobGroup->jobs().begin(); it != jobGroup->jobs().end();
-         it++)
+    for (it = jobGroup->jobs().begin(); it != jobGroup->jobs().end(); it++)
     {
         Job* job = lut::setFind(_jobs, (*it));
         // we will not create a job group if any of its members has the status
@@ -296,8 +314,7 @@ ClevorDataSet::add(JobGroup* jobGroup)
         // we also need to ignore all its siblings by setting their inactive.
         // this may affect optimization efficiency, but removing jobs from dataset
         // is hard in both FE and BE, especially in FE.
-        if (job->status() == jobstatus_confirmed ||
-            job->status() == jobstatus_started ||
+        if (job->status() == jobstatus_confirmed || job->status() == jobstatus_started ||
             job->status() == jobstatus_complete)
         {
             selectedJob = job;
@@ -318,8 +335,9 @@ ClevorDataSet::add(JobGroup* jobGroup)
         }
     }
 
-    if (jobs.size() == 1) return;
-//     ASSERTD(jobs.size() > 1);
+    if (jobs.size() == 1)
+        return;
+    //     ASSERTD(jobs.size() > 1);
     ASSERTD(aJob != nullptr);
     if (selectedJob != nullptr)
     {
@@ -336,7 +354,7 @@ ClevorDataSet::add(JobGroup* jobGroup)
     jobGroup->setActiveJob(aJob);
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 Job*
 ClevorDataSet::findJob(utl::uint_t id) const
@@ -344,11 +362,12 @@ ClevorDataSet::findJob(utl::uint_t id) const
     Job dummy;
     dummy.id() = id;
     job_set_id_t::const_iterator it = _jobs.find(&dummy);
-    if (it == _jobs.end()) return nullptr;
+    if (it == _jobs.end())
+        return nullptr;
     return *it;
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 JobGroup*
 ClevorDataSet::findJobGroup(utl::uint_t id) const
@@ -356,11 +375,12 @@ ClevorDataSet::findJobGroup(utl::uint_t id) const
     JobGroup dummy;
     dummy.id() = id;
     jobgroup_set_id_t::const_iterator it = _jobGroups.find(&dummy);
-    if (it == _jobGroups.end()) return nullptr;
+    if (it == _jobGroups.end())
+        return nullptr;
     return *it;
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 JobOp*
 ClevorDataSet::findOp(utl::uint_t id) const
@@ -368,11 +388,12 @@ ClevorDataSet::findOp(utl::uint_t id) const
     JobOp dummy;
     dummy.id() = id;
     jobop_set_id_t::const_iterator it = _ops.find(&dummy);
-    if (it == _ops.end()) return nullptr;
+    if (it == _ops.end())
+        return nullptr;
     return *it;
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 Resource*
 ClevorDataSet::findResource(utl::uint_t id) const
@@ -380,22 +401,24 @@ ClevorDataSet::findResource(utl::uint_t id) const
     Resource dummy;
     dummy.id() = id;
     res_set_id_t::const_iterator it = _resources.find(&dummy);
-    if (it == _resources.end()) return nullptr;
+    if (it == _resources.end())
+        return nullptr;
     return *it;
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 ResourceGroup*
 ClevorDataSet::findResourceGroup(utl::uint_t id) const
 {
     ResourceGroup dummy(id);
     resgroup_set_t::const_iterator it = _resGroups.find(&dummy);
-    if (it == _resGroups.end()) return nullptr;
+    if (it == _resGroups.end())
+        return nullptr;
     return *it;
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 ResourceSequenceList*
 ClevorDataSet::findResourceSequenceList(utl::uint_t id) const
@@ -403,11 +426,12 @@ ClevorDataSet::findResourceSequenceList(utl::uint_t id) const
     ResourceSequenceList dummy;
     dummy.id() = id;
     rsl_set_t::const_iterator it = _rsls.find(&dummy);
-    if (it == _rsls.end()) return nullptr;
+    if (it == _rsls.end())
+        return nullptr;
     return *it;
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 ClevorDataSet::clearProblemData()
@@ -420,7 +444,7 @@ ClevorDataSet::clearProblemData()
     deleteCont(_rsls);
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 ClevorDataSet::init()
@@ -438,7 +462,7 @@ ClevorDataSet::init()
     _minCostHeuristics = nullptr;
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 ClevorDataSet::deInit()
@@ -453,7 +477,7 @@ ClevorDataSet::deInit()
     delete _minCostHeuristics;
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 int
 ClevorDataSet::timeToTimeSlot(time_t t) const
@@ -462,7 +486,7 @@ ClevorDataSet::timeToTimeSlot(time_t t) const
     return _config->timeToTimeSlot(t);
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 ClevorDataSet::createViews_0_0()
@@ -482,7 +506,7 @@ ClevorDataSet::createViews_0_0()
     }
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 ClevorDataSet::createViews_0_1()
@@ -505,12 +529,13 @@ ClevorDataSet::createViews_0_1()
     for (opIt = _ops.begin(); opIt != _ops.end(); ++opIt)
     {
         JobOp* op = *opIt;
-        if (op->type() != op_summary) continue;
+        if (op->type() != op_summary)
+            continue;
         _summaryOpsIncSD += op;
     }
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 ClevorDataSet::createViews_1()
@@ -530,13 +555,13 @@ ClevorDataSet::createViews_1()
             {
                 _sops.insert(op);
             }
-//             if (!op->schedulable()) continue;
-//             _sops.insert(op);
+            //             if (!op->schedulable()) continue;
+            //             _sops.insert(op);
         }
     }
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 ClevorDataSet::setRSLs()
@@ -558,13 +583,13 @@ ClevorDataSet::setRSLs()
         }
         const ResourceSequenceList* rsl = findResourceSequenceList(id);
         dres->sequenceList() = rsl;
-//         utl::cout << "res:" << dres->id()
-//                   << ", rsl:" << rsl->id()
-//                   << utl::endlf;
+        //         utl::cout << "res:" << dres->id()
+        //                   << ", rsl:" << rsl->id()
+        //                   << utl::endlf;
     }
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 ClevorDataSet::propagate()
@@ -572,7 +597,7 @@ ClevorDataSet::propagate()
     _mgr->propagate();
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 ClevorDataSet::modelBuildActivities_0()
@@ -601,7 +626,7 @@ ClevorDataSet::modelBuildActivities_0()
         // guarantees all summary ops don't have any resource requirement.
         // Note: an ASSERTD is added in else{}.
         // Probably !op->schedulable() is even better. Joe Sept 6, 2006
-//         if (!op->hasRequirements() || (op->type() == op_summary))
+        //         if (!op->hasRequirements() || (op->type() == op_summary))
         if (!op->hasRequirements())
         {
             act = new Activity(_schedule);
@@ -613,8 +638,7 @@ ClevorDataSet::modelBuildActivities_0()
         else if (op->type() == op_interruptible)
         {
             act = intact = new IntActivity(_schedule);
-            intact->processingTime()
-                = _config->durationToTimeSlot(op->processingTime());
+            intact->processingTime() = _config->durationToTimeSlot(op->processingTime());
             if (intact->processingTime() == uint_t_max)
             {
                 intact->processingTime() = 0;
@@ -628,7 +652,8 @@ ClevorDataSet::modelBuildActivities_0()
 
                 // EF
                 EFboundInt* efBound = new EFboundInt(esBound, efb);
-                ef = efBound; esBound->efBound() = efBound;
+                ef = efBound;
+                esBound->efBound() = efBound;
 
                 // LS,LF
                 ls = new ConstrainedBound(_mgr, bound_ub, lsb);
@@ -650,11 +675,13 @@ ClevorDataSet::modelBuildActivities_0()
             {
                 // ES
                 ESbound* esBound = new ESbound(_mgr, esb);
-                es = esBound; esBound->act() = brkact;
+                es = esBound;
+                esBound->act() = brkact;
 
                 // EF
                 EFbound* efBound = new EFbound(esBound, efb);
-                ef = efBound; esBound->efBound() = efBound;
+                ef = efBound;
+                esBound->efBound() = efBound;
 
                 // LS,LF
                 ls = new ConstrainedBound(_mgr, bound_ub, lsb);
@@ -672,7 +699,8 @@ ClevorDataSet::modelBuildActivities_0()
 
                 // LS
                 LSbound* lsBound = new LSbound(lfBound, lsb);
-                ls = lsBound; lfBound->lsBound() = lsBound;
+                ls = lsBound;
+                lfBound->lsBound() = lsBound;
 
                 // ES,EF
                 es = new ConstrainedBound(_mgr, bound_lb, esb);
@@ -683,8 +711,7 @@ ClevorDataSet::modelBuildActivities_0()
                 lfBound->add(calendarBound);
             }
 
-            calendarBound->name()
-                = String("act-" + Uint(op->id()).toString() + " calendar");
+            calendarBound->name() = String("act-" + Uint(op->id()).toString() + " calendar");
             _mgr->revAllocate(calendarBound);
         }
 
@@ -703,8 +730,10 @@ ClevorDataSet::modelBuildActivities_0()
 
         // establish twin relationships
         // .. to detect failure if (es > ls) or (ef > lf)
-        es->setTwinBound(ls); ls->setTwinBound(es);
-        ef->setTwinBound(lf); lf->setTwinBound(ef);
+        es->setTwinBound(ls);
+        ls->setTwinBound(es);
+        ef->setTwinBound(lf);
+        lf->setTwinBound(ef);
 
         // make CycleGroup for ES,LF
         CycleGroup* esCG = _bp->newCycleGroup();
@@ -749,7 +778,7 @@ ClevorDataSet::modelBuildActivities_0()
     }
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 ClevorDataSet::modelBuildPrecedenceCts_0()
@@ -787,15 +816,11 @@ ClevorDataSet::modelBuildPrecedenceCts_0()
         {
             if (_config->forward())
             {
-                _bp->addPrecedenceLink(
-                    lhsOp->job()->cycleGroup(),
-                    rhsOp->job()->cycleGroup());
+                _bp->addPrecedenceLink(lhsOp->job()->cycleGroup(), rhsOp->job()->cycleGroup());
             }
             else
             {
-                _bp->addPrecedenceLink(
-                    rhsOp->job()->cycleGroup(),
-                    lhsOp->job()->cycleGroup());
+                _bp->addPrecedenceLink(rhsOp->job()->cycleGroup(), lhsOp->job()->cycleGroup());
             }
         }
 
@@ -834,7 +859,7 @@ ClevorDataSet::modelBuildPrecedenceCts_0()
     }
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 ClevorDataSet::modelBuildPrecedenceCts_1()
@@ -905,7 +930,7 @@ ClevorDataSet::modelBuildPrecedenceCts_1()
     }
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 ClevorDataSet::modelBuildActivities_1()
@@ -919,9 +944,7 @@ ClevorDataSet::modelBuildActivities_1()
         if (!op->schedulable())
         {
             // not schedulable => set bounds on start/end times
-            if (op->isScheduled()
-                && !op->ignorable()
-                && (op->type() != op_summary))
+            if (op->isScheduled() && !op->ignorable() && (op->type() != op_summary))
             {
                 Activity* act = op->activity();
                 int startTS = timeToTimeSlot(op->scheduledStartTime());
@@ -948,9 +971,8 @@ ClevorDataSet::modelBuildActivities_1()
 
         // determine processing-time
         int pt;
-        if ((op->status() == opstatus_started)
-            && (op->scheduledRemainingPt() != uint_t_max)
-            && (op->scheduledRemainingPt() > 0))
+        if ((op->status() == opstatus_started) && (op->scheduledRemainingPt() != uint_t_max) &&
+            (op->scheduledRemainingPt() > 0))
         {
             pt = (int)op->scheduledRemainingPt();
         }
@@ -982,7 +1004,7 @@ ClevorDataSet::modelBuildActivities_1()
     }
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 ClevorDataSet::modelBuildUnaryCts()
@@ -994,10 +1016,12 @@ ClevorDataSet::modelBuildUnaryCts()
         JobOp* op = *it;
 
         // skip ignorable
-        if (op->ignorable()) continue;
+        if (op->ignorable())
+            continue;
 
         Activity* act = op->activity();
-        if (act == nullptr) continue;
+        if (act == nullptr)
+            continue;
 
         // default values for es,ls,ef,lf
         int es = _originTS, ls = _horizonTS - 1;
@@ -1008,9 +1032,7 @@ ClevorDataSet::modelBuildUnaryCts()
             ASSERTD(_config->forward());
             if (op->status() == opstatus_started)
             {
-                es = utl::max(
-                    es,
-                    timeToTimeSlot(op->scheduledResumeTime()));
+                es = utl::max(es, timeToTimeSlot(op->scheduledResumeTime()));
             }
             else
             {
@@ -1106,7 +1128,7 @@ ClevorDataSet::modelBuildUnaryCts()
 
         // convert processing-time to time-slots
         int pt = _config->durationToTimeSlot((int)op->processingTime());
-//         int pt = op->processingTime() / (int)_config->timeStep();
+        //         int pt = op->processingTime() / (int)_config->timeStep();
         --pt;
 
         // post constraints
@@ -1121,7 +1143,7 @@ ClevorDataSet::modelBuildUnaryCts()
     }
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 ClevorDataSet::modelBuildResources()
@@ -1130,7 +1152,7 @@ ClevorDataSet::modelBuildResources()
     modelBuildCompositeResources();
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 ClevorDataSet::modelBuildDiscreteResources()
@@ -1146,8 +1168,7 @@ ClevorDataSet::modelBuildDiscreteResources()
         cse::DiscreteResource* cseDres = (cse::DiscreteResource*)cseRes;
 
         // make cls::DiscreteResource
-        cls::DiscreteResource* clsDres
-            = new cls::DiscreteResource(_schedule);
+        cls::DiscreteResource* clsDres = new cls::DiscreteResource(_schedule);
         clsDres->id() = cseDres->id();
         clsDres->name() = cseDres->name();
         clsDres->object() = (void*)cseDres->cost();
@@ -1157,7 +1178,7 @@ ClevorDataSet::modelBuildDiscreteResources()
     modelBuildDiscreteResourceCalendars();
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 ClevorDataSet::modelBuildDiscreteResourceCalendars()
@@ -1176,20 +1197,19 @@ ClevorDataSet::modelBuildDiscreteResourceCalendars()
         const cse::DiscreteResource* cseDres = (DiscreteResource*)cseRes;
         cls::DiscreteResource* clsDres = cseDres->clsResource();
         ResourceCalendar* resCal = cseDres->makeCurrentCalendar(_config);
-//         if (cseDres->id() == 15 | cseDres->id() == 16)
-//         {
-//             utl::cout << "res:" << cseDres->id() << utl::endlf;
-//             resCal->dump(utl::cout, _config->originTime(), _config->timeStep());
-//             utl::cout << utl::endlf;
-//         }
+        //         if (cseDres->id() == 15 | cseDres->id() == 16)
+        //         {
+        //             utl::cout << "res:" << cseDres->id() << utl::endlf;
+        //             resCal->dump(utl::cout, _config->originTime(), _config->timeStep());
+        //             utl::cout << utl::endlf;
+        //         }
 
         // add provided capacity
         ResourceCalendar::iterator spanIt;
         for (spanIt = resCal->begin(); spanIt != resCal->end(); ++spanIt)
         {
             ResourceCalendarSpan* rcs = (ResourceCalendarSpan*)*spanIt;
-            clsDres->addProvidedCapacity(
-                rcs->getBegin(), rcs->getEnd(), rcs->capacity());
+            clsDres->addProvidedCapacity(rcs->getBegin(), rcs->getEnd(), rcs->capacity());
         }
 
         // add the calendar to the calendar mgr
@@ -1199,7 +1219,7 @@ ClevorDataSet::modelBuildDiscreteResourceCalendars()
     }
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 ClevorDataSet::modelBuildCompositeResources()
@@ -1210,20 +1230,19 @@ ClevorDataSet::modelBuildCompositeResources()
     for (it = _resources.begin(); it != _resources.end(); ++it)
     {
         cse::Resource* cseRes = *it;
-        if (!cseRes->isA(cse::CompositeResource)) continue;
+        if (!cseRes->isA(cse::CompositeResource))
+            continue;
         cse::CompositeResource* cseCres = (cse::CompositeResource*)cseRes;
         uint_t resGroupId = cseCres->resourceGroupId();
         ASSERTD(resGroupId != uint_t_max);
 
         // make cls::CompositeResource
-        cls::CompositeResource* clsCres
-            = new cls::CompositeResource(_schedule);
+        cls::CompositeResource* clsCres = new cls::CompositeResource(_schedule);
         clsCres->id() = cseCres->id();
         clsCres->name() = cseCres->name();
 
         // add resources to cls::CompositeResource
-        const ResourceGroup* resGroup
-            = findResourceGroup(resGroupId);
+        const ResourceGroup* resGroup = findResourceGroup(resGroupId);
         ASSERTD(resGroup != nullptr);
         const std::set<uint_t>& resIds = resGroup->resIds();
         std::set<uint_t>::const_iterator resIdIt;
@@ -1234,8 +1253,7 @@ ClevorDataSet::modelBuildCompositeResources()
             ASSERTD(res->isA(cse::DiscreteResource));
             cls::Resource* resCLSres = res->clsResource();
             ASSERTD(resCLSres->isA(cls::DiscreteResource));
-            cls::DiscreteResource* resCLSdres
-                = (cls::DiscreteResource*)resCLSres;
+            cls::DiscreteResource* resCLSdres = (cls::DiscreteResource*)resCLSres;
             resCLSdres->addCRid(cseCres->id());
         }
 
@@ -1252,9 +1270,9 @@ ClevorDataSet::modelBuildCompositeResources()
     for (it = _resources.begin(); it != _resources.end(); ++it)
     {
         cse::Resource* cseRes = *it;
-        if (!cseRes->isA(cse::DiscreteResource)) continue;
-        cls::DiscreteResource* clsDres
-            = (cls::DiscreteResource*)cseRes->clsResource();
+        if (!cseRes->isA(cse::DiscreteResource))
+            continue;
+        cls::DiscreteResource* clsDres = (cls::DiscreteResource*)cseRes->clsResource();
         std::vector<uint_t>& crIds = clsDres->crIds();
         std::vector<uint_t>::iterator it;
         for (it = crIds.begin(); it != crIds.end(); ++it)
@@ -1263,8 +1281,7 @@ ClevorDataSet::modelBuildCompositeResources()
             cse::Resource* cseRes = findResource(id);
             cls::Resource* clsRes = cseRes->clsResource();
             ASSERTD(clsRes->isA(cls::CompositeResource));
-            cls::CompositeResource* clsCres
-                = (cls::CompositeResource*)clsRes;
+            cls::CompositeResource* clsCres = (cls::CompositeResource*)clsRes;
             *it = cseRes->clsResource()->serialId();
             clsCres->add(clsDres);
         }
@@ -1274,14 +1291,14 @@ ClevorDataSet::modelBuildCompositeResources()
     for (it = _resources.begin(); it != _resources.end(); ++it)
     {
         cse::Resource* cseRes = *it;
-        if (!cseRes->isA(cse::CompositeResource)) continue;
-        cls::CompositeResource* clsCres
-            = (cls::CompositeResource*)cseRes->clsResource();
+        if (!cseRes->isA(cse::CompositeResource))
+            continue;
+        cls::CompositeResource* clsCres = (cls::CompositeResource*)cseRes->clsResource();
         clsCres->initialize();
     }
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 ClevorDataSet::modelBuildResourceCts()
@@ -1319,7 +1336,7 @@ ClevorDataSet::modelBuildResourceCts()
     }
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 ClevorDataSet::modelBuildDiscreteResourceCts()
@@ -1354,19 +1371,19 @@ ClevorDataSet::modelBuildDiscreteResourceCts()
             }
 
             DiscreteResource* cseDres = (DiscreteResource*)cseRes;
-            cls::DiscreteResource* clsDres
-                = (cls::DiscreteResource*)cseDres->clsResource();
+            cls::DiscreteResource* clsDres = (cls::DiscreteResource*)cseDres->clsResource();
 
             // determine cap, pt (may not be defined)
             uint_t cap, pt;
             cap = cseResReq->capacity();
-            if (cap == uint_t_max) cap = cseResReq->scheduledCapacity();
+            if (cap == uint_t_max)
+                cap = cseResReq->scheduledCapacity();
             if (act->frozenPt() == uint_t_max)
             {
                 pt = op->processingTime();
                 if (pt != uint_t_max)
                     pt = _config->durationToTimeSlot(pt);
-//                 pt /= _config->timeStep();
+                //                 pt /= _config->timeStep();
             }
             else // frozen
             {
@@ -1390,17 +1407,15 @@ ClevorDataSet::modelBuildDiscreteResourceCts()
             }
 
             // add resource requirement
-            cls::DiscreteResourceRequirement* drr
-                = new cls::DiscreteResourceRequirement(
-                    act,
-                    resCapPts);
+            cls::DiscreteResourceRequirement* drr =
+                new cls::DiscreteResourceRequirement(act, resCapPts);
             cseResReq->clsResReq() = drr;
             act->add(drr);
         }
     }
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 ClevorDataSet::modelBuildResourceGroupCts()
@@ -1423,11 +1438,8 @@ ClevorDataSet::modelBuildResourceGroupCts()
         uint_t numResGroupReqs = op->numResGroupReqs();
         for (uint_t i = 0; i < numResGroupReqs; ++i)
         {
-            cse::ResourceGroupRequirement* cseResGroupReq
-                = op->getResGroupReq(i);
-            ResourceGroup* resGroup =
-                findResourceGroup(
-                    cseResGroupReq->resourceGroupId());
+            cse::ResourceGroupRequirement* cseResGroupReq = op->getResGroupReq(i);
+            ResourceGroup* resGroup = findResourceGroup(cseResGroupReq->resourceGroupId());
             ASSERTD(resGroup != nullptr);
 
             // build res-cap-pts set
@@ -1443,9 +1455,9 @@ ClevorDataSet::modelBuildResourceGroupCts()
                 ASSERTD(res != nullptr);
 
                 // skip past non-discrete resource
-                const cse::DiscreteResource* dres
-                    = dynamic_cast<cse::DiscreteResource*>(res);
-                if (dres == nullptr) continue;
+                const cse::DiscreteResource* dres = dynamic_cast<cse::DiscreteResource*>(res);
+                if (dres == nullptr)
+                    continue;
 
                 // get res-cap-pts for this resource
                 ResourceCapPts* resCapPts = op->resCapPtsAdj(resId);
@@ -1457,10 +1469,9 @@ ClevorDataSet::modelBuildResourceGroupCts()
                     ASSERTD(cseResGroupReq->capacity() != uint_t_max);
                     resCapPts = new ResourceCapPts();
                     resCapPts->resourceId() = resId;
-                    resCapPts->addCapPt(
-                        cseResGroupReq->capacity(),
-                        _config->durationToTimeSlot(op->processingTime()));
-//                         op->processingTime() / _config->timeStep());
+                    resCapPts->addCapPt(cseResGroupReq->capacity(),
+                                        _config->durationToTimeSlot(op->processingTime()));
+                    //                         op->processingTime() / _config->timeStep());
                     op->resCapPtsAdj() += resCapPts;
                 }
                 resCapPts->resource() = dres->clsResource();
@@ -1468,15 +1479,14 @@ ClevorDataSet::modelBuildResourceGroupCts()
             }
 
             // post resource constraint
-            cls::DiscreteResourceRequirement* drr
-                = new cls::DiscreteResourceRequirement(act, rcps);
+            cls::DiscreteResourceRequirement* drr = new cls::DiscreteResourceRequirement(act, rcps);
             cseResGroupReq->clsResReq() = drr;
             act->add(drr);
         }
     }
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 ClevorDataSet::modelBuildCompositeResourceCts()
@@ -1510,8 +1520,7 @@ ClevorDataSet::modelBuildCompositeResourceCts()
             }
 
             CompositeResource* cseCres = (CompositeResource*)cseRes;
-            cls::CompositeResource* clsCres
-                = (cls::CompositeResource*)cseCres->clsResource();
+            cls::CompositeResource* clsCres = (cls::CompositeResource*)cseCres->clsResource();
 
             // determine cap, pt (may not be defined)
             uint_t cap = cseResReq->capacity();
@@ -1524,8 +1533,7 @@ ClevorDataSet::modelBuildCompositeResourceCts()
 
             // preferred-resources
             //     convert resource-ids to serial-ids
-            PreferredResources* pr
-                = utl::clone(cseResReq->preferredResources());
+            PreferredResources* pr = utl::clone(cseResReq->preferredResources());
             if (pr != nullptr)
             {
                 std::vector<utl::uint_t>& resIds = pr->resIds();
@@ -1546,12 +1554,8 @@ ClevorDataSet::modelBuildCompositeResourceCts()
             }
 
             // add resource requirement
-            cls::CompositeResourceRequirement* crr
-                = new cls::CompositeResourceRequirement(
-                    act,
-                    clsCres,
-                    cap / 100,
-                    cseResReq->maxCapacity() / 100);
+            cls::CompositeResourceRequirement* crr = new cls::CompositeResourceRequirement(
+                act, clsCres, cap / 100, cseResReq->maxCapacity() / 100);
             crr->setPreferredResources(pr);
             cseResReq->clsResReq() = crr;
             act->add(crr);
@@ -1559,7 +1563,7 @@ ClevorDataSet::modelBuildCompositeResourceCts()
     }
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 ClevorDataSet::modelBuildHeuristics()
@@ -1568,11 +1572,11 @@ ClevorDataSet::modelBuildHeuristics()
     _minCostHeuristics->initialize(this);
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 CSE_NS_END;
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 UTL_CLASS_IMPL(cse::JobOpIncSDordering, utl::Ordering);
 UTL_CLASS_IMPL(cse::JobOpDecSDordering, utl::Ordering);

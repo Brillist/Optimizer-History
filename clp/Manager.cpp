@@ -7,20 +7,20 @@
 #include "Or.h"
 #include "Manager.h"
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 UTL_NS_USE;
 LUT_NS_USE;
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 UTL_CLASS_IMPL(clp::Manager, utl::Object);
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 CLP_NS_BEGIN;
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 Manager::add(const Goal& goal)
@@ -28,7 +28,7 @@ Manager::add(const Goal& goal)
     add(goal.clone());
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 Manager::add(Goal* goal)
@@ -37,7 +37,7 @@ Manager::add(Goal* goal)
     goal->addRef();
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 Manager::add(const Constraint& ct)
@@ -45,7 +45,7 @@ Manager::add(const Constraint& ct)
     ((Constraint&)ct).mclone();
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 bool
 Manager::add(Constraint* ct)
@@ -74,7 +74,7 @@ Manager::add(Constraint* ct)
     return true;
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 Manager::add(ConstrainedVar* var)
@@ -85,7 +85,7 @@ Manager::add(ConstrainedVar* var)
     var->postConstraints();
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 Manager::remove(Constraint* ct)
@@ -97,7 +97,7 @@ Manager::remove(Constraint* ct)
     }
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 Manager::remove(ConstrainedVar* var)
@@ -106,7 +106,7 @@ Manager::remove(ConstrainedVar* var)
     delete var;
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 Manager::reset()
@@ -114,7 +114,7 @@ Manager::reset()
     backtrack(uint_t_max - 2);
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 Manager::restart()
@@ -123,7 +123,7 @@ Manager::restart()
     backtrack(uint_t_max - 1);
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 bool
 Manager::nextSolution()
@@ -195,7 +195,7 @@ Manager::nextSolution()
     return true;
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 Manager::propagate()
@@ -203,7 +203,7 @@ Manager::propagate()
     _boundPropagator->propagate();
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 Manager::pushState()
@@ -211,7 +211,7 @@ Manager::pushState()
     pushChoicePoint();
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 Manager::popState()
@@ -230,7 +230,7 @@ Manager::popState()
     popChoicePoint();
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 Manager::setBoundPropagator(BoundPropagator* bp)
@@ -239,7 +239,7 @@ Manager::setBoundPropagator(BoundPropagator* bp)
     _boundPropagator = bp;
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 Manager::init()
@@ -287,7 +287,7 @@ Manager::init()
     pushChoicePoint();
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 Manager::deInit()
@@ -309,23 +309,23 @@ Manager::deInit()
     deleteArray(_revAllocations, _revAllocationsPtr);
 
 #if UTL_HOST_WORDSIZE == 64
-    delete [] _revLongs;
-    delete [] _revLongArrays;
-    delete [] _revLongsInd;
-    delete [] _revLongArraysInd;
+    delete[] _revLongs;
+    delete[] _revLongArrays;
+    delete[] _revLongsInd;
+    delete[] _revLongArraysInd;
 #endif
-    delete [] _revInts;
-    delete [] _revIntArrays;
-    delete [] _revIntsInd;
-    delete [] _revIntArraysInd;
-    delete [] _revDeltaVars;
-    delete [] _revToggles;
-    delete [] _revCts;
-    delete [] _revActions;
-    delete [] _revAllocations;
+    delete[] _revInts;
+    delete[] _revIntArrays;
+    delete[] _revIntsInd;
+    delete[] _revIntArraysInd;
+    delete[] _revDeltaVars;
+    delete[] _revToggles;
+    delete[] _revCts;
+    delete[] _revActions;
+    delete[] _revAllocations;
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 ChoicePoint*
 Manager::pushChoicePoint()
@@ -366,7 +366,7 @@ Manager::pushChoicePoint()
     return cp;
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 Manager::popChoicePoint()
@@ -378,7 +378,7 @@ Manager::popChoicePoint()
     _topCP = _cpStack.top();
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 Manager::goalStackClear()
@@ -391,11 +391,11 @@ Manager::goalStackClear()
     }
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 #if UTL_HOST_WORDSIZE == 64
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 Manager::revSetLong(size_t& i)
@@ -403,18 +403,14 @@ Manager::revSetLong(size_t& i)
     // grow if necessary
     if (_revLongsPtr == _revLongsLim)
     {
-        utl::arrayGrow(
-            _revLongs,
-            _revLongsPtr,
-            _revLongsLim,
-            utl::max(K(4), (_revLongsSize + 1)));
+        utl::arrayGrow(_revLongs, _revLongsPtr, _revLongsLim, utl::max(K(4), (_revLongsSize + 1)));
         _revLongsSize = _revLongsLim - _revLongs;
     }
     *_revLongsPtr++ = (size_t)&i;
     *_revLongsPtr++ = (size_t)i;
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 Manager::revSetLongArray(size_t* array, uint_t size)
@@ -425,11 +421,8 @@ Manager::revSetLongArray(size_t* array, uint_t size)
     if (room < growth)
     {
         size_t curSize = (_revLongArraysPtr - _revLongArrays);
-        utl::arrayGrow(
-            _revLongArrays,
-            _revLongArraysPtr,
-            _revLongArraysLim,
-            utl::max(K(4), curSize + growth));
+        utl::arrayGrow(_revLongArrays, _revLongArraysPtr, _revLongArraysLim,
+                       utl::max(K(4), curSize + growth));
         _revLongArraysSize = _revLongArraysLim - _revLongArrays;
     }
 
@@ -447,7 +440,7 @@ Manager::revSetLongArray(size_t* array, uint_t size)
     *_revLongArraysPtr++ = (size_t)array;
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 Manager::revSetLongInd(size_t*& array, uint_t idx)
@@ -457,11 +450,7 @@ Manager::revSetLongInd(size_t*& array, uint_t idx)
     if (room < 3)
     {
         size_t curSize = (_revLongsIndPtr - _revLongsInd);
-        utl::arrayGrow(
-            _revLongsInd,
-            _revLongsIndPtr,
-            _revLongsIndLim,
-            utl::max(K(4), curSize + 3));
+        utl::arrayGrow(_revLongsInd, _revLongsIndPtr, _revLongsIndLim, utl::max(K(4), curSize + 3));
         _revLongsIndSize = _revLongsIndLim - _revLongsInd;
     }
 
@@ -470,7 +459,7 @@ Manager::revSetLongInd(size_t*& array, uint_t idx)
     *_revLongsIndPtr++ = (size_t)&array;
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 Manager::revSetLongArrayInd(size_t*& array, uint_t idx, uint_t size)
@@ -481,11 +470,8 @@ Manager::revSetLongArrayInd(size_t*& array, uint_t idx, uint_t size)
     if (room < growth)
     {
         size_t curSize = (_revLongArraysIndPtr - _revLongArraysInd);
-        utl::arrayGrow(
-            _revLongArraysInd,
-            _revLongArraysIndPtr,
-            _revLongArraysIndLim,
-            utl::max(K(4), curSize + growth));
+        utl::arrayGrow(_revLongArraysInd, _revLongArraysIndPtr, _revLongArraysIndLim,
+                       utl::max(K(4), curSize + growth));
         _revLongArraysIndSize = _revLongArraysIndLim - _revLongArraysInd;
     }
 
@@ -504,11 +490,11 @@ Manager::revSetLongArrayInd(size_t*& array, uint_t idx, uint_t size)
     *_revLongArraysIndPtr++ = (size_t)&array;
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 #endif // UTL_HOST_WORDSIZE == 64
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 Manager::revSetInt(uint_t& i)
@@ -516,11 +502,7 @@ Manager::revSetInt(uint_t& i)
     // grow if necessary
     if (_revIntsPtr == _revIntsLim)
     {
-        utl::arrayGrow(
-            _revInts,
-            _revIntsPtr,
-            _revIntsLim,
-            utl::max(K(4), (_revIntsSize + 2)));
+        utl::arrayGrow(_revInts, _revIntsPtr, _revIntsLim, utl::max(K(4), (_revIntsSize + 2)));
         _revIntsSize = _revIntsLim - _revInts;
     }
 
@@ -528,7 +510,7 @@ Manager::revSetInt(uint_t& i)
     *_revIntsPtr++ = i;
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 Manager::revSetIntArray(uint_t* array, uint_t size)
@@ -539,11 +521,8 @@ Manager::revSetIntArray(uint_t* array, uint_t size)
     if (room < growth)
     {
         size_t curSize = (_revIntArraysPtr - _revIntArrays);
-        utl::arrayGrow(
-            _revIntArrays,
-            _revIntArraysPtr,
-            _revIntArraysLim,
-            utl::max(K(4), curSize + growth));
+        utl::arrayGrow(_revIntArrays, _revIntArraysPtr, _revIntArraysLim,
+                       utl::max(K(4), curSize + growth));
         _revIntArraysSize = _revIntArraysLim - _revIntArrays;
     }
 
@@ -561,7 +540,7 @@ Manager::revSetIntArray(uint_t* array, uint_t size)
     *_revIntArraysPtr++ = (size_t)array;
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 Manager::revSetIntInd(uint_t*& array, uint_t idx)
@@ -571,11 +550,7 @@ Manager::revSetIntInd(uint_t*& array, uint_t idx)
     if (room < 3)
     {
         size_t curSize = (_revIntsIndPtr - _revIntsInd);
-        utl::arrayGrow(
-            _revIntsInd,
-            _revIntsIndPtr,
-            _revIntsIndLim,
-            utl::max(K(4), curSize + 3));
+        utl::arrayGrow(_revIntsInd, _revIntsIndPtr, _revIntsIndLim, utl::max(K(4), curSize + 3));
         _revIntsIndSize = _revIntsIndLim - _revIntsInd;
     }
 
@@ -584,7 +559,7 @@ Manager::revSetIntInd(uint_t*& array, uint_t idx)
     *_revIntsIndPtr++ = (size_t)&array;
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 Manager::revSetIntArrayInd(uint_t*& array, uint_t idx, uint_t size)
@@ -595,11 +570,8 @@ Manager::revSetIntArrayInd(uint_t*& array, uint_t idx, uint_t size)
     if (room < growth)
     {
         size_t curSize = (_revIntArraysIndPtr - _revIntArraysInd);
-        utl::arrayGrow(
-            _revIntArraysInd,
-            _revIntArraysIndPtr,
-            _revIntArraysIndLim,
-            utl::max(K(4), curSize + growth));
+        utl::arrayGrow(_revIntArraysInd, _revIntArraysIndPtr, _revIntArraysIndLim,
+                       utl::max(K(4), curSize + growth));
         _revIntArraysIndSize = _revIntArraysIndLim - _revIntArraysInd;
     }
 
@@ -618,7 +590,7 @@ Manager::revSetIntArrayInd(uint_t*& array, uint_t idx, uint_t size)
     *_revIntArraysIndPtr++ = (size_t)&array;
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 bool
 Manager::backtrack(uint_t label)
@@ -636,9 +608,7 @@ Manager::backtrack(uint_t label)
 
         // can we resume the search at this choice point?
         if (cp->hasRemainingChoice() &&
-            (!cp->isLabeled() ||
-             (label == uint_t_max) ||
-             (label == cp->label())))
+            (!cp->isLabeled() || (label == uint_t_max) || (label == cp->label())))
         {
             Or* orGoal = cp->orGoal();
             _goalStack.push(orGoal);
@@ -654,7 +624,7 @@ Manager::backtrack(uint_t label)
     return false;
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 Manager::backtrackCP(ChoicePoint* cp)
@@ -691,8 +661,7 @@ Manager::backtrackCP(ChoicePoint* cp)
     }
 
     // backtrack indirect rev-long-arrays
-    size_t* revLongArraysIndBegin
-        = _revLongArraysInd + cp->getRevLongArraysIndIdx();
+    size_t* revLongArraysIndBegin = _revLongArraysInd + cp->getRevLongArraysIndIdx();
     while (_revLongArraysIndPtr > revLongArraysIndBegin)
     {
         size_t** arrayPtr = (size_t**)*(--_revLongArraysIndPtr);
@@ -749,8 +718,7 @@ Manager::backtrackCP(ChoicePoint* cp)
     }
 
     // backtrack indirect rev-int-arrays
-    size_t* revIntArraysIndBegin
-        = _revIntArraysInd + cp->getRevIntArraysIndIdx();
+    size_t* revIntArraysIndBegin = _revIntArraysInd + cp->getRevIntArraysIndIdx();
     while (_revIntArraysIndPtr > revIntArraysIndBegin)
     {
         uint_t** arrayPtr = (uint_t**)*(--_revIntArraysIndPtr);
@@ -779,8 +747,7 @@ Manager::backtrackCP(ChoicePoint* cp)
     }
 
     // backtrack changed variables
-    ConstrainedVar** revDeltaVarsBegin =
-        _revDeltaVars + cp->getRevDeltaVarsIdx();
+    ConstrainedVar** revDeltaVarsBegin = _revDeltaVars + cp->getRevDeltaVarsIdx();
     while (_revDeltaVarsPtr > revDeltaVarsBegin)
     {
         ConstrainedVar* var = *(--_revDeltaVarsPtr);
@@ -805,8 +772,7 @@ Manager::backtrackCP(ChoicePoint* cp)
     }
 
     // run backtracking actions
-    Functor** revActionsBegin =
-        _revActions + cp->getRevActionsIdx();
+    Functor** revActionsBegin = _revActions + cp->getRevActionsIdx();
     while (_revActionsPtr > revActionsBegin)
     {
         Functor* action = *(--_revActionsPtr);
@@ -815,8 +781,7 @@ Manager::backtrackCP(ChoicePoint* cp)
     }
 
     // delete objects that were allocated
-    Object** revAllocationsBegin =
-        _revAllocations + cp->getRevAllocationsIdx();
+    Object** revAllocationsBegin = _revAllocations + cp->getRevAllocationsIdx();
     while (_revAllocationsPtr > revAllocationsBegin)
     {
         Object* object = *(--_revAllocationsPtr);
@@ -824,6 +789,6 @@ Manager::backtrackCP(ChoicePoint* cp)
     }
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 CLP_NS_END;

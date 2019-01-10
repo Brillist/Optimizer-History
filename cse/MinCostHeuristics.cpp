@@ -7,7 +7,7 @@
 #include "JobOp.h"
 #include "MinCostHeuristics.h"
 
-///////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////////
 
 UTL_NS_USE;
 LUT_NS_USE;
@@ -15,16 +15,16 @@ CLP_NS_USE;
 CLS_NS_USE;
 GOP_NS_USE;
 
-///////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////////
 
 UTL_CLASS_IMPL(cse::MinCostHeuristics, utl::Object);
 UTL_CLASS_IMPL(cse::MinCostAltResPt, utl::Object);
 
-///////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////////
 
 CSE_NS_BEGIN;
 
-///////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 MinCostHeuristics::initialize(ClevorDataSet* dataSet)
@@ -39,10 +39,12 @@ MinCostHeuristics::initialize(ClevorDataSet* dataSet)
     for (it = ops.begin(); it != ops.end(); ++it)
     {
         JobOp* op = *it;
-        if (op->frozen()) continue;
+        if (op->frozen())
+            continue;
         Activity* act = op->activity();
         ASSERTD(act != nullptr);
-        if (!act->isA(PtActivity)) continue;
+        if (!act->isA(PtActivity))
+            continue;
         if (op->interruptible())
         {
             continue;
@@ -52,21 +54,21 @@ MinCostHeuristics::initialize(ClevorDataSet* dataSet)
             BrkActivity* act = op->brkact();
             const IntExp& ptExp = act->possiblePts();
             uint_t numResGroupReqs = op->numResGroupReqs();
-            if (ptExp.isBound() &&  numResGroupReqs == 0) continue;
+            if (ptExp.isBound() && numResGroupReqs == 0)
+                continue;
             setMinCostAltResPt(op);
         }
         else
         {
             std::cout << "Warning(MinCostHeuristics.cpp): op" << op->id()
-                      << " is not either an interruptible or breakable op"
-                      << std::endl;
+                      << " is not either an interruptible or breakable op" << std::endl;
             continue;
         }
     }
     return;
 }
 
-///////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 MinCostHeuristics::setMinCostAltResPt(const JobOp* op)
@@ -76,7 +78,7 @@ MinCostHeuristics::setMinCostAltResPt(const JobOp* op)
         return;
     }
     ASSERTD(op->breakable());
-    double minCost = utl::double_t_max;//(double)uint_t_max;
+    double minCost = utl::double_t_max; //(double)uint_t_max;
     uint_t minCostPt = uint_t_max;
     uint_vector_t minCostAltResIdx;
     BrkActivity* act = op->brkact();
@@ -98,13 +100,15 @@ MinCostHeuristics::setMinCostAltResPt(const JobOp* op)
         for (uint_t i = 0; i < numResReqs; ++i)
         {
             const cse::ResourceRequirement* cseResReq = op->getResReq(i);
-            const cls::DiscreteResourceRequirement* clsResReq
-                = (cls::DiscreteResourceRequirement*)cseResReq->clsResReq();
-            if (clsResReq == nullptr) continue;
+            const cls::DiscreteResourceRequirement* clsResReq =
+                (cls::DiscreteResourceRequirement*)cseResReq->clsResReq();
+            if (clsResReq == nullptr)
+                continue;
             const ResourceCapPts* resCapPts = clsResReq->resCapPts();
-            cls::DiscreteResource* res
-                = dynamic_cast<cls::DiscreteResource*>(resCapPts->resource());
-            if (res == nullptr) continue;
+            cls::DiscreteResource* res =
+                dynamic_cast<cls::DiscreteResource*>(resCapPts->resource());
+            if (res == nullptr)
+                continue;
             ResourceCost* resCost = (ResourceCost*)res->object();
             uint_t cap = findCap(resCapPts, pt);
             ASSERTD(cap != uint_t_max);
@@ -114,33 +118,32 @@ MinCostHeuristics::setMinCostAltResPt(const JobOp* op)
         // spin thru res-group-reqs
         for (uint_t rgrIdx = 0; rgrIdx < numResGroupReqs; ++rgrIdx)
         {
-            const cse::ResourceGroupRequirement* cseResGroupReq
-                = op->getResGroupReq(rgrIdx);
-            const cls::DiscreteResourceRequirement* clsResReq
-                = cseResGroupReq->clsResReq();
+            const cse::ResourceGroupRequirement* cseResGroupReq = op->getResGroupReq(rgrIdx);
+            const cls::DiscreteResourceRequirement* clsResReq = cseResGroupReq->clsResReq();
             const utl::Hashtable& resCapPtsSet = clsResReq->resCapPtsSet();
             uint_t numResources = resCapPtsSet.size();
-            double minRgrCost = utl::double_t_max;//(double)uint_t_max;
+            double minRgrCost = utl::double_t_max; //(double)uint_t_max;
             uint_vector_t idxCandidates;
             for (uint_t resIdx = 0; resIdx < numResources; ++resIdx)
             {
-                const ResourceCapPts* resCapPts
-                    = clsResReq->resIdxCapPts(resIdx);
-                cls::DiscreteResource* res
-                    = dynamic_cast<cls::DiscreteResource*>(resCapPts->resource());
-                if (res == nullptr) continue;
+                const ResourceCapPts* resCapPts = clsResReq->resIdxCapPts(resIdx);
+                cls::DiscreteResource* res =
+                    dynamic_cast<cls::DiscreteResource*>(resCapPts->resource());
+                if (res == nullptr)
+                    continue;
                 ResourceCost* resCost = (ResourceCost*)res->object();
                 uint_t cap = findCap(resCapPts, pt);
                 // pt impossible for this resource?
-                if (cap == uint_t_max) continue;
+                if (cap == uint_t_max)
+                    continue;
 
                 double curResCost = getResCost(cap, pt, resCost);
                 int cmpResult = lut::compare(curResCost, minRgrCost);
                 if (cmpResult <= 0)
-//                 if (curResCost <= minRgrCost)
+                //                 if (curResCost <= minRgrCost)
                 {
                     if (cmpResult < 0)
-//                     if (curResCost < minRgrCost)
+                    //                     if (curResCost < minRgrCost)
                     {
                         minRgrCost = curResCost;
                         idxCandidates.clear();
@@ -148,7 +151,7 @@ MinCostHeuristics::setMinCostAltResPt(const JobOp* op)
                     idxCandidates.push_back(resIdx);
                 }
             }
-            ASSERTD(minRgrCost < utl::double_t_max);//(double)uint_t_max);
+            ASSERTD(minRgrCost < utl::double_t_max); //(double)uint_t_max);
             ASSERTD(idxCandidates.size() > 0);
             uint_t idx = _rng->evali(idxCandidates.size());
             altResIdx[rgrIdx] = idxCandidates[idx];
@@ -180,12 +183,10 @@ MinCostHeuristics::setMinCostAltResPt(const JobOp* op)
     return;
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 uint_t
-MinCostHeuristics::findCap(
-    const ResourceCapPts* resCapPts,
-    uint_t p_pt)
+MinCostHeuristics::findCap(const ResourceCapPts* resCapPts, uint_t p_pt)
 {
     uint_t numCapPts = resCapPts->numCapPts();
     for (uint_t i = 0; i < numCapPts; ++i)
@@ -200,13 +201,10 @@ MinCostHeuristics::findCap(
     return uint_t_max;
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 double
-MinCostHeuristics::getResCost(
-    uint_t cap,
-    uint_t pt,
-    const ResourceCost* resCost)
+MinCostHeuristics::getResCost(uint_t cap, uint_t pt, const ResourceCost* resCost)
 {
     uint_t timeStep = _timeStep;
     uint_t tsPerHour = (60 * 60) / timeStep;
@@ -245,7 +243,7 @@ MinCostHeuristics::getResCost(
     }
 }
 
-///////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////////
 
 const MinCostAltResPt*
 MinCostHeuristics::getMinCostAltResPt(const JobOp* op) const
@@ -261,7 +259,7 @@ MinCostHeuristics::getMinCostAltResPt(const JobOp* op) const
     }
 }
 
-///////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 MinCostHeuristics::init()
@@ -270,7 +268,7 @@ MinCostHeuristics::init()
     _rng = nullptr;
 }
 
-///////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 MinCostHeuristics::deInit()
@@ -279,6 +277,6 @@ MinCostHeuristics::deInit()
     delete _rng;
 }
 
-///////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////////
 
 CSE_NS_END;

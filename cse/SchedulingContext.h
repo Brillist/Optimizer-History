@@ -1,17 +1,17 @@
 #ifndef CSE_SCHEDULINGCONTEXT_H
 #define CSE_SCHEDULINGCONTEXT_H
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 #include <gop/IndBuilderContext.h>
 #include <cls/Schedule.h>
 #include <cse/ClevorDataSet.h>
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 CSE_NS_BEGIN;
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
    Maintain state for schedule-building process.
@@ -19,39 +19,61 @@ CSE_NS_BEGIN;
    \author Adam McKee
 */
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 class SchedulingContext : public gop::IndBuilderContext
 {
     UTL_CLASS_DECL(SchedulingContext);
     UTL_CLASS_NO_COPY;
+
 public:
     /** Get the data-set. */
-    const gop::DataSet* dataSet() const
-    { return _dataSet; }
+    const gop::DataSet*
+    dataSet() const
+    {
+        return _dataSet;
+    }
 
     /** Get the data-set. */
-    const cse::ClevorDataSet* clevorDataSet() const
-    { return _dataSet; }
+    const cse::ClevorDataSet*
+    clevorDataSet() const
+    {
+        return _dataSet;
+    }
 
-    cse::ClevorDataSet* clevorDataSet()
-    { return _dataSet; }
+    cse::ClevorDataSet*
+    clevorDataSet()
+    {
+        return _dataSet;
+    }
 
     /** Get the manager. */
-    const clp::Manager* manager() const
-    { return _mgr; }
+    const clp::Manager*
+    manager() const
+    {
+        return _mgr;
+    }
 
     /** Get the manager. */
-    clp::Manager* manager()
-    { return _mgr; }
+    clp::Manager*
+    manager()
+    {
+        return _mgr;
+    }
 
     /** Get the schedule. */
-    const cls::Schedule* schedule() const
-    { return _schedule; }
+    const cls::Schedule*
+    schedule() const
+    {
+        return _schedule;
+    }
 
     /** Get the schedule. */
-    cls::Schedule* schedule()
-    { return _schedule; }
+    cls::Schedule*
+    schedule()
+    {
+        return _schedule;
+    }
 
     /** Initialize. */
     void initialize(ClevorDataSet* dataSet);
@@ -63,18 +85,24 @@ public:
     void schedule(JobOp* op);
 
     /** Scheduling complete? */
-    bool complete() const
-    { return _complete; } //(_sjobs.size() == 0); }
+    bool
+    complete() const
+    {
+        return _complete;
+    } //(_sjobs.size() == 0); }
 
     /** Set scheduling complete status. */
     void setComplete(bool complete);
-/*     { _complete = complete; } */
+    /*     { _complete = complete; } */
 
     /// \name Schedulable Jobs
     //@{
     /** Schedulable-jobs empty? */
-    bool sjobsEmpty() const
-    { return (_sjobs.begin() == _sjobs.end()); }
+    bool
+    sjobsEmpty() const
+    {
+        return (_sjobs.begin() == _sjobs.end());
+    }
 
     /** Add to the list of schedulable-jobs. */
     void sjobsAdd(Job* job);
@@ -83,43 +111,72 @@ public:
     void sjobsRemove(Job* job);
 
     /** Get begin iterator for schedulable-jobs. */
-    Job** sjobsBegin() const
-    { return (Job**)_sjobs.begin(); }
+    Job**
+    sjobsBegin() const
+    {
+        return (Job**)_sjobs.begin();
+    }
 
     /** Get end iterator for schedulable-jobs. */
-    Job** sjobsEnd() const
-    { return (Job**)_sjobs.end(); }
+    Job**
+    sjobsEnd() const
+    {
+        return (Job**)_sjobs.end();
+    }
     //@}
 
     /** Store the schedule into the data-set. */
     void store();
 
     /** Get the makespan. */
-    time_t makespan() const
-    { ASSERTD(_config != nullptr); return _config->timeSlotToTime(_makespan); }
+    time_t
+    makespan() const
+    {
+        ASSERTD(_config != nullptr);
+        return _config->timeSlotToTime(_makespan);
+    }
 
     /** Convert time => time-slot. */
-    utl::uint_t timeToTimeSlot(time_t t) const
-    { return _config->timeToTimeSlot(t); }
+    utl::uint_t
+    timeToTimeSlot(time_t t) const
+    {
+        return _config->timeToTimeSlot(t);
+    }
 
     /** Convert time-slot => time. */
-    time_t timeSlotToTime(utl::uint_t ts) const
-    { return _config->timeSlotToTime(ts); }
+    time_t
+    timeSlotToTime(utl::uint_t ts) const
+    {
+        return _config->timeSlotToTime(ts);
+    }
 
     /** Get the makespan time-slot. */
-    int makespanTimeSlot() const
-    { return _makespan; }
+    int
+    makespanTimeSlot() const
+    {
+        return _makespan;
+    }
 
     /** Get the hard constraint score. */
-    utl::uint_t hardCtScore() const
-    { return _hardCtScore; }
+    utl::uint_t
+    hardCtScore() const
+    {
+        return _hardCtScore;
+    }
 
     /** Get the number of scheduled operations. */
-    utl::uint_t numScheduledOps() const
-    { return _numScheduledOps; }
+    utl::uint_t
+    numScheduledOps() const
+    {
+        return _numScheduledOps;
+    }
 
-    void setDataSetOwner(bool owner)
-    { _dataSetOwner = owner; }
+    void
+    setDataSetOwner(bool owner)
+    {
+        _dataSetOwner = owner;
+    }
+
 private:
     void init();
     void deInit();
@@ -145,6 +202,7 @@ private:
     void postResourceSequenceDelays();
 
     void propagate();
+
 private:
     // data-set, constraint engine
     ClevorDataSet* _dataSet;
@@ -160,9 +218,9 @@ private:
     // list of all schedulable ops
     // This seems obsolete.
     // Joe, Oct 10, 2006
-/*     jobop_set_id_t _allSops; */
+    /*     jobop_set_id_t _allSops; */
 
-    // a dynamic list of schedulable jobs 
+    // a dynamic list of schedulable jobs
     // controlled by cse::Propagator::unsuspend().
     clp::RevArray<Job*> _sjobs;
 
@@ -172,15 +230,15 @@ private:
     utl::uint_t _hardCtScore;
     utl::uint_t _numScheduledOps;
 
-    // control who will be responsible for 
+    // control who will be responsible for
     // deleting _dataSet, SchedulingContext or MRPrun.
     bool _dataSetOwner;
 };
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 CSE_NS_END;
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 #endif

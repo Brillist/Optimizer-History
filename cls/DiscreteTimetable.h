@@ -1,20 +1,20 @@
 #ifndef CLS_DISCRETETIMETABLE_H
 #define CLS_DISCRETETIMETABLE_H
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 #include <clp/ConstrainedBound.h>
 #include <cls/DiscreteTimetableDomain.h>
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 CLS_NS_BEGIN;
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 class DiscreteResource;
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
    Discrete resource timetable.
@@ -27,30 +27,43 @@ class DiscreteResource;
    \author Adam McKee
 */
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 class DiscreteTimetable : public utl::Object
 {
     UTL_CLASS_DECL(DiscreteTimetable);
     UTL_CLASS_NO_COPY;
+
 public:
     /** Constructor. */
     DiscreteTimetable(clp::Manager* mgr)
-    { init(); setManager(mgr); }
+    {
+        init();
+        setManager(mgr);
+    }
 
     /// \name Accessors
     //@{
     /** Get the resource. */
-    const DiscreteResource* res() const
-    { return _res; }
+    const DiscreteResource*
+    res() const
+    {
+        return _res;
+    }
 
     /** Get the resource. */
-    const DiscreteResource*& res()
-    { return _res; }
+    const DiscreteResource*&
+    res()
+    {
+        return _res;
+    }
 
     /** Get the manager. */
-    clp::Manager* manager() const
-    { return _mgr; }
+    clp::Manager*
+    manager() const
+    {
+        return _mgr;
+    }
 
     /** Set the manager. */
     void setManager(clp::Manager* mgr);
@@ -59,38 +72,48 @@ public:
     utl::Span<int> range() const;
 
     /** Get the domain. */
-    const DiscreteTimetableDomain* domain() const
-    { return &_domain; }
+    const DiscreteTimetableDomain*
+    domain() const
+    {
+        return &_domain;
+    }
 
     /** Head iterator. */
-    const clp::IntSpan* head() const
-    { return _domain.head(); }
+    const clp::IntSpan*
+    head() const
+    {
+        return _domain.head();
+    }
 
     /** End iterator. */
-    const clp::IntSpan* tail() const
-    { return _domain.tail(); }
+    const clp::IntSpan*
+    tail() const
+    {
+        return _domain.tail();
+    }
 
     /** Add capacity-expression. */
-    clp::IntExp* addCapExp(utl::uint_t cap)
-    { return _domain.addCapExp(cap); }
+    clp::IntExp*
+    addCapExp(utl::uint_t cap)
+    {
+        return _domain.addCapExp(cap);
+    }
 
     /** Remove capacity-expression. */
-    void remCapExp(utl::uint_t cap)
-    { _domain.remCapExp(cap); }
+    void
+    remCapExp(utl::uint_t cap)
+    {
+        _domain.remCapExp(cap);
+    }
     //@}
 
     /// \name Energy
     //@{
     /** Get the required and provided energy. */
-    void energy(
-        utl::uint_t& required,
-        utl::uint_t& provided) const;
+    void energy(utl::uint_t& required, utl::uint_t& provided) const;
 
     /** Get the required and provided energy over the given span. */
-    void energy(
-        const utl::Span<int>& span,
-        utl::uint_t& required,
-        utl::uint_t& provided) const;
+    void energy(const utl::Span<int>& span, utl::uint_t& required, utl::uint_t& provided) const;
     //@}
 
     /// \name Query
@@ -117,22 +140,31 @@ public:
     /// \name Events
     //@{
     /** Add a range-bound. */
-    void addRangeBound(clp::ConstrainedBound* bound)
-    { _rangeBounds.add(bound); }
+    void
+    addRangeBound(clp::ConstrainedBound* bound)
+    {
+        _rangeBounds.add(bound);
+    }
 
     /** Remove a domain-bound. */
-    void removeRangeBound(clp::ConstrainedBound* bound)
-    { _rangeBounds.remove(bound); }
+    void
+    removeRangeBound(clp::ConstrainedBound* bound)
+    {
+        _rangeBounds.remove(bound);
+    }
     //@}
 protected:
     DiscreteTimetableDomain _domain;
+
 private:
     void init();
     void deInit();
 
     void raiseEvents();
+
 private:
     typedef clp::RevSet<clp::ConstrainedBound> cb_set_t;
+
 private:
     const DiscreteResource* _res;
     clp::Manager* _mgr;
@@ -140,10 +172,10 @@ private:
     cb_set_t _rangeBounds;
 };
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 CLS_NS_END;
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 #endif

@@ -1,7 +1,7 @@
 #ifndef CLP_BOUNDPROPAGATOR_H
 #define CLP_BOUNDPROPAGATOR_H
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 #include <libutl/Object.h>
 #include <lut/Queue.h>
@@ -9,17 +9,17 @@
 #include <clp/RevArray.h>
 #include <clp/RevSet.h>
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 CLP_NS_BEGIN;
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 class BoundCt;
 class ConstrainedBound;
 class Manager;
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
    Bound propagator.
@@ -27,29 +27,25 @@ class Manager;
    \author Adam McKee
 */
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 class BoundPropagator : public utl::Object
 {
     UTL_CLASS_DECL(BoundPropagator);
     UTL_CLASS_NO_COPY;
+
 public:
     /** Constructor. */
     BoundPropagator(Manager* mgr)
-    { init(mgr); }
+    {
+        init(mgr);
+    }
 
     /** Add a new bound-ct. */
-    void addBoundCt(
-        ConstrainedBound* src,
-        ConstrainedBound* dst,
-        int d,
-        bool cycleCheck = true);
+    void addBoundCt(ConstrainedBound* src, ConstrainedBound* dst, int d, bool cycleCheck = true);
 
     /** Add a new precedence relationship between two cycle-groups. */
-    void addPrecedenceLink(
-        CycleGroup* src,
-        CycleGroup* dst,
-        bool cycleCheck = true);
+    void addPrecedenceLink(CycleGroup* src, CycleGroup* dst, bool cycleCheck = true);
 
     /** Perform static analysis (transitive closure). */
     void staticAnalysis();
@@ -78,7 +74,8 @@ public:
 #ifdef DEBUG
     void enQ(ConstrainedBound* bound);
 #else
-    void enQ(ConstrainedBound* bound)
+    void
+    enQ(ConstrainedBound* bound)
     {
         _propQ.enQ(bound);
     }
@@ -86,13 +83,18 @@ public:
     //@}
 protected:
     Manager* _mgr;
+
 private:
-/*     typedef std::set<CycleGroup*> cg_set_t; */
-/*     typedef clp::RevSet<CycleGroup> cg_revset_t; */
+    /*     typedef std::set<CycleGroup*> cg_set_t; */
+    /*     typedef clp::RevSet<CycleGroup> cg_revset_t; */
     typedef RevArray<BoundCt*> bct_array_t;
+
 private:
-    void init()
-    { ABORT(); }
+    void
+    init()
+    {
+        ABORT();
+    }
     void init(Manager* mgr);
     void deInit();
 
@@ -111,6 +113,7 @@ private:
     // set successor depth for all CGs
     void setSuccessorDepth();
     void setSuccessorDepth(CycleGroup* cg);
+
 private:
 #ifdef DEBUG
     void sanityCheckCGs();
@@ -132,10 +135,10 @@ private:
     utl::uint_t _initCgId;
 };
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 CLP_NS_END;
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 #endif

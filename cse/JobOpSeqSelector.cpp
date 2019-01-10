@@ -6,13 +6,13 @@
 #include "ForwardScheduler.h"
 #include "JobOpSeqSelector.h"
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 #ifdef DEBUG
 #define DEBUG_UNIT
 #endif
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 UTL_NS_USE;
 LUT_NS_USE;
@@ -20,15 +20,15 @@ CLP_NS_USE;
 CLS_NS_USE;
 GOP_NS_USE;
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 UTL_CLASS_IMPL(cse::JobOpSeqSelector, cse::Scheduler);
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 CSE_NS_BEGIN;
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 JobOpSeqSelector::copy(const Object& rhs)
@@ -38,7 +38,7 @@ JobOpSeqSelector::copy(const Object& rhs)
     Scheduler::copy(rcs);
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 JobOpSeqSelector::setStringBase(Operator* op) const
@@ -55,7 +55,7 @@ JobOpSeqSelector::setStringBase(Operator* op) const
     _nestedScheduler->setStringBase(op);
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 uint_t
 JobOpSeqSelector::stringSize(const ClevorDataSet& dataSet) const
@@ -66,12 +66,10 @@ JobOpSeqSelector::stringSize(const ClevorDataSet& dataSet) const
     return stringSize;
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
-JobOpSeqSelector::initialize(
-    const gop::DataSet* p_dataSet,
-    uint_t stringBase)
+JobOpSeqSelector::initialize(const gop::DataSet* p_dataSet, uint_t stringBase)
 {
     ASSERTD(_nestedScheduler != nullptr);
     ASSERTD(dynamic_cast<const ClevorDataSet*>(p_dataSet) != nullptr);
@@ -83,18 +81,13 @@ JobOpSeqSelector::initialize(
     fScheduler->setJobOps(dataSet);
     fScheduler->jobStartPosition() = _stringBase - dataSet->jobs().size();
     fScheduler->opStartPosition() = _stringBase;
-    _nestedScheduler->initialize(dataSet,
-        _stringBase + dataSet->sops().size());
+    _nestedScheduler->initialize(dataSet, _stringBase + dataSet->sops().size());
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
-JobOpSeqSelector::initializeInd(
-    Ind* p_ind,
-    const gop::DataSet* p_dataSet,
-    RandNumGen* rng,
-    void*)
+JobOpSeqSelector::initializeInd(Ind* p_ind, const gop::DataSet* p_dataSet, RandNumGen* rng, void*)
 {
     ASSERTD(dynamic_cast<StringInd<uint_t>*>(p_ind) != nullptr);
     ASSERTD(dynamic_cast<const ClevorDataSet*>(p_dataSet) != nullptr);
@@ -119,26 +112,22 @@ JobOpSeqSelector::initializeInd(
         string[_stringBase + i] = uint_t_max;
         i++;
     }
-    _nestedScheduler->initializeInd(
-        ind, dataSet, rng, (void*)size_t_max);
+    _nestedScheduler->initializeInd(ind, dataSet, rng, (void*)size_t_max);
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
-JobOpSeqSelector::initializeRandomInd(
-    Ind* p_ind,
-    const gop::DataSet* p_dataSet,
-    RandNumGen* rng,
-    void*)
+JobOpSeqSelector::initializeRandomInd(Ind* p_ind,
+                                      const gop::DataSet* p_dataSet,
+                                      RandNumGen* rng,
+                                      void*)
 {
-    utl::cout
-        << "ERROR(JobOpSeqSelector.cpp): in the incompleted code!"
-        << utl::endl;
+    utl::cout << "ERROR(JobOpSeqSelector.cpp): in the incompleted code!" << utl::endl;
     ABORT();
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 JobOpSeqSelector::run(Ind* p_ind, IndBuilderContext* p_context) const
@@ -152,7 +141,7 @@ JobOpSeqSelector::run(Ind* p_ind, IndBuilderContext* p_context) const
     _nestedScheduler->run(ind, context);
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 JobOpSeqSelector::init()
@@ -160,12 +149,10 @@ JobOpSeqSelector::init()
     _nestedScheduler = new ForwardScheduler();
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
-JobOpSeqSelector::setSelectedJobOpSeq(
-    StringInd<uint_t>* ind,
-    SchedulingContext* context) const
+JobOpSeqSelector::setSelectedJobOpSeq(StringInd<uint_t>* ind, SchedulingContext* context) const
 {
     gop::String<uint_t>& string = ind->string();
     const job_set_id_t& jobs = context->clevorDataSet()->jobs();
@@ -175,8 +162,7 @@ JobOpSeqSelector::setSelectedJobOpSeq(
     {
         Job* job = *it;
         const jobop_set_id_t& ops = job->allSops();
-        for (jobop_set_id_t::const_iterator opIt = ops.begin();
-             opIt != ops.end(); ++opIt)
+        for (jobop_set_id_t::const_iterator opIt = ops.begin(); opIt != ops.end(); ++opIt)
         {
             JobOp* op = *opIt;
             op->serialId() = string[_stringBase + i];
@@ -185,6 +171,6 @@ JobOpSeqSelector::setSelectedJobOpSeq(
     }
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 CSE_NS_END;

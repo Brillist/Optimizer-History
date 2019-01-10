@@ -3,13 +3,13 @@
 #include <clp/FailEx.h>
 #include "ResCapMutate.h"
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 #ifdef DEBUG
 #define DEBUG_UNIT
 #endif
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 UTL_NS_USE;
 LUT_NS_USE;
@@ -17,15 +17,15 @@ GOP_NS_USE;
 CLP_NS_USE;
 CLS_NS_USE;
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 UTL_CLASS_IMPL(cse::ResCapMutate, gop::RevOperator);
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 CSE_NS_BEGIN;
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 ResCapMutate::copy(const Object& rhs)
@@ -39,7 +39,7 @@ ResCapMutate::copy(const Object& rhs)
     _moveResCap = rcm._moveResCap;
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 ResCapMutate::initialize(const gop::DataSet* p_dataSet)
@@ -57,24 +57,21 @@ ResCapMutate::initialize(const gop::DataSet* p_dataSet)
         uint_t size = ((_maxCaps[i] - _minCaps[i]) / res->stepCap()) + 1;
         if (size == 0)
         {
-            addOperatorVar(i,0,2);
+            addOperatorVar(i, 0, 2);
         }
         else
         {
-            addOperatorVar(i,1,2);
+            addOperatorVar(i, 1, 2);
         }
         numCaps += size;
     }
     setNumChoices(numCaps - numRes);
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 bool
-ResCapMutate::execute(
-    gop::Ind* p_ind,
-    gop::IndBuilderContext* p_context,
-    bool singleStep)
+ResCapMutate::execute(gop::Ind* p_ind, gop::IndBuilderContext* p_context, bool singleStep)
 {
     if (_resources.size() == 0)
     {
@@ -91,7 +88,7 @@ ResCapMutate::execute(
 #endif
 
     // select a resource (resIdx)
-//     uint_t resIdx = selectOperatorVarIdx();
+    //     uint_t resIdx = selectOperatorVarIdx();
     uint_t resIdx = getSelectedVarIdx();
     _moveResIdx = resIdx;
     _moveResCap = string[_stringBase + _moveResIdx];
@@ -107,8 +104,7 @@ ResCapMutate::execute(
         {
             cap = oldCap - step;
         }
-        else if ((oldCap < step) ||
-                 (oldCap - step) < _minCaps[resIdx])
+        else if ((oldCap < step) || (oldCap - step) < _minCaps[resIdx])
         {
             cap = oldCap + step;
         }
@@ -130,19 +126,16 @@ ResCapMutate::execute(
     {
         uint_t range = (_maxCaps[resIdx] - _minCaps[resIdx]) / step;
         cap = _minCaps[resIdx] + (_rng->evali(range) * step);
-        if (cap >= oldCap) cap = utl::min(cap + step, _maxCaps[resIdx]);
+        if (cap >= oldCap)
+            cap = utl::min(cap + step, _maxCaps[resIdx]);
     }
     string[_stringBase + _moveResIdx] = cap;
 #ifdef DEBUG_UNIT
-    utl::cout
-        << "                                                   "
-        << " res:" << res->id()
-        << ", size:" << _maxCaps[resIdx] - _minCaps[resIdx]
-        << ", oldCap:" << oldCap << ", cap:" << cap
-        << utl::endlf;
+    utl::cout << "                                                   "
+              << " res:" << res->id() << ", size:" << _maxCaps[resIdx] - _minCaps[resIdx]
+              << ", oldCap:" << oldCap << ", cap:" << cap << utl::endlf;
 #endif
-    cls::DiscreteResource* clsRes
-        = (cls::DiscreteResource*)res->clsResource();
+    cls::DiscreteResource* clsRes = (cls::DiscreteResource*)res->clsResource();
     clsRes->selectCapacity(cap, res->maxCap());
     SchedulingContext* context = (SchedulingContext*)p_context;
     context->manager()->revSet(res->selectedCap(), cap);
@@ -150,16 +143,17 @@ ResCapMutate::execute(
     return true;
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 ResCapMutate::accept()
 {
     ASSERTD(_moveSchedule != nullptr);
-    if (_moveSchedule->newString()) _moveSchedule->acceptNewString();
+    if (_moveSchedule->newString())
+        _moveSchedule->acceptNewString();
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 ResCapMutate::undo()
@@ -167,12 +161,13 @@ ResCapMutate::undo()
     ASSERTD(_moveSchedule != nullptr);
     ASSERTD(_moveResIdx != uint_t_max);
     ASSERTD(_moveResCap != uint_t_max);
-    if (_moveSchedule->newString()) _moveSchedule->deleteNewString();
+    if (_moveSchedule->newString())
+        _moveSchedule->deleteNewString();
     gop::String<uint_t>& string = _moveSchedule->string();
     string[_stringBase + _moveResIdx] = _moveResCap;
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 ResCapMutate::init()
@@ -182,14 +177,14 @@ ResCapMutate::init()
     _moveResCap = uint_t_max;
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 ResCapMutate::deInit()
 {
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 ResCapMutate::setResources(const ClevorDataSet* dataSet)
@@ -197,15 +192,12 @@ ResCapMutate::setResources(const ClevorDataSet* dataSet)
     // note all resources with minCap < maxCap
     _resources.clear();
     res_set_id_t::const_iterator it;
-    for (it = dataSet->resources().begin();
-         it != dataSet->resources().end();
-         ++it)
+    for (it = dataSet->resources().begin(); it != dataSet->resources().end(); ++it)
     {
-        DiscreteResource* res
-            = dynamic_cast<DiscreteResource*>(*it);
-        if (res == nullptr) continue;
-        cls::DiscreteResource* clsRes
-            = (cls::DiscreteResource*)(res->clsResource());
+        DiscreteResource* res = dynamic_cast<DiscreteResource*>(*it);
+        if (res == nullptr)
+            continue;
+        cls::DiscreteResource* clsRes = (cls::DiscreteResource*)(res->clsResource());
         uint_t minReqCap = roundUp(clsRes->minReqCap(), (uint_t)100);
         uint_t maxReqCap = roundUp(clsRes->maxReqCap(), (uint_t)100);
         ASSERTD(res->maxCap() >= res->minCap());
@@ -236,12 +228,7 @@ ResCapMutate::setResources(const ClevorDataSet* dataSet)
         if ((res->maxCap() - res->minCap()) >= res->stepCap())
         {
             uint_t minCap = utl::max(res->minCap(), minReqCap);
-            uint_t maxCap
-                = utl::max(
-                    minCap,
-                    utl::min(
-                        res->maxCap(),
-                        maxReqCap));
+            uint_t maxCap = utl::max(minCap, utl::min(res->maxCap(), maxReqCap));
             if (maxCap > minCap)
             {
                 _resources.push_back(res);
@@ -252,6 +239,6 @@ ResCapMutate::setResources(const ClevorDataSet* dataSet)
     }
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 CSE_NS_END;

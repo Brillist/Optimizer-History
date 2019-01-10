@@ -3,13 +3,13 @@
 #include <libutl/Time.h>
 #include "ReleaseTimeMutate.h"
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 #ifdef DEBUG
 #define DEBUG_UNIT
 #endif
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 UTL_NS_USE;
 LUT_NS_USE;
@@ -17,15 +17,15 @@ GOP_NS_USE;
 CLP_NS_USE;
 CLS_NS_USE;
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 UTL_CLASS_IMPL(cse::ReleaseTimeMutate, gop::RevOperator);
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 CSE_NS_BEGIN;
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 ReleaseTimeMutate::copy(const Object& rhs)
@@ -43,7 +43,7 @@ ReleaseTimeMutate::copy(const Object& rhs)
     _moveActRlsTime = rtm._moveActRlsTime;
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 ReleaseTimeMutate::initialize(const gop::DataSet* p_dataSet)
@@ -62,21 +62,19 @@ ReleaseTimeMutate::initialize(const gop::DataSet* p_dataSet)
         JobOp* op = (JobOp*)(act->owner());
         Job* job = op->job();
         //// suppose there are only two values for each act
-        if(job->active()) _numRlsTimeChoices += 2;
-        addOperatorVar(i,1,2,job->activeP());
+        if (job->active())
+            _numRlsTimeChoices += 2;
+        addOperatorVar(i, 1, 2, job->activeP());
     }
     setNumChoices(_numRlsTimeChoices);
     // init _changeStep: set it to a day
     _changeStep = dataSet->schedulerConfig()->durationToTimeSlot(24 * 3600);
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 bool
-ReleaseTimeMutate::execute(
-    gop::Ind* ind,
-    gop::IndBuilderContext* p_context,
-    bool singleStep)
+ReleaseTimeMutate::execute(gop::Ind* ind, gop::IndBuilderContext* p_context, bool singleStep)
 {
     ASSERTD(dynamic_cast<SchedulingContext*>(p_context) != nullptr);
     ASSERTD(dynamic_cast<StringInd<uint_t>*>(ind) != nullptr);
@@ -87,10 +85,8 @@ ReleaseTimeMutate::execute(
     // choose an activity
     uint_t actIdx = getSelectedVarIdx();
 #ifdef DEBUG_UNIT
-    utl::cout
-        << "                                                   "
-        << "varSucRate:" << getSelectedVarP()
-        << ", idx:" << actIdx;
+    utl::cout << "                                                   "
+              << "varSucRate:" << getSelectedVarP() << ", idx:" << actIdx;
 #endif
     _moveActIdx = _stringBase + actIdx;
     _moveActRlsTime = string[_moveActIdx];
@@ -124,15 +120,10 @@ ReleaseTimeMutate::execute(
     oldT = dataSet->schedulerConfig()->timeSlotToTime(oldRlsTime);
     newT = dataSet->schedulerConfig()->timeSlotToTime(newRlsTime);
     existingT = dataSet->schedulerConfig()->timeSlotToTime(act->es());
-    utl::cout << ", job(ropId):" << act->id()
-              << ", minReleaseT:" << Time(minT).toString()
-              << "(" << _minRlsTimes[actIdx]
-              << "), oldReleaseT:" << Time(oldT).toString()
-              << "(" << oldRlsTime
-              << "), newReleaseT:" << Time(newT).toString()
-              << "(" << newRlsTime
-              << "), existingES:" << Time(existingT).toString()
-              << "(" << act->es() << ")"
+    utl::cout << ", job(ropId):" << act->id() << ", minReleaseT:" << Time(minT).toString() << "("
+              << _minRlsTimes[actIdx] << "), oldReleaseT:" << Time(oldT).toString() << "("
+              << oldRlsTime << "), newReleaseT:" << Time(newT).toString() << "(" << newRlsTime
+              << "), existingES:" << Time(existingT).toString() << "(" << act->es() << ")"
               << utl::endlf;
 #endif
     // set new release time and propagate
@@ -144,16 +135,17 @@ ReleaseTimeMutate::execute(
     return true;
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 ReleaseTimeMutate::accept()
 {
     ASSERTD(_moveSchedule != nullptr);
-    if (_moveSchedule->newString()) _moveSchedule->acceptNewString();
+    if (_moveSchedule->newString())
+        _moveSchedule->acceptNewString();
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 ReleaseTimeMutate::undo()
@@ -161,12 +153,13 @@ ReleaseTimeMutate::undo()
     ASSERTD(_moveSchedule != nullptr);
     ASSERTD(_moveActIdx != uint_t_max);
     ASSERTD(_moveActRlsTime != uint_t_max);
-    if (_moveSchedule->newString()) _moveSchedule->deleteNewString();
+    if (_moveSchedule->newString())
+        _moveSchedule->deleteNewString();
     gop::String<uint_t>& string = _moveSchedule->string();
     string[_moveActIdx] = _moveActRlsTime;
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 ReleaseTimeMutate::init()
@@ -177,14 +170,14 @@ ReleaseTimeMutate::init()
     _moveActRlsTime = uint_t_max;
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 ReleaseTimeMutate::deInit()
 {
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 ReleaseTimeMutate::setActs(const ClevorDataSet* dataSet)
@@ -201,7 +194,8 @@ ReleaseTimeMutate::setActs(const ClevorDataSet* dataSet)
         utl::cout << op->toString() << utl::endlf;
 #endif
         const unaryct_vect_t& unaryCts = op->unaryCts();
-        if (unaryCts.size() == 0) continue;
+        if (unaryCts.size() == 0)
+            continue;
         unaryct_vect_t::const_iterator it;
         bool hasRlsTime = false;
         uint_t rlsTime = uint_t_max;
@@ -214,26 +208,24 @@ ReleaseTimeMutate::setActs(const ClevorDataSet* dataSet)
                 rlsTime = dataSet->schedulerConfig()->timeToTimeSlot(uct->time());
 #ifdef DEBUG_UNIT
                 utl::cout << "summaryOp:" << op->id()
-                          << " has a release date:" << Time(uct->time()).toString()
-                          << utl::endlf;
+                          << " has a release date:" << Time(uct->time()).toString() << utl::endlf;
 #endif
                 break;
             }
         }
-        if (!hasRlsTime) continue;
-//         ASSERTD(job->releaseTime() != -1);
+        if (!hasRlsTime)
+            continue;
+        //         ASSERTD(job->releaseTime() != -1);
         Activity* act = op->activity();
 #ifdef DEBUG_UNIT
-        utl::cout << act->toString()
-                  << ", rlsTime:" << rlsTime
-                  << ", act->es():" << act->es()
+        utl::cout << act->toString() << ", rlsTime:" << rlsTime << ", act->es():" << act->es()
                   << utl::endlf;
 #endif
-        _acts.push_back(act); // _acts
+        _acts.push_back(act);                                    // _acts
         _minRlsTimes.push_back(min(rlsTime, (uint_t)act->es())); // _minRlsTimes
     }
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 CSE_NS_END;

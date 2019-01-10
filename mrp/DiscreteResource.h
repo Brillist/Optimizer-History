@@ -1,7 +1,7 @@
 #ifndef MRP_DISCRETERESOURCE_H
 #define MRP_DISCRETERESOURCE_H
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /* #include <cls/ResourceCalendar.h> */
 #include <cse/DiscreteResource.h>
@@ -9,11 +9,11 @@
 #include <mrp/Resource.h>
 #include <mrp/SetupGroup.h>
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 MRP_NS_BEGIN;
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
    Discrete resource.
@@ -21,36 +21,47 @@ MRP_NS_BEGIN;
    \author Adam McKee
 */
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 class DiscreteResource : public Resource
 {
     UTL_CLASS_DECL(DiscreteResource);
+
 public:
     virtual void copy(const utl::Object& rhs);
 
-    virtual void serialize(
-        utl::Stream& stream,
-        utl::uint_t io,
-        utl::uint_t mode = utl::ser_default);
+    virtual void
+    serialize(utl::Stream& stream, utl::uint_t io, utl::uint_t mode = utl::ser_default);
 
     /// \name Accessors
     //@{
     /** Capacity. */
-    utl::uint_t capacity() const
-    { return _capacity; }
+    utl::uint_t
+    capacity() const
+    {
+        return _capacity;
+    }
 
     /** Capacity. */
-    utl::uint_t& capacity()
-    { return _capacity; }
+    utl::uint_t&
+    capacity()
+    {
+        return _capacity;
+    }
 
     /** Setup group. */
-    const SetupGroup* setupGroup() const
-    { return _setupGroup; }
+    const SetupGroup*
+    setupGroup() const
+    {
+        return _setupGroup;
+    }
 
     /** Setup group. */
-    SetupGroup* setupGroup()
-    { return _setupGroup; }
+    SetupGroup*
+    setupGroup()
+    {
+        return _setupGroup;
+    }
     //@}
 
     /** reset setup group. */
@@ -60,9 +71,11 @@ public:
     cse::DiscreteResource* createDiscreteResource();
 
     utl::String toString() const;
+
 private:
     void init();
     void deInit();
+
 private:
     utl::uint_t _capacity;
     SetupGroup* _setupGroup;
@@ -73,10 +86,10 @@ private:
     bool _setupGroupOwner;
 };
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 MRP_NS_END;
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 #endif

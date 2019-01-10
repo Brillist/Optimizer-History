@@ -5,7 +5,7 @@
 #include <libutl/Float.h>
 #include <libutl/BufferedFDstream.h>
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 #ifdef DEBUG
 #define DEBUG_UNIT
@@ -14,20 +14,20 @@
 // #define ID_SA //Iterative Deepening SA
 // #define AR_SA //Automatic Re-annealing SA
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 UTL_NS_USE;
 LUT_NS_USE;
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 UTL_CLASS_IMPL(gop::SAoptimizer, gop::Optimizer);
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 GOP_NS_BEGIN;
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 SAoptimizer::initialize(const OptimizerConfiguration* config)
@@ -41,10 +41,9 @@ SAoptimizer::initialize(const OptimizerConfiguration* config)
     iterationRun();
     setInitScore(_newScore->clone());
     setBestScore(_newScore->clone());
-    if (_ind->newString()) _ind->acceptNewString();
-    StringScore* strScore = new StringScore(
-        0, _ind->getString()->clone(),
-        _bestScore->clone());
+    if (_ind->newString())
+        _ind->acceptNewString();
+    StringScore* strScore = new StringScore(0, _ind->getString()->clone(), _bestScore->clone());
     setBestStrScore(strScore);
     setAcceptedScore(_bestScore->clone());
     objective->setBestScore(_bestScore->clone());
@@ -54,7 +53,7 @@ SAoptimizer::initialize(const OptimizerConfiguration* config)
 #endif
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 SAoptimizer::storeScoreDiff(double diff)
@@ -66,10 +65,9 @@ SAoptimizer::storeScoreDiff(double diff)
     _scoreDiff = diff;
     if (!_fixedInitTemp)
     {
-        if ((_newScore->getType() == _acceptedScore->getType())
-            & (diff < 0))
+        if ((_newScore->getType() == _acceptedScore->getType()) & (diff < 0))
         {
-            _totalScoreDiff += -diff;//fabs(diff);
+            _totalScoreDiff += -diff; //fabs(diff);
             ++_totalScoreDiffIter;
         }
         else if (_newScore->getType() > _acceptedScore->getType())
@@ -80,20 +78,20 @@ SAoptimizer::storeScoreDiff(double diff)
     }
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 SAoptimizer::resetInitTemp(double acceptanceRatio, bool reinit)
 {
-    if (_totalScoreDiffIter == 0) return;
+    if (_totalScoreDiffIter == 0)
+        return;
     if (acceptanceRatio == 1.0)
     {
         _initTemp = double_t_max;
     }
     else
     {
-        _initTemp = -1 * (_totalScoreDiff / _totalScoreDiffIter) /
-            log(acceptanceRatio);
+        _initTemp = -1 * (_totalScoreDiff / _totalScoreDiffIter) / log(acceptanceRatio);
     }
     if (reinit)
     {
@@ -102,7 +100,7 @@ SAoptimizer::resetInitTemp(double acceptanceRatio, bool reinit)
     }
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 SAoptimizer::acceptanceEval(RevOperator* op)
@@ -120,7 +118,7 @@ SAoptimizer::acceptanceEval(RevOperator* op)
     }
     else
     {
-        double acceptProb  = exp(_scoreDiff / _currentTemp);
+        double acceptProb = exp(_scoreDiff / _currentTemp);
         _accept = (_rng->evalf() < acceptProb); //_accept
     }
 #ifdef DEBUG_UNIT
@@ -131,7 +129,7 @@ SAoptimizer::acceptanceEval(RevOperator* op)
         op->accept();
         setAcceptedScore(utl::clone(_newScore));
         cmpResult = objective->compare(_newScore, _bestScore);
-        _newBest = (cmpResult > 0); //_newBest
+        _newBest = (cmpResult > 0);    //_newBest
         _sameScore = (cmpResult == 0); //_sameScore
         if (_newBest)
         {
@@ -157,7 +155,7 @@ SAoptimizer::acceptanceEval(RevOperator* op)
     }
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 bool
 SAoptimizer::SAiterationRun()
@@ -177,9 +175,7 @@ SAoptimizer::SAiterationRun()
     RevOperator* rop = (RevOperator*)op;
     rop->addTotalIter();
 #ifdef DEBUG_UNIT
-    utl::cout
-        << "                                      "
-        << op->toString() << utl::endlf;
+    utl::cout << "                                      " << op->toString() << utl::endlf;
 #endif
 
     // generate and evaluate a new schedule
@@ -196,7 +192,7 @@ SAoptimizer::SAiterationRun()
     return complete;
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 bool
 SAoptimizer::run()
@@ -221,18 +217,19 @@ SAoptimizer::run()
     return scheduleFeasible;
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 SAoptimizer::audit()
 {
     ASSERTD(_bestStrScore != nullptr);
     _ind->setString(_bestStrScore->getString()->clone());
-    if (!iterationRun(nullptr, true)) ABORT();
+    if (!iterationRun(nullptr, true))
+        ABORT();
     ASSERTD(*_bestScore == *_newScore);
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 SAoptimizer::init()
@@ -252,7 +249,7 @@ SAoptimizer::init()
     _tempIteration = 0;
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 SAoptimizer::deInit()
@@ -261,19 +258,17 @@ SAoptimizer::deInit()
     delete _acceptedScore;
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 utl::String
 SAoptimizer::temperatureString() const
 {
     utl::MemStream str;
-    str << "                     ";//temporary code
-    str << "temp:"
-        << Float(_currentTemp).toString("precision:3")
-        << "/" << Float(_initTemp).toString("precision:0")
+    str << "                     "; //temporary code
+    str << "temp:" << Float(_currentTemp).toString("precision:3") << "/"
+        << Float(_initTemp).toString("precision:0")
         << ", rate:" << Float(_tempDcrRate).toString("precision:2")
-        << ", new:" << _newScore->toString()
-        << ", accepted:" << _acceptedScore->toString()
+        << ", new:" << _newScore->toString() << ", accepted:" << _acceptedScore->toString()
         << ", diff:";
     if (_scoreDiff == utl::double_t_max)
     {
@@ -304,7 +299,7 @@ SAoptimizer::temperatureString() const
     return utl::String((char*)str.get());
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 // bool
 // SAoptimizer::run1()
@@ -455,7 +450,7 @@ SAoptimizer::temperatureString() const
 //     return scheduleFeasible;
 // }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 // bool
 // SAoptimizer::run2()
@@ -589,7 +584,6 @@ SAoptimizer::temperatureString() const
 //     return scheduleFeasible;
 // }
 
-
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 GOP_NS_END;

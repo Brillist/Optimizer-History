@@ -1,15 +1,15 @@
 #ifndef CLP_CONSTRAINT_H
 #define CLP_CONSTRAINT_H
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 #include <clp/Goal.h>
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 CLP_NS_BEGIN;
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
    Constraint (abstract).
@@ -26,16 +26,19 @@ CLP_NS_BEGIN;
    \author Adam McKee
 */
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 class Constraint : public Goal
 {
     UTL_CLASS_DECL_ABC(Constraint);
+
 public:
     /** Constructor. */
     Constraint(Manager* mgr)
         : Goal(mgr)
-    { init(); }
+    {
+        init();
+    }
 
     virtual void copy(const utl::Object& rhs);
 
@@ -43,51 +46,72 @@ public:
     virtual Constraint* mclone();
 
     /** Make managed copies of unmanaged referenced objects. */
-    virtual void mcopy() {}
+    virtual void
+    mcopy()
+    {
+    }
 
     /** Post constraints for expressions. */
-    virtual void postExpConstraints() {}
+    virtual void
+    postExpConstraints()
+    {
+    }
 
     /** Post the constraint. */
-    virtual void post()=0;
+    virtual void post() = 0;
 
     /** Remove the constraint. */
-    virtual void unpost()=0;
+    virtual void unpost() = 0;
 
     /** Get the depth of posting. */
-    utl::uint_t getPostDepth() const
-    { return _postDepth; }
+    utl::uint_t
+    getPostDepth() const
+    {
+        return _postDepth;
+    }
 
     /** Get the \b posted flag. */
-    bool isPosted() const
-    { return _posted; }
+    bool
+    isPosted() const
+    {
+        return _posted;
+    }
 
     /** Set the \b posted flag. */
     void setPosted(bool posted);
 
     /** Get the \b managed flag. */
-    bool isManaged() const
-    { return _managed; }
+    bool
+    isManaged() const
+    {
+        return _managed;
+    }
 
     /** Set the \b managed flag. */
-    void setManaged(bool managed)
-    { _managed = managed; }
+    void
+    setManaged(bool managed)
+    {
+        _managed = managed;
+    }
+
 private:
     void init();
-    void deInit()
+    void
+    deInit()
     {
         ASSERTD(!isPosted());
     }
+
 private:
     bool _posted;
     bool _managed;
     utl::uint_t _postDepth;
 };
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 CLP_NS_END;
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 #endif

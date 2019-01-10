@@ -6,19 +6,19 @@
 #include "TotalCostEvaluator.h"
 #include "TotalCostEvaluatorConfiguration.h"
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 #undef new
 #include <list>
 #include <libutl/gblnew_macros.h>
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 #ifdef DEBUG
 // #define DEBUG_UNIT
 #endif
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 UTL_NS_USE;
 LUT_NS_USE;
@@ -26,20 +26,20 @@ CLP_NS_USE;
 CLS_NS_USE;
 GOP_NS_USE;
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 CSE_NS_BEGIN;
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 static uint_t hourSec = 60 * 60;
 static uint_t daySec = 24 * hourSec;
 static uint_t weekSec = 7 * daySec;
 static uint_t monthSec = 30 * daySec;
 
-//////////////////////////////////////////////////////////////////////////////
-/// CapCostRec ///////////////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
+/// CapCostRec /////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 class CapCostRec
 {
@@ -49,34 +49,58 @@ public:
         init(cap);
     }
 
-    uint_t cap() const
-    { return _cap; }
+    uint_t
+    cap() const
+    {
+        return _cap;
+    }
 
-    uint_t capIdx() const
-    { return _capIdx; }
+    uint_t
+    capIdx() const
+    {
+        return _capIdx;
+    }
 
-    uint_t& capIdx()
-    { return _capIdx; }
+    uint_t&
+    capIdx()
+    {
+        return _capIdx;
+    }
 
-    int startTime() const
-    { return _startTime; }
+    int
+    startTime() const
+    {
+        return _startTime;
+    }
 
-    int& startTime()
-    { return _startTime; }
+    int&
+    startTime()
+    {
+        return _startTime;
+    }
 
-    int endTime() const
-    { return _endTime; }
+    int
+    endTime() const
+    {
+        return _endTime;
+    }
 
-    int& endTime()
-    { return _endTime; }
+    int&
+    endTime()
+    {
+        return _endTime;
+    }
+
 private:
-    void init(uint_t cap)
+    void
+    init(uint_t cap)
     {
         _cap = cap;
         _capIdx = 0;
         _startTime = 0;
         _endTime = 0;
     }
+
 private:
     uint_t _cap;
     uint_t _capIdx;
@@ -84,16 +108,14 @@ private:
     int _endTime;
 };
 
-//////////////////////////////////////////////////////////////////////////////
-/// CapCostRecOrdering ///////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
+/// CapCostRecOrdering /////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
-struct CapCostRecOrdering
-    : public std::binary_function<CapCostRec*,CapCostRec*,bool>
+struct CapCostRecOrdering : public std::binary_function<CapCostRec*, CapCostRec*, bool>
 {
-    bool operator()(
-        const CapCostRec* lhs,
-        const CapCostRec* rhs) const
+    bool
+    operator()(const CapCostRec* lhs, const CapCostRec* rhs) const
     {
         if (lhs->startTime() != rhs->startTime())
         {
@@ -103,101 +125,132 @@ struct CapCostRecOrdering
     }
 };
 
-//////////////////////////////////////////////////////////////////////////////
-/// CapCostRecCapOrdering ////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
+/// CapCostRecCapOrdering //////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
-struct CapCostRecCapOrdering
-    : public std::binary_function<CapCostRec*,CapCostRec*,bool>
+struct CapCostRecCapOrdering : public std::binary_function<CapCostRec*, CapCostRec*, bool>
 {
-    bool operator()(
-        const CapCostRec* lhs,
-        const CapCostRec* rhs) const
+    bool
+    operator()(const CapCostRec* lhs, const CapCostRec* rhs) const
     {
         return (lhs->cap() < rhs->cap());
     }
 };
 
-//////////////////////////////////////////////////////////////////////////////
-/// CapSpan //////////////////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
+/// CapSpan ////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 class CapSpan
 {
 public:
     CapSpan(uint_t cap, const Span<int>& span)
-    { _cap = cap; _begin = span.getBegin(); _end = span.getEnd(); }
+    {
+        _cap = cap;
+        _begin = span.getBegin();
+        _end = span.getEnd();
+    }
 
     CapSpan(uint_t cap, int begin, int end)
-    { _cap = cap; _begin = begin; _end = end; }
+    {
+        _cap = cap;
+        _begin = begin;
+        _end = end;
+    }
 
-    uint_t size() const
-    { return _end - _begin; }
+    uint_t
+    size() const
+    {
+        return _end - _begin;
+    }
 
-    uint_t cap() const
-    { return _cap; }
+    uint_t
+    cap() const
+    {
+        return _cap;
+    }
 
-    uint_t& cap()
-    { return _cap; }
+    uint_t&
+    cap()
+    {
+        return _cap;
+    }
 
-    int begin() const
-    { return _begin; }
+    int
+    begin() const
+    {
+        return _begin;
+    }
 
-    int& begin()
-    { return _begin; }
+    int&
+    begin()
+    {
+        return _begin;
+    }
 
-    int end() const
-    { return _end; }
+    int
+    end() const
+    {
+        return _end;
+    }
 
-    int& end()
-    { return _end; }
+    int&
+    end()
+    {
+        return _end;
+    }
+
 private:
     uint_t _cap;
     int _begin;
     int _end;
 };
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 typedef std_hash_map<uint_t, CapCostRec*> ccr_map_t;
 
-//////////////////////////////////////////////////////////////////////////////
-/// SpanInterestPeriod ///////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
+/// SpanInterestPeriod /////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 class SpanInterestPeriod : public utl::Span<int>
 {
     UTL_CLASS_DECL(SpanInterestPeriod);
+
 public:
-    SpanInterestPeriod(
-        int begin,
-        int end,
-        utl::uint_t period);
+    SpanInterestPeriod(int begin, int end, utl::uint_t period);
 
     virtual void copy(const utl::Object& rhs);
 
-    utl::uint_t period() const
-    { return _period; }
+    utl::uint_t
+    period() const
+    {
+        return _period;
+    }
+
 private:
     void init();
-    void deInit() {}
+    void
+    deInit()
+    {
+    }
+
 private:
     utl::uint_t _period;
 };
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
-SpanInterestPeriod::SpanInterestPeriod(
-    int begin,
-    int end,
-    utl::uint_t period)
+SpanInterestPeriod::SpanInterestPeriod(int begin, int end, utl::uint_t period)
     : Span<int>(begin, end)
 {
     setRelaxed(true);
     _period = period;
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 SpanInterestPeriod::copy(const Object& rhs)
@@ -208,7 +261,7 @@ SpanInterestPeriod::copy(const Object& rhs)
     _period = ip._period;
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 SpanInterestPeriod::init()
@@ -217,9 +270,9 @@ SpanInterestPeriod::init()
     setRelaxed(true);
 }
 
-//////////////////////////////////////////////////////////////////////////////
-/// TotalCostEvaluator ///////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
+/// TotalCostEvaluator /////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 TotalCostEvaluator::copy(const Object& rhs)
@@ -234,37 +287,42 @@ TotalCostEvaluator::copy(const Object& rhs)
     _overheadCostPerTS = tce._overheadCostPerTS;
     _interestRate = tce._interestRate;
     _numIPs = tce._numIPs;
-    delete [] _ipCost; _ipCost = nullptr;
+    delete[] _ipCost;
+    _ipCost = nullptr;
     if (_numIPs > 0)
     {
         _ipCost = new double[_numIPs];
     }
 
     _capsSize = 0;
-    delete [] _caps; _caps = nullptr;
+    delete[] _caps;
+    _caps = nullptr;
     _capDayTimesSize = 0;
-    delete [] _capDayTimes; _capDayTimes = nullptr;
+    delete[] _capDayTimes;
+    _capDayTimes = nullptr;
     _capDayHiresSize = 0;
-    delete [] _capDayHires; _capDayHires = nullptr;
+    delete[] _capDayHires;
+    _capDayHires = nullptr;
     _capDayFireBeforeHireSize = 0;
-    delete [] _capDayFireBeforeHire; _capDayFireBeforeHire = nullptr;
+    delete[] _capDayFireBeforeHire;
+    _capDayFireBeforeHire = nullptr;
     _dayCostsSize = 0;
-    delete [] _dayCosts; _dayCosts = nullptr;
+    delete[] _dayCosts;
+    _dayCosts = nullptr;
     _dayCostPeriods = 0;
-    delete [] _dayCostPeriods; _dayCostPeriods = nullptr;
+    delete[] _dayCostPeriods;
+    _dayCostPeriods = nullptr;
 
     _spanIPs = tce._spanIPs;
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 TotalCostEvaluator::initialize(const IndEvaluatorConfiguration* p_cf)
 {
-    ASSERTD(
-        dynamic_cast<const TotalCostEvaluatorConfiguration*>(p_cf) != nullptr);
-    const TotalCostEvaluatorConfiguration& cf =
-        (const TotalCostEvaluatorConfiguration&)*p_cf;
+    ASSERTD(dynamic_cast<const TotalCostEvaluatorConfiguration*>(p_cf) != nullptr);
+    const TotalCostEvaluatorConfiguration& cf = (const TotalCostEvaluatorConfiguration&)*p_cf;
     ScheduleEvaluator::initialize(cf);
 
     // origin, horizon, due-time
@@ -276,8 +334,7 @@ TotalCostEvaluator::initialize(const IndEvaluatorConfiguration* p_cf)
 
     // overhead cost
     uint_t periodSeconds = periodToSeconds(cf.overheadCostPeriod());
-    _overheadCostPerTS =
-        cf.overheadCost() / ((double)periodSeconds / (double)_timeStep);
+    _overheadCostPerTS = cf.overheadCost() / ((double)periodSeconds / (double)_timeStep);
 
     // ipCost[]
     time_t originTime = schedulerConfig->originTime();
@@ -332,11 +389,7 @@ TotalCostEvaluator::initialize(const IndEvaluatorConfiguration* p_cf)
         }
         else
         {
-            _spanIPs.add(
-                new SpanInterestPeriod(
-                    spanBegin,
-                    spanEnd + 1,
-                    spanIP));
+            _spanIPs.add(new SpanInterestPeriod(spanBegin, spanEnd + 1, spanIP));
             spanBegin = spanEnd = ts;
         }
         spanIP = ip;
@@ -348,10 +401,11 @@ TotalCostEvaluator::initialize(const IndEvaluatorConfiguration* p_cf)
         _spanIPs.add(new SpanInterestPeriod(spanBegin, spanEnd + 1, spanIP));
     }
     _numIPs = _spanIPs.size();
-    delete [] _ipCost; _ipCost = new double[_numIPs];
+    delete[] _ipCost;
+    _ipCost = new double[_numIPs];
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 double
 TotalCostEvaluator::calcScore(const IndBuilderContext* p_context) const
@@ -379,14 +433,11 @@ TotalCostEvaluator::calcScore(const IndBuilderContext* p_context) const
         *_os << heading("Configuration", '=', 80) << std::endl;
         std::string originTimeStr = getTimeString(origTime);
         std::string horizonTimeStr = getTimeString(horiTime);
-        *_os
-            << "origin: " << originTimeStr << std::endl;
-        *_os
-            << "horizon: " << horizonTimeStr << std::endl;
-        *_os
-            << "time-step: " << timeStep << " sec."
-            << std::endl;
-        delete _auditReport; _auditReport = new AuditReport();
+        *_os << "origin: " << originTimeStr << std::endl;
+        *_os << "horizon: " << horizonTimeStr << std::endl;
+        *_os << "time-step: " << timeStep << " sec." << std::endl;
+        delete _auditReport;
+        _auditReport = new AuditReport();
         _auditReport->setName(this->name());
         _auditReport->setOriginTime(origTime);
         _auditReport->setHorizonTime(horiTime);
@@ -400,10 +451,8 @@ TotalCostEvaluator::calcScore(const IndBuilderContext* p_context) const
             SpanInterestPeriod* sip = (SpanInterestPeriod*)*it;
             time_t begin = origTime + (sip->getBegin() * timeStep);
             time_t end = origTime + (sip->getEnd() * timeStep);
-            *_os
-                << "i.p. " << ipIdx << ": "
-                << "[" << getTimeString(begin) << "," << getTimeString(end) << ")"
-                << std::endl;
+            *_os << "i.p. " << ipIdx << ": "
+                 << "[" << getTimeString(begin) << "," << getTimeString(end) << ")" << std::endl;
             InterestPeriodInfo* info = new InterestPeriodInfo();
             info->idx = ipIdx;
             info->begin = begin;
@@ -434,7 +483,6 @@ TotalCostEvaluator::calcScore(const IndBuilderContext* p_context) const
     // interest cost
     calcInterestCost(context);
 
-
     if (_audit)
     {
         // Store the op info.
@@ -446,8 +494,7 @@ TotalCostEvaluator::calcScore(const IndBuilderContext* p_context) const
             OperationInfo* info = new OperationInfo();
             info->id = op->id();
             info->name = op->name();
-            _auditReport->operationInfos()->insert(
-                opInfos_t::value_type(info->id,info));
+            _auditReport->operationInfos()->insert(opInfos_t::value_type(info->id, info));
         }
     }
 
@@ -463,7 +510,7 @@ TotalCostEvaluator::calcScore(const IndBuilderContext* p_context) const
     return _totalCost;
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 TotalCostEvaluator::init()
@@ -495,23 +542,23 @@ TotalCostEvaluator::init()
     _auditReport = nullptr;
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 TotalCostEvaluator::deInit()
 {
-    delete [] _ipCost;
-    delete [] _dayIsBreak;
-    delete [] _caps;
-    delete [] _capDayTimes;
-    delete [] _capDayHires;
-    delete [] _capDayFireBeforeHire;
-    delete [] _dayCosts;
-    delete [] _dayCostPeriods;
+    delete[] _ipCost;
+    delete[] _dayIsBreak;
+    delete[] _caps;
+    delete[] _capDayTimes;
+    delete[] _capDayHires;
+    delete[] _capDayFireBeforeHire;
+    delete[] _dayCosts;
+    delete[] _dayCostPeriods;
     delete _auditReport;
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 TotalCostEvaluator::calcResourceCost(const SchedulingContext& context) const
@@ -520,14 +567,11 @@ TotalCostEvaluator::calcResourceCost(const SchedulingContext& context) const
     const cls::Schedule* clsSchedule = context.schedule();
 
     cls::Schedule::res_const_iterator rit;
-    for (rit = clsSchedule->resourcesBegin();
-         rit != clsSchedule->resourcesEnd();
-         ++rit)
+    for (rit = clsSchedule->resourcesBegin(); rit != clsSchedule->resourcesEnd(); ++rit)
     {
         // only deal with discrete resources that have cost defined
         cls::Resource* res = *rit;
-        if ((dynamic_cast<cls::DiscreteResource*>(res) == nullptr)
-            || (res->object() == nullptr))
+        if ((dynamic_cast<cls::DiscreteResource*>(res) == nullptr) || (res->object() == nullptr))
         {
             continue;
         }
@@ -551,7 +595,7 @@ TotalCostEvaluator::calcResourceCost(const SchedulingContext& context) const
     }
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 // void
 // TotalCostEvaluator::cslistBuild(
@@ -1019,7 +1063,7 @@ TotalCostEvaluator::calcResourceCost(const SchedulingContext& context) const
 // #endif
 // }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 TotalCostEvaluator::cslistDump(const cslist_t& cslist) const
@@ -1032,21 +1076,18 @@ TotalCostEvaluator::cslistDump(const cslist_t& cslist) const
         CapSpan* cs = *it;
         time_t begin = cs->begin() * timeStep + origin;
         time_t end = cs->end() * timeStep + origin;
-        std::cout
-            << "[" << getTimeString(begin) << "<" << cs->begin() << ">"
-            << "," << getTimeString(end) << "<" << cs->end() << ">"
-            << "): " << cs->cap()
-            << std::endl;
+        std::cout << "[" << getTimeString(begin) << "<" << cs->begin() << ">"
+                  << "," << getTimeString(end) << "<" << cs->end() << ">"
+                  << "): " << cs->cap() << std::endl;
     }
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
-TotalCostEvaluator::cslistUnbuffer(
-    cslist_t& cslist,
-    cslist_t& cslist_buf,
-    const CapSpan* endCS) const
+TotalCostEvaluator::cslistUnbuffer(cslist_t& cslist,
+                                   cslist_t& cslist_buf,
+                                   const CapSpan* endCS) const
 {
     while (!cslist_buf.empty())
     {
@@ -1060,14 +1101,14 @@ TotalCostEvaluator::cslistUnbuffer(
     }
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 // cslistCost calculate resource cost based on the CapSpan list generated
 // by cslistBuild
-void TotalCostEvaluator::cslistCost(
-    const SchedulingContext& context,
-    const cls::DiscreteResource& res,
-    const cslist_t& cslist) const
+void
+TotalCostEvaluator::cslistCost(const SchedulingContext& context,
+                               const cls::DiscreteResource& res,
+                               const cslist_t& cslist) const
 {
 #ifdef DEBUG_UNIT
     std::string myName("TotalCostEvaluator::cslistCost(): ");
@@ -1080,10 +1121,8 @@ void TotalCostEvaluator::cslistCost(
     ASSERTD(resCost != nullptr);
 
     // cannot cost the resource without cost information
-    if ((resCost->costPerHour() == double_t_max) &&
-        (resCost->costPerDay() == double_t_max) &&
-        (resCost->costPerWeek() == double_t_max) &&
-        (resCost->costPerMonth() == double_t_max))
+    if ((resCost->costPerHour() == double_t_max) && (resCost->costPerDay() == double_t_max) &&
+        (resCost->costPerWeek() == double_t_max) && (resCost->costPerMonth() == double_t_max))
     {
         return;
     }
@@ -1102,8 +1141,8 @@ void TotalCostEvaluator::cslistCost(
         if (lastSpan->end() > makespan.getEnd())
         {
 #ifdef DEBUG_UNIT
-            std::cout << myName << "lastSpan->end() > makespan.end() | "
-                << lastSpan->end() << " > " << makespan.getEnd() << std::endl;
+            std::cout << myName << "lastSpan->end() > makespan.end() | " << lastSpan->end() << " > "
+                      << makespan.getEnd() << std::endl;
 #endif
             makespan.setEnd(roundUp(lastSpan->end(), tsPerDay));
         }
@@ -1126,7 +1165,8 @@ void TotalCostEvaluator::cslistCost(
     {
         CapSpan* capSpan = *cslistIt;
         uint_t cap = capSpan->cap();
-        if (cap > maxCap) maxCap = 0;
+        if (cap > maxCap)
+            maxCap = 0;
         ccr_map_t::iterator it = ccrs.find(cap);
         if (it == ccrs.end())
         {
@@ -1159,12 +1199,10 @@ void TotalCostEvaluator::cslistCost(
     // work properly.
     // Joe, June 15, 2009
     const ClevorDataSet* dataSet = context.clevorDataSet();
-    const DiscreteResource* dres =
-        dynamic_cast<DiscreteResource*>(dataSet->findResource(res.id()));
+    const DiscreteResource* dres = dynamic_cast<DiscreteResource*>(dataSet->findResource(res.id()));
     uint_t existingCap = dres->existingCap();
     existingCap = (uint_t)ceil((double)existingCap / 100.0);
-    if (ccrs.find(existingCap) == ccrs.end() &&
-        existingCap < maxCap)
+    if (ccrs.find(existingCap) == ccrs.end() && existingCap < maxCap)
     {
         utl::arrayGrow(_caps, _capsSize, numCaps + 1);
         _caps[numCaps++] = existingCap;
@@ -1203,10 +1241,7 @@ void TotalCostEvaluator::cslistCost(
     utl::arrayGrow(_dayIsBreak, _dayIsBreakSize, numDays);
     utl::arrayGrow(_capDayTimes, _capDayTimesSize, cap_x_days);
     utl::arrayGrow(_capDayHires, _capDayHiresSize, cap_x_days);
-    utl::arrayGrow(
-        _capDayFireBeforeHire,
-        _capDayFireBeforeHireSize,
-        cap_x_days);
+    utl::arrayGrow(_capDayFireBeforeHire, _capDayFireBeforeHireSize, cap_x_days);
     memset(_dayIsBreak, 1, numDays * sizeof(byte_t));
     memset(_capDayTimes, 0, cap_x_days * sizeof(uint_t));
     memset(_capDayHires, 0, cap_x_days * sizeof(uint_t));
@@ -1232,8 +1267,7 @@ void TotalCostEvaluator::cslistCost(
         int begin = roundDown(capSpan->begin(), tsPerDay);
         int end = roundUp(capSpan->end(), tsPerDay);
         // ignore if the entire span is a break.
-        uint_t nonBreak = res.getNonBreakTime(
-                capSpan->begin(), capSpan->end() - 1);
+        uint_t nonBreak = res.getNonBreakTime(capSpan->begin(), capSpan->end() - 1);
         if (nonBreak == 0)
         {
             continue;
@@ -1340,8 +1374,7 @@ void TotalCostEvaluator::cslistCost(
         // show hours worked on each day
         if (_audit)
         {
-            ResourceCostReport* report =
-                _auditReport->resourceCost(res.id());
+            ResourceCostReport* report = _auditReport->resourceCost(res.id());
             uint_t curTs = capDayBegin * tsPerDay;
             *_os << "Hours worked on each day: ";
             for (uint_t day = capDayBegin; day < capDayEnd; ++day)
@@ -1366,11 +1399,16 @@ void TotalCostEvaluator::cslistCost(
         double dayCost = resCost->costPerDay();
         double weekCost = resCost->costPerWeek();
         double monthCost = resCost->costPerMonth();
-        if (hiringCost != double_t_max) hiringCost *= (double)capDiff;
-        if (hourCost != double_t_max) hourCost *= (double)capDiff;
-        if (dayCost != double_t_max) dayCost *= (double)capDiff;
-        if (weekCost != double_t_max) weekCost *= (double)capDiff;
-        if (monthCost != double_t_max) monthCost *= (double)capDiff;
+        if (hiringCost != double_t_max)
+            hiringCost *= (double)capDiff;
+        if (hourCost != double_t_max)
+            hourCost *= (double)capDiff;
+        if (dayCost != double_t_max)
+            dayCost *= (double)capDiff;
+        if (weekCost != double_t_max)
+            weekCost *= (double)capDiff;
+        if (monthCost != double_t_max)
+            monthCost *= (double)capDiff;
 
         // consider hourly and daily rate for each day
         uint_t day;
@@ -1392,9 +1430,7 @@ void TotalCostEvaluator::cslistCost(
             {
                 // HOWARD'S CHANGE
                 // Round workingHours to the hour.
-                uint_t workingHours =
-                    roundUp((workingTime * timeStep), (uint_t)3600)
-                    / 3600;
+                uint_t workingHours = roundUp((workingTime * timeStep), (uint_t)3600) / 3600;
                 double cost = workingHours * hourCost;
                 // For hourly costs, all hiring has to be
                 // accounted for.
@@ -1409,12 +1445,11 @@ void TotalCostEvaluator::cslistCost(
                 double cost = dayCost;
                 // Only account for hiring cost if it is
                 // done before any firing had occured.
-                if ((! fbht[day]) && (ht[day] > 0))
+                if ((!fbht[day]) && (ht[day] > 0))
                 {
                     cost += hiringCost;
                 }
-                if ((cost < _dayCosts[day]) ||
-                    (_dayCostPeriods[day] == period_undefined))
+                if ((cost < _dayCosts[day]) || (_dayCostPeriods[day] == period_undefined))
                 {
                     _dayCosts[day] = cost;
                     _dayCostPeriods[day] = period_day;
@@ -1441,8 +1476,7 @@ void TotalCostEvaluator::cslistCost(
 
             while (beginDay < capDayEnd)
             {
-                if ((! _dayIsBreak[beginDay])
-                    && (wt[beginDay] != 0))
+                if ((!_dayIsBreak[beginDay]) && (wt[beginDay] != 0))
                 {
                     // Determine the cost of the next 7 or less days.
                     double next7DaysCost = 0.0;
@@ -1453,13 +1487,12 @@ void TotalCostEvaluator::cslistCost(
                     }
                     // Determine the cost for using weekly cost.
                     double cost = weekCost;
-                    if ((! fbht[beginDay]) && (ht[beginDay] > 0))
+                    if ((!fbht[beginDay]) && (ht[beginDay] > 0))
                     {
                         cost += hiringCost;
                     }
                     // Compare the costs.
-                    if (((cost < next7DaysCost)
-                         || (_dayCostPeriods[beginDay] == period_undefined)))
+                    if (((cost < next7DaysCost) || (_dayCostPeriods[beginDay] == period_undefined)))
                     {
                         _dayCosts[beginDay] = cost;
                         _dayCostPeriods[beginDay] = period_week;
@@ -1526,14 +1559,14 @@ void TotalCostEvaluator::cslistCost(
                 }
                 double cost = monthCost;
                 // Account for any hiring costs.
-                if ((! fbht[beginDay]) && (ht[beginDay] > 0))
+                if ((!fbht[beginDay]) && (ht[beginDay] > 0))
                 {
                     totalMonthCost += hiringCost;
                     cost += hiringCost;
                 }
                 // Compare the costs.
-                if ((totalMonthCost < next30DaysCost)
-                    || (_dayCostPeriods[beginDay] == period_undefined))
+                if ((totalMonthCost < next30DaysCost) ||
+                    (_dayCostPeriods[beginDay] == period_undefined))
                 {
                     _dayCosts[beginDay] = cost;
                     _dayCostPeriods[beginDay] = period_month;
@@ -1551,7 +1584,7 @@ void TotalCostEvaluator::cslistCost(
             }
         }
 
-        delete [] dayCosts;
+        delete[] dayCosts;
 
         // execute the plan for costing the resource
         uint_t t = capDayBegin * tsPerDay;
@@ -1568,8 +1601,7 @@ void TotalCostEvaluator::cslistCost(
             }
 
             // what interest period (ip) does day belong to?
-            spanip_col_t::iterator it
-                = _spanIPs.findFirstIt(Span<int>(t, t + 1));
+            spanip_col_t::iterator it = _spanIPs.findFirstIt(Span<int>(t, t + 1));
             ASSERTD(it != _spanIPs.end());
             SpanInterestPeriod* sip = (SpanInterestPeriod*)*it;
             uint_t ip = sip->period();
@@ -1578,12 +1610,9 @@ void TotalCostEvaluator::cslistCost(
             {
                 time_t originTime = _schedulerConfig->originTime();
                 time_t curTime = originTime + (t * timeStep);
-                *_os
-                    << "Day: " << day
-                    << ": " << getTimeString(curTime) << std::endl;
+                *_os << "Day: " << day << ": " << getTimeString(curTime) << std::endl;
 
-                ResourceCostReport* report =
-                    _auditReport->resourceCost(res.id());
+                ResourceCostReport* report = _auditReport->resourceCost(res.id());
                 ResourceCostInfo* newCost = new ResourceCostInfo();
                 newCost->cap = cap;
                 newCost->date = curTime;
@@ -1617,7 +1646,7 @@ void TotalCostEvaluator::cslistCost(
             case period_week:
             case period_month:
             {
-                if ((! fbht[day]) && (ht[day] > 0))
+                if ((!fbht[day]) && (ht[day] > 0))
                 {
                     capHired = capDiff;
                     hireCost = hiringCost;
@@ -1634,9 +1663,8 @@ void TotalCostEvaluator::cslistCost(
             {
                 if (_audit)
                 {
-                    *_os
-                        << "Hiring " << capHired << " unit(s): "
-                        << "$" << hireCost << std::endl;
+                    *_os << "Hiring " << capHired << " unit(s): "
+                         << "$" << hireCost << std::endl;
                     *_os << "    i.p. " << ip << ": $" << _ipCost[ip];
 
                     ResourceCostInfo* costInfo =
@@ -1648,26 +1676,22 @@ void TotalCostEvaluator::cslistCost(
                 _totalCost += hireCost;
                 if (_audit)
                 {
-                    *_os
-                        << " + $" << hireCost
-                        << " = $" << _ipCost[ip] << std::endl;
+                    *_os << " + $" << hireCost << " = $" << _ipCost[ip] << std::endl;
                 }
             }
 
             // print the chosen rate
             if (_audit)
             {
-                *_os
-                    << "bestRate: " << periodToString((period_t)_dayCostPeriods[day])
-                    << ", cost: $" << rateCost;
+                *_os << "bestRate: " << periodToString((period_t)_dayCostPeriods[day])
+                     << ", cost: $" << rateCost;
                 if ((period == period_hour) || (period == period_day))
                 {
                     double hoursWorked = wt[day] * timeStep / 3600.0;
                     *_os << ", hoursWorked: " << hoursWorked;
                 }
                 *_os << std::endl;
-                ResourceCostInfo* costInfo =
-                    _auditReport->resourceCost(res.id()).costs()->back();
+                ResourceCostInfo* costInfo = _auditReport->resourceCost(res.id()).costs()->back();
                 costInfo->bestRate = (period_t)_dayCostPeriods[day];
                 costInfo->workCost = rateCost;
             }
@@ -1688,9 +1712,7 @@ void TotalCostEvaluator::cslistCost(
             {
                 // HOWARD'S CHANGE.
                 // Slightly more complicated.
-                time_t tTime_T =
-                    _schedulerConfig->originTime() +
-                    (t * timeStep);
+                time_t tTime_T = _schedulerConfig->originTime() + (t * timeStep);
                 struct tm* tm = localtime(&tTime_T);
                 ++tm->tm_mon;
                 time_t nextMonth = mktime(tm);
@@ -1740,11 +1762,10 @@ void TotalCostEvaluator::cslistCost(
 #endif
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
-TotalCostEvaluator::calcLatenessCost(
-    const SchedulingContext& context) const
+TotalCostEvaluator::calcLatenessCost(const SchedulingContext& context) const
 {
     if (_audit)
     {
@@ -1771,31 +1792,29 @@ TotalCostEvaluator::calcLatenessCost(
 #ifdef DEBUG
         // check the makespan
         int maxEndTime = -1;
-        for (Job::const_iterator it = job->begin();
-             it != job->end();
-             ++it)
+        for (Job::const_iterator it = job->begin(); it != job->end(); ++it)
         {
             JobOp* op = *it;
-            if (op->type() == op_summary) continue;
-            if (op->ignorable()) continue;
+            if (op->type() == op_summary)
+                continue;
+            if (op->ignorable())
+                continue;
             Activity* act = op->activity();
-            if (act == nullptr) continue;
+            if (act == nullptr)
+                continue;
 
-            int endTime = _schedulerConfig->forward()
-                ? act->ef() + 1
-                : act->lf() + 1;
+            int endTime = _schedulerConfig->forward() ? act->ef() + 1 : act->lf() + 1;
             if (endTime > maxEndTime)
             {
                 maxEndTime = endTime;
             }
         }
-      // the maxEndTime != -1 check is for summaries with no
+        // the maxEndTime != -1 check is for summaries with no
         // schedulables (most likely containing only milestones).
         if ((maxEndTime != -1) && (makespan != maxEndTime))
         {
-            std::cout << "end times differ for job " << job->id()
-                 << " makespan " << makespan << " jobOp end time "
-                 << maxEndTime << std::endl;
+            std::cout << "end times differ for job " << job->id() << " makespan " << makespan
+                      << " jobOp end time " << maxEndTime << std::endl;
         }
 #endif
         if (dueTime == makespan)
@@ -1809,38 +1828,30 @@ TotalCostEvaluator::calcLatenessCost(
             uint_t periodSeconds;
             periodSeconds = periodToSeconds(job->opportunityCostPeriod());
             opportunityCostPerTS =
-                job->opportunityCost()
-                / ((double)periodSeconds / (double)_timeStep);
+                job->opportunityCost() / ((double)periodSeconds / (double)_timeStep);
         }
 
         double latenessCostPerTS = 0.0;
-	double latenessIncrement = 0.0;
+        double latenessIncrement = 0.0;
         double pSeconds = 0.0;
         if (job->latenessCostPeriod() != period_undefined)
         {
-            uint_t periodSeconds =
-                periodToSeconds(job->latenessCostPeriod());
+            uint_t periodSeconds = periodToSeconds(job->latenessCostPeriod());
             pSeconds = (double)periodSeconds;
-            latenessCostPerTS =
-                job->latenessCost()
-                / ((double)periodSeconds / (double)_timeStep);
-	    latenessIncrement = job->latenessIncrement()/100;
+            latenessCostPerTS = job->latenessCost() / ((double)periodSeconds / (double)_timeStep);
+            latenessIncrement = job->latenessIncrement() / 100;
             latenessIncrement = latenessIncrement + (double)1.0;
         }
         double inventoryCostPerTS = 0.0;
         if (job->inventoryCostPeriod() != period_undefined)
         {
-            uint_t periodSeconds =
-                periodToSeconds(job->inventoryCostPeriod());
-            inventoryCostPerTS =
-                job->inventoryCost()
-                / ((double)periodSeconds / (double)_timeStep);
+            uint_t periodSeconds = periodToSeconds(job->inventoryCostPeriod());
+            inventoryCostPerTS = job->inventoryCost() / ((double)periodSeconds / (double)_timeStep);
         }
 
         if (_audit)
         {
-            *_os << "WorkOrder id = " << job->id()
-                 << " name = " << job->name() << ": ";
+            *_os << "WorkOrder id = " << job->id() << " name = " << job->name() << ": ";
         }
         if (makespan < dueTime)
         {
@@ -1849,22 +1860,16 @@ TotalCostEvaluator::calcLatenessCost(
             {
                 *_os << "Opportunity Cost" << std::endl;
             }
-            calcPeriodCost(
-                Span<int>(makespan, dueTime),
-                -1.0 * opportunityCostPerTS);
+            calcPeriodCost(Span<int>(makespan, dueTime), -1.0 * opportunityCostPerTS);
             if (_audit)
             {
-
-                LatenessCostReport* report =
-                    _auditReport->latenessCost(job->id());
+                LatenessCostReport* report = _auditReport->latenessCost(job->id());
                 if (report->getName().empty())
                 {
                     report->setName(job->name());
                 }
-                std::map<utl::uint_t,double>::const_iterator i;
-                for (i = _auditIpCosts.begin();
-                     i != _auditIpCosts.end();
-                     i++)
+                std::map<utl::uint_t, double>::const_iterator i;
+                for (i = _auditIpCosts.begin(); i != _auditIpCosts.end(); i++)
                 {
                     LatenessCostInfo* info = new LatenessCostInfo();
                     info->interestPeriod = i->first;
@@ -1881,21 +1886,16 @@ TotalCostEvaluator::calcLatenessCost(
             {
                 *_os << "Inventory Cost" << std::endl;
             }
-            calcPeriodCost(
-                Span<int>(makespan, dueTime),
-                inventoryCostPerTS);
+            calcPeriodCost(Span<int>(makespan, dueTime), inventoryCostPerTS);
             if (_audit)
             {
-                LatenessCostReport* report =
-                    _auditReport->latenessCost(job->id());
+                LatenessCostReport* report = _auditReport->latenessCost(job->id());
                 if (report->getName().empty())
                 {
                     report->setName(job->name());
                 }
                 std::map<utl::uint_t, double>::const_iterator i;
-                for (i = _auditIpCosts.begin();
-                     i != _auditIpCosts.end();
-                     i++)
+                for (i = _auditIpCosts.begin(); i != _auditIpCosts.end(); i++)
                 {
                     LatenessCostInfo* info = new LatenessCostInfo();
                     info->interestPeriod = i->first;
@@ -1908,33 +1908,26 @@ TotalCostEvaluator::calcLatenessCost(
             invCost += _totalCost - saveTotalCost;
             saveTotalCost = _totalCost;
         }
-	/* November 21, 2013 (Elisa) */
-	/* code will be added in this section to use the */
-	/* lateness cost increment in calculations */
+        /* November 21, 2013 (Elisa) */
+        /* code will be added in this section to use the */
+        /* lateness cost increment in calculations */
         else if (makespan > dueTime) // lateness cost
         {
             if (_audit)
             {
                 *_os << "Lateness Cost" << std::endl;
             }
-            calcPeriodCost(
-                Span<int>(dueTime, makespan),
-                latenessCostPerTS,
-		latenessIncrement,
-                pSeconds,
-                (double)_timeStep);
+            calcPeriodCost(Span<int>(dueTime, makespan), latenessCostPerTS, latenessIncrement,
+                           pSeconds, (double)_timeStep);
             if (_audit)
             {
-                LatenessCostReport* report =
-                    _auditReport->latenessCost(job->id());
+                LatenessCostReport* report = _auditReport->latenessCost(job->id());
                 if (report->getName().empty())
                 {
                     report->setName(job->name());
                 }
-                std::map<utl::uint_t,double>::const_iterator i;
-                for (i = _auditIpCosts.begin();
-                     i != _auditIpCosts.end();
-                     i++)
+                std::map<utl::uint_t, double>::const_iterator i;
+                for (i = _auditIpCosts.begin(); i != _auditIpCosts.end(); i++)
                 {
                     LatenessCostInfo* info = new LatenessCostInfo();
                     info->interestPeriod = i->first;
@@ -1949,8 +1942,8 @@ TotalCostEvaluator::calcLatenessCost(
         }
     }
 
-//     double totalLatenessCost = _totalCost - saveTotalCost;
-//     setComponentScore("LatenessCost", (int)totalLatenessCost);
+    //     double totalLatenessCost = _totalCost - saveTotalCost;
+    //     setComponentScore("LatenessCost", (int)totalLatenessCost);
     setComponentScore("OpportunityCost", (int)oppCost);
     setComponentScore("InventoryCost", (int)invCost);
     setComponentScore("LatenessCost", (int)latCost);
@@ -1958,20 +1951,20 @@ TotalCostEvaluator::calcLatenessCost(
     {
         ComponentScoreInfo* info1 = new ComponentScoreInfo();
         info1->name = "OpportunityCost";
-        info1->score = oppCost;//totalLatenessCost;
+        info1->score = oppCost; //totalLatenessCost;
         _auditReport->componentInfos()->push_back(info1);
         ComponentScoreInfo* info2 = new ComponentScoreInfo();
         info2->name = "InventoryCost";
-        info2->score = invCost;//totalLatenessCost;
+        info2->score = invCost; //totalLatenessCost;
         _auditReport->componentInfos()->push_back(info2);
         ComponentScoreInfo* info3 = new ComponentScoreInfo();
         info3->name = "LatenessCost";
-        info3->score = latCost;//totalLatenessCost;
+        info3->score = latCost; //totalLatenessCost;
         _auditReport->componentInfos()->push_back(info3);
     }
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 TotalCostEvaluator::calcFixedCost(const SchedulingContext& context) const
@@ -1989,8 +1982,7 @@ TotalCostEvaluator::calcFixedCost(const SchedulingContext& context) const
         JobOp* op = *it;
 
         // op must be active and non-summary and unstarted
-        if (!op->job()->active() ||
-            (op->type() == op_summary) ||
+        if (!op->job()->active() || (op->type() == op_summary) ||
             (op->status() != opstatus_unstarted))
         {
             continue;
@@ -2004,27 +1996,25 @@ TotalCostEvaluator::calcFixedCost(const SchedulingContext& context) const
         }
 
         // op must have an activity
-        if (op->activity() == nullptr) continue;
+        if (op->activity() == nullptr)
+            continue;
         Activity* act = op->activity();
 
         // find SpanInterestPeriod where activity starts to execute
         Span<int> searchSpan;
         int es = act->es();
         searchSpan.set(es, es + 1);
-        spanip_col_t::iterator it
-            = _spanIPs.findFirstIt(searchSpan);
+        spanip_col_t::iterator it = _spanIPs.findFirstIt(searchSpan);
         ASSERTD(it != _spanIPs.end());
         SpanInterestPeriod* sip = (SpanInterestPeriod*)*it;
 
         uint_t ip = sip->period();
         if (_audit)
         {
-            *_os
-                << "Fixed Cost (op id = " << op->id() << "): "
-                << "$" << opCost << std::endl;
+            *_os << "Fixed Cost (op id = " << op->id() << "): "
+                 << "$" << opCost << std::endl;
             *_os << "    i.p. " << ip << ": $" << _ipCost[ip];
-            FixedCostInfo*& info =
-                (*_auditReport->fixedCosts())[op->id()];
+            FixedCostInfo*& info = (*_auditReport->fixedCosts())[op->id()];
             info = new FixedCostInfo();
             info->opId = op->id();
             info->interestPeriod = ip;
@@ -2048,11 +2038,10 @@ TotalCostEvaluator::calcFixedCost(const SchedulingContext& context) const
     }
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
-TotalCostEvaluator::calcResourceSequenceCost(
-    const SchedulingContext& context) const
+TotalCostEvaluator::calcResourceSequenceCost(const SchedulingContext& context) const
 {
     if (_audit)
     {
@@ -2066,7 +2055,8 @@ TotalCostEvaluator::calcResourceSequenceCost(
     for (it = resources.begin(); it != resources.end(); ++it)
     {
         DiscreteResource* res = dynamic_cast<DiscreteResource*>(*it);
-        if (res == nullptr) continue;
+        if (res == nullptr)
+            continue;
         const rsra_vector_t& rsras = res->sequenceRuleApplications();
         rsra_vector_t::const_iterator raIt;
         for (raIt = rsras.begin(); raIt != rsras.end(); ++raIt)
@@ -2074,10 +2064,12 @@ TotalCostEvaluator::calcResourceSequenceCost(
             const ResourceSequenceRuleApplication& app = *raIt;
             const ResourceSequenceRule* rule = app.rule();
             double cost = rule->cost();
-            if (cost == 0.0) continue;
+            if (cost == 0.0)
+                continue;
             cls::Activity* lhsAct = app.lhsOp()->activity();
             cls::Activity* rhsAct = app.rhsOp()->activity();
-            if ((lhsAct == nullptr) || (rhsAct == nullptr)) continue;
+            if ((lhsAct == nullptr) || (rhsAct == nullptr))
+                continue;
 
             // impose the cost
             int costTS = lhsAct->ef();
@@ -2088,16 +2080,12 @@ TotalCostEvaluator::calcResourceSequenceCost(
             uint_t ip = sip->period();
             if (_audit)
             {
-                *_os
-                    << "Resource Sequence Cost "
-                    << "(res-id = " << res->id()
-                    << ", lhs-op-id = " << lhsAct->id()
-                    << ", rhs-op-id = " << rhsAct->id()
-                    << "): "
-                    << "$" << cost << std::endl;
+                *_os << "Resource Sequence Cost "
+                     << "(res-id = " << res->id() << ", lhs-op-id = " << lhsAct->id()
+                     << ", rhs-op-id = " << rhsAct->id() << "): "
+                     << "$" << cost << std::endl;
                 *_os << "    i.p. " << ip << ": $" << _ipCost[ip];
-                ResourceSequenceCostInfo* info
-                    = new ResourceSequenceCostInfo();
+                ResourceSequenceCostInfo* info = new ResourceSequenceCostInfo();
                 info->id = res->id();
                 info->lhsId = lhsAct->id();
                 info->rhsId = rhsAct->id();
@@ -2124,7 +2112,7 @@ TotalCostEvaluator::calcResourceSequenceCost(
     }
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 TotalCostEvaluator::calcOverheadCost(const SchedulingContext& context) const
@@ -2155,10 +2143,8 @@ TotalCostEvaluator::calcOverheadCost(const SchedulingContext& context) const
     setComponentScore("OverheadCost", (int)totalOverheadCost);
     if (_audit)
     {
-        std::map<utl::uint_t,double>::const_iterator i;
-        for (i = _auditIpCosts.begin();
-             i != _auditIpCosts.end();
-             i++)
+        std::map<utl::uint_t, double>::const_iterator i;
+        for (i = _auditIpCosts.begin(); i != _auditIpCosts.end(); i++)
         {
             OverheadCostInfo* info = new OverheadCostInfo();
             info->interestPeriod = i->first;
@@ -2172,11 +2158,10 @@ TotalCostEvaluator::calcOverheadCost(const SchedulingContext& context) const
     }
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
-TotalCostEvaluator::calcInterestCost(
-    const SchedulingContext& context) const
+TotalCostEvaluator::calcInterestCost(const SchedulingContext& context) const
 {
     if (_audit)
     {
@@ -2187,8 +2172,7 @@ TotalCostEvaluator::calcInterestCost(
     double totalCost = 0.0;
     uint_t ip;
     double interestCost;
-    for (spanip_col_t::iterator it = _spanIPs.begin();
-         it != _spanIPs.end(); ++it)
+    for (spanip_col_t::iterator it = _spanIPs.begin(); it != _spanIPs.end(); ++it)
     {
         SpanInterestPeriod* sip = (SpanInterestPeriod*)*it;
         ip = sip->period();
@@ -2205,9 +2189,7 @@ TotalCostEvaluator::calcInterestCost(
         _totalCost += interestCost;
         if (_audit)
         {
-            *_os
-                << " + $" << interestCost
-                << " = $" << _ipCost[ip] << std::endl;
+            *_os << " + $" << interestCost << " = $" << _ipCost[ip] << std::endl;
             InterestCostInfo* info = new InterestCostInfo();
             info->interestPeriod = ip;
             info->cost = interestCost;
@@ -2226,12 +2208,10 @@ TotalCostEvaluator::calcInterestCost(
     }
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
-TotalCostEvaluator::calcPeriodCost(
-    const utl::Span<int>& p_span,
-    double costPerTS) const
+TotalCostEvaluator::calcPeriodCost(const utl::Span<int>& p_span, double costPerTS) const
 {
     if (_audit)
     {
@@ -2251,16 +2231,13 @@ TotalCostEvaluator::calcPeriodCost(
         time_t originTime = _schedulerConfig->originTime();
         time_t beginTime = originTime + (span.getBegin() * timeStep);
         time_t endTime = originTime + (span.getEnd() * timeStep);
-        *_os
-            << " => calcPeriodCost("
-            << getTimeString(beginTime) << ", "
-            << getTimeString(endTime) << ", "
-            << "$" << costPerTS << ")" << std::endl;
+        *_os << " => calcPeriodCost(" << getTimeString(beginTime) << ", " << getTimeString(endTime)
+             << ", "
+             << "$" << costPerTS << ")" << std::endl;
     }
 
     for (spanip_col_t::iterator it = _spanIPs.findFirstIt(span);
-         (it != _spanIPs.end()) && !span.isNil();
-         ++it)
+         (it != _spanIPs.end()) && !span.isNil(); ++it)
     {
         const SpanInterestPeriod& sip = (const SpanInterestPeriod&)**it;
         Span<int> overlap = sip.overlap(span);
@@ -2275,28 +2252,25 @@ TotalCostEvaluator::calcPeriodCost(
         _totalCost += cost;
         if (_audit)
         {
-          *_os << " + $" << cost << " = $" << _ipCost[ip] << std::endl; 
-          _auditIpCosts[ip] = cost;
+            *_os << " + $" << cost << " = $" << _ipCost[ip] << std::endl;
+            _auditIpCosts[ip] = cost;
         }
     }
 
     if (_audit)
     {
-        *_os
-            << "    total: $" << (_totalCost - saveTotalCost)
-            << std::endl;
+        *_os << "    total: $" << (_totalCost - saveTotalCost) << std::endl;
     }
 }
 
 /* November 21, 2013 (Elisa) */
 /* this verion on the fuction includes the lateness cost increment */
 void
-TotalCostEvaluator::calcPeriodCost(
-    const utl::Span<int>& p_span,
-    double costPerTS,
-    double incrCost,
-    double periodS,
-    double tStep) const
+TotalCostEvaluator::calcPeriodCost(const utl::Span<int>& p_span,
+                                   double costPerTS,
+                                   double incrCost,
+                                   double periodS,
+                                   double tStep) const
 {
     if (_audit)
     {
@@ -2316,19 +2290,14 @@ TotalCostEvaluator::calcPeriodCost(
         time_t originTime = _schedulerConfig->originTime();
         time_t beginTime = originTime + (span.getBegin() * timeStep);
         time_t endTime = originTime + (span.getEnd() * timeStep);
-        *_os
-            << " => calcPeriodCost("
-            << getTimeString(beginTime) << ", "
-            << getTimeString(endTime) << ", "
-            << "$" << costPerTS << ", "
-	    << "%" << incrCost << ", "
-            << periodS << ", "
-            << timeStep << ")" << std::endl;
+        *_os << " => calcPeriodCost(" << getTimeString(beginTime) << ", " << getTimeString(endTime)
+             << ", "
+             << "$" << costPerTS << ", "
+             << "%" << incrCost << ", " << periodS << ", " << timeStep << ")" << std::endl;
     }
 
     for (spanip_col_t::iterator it = _spanIPs.findFirstIt(span);
-         (it != _spanIPs.end()) && !span.isNil();
-         ++it)
+         (it != _spanIPs.end()) && !span.isNil(); ++it)
     {
         const SpanInterestPeriod& sip = (const SpanInterestPeriod&)**it;
         Span<int> overlap = sip.overlap(span);
@@ -2339,85 +2308,81 @@ TotalCostEvaluator::calcPeriodCost(
         double realtStep = (double)(periodS / tStep);
         if (_audit)
         {
-	  //*_os << "    i.p. " << ip << ": " << (double)overlap.size() 
-	  //     << " " << periodS << " " << tStep 
-          //     << " " << realtStep << " $" << _ipCost[ip] << std::endl;
-          *_os << "    i.p. " << ip << ": $" << _ipCost[ip];
+            //*_os << "    i.p. " << ip << ": " << (double)overlap.size()
+            //     << " " << periodS << " " << tStep
+            //     << " " << realtStep << " $" << _ipCost[ip] << std::endl;
+            *_os << "    i.p. " << ip << ": $" << _ipCost[ip];
         }
-        
-        if (realtStep <= (double)overlap.size() && incrCost > (double)1.0)
-	{
-          cost = 0.0;
-          double realcostPerTS = costPerTS;
-          firstcost = (realcostPerTS * realtStep);
 
-          for (double i = realtStep; i <= (double)overlap.size(); i += realtStep)
-	  {
-	    cost = cost + (realcostPerTS * realtStep);
-            if (_audit)
-   	    {
-	        //*_os << "             + $" << (realcostPerTS * realtStep) 
-                //     << " " << realcostPerTS << " realtStep:" << realtStep << std::endl;
-	    }
-	    realcostPerTS = realcostPerTS * incrCost;
-            if ((i + realtStep) > (double)overlap.size())
-	    {
-	      double remaining = (double)overlap.size() - i;
-	      cost = cost + (realcostPerTS * remaining);
-              if (_audit)
-     	      {
-		//*_os << "             + $" << (realcostPerTS * remaining) 
-                //      << " " << realcostPerTS << " remaining:" << remaining << std::endl;
-	      }  
+        if (realtStep <= (double)overlap.size() && incrCost > (double)1.0)
+        {
+            cost = 0.0;
+            double realcostPerTS = costPerTS;
+            firstcost = (realcostPerTS * realtStep);
+
+            for (double i = realtStep; i <= (double)overlap.size(); i += realtStep)
+            {
+                cost = cost + (realcostPerTS * realtStep);
+                if (_audit)
+                {
+                    //*_os << "             + $" << (realcostPerTS * realtStep)
+                    //     << " " << realcostPerTS << " realtStep:" << realtStep << std::endl;
+                }
+                realcostPerTS = realcostPerTS * incrCost;
+                if ((i + realtStep) > (double)overlap.size())
+                {
+                    double remaining = (double)overlap.size() - i;
+                    cost = cost + (realcostPerTS * remaining);
+                    if (_audit)
+                    {
+                        //*_os << "             + $" << (realcostPerTS * remaining)
+                        //      << " " << realcostPerTS << " remaining:" << remaining << std::endl;
+                    }
+                }
             }
-	  }
-	}
+        }
         else
-	{
-          if (_audit)
-	  {
-	    //*_os << "             + $" << firstcost << std::endl;
-            //*_os << "             + $" << (cost-firstcost) << std::endl;             
-	  }
-	}
+        {
+            if (_audit)
+            {
+                //*_os << "             + $" << firstcost << std::endl;
+                //*_os << "             + $" << (cost-firstcost) << std::endl;
+            }
+        }
         //if (_audit)
         //{
-	//  *_os << "    i.p. " << ip << ": " << (double)overlap.size() 
-	//       << " " << periodS << " " << tStep 
+        //  *_os << "    i.p. " << ip << ": " << (double)overlap.size()
+        //       << " " << periodS << " " << tStep
         //       << " " << (periodS/tStep) << " $" << _ipCost[ip];
         //}
         _ipCost[ip] += cost;
         _totalCost += cost;
         if (_audit)
         {
-	  //*_os << "               = $" << _ipCost[ip] << std::endl;
+            //*_os << "               = $" << _ipCost[ip] << std::endl;
             *_os << " + " << cost << " = $" << _ipCost[ip] << std::endl;
             _auditIpCosts[ip] = cost;
         }
-        
     }
 
     if (_audit)
     {
-        *_os
-            << "    total: $" << (_totalCost - saveTotalCost)
-            << std::endl;
+        *_os << "    total: $" << (_totalCost - saveTotalCost) << std::endl;
     }
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 // Joe rewrote cslistBuild on August 21, 2008
 // Note: resCost->resolution() is not considered, because cslistCost will roundup
 //       a day's working time to hours anyway when hourly rate is given.
 //       we need to do further modifications to this file in the future when
 //       res->resolution() is bigger than a hour.
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
-TotalCostEvaluator::cslistBuild(
-    const SchedulingContext& context,
-    const cls::DiscreteResource& res,
-    cslist_t& cslist) const
+TotalCostEvaluator::cslistBuild(const SchedulingContext& context,
+                                const cls::DiscreteResource& res,
+                                cslist_t& cslist) const
 {
 #ifdef DEBUG_UNIT
     std::string myName("TotalCostEvaluator::cslistBuild(): ");
@@ -2450,34 +2415,21 @@ TotalCostEvaluator::cslistBuild(
         double weekCost = resCost->costPerWeek();
         double monthCost = resCost->costPerMonth();
 
-        char resIdStr[128]; sprintf(resIdStr, "%u", resId);
+        char resIdStr[128];
+        sprintf(resIdStr, "%u", resId);
         title.append(resIdStr);
         title.append(")");
         *_os << heading(title, '-', 75) << std::endl;
-        *_os
-            << "Resolution: " << rts << " time-slots" << std::endl;
-        *_os
-            << "Max-Idle: " << mits << " time-slots" << std::endl;
-        *_os
-            << "Min-Employment: " << mets << " time-slots" << std::endl;
-        *_os
-            << "Cost-per-unit-hired: " << hireCost
-            << std::endl;
-        *_os
-            << "Cost-per-hour: $" << hourCost
-            << std::endl;
-        *_os
-            << "Cost-per-day: $" << dayCost
-            << std::endl;
-        *_os
-            << "Cost-per-week: $" << weekCost
-            << std::endl;
-        *_os
-            << "Cost-per-month: $" << monthCost
-            << std::endl;
+        *_os << "Resolution: " << rts << " time-slots" << std::endl;
+        *_os << "Max-Idle: " << mits << " time-slots" << std::endl;
+        *_os << "Min-Employment: " << mets << " time-slots" << std::endl;
+        *_os << "Cost-per-unit-hired: " << hireCost << std::endl;
+        *_os << "Cost-per-hour: $" << hourCost << std::endl;
+        *_os << "Cost-per-day: $" << dayCost << std::endl;
+        *_os << "Cost-per-week: $" << weekCost << std::endl;
+        *_os << "Cost-per-month: $" << monthCost << std::endl;
 
-        resInfos_t::iterator it =
-            _auditReport->resourceInfos()->find(resId);
+        resInfos_t::iterator it = _auditReport->resourceInfos()->find(resId);
         if (it == _auditReport->resourceInfos()->end())
         {
             // Not found, create it.
@@ -2492,19 +2444,17 @@ TotalCostEvaluator::cslistBuild(
             rcInfo->costPerDay = dayCost;
             rcInfo->costPerWeek = weekCost;
             rcInfo->costPerMonth = monthCost;
-            _auditReport->resourceInfos()->insert(
-                resInfos_t::value_type(resId,rcInfo));
+            _auditReport->resourceInfos()->insert(resInfos_t::value_type(resId, rcInfo));
         }
     }
 
     // t: time-point for checking
     int t = scheduleSpan.getBegin();
     const ClevorDataSet* dataSet = context.clevorDataSet();
-    const DiscreteResource* dres =
-        dynamic_cast<DiscreteResource*>(dataSet->findResource(res.id()));
+    const DiscreteResource* dres = dynamic_cast<DiscreteResource*>(dataSet->findResource(res.id()));
     uint_t maxCap = roundUp(dres->clsResource()->maxReqCap(), (uint_t)100);
     maxCap = maxCap / 100;
-//     bool employed[maxCap];
+    //     bool employed[maxCap];
     bool canFired[maxCap], alreadyIdle[maxCap];
     int employStarts[maxCap], minEmployEnds[maxCap];
     int idleStarts[maxCap], maxIdleEnds[maxCap];
@@ -2516,7 +2466,7 @@ TotalCostEvaluator::cslistBuild(
     // init employStarts, employEnds, idleStarts, maxIdleEnds, etc
     for (int i = 0; i < (int)maxCap; i++)
     {
-//         employed[i] = true;
+        //         employed[i] = true;
         canFired[i] = alreadyIdle[i] = false;
         employStarts[i] = minEmployEnds[i] = 0;
         idleStarts[i] = maxIdleEnds[i] = 0;
@@ -2546,29 +2496,28 @@ TotalCostEvaluator::cslistBuild(
         reqCap = (int)ceil(tmp);
 
         // step 1: dealing with existing-cap
-        if (cslist.empty() && existingCap > 0 &&
-            ( mets > 0 || mits > 0))
+        if (cslist.empty() && existingCap > 0 && (mets > 0 || mits > 0))
         {
             if (mets > 0)
             {
                 for (int i = 0; i < (int)existingCap; i++)
                 {
-//                     employed[i] = true;
+                    //                     employed[i] = true;
                     canFired[i] = false;
                     employStarts[i] = t;
                     minEmployEnds[i] = res.getEndTimeForStartTime(employStarts[i], mets);
                     minEmployEnds[i] = res.getNonBreakTimeNext(minEmployEnds[i]);
                 }
             }
-//             if (mits > 0 && reqCap < existingCap)
-//             {
-//                 for (int i = reqCap; i < existingCap; i++)
-//                 {
-//                     idleStarts[i] = t;
-//                     int tmp = res.getEndTimeForStartTime(idleStarts[i], mits) + 1;
-//                     maxIdleEnds[i] = res.getNonBreakTimeNext(tmp);
-//                 }
-//             }
+            //             if (mits > 0 && reqCap < existingCap)
+            //             {
+            //                 for (int i = reqCap; i < existingCap; i++)
+            //                 {
+            //                     idleStarts[i] = t;
+            //                     int tmp = res.getEndTimeForStartTime(idleStarts[i], mits) + 1;
+            //                     maxIdleEnds[i] = res.getNonBreakTimeNext(tmp);
+            //                 }
+            //             }
             lastReqCap = existingCap;
         }
 
@@ -2582,19 +2531,19 @@ TotalCostEvaluator::cslistBuild(
             }
             for (int i = lastReqCap; i < reqCap; i++)
             {
-//                 employed[i] = true;
+                //                 employed[i] = true;
                 canFired[i] = false;
                 employStarts[i] = overlap.getBegin();
                 minEmployEnds[i] = res.getEndTimeForStartTime(employStarts[i], mets);
                 minEmployEnds[i] = res.getNonBreakTimeNext(minEmployEnds[i]);
                 alreadyIdle[i] = false;
             }
-            t = overlap.getEnd();//t updated
+            t = overlap.getEnd(); //t updated
         }
         else if (reqCap <= lastReqCap)
         {
             int spanEnd = overlap.getEnd();
-            for (int i = reqCap;  i < lastReqCap; i++)
+            for (int i = reqCap; i < lastReqCap; i++)
             {
                 int newPayCap = payCap;
                 if (mets > 0)
@@ -2624,8 +2573,7 @@ TotalCostEvaluator::cslistBuild(
                     if (newPayCap == payCap)
                     {
                         const IntSpan* nextTs = ts->next();
-                        while (nextTs != tail &&
-                               maxIdleEnds[i] >= nextTs->span().getBegin())
+                        while (nextTs != tail && maxIdleEnds[i] >= nextTs->span().getBegin())
                         {
                             int nextTsCap = (int)ceil((double)nextTs->v0() / 100.0);
                             if (nextTsCap > payCap)
@@ -2636,17 +2584,17 @@ TotalCostEvaluator::cslistBuild(
                             nextTs = nextTs->next();
                         }
                     }
-//                     if (maxIdleEnds[i] >= nextTs->span().getBegin() &&
-//                         nextTsCap >= payCap)
-//                     {
-//                         if (newPayCap == payCap) newPayCap++;
-//                         spanEnd = min(spanEnd, maxIdleEnds[i]);
-//                     }
+                    //                     if (maxIdleEnds[i] >= nextTs->span().getBegin() &&
+                    //                         nextTsCap >= payCap)
+                    //                     {
+                    //                         if (newPayCap == payCap) newPayCap++;
+                    //                         spanEnd = min(spanEnd, maxIdleEnds[i]);
+                    //                     }
                 }
                 payCap = newPayCap;
             }
             t = spanEnd; // t updated
-//             t = min(spanEnd, overlap.getEnd());
+                         //             t = min(spanEnd, overlap.getEnd());
         }
 
         // merge with previous capSpan if
@@ -2656,8 +2604,7 @@ TotalCostEvaluator::cslistBuild(
         // note: it's necessary to remove 2) case, because the next span will re-hire this cap and apply mets to it.
         if (lastCapSpan != nullptr &&
             (payCap == lastReqCap ||
-             (res.getNonBreakTime((int)overlap.getBegin(), (int)t - 1) == 0 &&
-              payCap == 0)))
+             (res.getNonBreakTime((int)overlap.getBegin(), (int)t - 1) == 0 && payCap == 0)))
         {
             capSpan = lastCapSpan;
             capSpan->end() = t;
@@ -2668,7 +2615,7 @@ TotalCostEvaluator::cslistBuild(
             capSpan = new CapSpan(payCap, overlap.getBegin(), t);
         }
         cslist.push_back(capSpan);
-        lastCapSpan = capSpan; // lastCapSpan updated
+        lastCapSpan = capSpan;       // lastCapSpan updated
         lastReqCap = capSpan->cap(); // lastReqCap updated
     }
 #ifdef DEBUG_UNIT
@@ -2677,77 +2624,70 @@ TotalCostEvaluator::cslistBuild(
 #endif
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 /* January 3, 2014 (Elisa) */
 /* code to calculate the overhead for each job */
 void
-TotalCostEvaluator::calcJobOverheadCost(
-    const SchedulingContext& context) const
+TotalCostEvaluator::calcJobOverheadCost(const SchedulingContext& context) const
 {
     if (_audit)
     {
-      *_os << heading("calcJobOverheadCost()", '-', 75) << std::endl;
-      _auditIpCosts.clear();
+        *_os << heading("calcJobOverheadCost()", '-', 75) << std::endl;
+        _auditIpCosts.clear();
     }
     double saveTotalCost = _totalCost;
     double jobovrdCost = 0.0;
-  
+
     const job_set_id_t& jobs = context.clevorDataSet()->jobs();
     job_set_id_t::const_iterator it;
     for (it = jobs.begin(); it != jobs.end(); ++it)
     {
         const Job* job = *it;
-        if (job->dueTime() == -1 || !job->active()) continue;
+        if (job->dueTime() == -1 || !job->active())
+            continue;
         int makespan = job->makespan();
         int minStartTime = 99999;
-        for (Job::const_iterator it = job->begin();
-             it != job->end();
-             ++it)
-	{
-	    JobOp* op = *it;
-            if (op->type() == op_summary) continue;
-            if (op->ignorable()) continue;
+        for (Job::const_iterator it = job->begin(); it != job->end(); ++it)
+        {
+            JobOp* op = *it;
+            if (op->type() == op_summary)
+                continue;
+            if (op->ignorable())
+                continue;
             Activity* act = op->activity();
-            if (act == nullptr) continue;
+            if (act == nullptr)
+                continue;
 
             int startTime = act->es() + 1;
-            if (startTime < minStartTime) minStartTime = startTime;
-	}
+            if (startTime < minStartTime)
+                minStartTime = startTime;
+        }
 
         // overhead cost
         double overheadCostPerTS = 0.0;
         if (job->overheadCostPeriod() != period_undefined)
-	{
-	    uint_t periodSeconds;
+        {
+            uint_t periodSeconds;
             periodSeconds = periodToSeconds(job->overheadCostPeriod());
-            overheadCostPerTS =
-	      job->overheadCost()
-              / ((double)periodSeconds / (double)_timeStep);
-	}
-        if (_audit)
-	{
-	    *_os << "WorkOrder id = " << job->id()
-	         << " name = " << job->name() << ": "
-	         << "Job Overhead Cost" << std::endl;
+            overheadCostPerTS = job->overheadCost() / ((double)periodSeconds / (double)_timeStep);
         }
-        calcJobPeriodCost(
-	    Span<int>(minStartTime,makespan),
-            overheadCostPerTS);   
-	if (_audit)
-	{
-
-	    JobOverheadCostReport* report =
-	      _auditReport->joboverheadCost(job->id());
+        if (_audit)
+        {
+            *_os << "WorkOrder id = " << job->id() << " name = " << job->name() << ": "
+                 << "Job Overhead Cost" << std::endl;
+        }
+        calcJobPeriodCost(Span<int>(minStartTime, makespan), overheadCostPerTS);
+        if (_audit)
+        {
+            JobOverheadCostReport* report = _auditReport->joboverheadCost(job->id());
             if (report->getName().empty())
-	    {
+            {
                 report->setName(job->name());
             }
-            std::map<utl::uint_t,double>::const_iterator i;
-            for (i = _auditIpCosts.begin();
-                 i != _auditIpCosts.end();
-                 i++)
-	    {
-  	        JobOverheadCostInfo* info = new JobOverheadCostInfo();
+            std::map<utl::uint_t, double>::const_iterator i;
+            for (i = _auditIpCosts.begin(); i != _auditIpCosts.end(); i++)
+            {
+                JobOverheadCostInfo* info = new JobOverheadCostInfo();
                 info->interestPeriod = i->first;
                 info->cost = i->second;
                 report->costs()->push_back(info);
@@ -2756,11 +2696,10 @@ TotalCostEvaluator::calcJobOverheadCost(
             saveTotalCost = _totalCost;
         }
     }
-    setComponentScore("JobOverheadCost",(int)jobovrdCost);
+    setComponentScore("JobOverheadCost", (int)jobovrdCost);
     if (_audit)
     {
-        *_os << "Total Job Overhead Cost: $" << jobovrdCost
-             << std::endl;
+        *_os << "Total Job Overhead Cost: $" << jobovrdCost << std::endl;
         ComponentScoreInfo* info = new ComponentScoreInfo();
         info->name = "JobOverheadCost";
         info->score = jobovrdCost;
@@ -2769,15 +2708,14 @@ TotalCostEvaluator::calcJobOverheadCost(
 }
 
 void
-TotalCostEvaluator::calcJobPeriodCost(
-     const utl::Span<int>& p_span,
-     double costPerTS) const
+TotalCostEvaluator::calcJobPeriodCost(const utl::Span<int>& p_span, double costPerTS) const
 {
     if (_audit)
     {
         _auditIpCosts.clear();
     }
-    if (costPerTS == 0.0) return;
+    if (costPerTS == 0.0)
+        return;
 
     Span<int> span = p_span;
 
@@ -2788,48 +2726,44 @@ TotalCostEvaluator::calcJobPeriodCost(
         time_t originTime = _schedulerConfig->originTime();
         time_t beginTime = originTime + (span.getBegin() * timeStep);
         time_t endTime = originTime + (span.getEnd() * timeStep);
-        *_os
-	    << " => calcJobPeriodCost("
-            << getTimeString(beginTime) << ", "
-            << getTimeString(endTime) << ", "
-            << "$" << costPerTS << ")" << std::endl;
+        *_os << " => calcJobPeriodCost(" << getTimeString(beginTime) << ", "
+             << getTimeString(endTime) << ", "
+             << "$" << costPerTS << ")" << std::endl;
     }
     for (spanip_col_t::iterator it = _spanIPs.findFirstIt(span);
-	 (it != _spanIPs.end()) && !span.isNil();
-         ++it)
+         (it != _spanIPs.end()) && !span.isNil(); ++it)
     {
         const SpanInterestPeriod& sip = (const SpanInterestPeriod&)**it;
         Span<int> overlap = sip.overlap(span);
         span.setBegin(overlap.getEnd());
         uint_t ip = sip.period();
         double cost = 0.0;
-        if (costPerTS != 0.0) cost = (costPerTS * (double)overlap.size());
-	//double cost = (costPerTS * (double)overlap.size());
+        if (costPerTS != 0.0)
+            cost = (costPerTS * (double)overlap.size());
+        //double cost = (costPerTS * (double)overlap.size());
         if (_audit)
-	{
-	    *_os << "    i.p. " << ip << ": $" << _ipCost[ip];
-	}
+        {
+            *_os << "    i.p. " << ip << ": $" << _ipCost[ip];
+        }
         _ipCost[ip] += cost;
         _totalCost += cost;
         if (_audit)
-	{
-	    *_os << " + $" << cost << " = $" << _ipCost[ip] << std::endl;
-	    // _auditIpCosts[ip] += cost;
+        {
+            *_os << " + $" << cost << " = $" << _ipCost[ip] << std::endl;
+            // _auditIpCosts[ip] += cost;
             _auditIpCosts[ip] = cost;
-	}
+        }
     }
     if (_audit)
     {
-        *_os
-            << "    total: $" << (_totalCost - saveTotalCost)
-            << std::endl;
+        *_os << "    total: $" << (_totalCost - saveTotalCost) << std::endl;
     }
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 CSE_NS_END;
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 UTL_CLASS_IMPL(cse::SpanInterestPeriod, utl::Span<int>);
 UTL_CLASS_IMPL(cse::TotalCostEvaluator, cse::ScheduleEvaluator);

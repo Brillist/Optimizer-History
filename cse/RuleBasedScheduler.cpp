@@ -9,7 +9,7 @@
 // #define DEBUG_UNIT
 #endif
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 UTL_NS_USE;
 LUT_NS_USE;
@@ -17,7 +17,7 @@ CLP_NS_USE;
 CLS_NS_USE;
 GOP_NS_USE;
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 UTL_CLASS_IMPL_ABC(cse::RuleBasedScheduler, cse::Scheduler);
 UTL_CLASS_IMPL(cse::JobLevelScheduler, cse::RuleBasedScheduler);
@@ -26,13 +26,13 @@ UTL_CLASS_IMPL(cse::JobSequenceScheduler, cse::JobLevelScheduler);
 UTL_CLASS_IMPL(cse::OpSequenceScheduler, cse::RuleBasedScheduler);
 UTL_CLASS_IMPL(cse::FwdScheduler, cse::JobLevelScheduler);
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 CSE_NS_BEGIN;
 
-//////////////////////////////////////////////////////////////////////////////
-// RuleBasedScheduler ////////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
+// RuleBasedScheduler //////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 RuleBasedScheduler::copy(const Object& rhs)
@@ -42,11 +42,11 @@ RuleBasedScheduler::copy(const Object& rhs)
     Scheduler::copy(rbs);
     _jobSid = 0;
     _opSid = 0;
-//     _context = rbs._context;
+    //     _context = rbs._context;
     setOpOrdering(rbs._opOrdering);
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 RuleBasedScheduler::run(SchedulingContext* context) const
@@ -69,37 +69,31 @@ RuleBasedScheduler::run(SchedulingContext* context) const
             selectedOp->serialId() = _opSid++;
         }
 #ifdef DEBUG_UNIT
-        utl::cout << "   jobId:" << selectedOp->job()->id()
-                  << ", opId:" << selectedOp->id()
+        utl::cout << "   jobId:" << selectedOp->job()->id() << ", opId:" << selectedOp->id()
                   << ", active:" << selectedOp->job()->active()
-                  << ", frozen:" << selectedOp->frozen()
-                  << ", opSid:" << selectedOp->serialId()
-                  << ", opES:" << selectedOp->activity()->es()
-                  << utl::endlf;
+                  << ", frozen:" << selectedOp->frozen() << ", opSid:" << selectedOp->serialId()
+                  << ", opES:" << selectedOp->activity()->es() << utl::endlf;
         CycleGroup* cg = selectedOp->esCG();
-        utl::cout << "        "
-                  << cg->toString() << ", "
-                  << cg->predCGsString() << ", "
-                  << cg->succCGsString()
-                  << utl::endlf;
+        utl::cout << "        " << cg->toString() << ", " << cg->predCGsString() << ", "
+                  << cg->succCGsString() << utl::endlf;
 #endif
         context->schedule(selectedOp);
     }
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 RuleBasedScheduler::initRun(SchedulingContext* context) const
 {
-//     _context = context;
+    //     _context = context;
     _jobSid = 0;
     _opSid = 0;
-    context->setComplete(false);//
-//     _terminate = false;
+    context->setComplete(false); //
+    //     _terminate = false;
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 RuleBasedScheduler::setOpOrdering(OpOrdering* opOrdering)
@@ -108,21 +102,21 @@ RuleBasedScheduler::setOpOrdering(OpOrdering* opOrdering)
     _opOrdering = opOrdering;
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 RuleBasedScheduler::init()
 {
     _jobSid = 0;
     _opSid = 0;
-//     _context = nullptr;
+    //     _context = nullptr;
 
     _opOrdering = nullptr;
     _setSid = false;
-//     _terminate = false;
+    //     _terminate = false;
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 RuleBasedScheduler::deInit()
@@ -130,9 +124,9 @@ RuleBasedScheduler::deInit()
     setOpOrdering(nullptr);
 }
 
-//////////////////////////////////////////////////////////////////////////////
-// JobLevelScheduler /////////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
+// JobLevelScheduler ///////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 JobLevelScheduler::copy(const Object& rhs)
@@ -141,10 +135,10 @@ JobLevelScheduler::copy(const Object& rhs)
 
     ASSERTD(rhs.isA(JobLevelScheduler));
     const JobLevelScheduler& jls = (const JobLevelScheduler&)rhs;
-    setJobOrdering(jls._jobOrdering);//note: not cloned?
+    setJobOrdering(jls._jobOrdering); //note: not cloned?
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 JobLevelScheduler::setJobOrdering(JobOrdering* jobOrdering)
@@ -153,7 +147,7 @@ JobLevelScheduler::setJobOrdering(JobOrdering* jobOrdering)
     _jobOrdering = jobOrdering;
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 JobLevelScheduler::initRun(SchedulingContext* context) const
@@ -174,12 +168,12 @@ JobLevelScheduler::initRun(SchedulingContext* context) const
     }
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 JobOp*
 JobLevelScheduler::selectOp(SchedulingContext* context) const
 {
-//     ASSERTD(_context != nullptr);
+    //     ASSERTD(_context != nullptr);
     ASSERTD(_jobOrdering != nullptr);
     ASSERTD(_opOrdering != nullptr);
 
@@ -220,7 +214,8 @@ JobLevelScheduler::selectOp(SchedulingContext* context) const
     if (selectedOp == nullptr)
     {
 #ifdef DEBUG_UNIT
-        utl::cout << "\nJobLevelScheduler::selectOp cannot select an op from JobLevelScheduler._sjobs={";
+        utl::cout
+            << "\nJobLevelScheduler::selectOp cannot select an op from JobLevelScheduler._sjobs={";
         for (Object** jobIt = _sjobs; jobIt != _sjobsPtr; ++jobIt)
             utl::cout << ((Job*)(*jobIt))->id() << ",";
         utl::cout << "}" << utl::endl;
@@ -230,7 +225,7 @@ JobLevelScheduler::selectOp(SchedulingContext* context) const
     return selectedOp;
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 JobLevelScheduler::setSchedulableJobs(SchedulingContext* context) const
@@ -274,12 +269,12 @@ JobLevelScheduler::setSchedulableJobs(SchedulingContext* context) const
                 break;
             }
         }
-        if (!anySchedulable) continue;
+        if (!anySchedulable)
+            continue;
 
         // use _jobOrdering to decide whether to select this job
         // note: OrderingInc is accepted by default
-        if ((selectedJob == nullptr)
-            || (_jobOrdering->cmp(job, selectedJob) < 0))
+        if ((selectedJob == nullptr) || (_jobOrdering->cmp(job, selectedJob) < 0))
         {
             selectedJob = job;
         }
@@ -290,7 +285,8 @@ JobLevelScheduler::setSchedulableJobs(SchedulingContext* context) const
     {
         utl::RBtree::iterator urIt, urLim = _unreleasedJobs.end();
 #ifdef DEBUG_UNIT
-        utl::cout << "No job in SchedulingContext._sjobs can be selected, select a job from JobLevelScheduler._unreleasedjobs={";
+        utl::cout << "No job in SchedulingContext._sjobs can be selected, select a job from "
+                     "JobLevelScheduler._unreleasedjobs={";
         for (urIt = _unreleasedJobs.begin(); urIt != urLim; ++urIt)
         {
             Job* job = (Job*)*urIt;
@@ -305,8 +301,7 @@ JobLevelScheduler::setSchedulableJobs(SchedulingContext* context) const
 
             // use _jobOrdering to decide whether to select this job
             // note: OrderingInc is accepted by default
-            if ((selectedJob == nullptr)
-                || (_jobOrdering->cmp(job, selectedJob) < 0))
+            if ((selectedJob == nullptr) || (_jobOrdering->cmp(job, selectedJob) < 0))
             {
                 selectedJob = job;
             }
@@ -329,7 +324,7 @@ JobLevelScheduler::setSchedulableJobs(SchedulingContext* context) const
         if (!_releaseJobs || _unreleasedJobs.empty())
         {
             context->setComplete(true);
-//             _terminate = true;
+            //             _terminate = true;
         }
         return;
     }
@@ -337,11 +332,11 @@ JobLevelScheduler::setSchedulableJobs(SchedulingContext* context) const
     // all jobs, including itself, in selectedJob's cycle-group
     // are schedulable
     CycleGroup* selectedJobCG = selectedJob->cycleGroup();
-//         utl::cout << "        "
-//                   << selectedJobCG->toString() << ", "
-//                   << selectedJobCG->predCGsString() << ", "
-//                   << selectedJobCG->succCGsString()
-//                   << utl::endlf;
+    //         utl::cout << "        "
+    //                   << selectedJobCG->toString() << ", "
+    //                   << selectedJobCG->predCGsString() << ", "
+    //                   << selectedJobCG->succCGsString()
+    //                   << utl::endlf;
 
     CycleGroup::iterator cbIt;
     CycleGroup::iterator cbLim = selectedJobCG->end();
@@ -351,43 +346,39 @@ JobLevelScheduler::setSchedulableJobs(SchedulingContext* context) const
         ASSERTD(cb->owner() != nullptr);
         Job* cbJob = (Job*)cb->owner();
         releaseJob(cbJob, context);
-//         if (!cbJob->active()) continue;
-//         sjobsAdd(cbJob);
-//         if (_releaseJobs && !cbJob->released())
-//         {
-//             if (_setSid)
-//             {
-//                 cbJob->serialId() = _jobSid++;
-//             }
-//             releaseJob(cbJob, context);
-//         }
+        //         if (!cbJob->active()) continue;
+        //         sjobsAdd(cbJob);
+        //         if (_releaseJobs && !cbJob->released())
+        //         {
+        //             if (_setSid)
+        //             {
+        //                 cbJob->serialId() = _jobSid++;
+        //             }
+        //             releaseJob(cbJob, context);
+        //         }
     }
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 JobLevelScheduler::sjobsAdd(utl::Object* obj) const
 {
     if (_sjobsPtr == _sjobsLim)
     {
-        utl::arrayGrow(
-            _sjobs,
-            _sjobsPtr,
-            _sjobsLim,
-            utl::max((size_t)256, _sjobsSize * 2));
+        utl::arrayGrow(_sjobs, _sjobsPtr, _sjobsLim, utl::max((size_t)256, _sjobsSize * 2));
         _sjobsSize = _sjobsLim - _sjobs;
-
     }
     *_sjobsPtr++ = obj;
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 JobLevelScheduler::releaseJob(Job* job, SchedulingContext* context) const
 {
-    if (!job->active()) return;
+    if (!job->active())
+        return;
     sjobsAdd(job);
     if (_releaseJobs && !job->released())
     {
@@ -399,24 +390,17 @@ JobLevelScheduler::releaseJob(Job* job, SchedulingContext* context) const
         job->release(context->manager());
 #ifdef DEBUG_UNIT
         clp::CycleGroup* cg = job->cycleGroup();
-        utl::cout << "Release job:" << job->id()
-                  << " in " << cg->toString()
-                  << ", " << cg->predCGsString()
-                  << ", " << cg->succCGsString()
-                  << utl::endlf;
-        utl::cout << "   jobId:" << job->id()
-                  << ", jobSid:" << job->serialId()
-                  << ", dueTime:" << job->dueTime()
-                  << ", successorDepth:" << job->successorDepth()
-                  << ", active:" << job->active()
-                  << ", #unreleasedJobs:" << _unreleasedJobs.size()
-                  << ", latenessCost:" << job->latenessCost()
-                  << utl::endl;
+        utl::cout << "Release job:" << job->id() << " in " << cg->toString() << ", "
+                  << cg->predCGsString() << ", " << cg->succCGsString() << utl::endlf;
+        utl::cout << "   jobId:" << job->id() << ", jobSid:" << job->serialId()
+                  << ", dueTime:" << job->dueTime() << ", successorDepth:" << job->successorDepth()
+                  << ", active:" << job->active() << ", #unreleasedJobs:" << _unreleasedJobs.size()
+                  << ", latenessCost:" << job->latenessCost() << utl::endl;
 #endif
     }
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 JobLevelScheduler::init()
@@ -429,35 +413,33 @@ JobLevelScheduler::init()
     _sjobsSize = 0;
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 JobLevelScheduler::deInit()
 {
     setJobOrdering(nullptr);
-    delete [] _sjobs;
+    delete[] _sjobs;
 }
 
-//////////////////////////////////////////////////////////////////////////////
-// FrozenOpScheduler /////////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
+// FrozenOpScheduler ///////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 FrozenOpScheduler::init()
 {
-    JobOrderingDecLatenessCost* jobOrdering1 =
-        new JobOrderingDecLatenessCost();
-    JobOrderingIncDueTime* jobOrdering2 =
-        new JobOrderingIncDueTime();
+    JobOrderingDecLatenessCost* jobOrdering1 = new JobOrderingDecLatenessCost();
+    JobOrderingIncDueTime* jobOrdering2 = new JobOrderingIncDueTime();
     jobOrdering1->setNextOrdering(jobOrdering2);
     setJobOrdering(jobOrdering1);
     setOpOrdering(new OpOrderingFrozenFirst());
     _releaseJobs = false;
 }
 
-//////////////////////////////////////////////////////////////////////////////
-// JobSequenceScheduler //////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
+// JobSequenceScheduler ////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 JobSequenceScheduler::init()
@@ -466,9 +448,9 @@ JobSequenceScheduler::init()
     setOpOrdering(new JobOpOrderingIncSID());
 }
 
-//////////////////////////////////////////////////////////////////////////////
-// OpSequenceScheduler ///////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
+// OpSequenceScheduler /////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 OpSequenceScheduler::initRun(SchedulingContext* context) const
@@ -486,7 +468,8 @@ OpSequenceScheduler::initRun(SchedulingContext* context) const
     for (opIt = ops.begin(); opIt != ops.end(); ++opIt)
     {
         JobOp* op = *opIt;
-        if (op->frozen() || !op->job()->active()) continue;
+        if (op->frozen() || !op->job()->active())
+            continue;
         _ops += op;
     }
     // sort _ops by SID
@@ -505,7 +488,7 @@ OpSequenceScheduler::initRun(SchedulingContext* context) const
     }
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 JobOp*
 OpSequenceScheduler::selectOp(SchedulingContext* context) const
@@ -516,7 +499,7 @@ OpSequenceScheduler::selectOp(SchedulingContext* context) const
     if (_idx == _ops.items())
     {
         context->setComplete(true);
-//         _terminate = true;
+        //         _terminate = true;
         return nullptr;
     }
 
@@ -525,7 +508,7 @@ OpSequenceScheduler::selectOp(SchedulingContext* context) const
     return op;
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 OpSequenceScheduler::init()
@@ -534,19 +517,16 @@ OpSequenceScheduler::init()
     setOpOrdering(new OpOrderingIncSID());
 }
 
-//////////////////////////////////////////////////////////////////////////////
-// FwdScheduler //////////////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
+// FwdScheduler ////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 FwdScheduler::init()
 {
-    JobOrderingDecSuccessorDepth* jobOrdering1 =
-        new JobOrderingDecSuccessorDepth();
-    JobOrderingDecLatenessCost* jobOrdering2 =
-        new JobOrderingDecLatenessCost();
-    JobOrderingIncDueTime* jobOrdering3 =
-        new JobOrderingIncDueTime();
+    JobOrderingDecSuccessorDepth* jobOrdering1 = new JobOrderingDecSuccessorDepth();
+    JobOrderingDecLatenessCost* jobOrdering2 = new JobOrderingDecLatenessCost();
+    JobOrderingIncDueTime* jobOrdering3 = new JobOrderingIncDueTime();
     jobOrdering1->setNextOrdering(jobOrdering2);
     jobOrdering2->setNextOrdering(jobOrdering3);
     setJobOrdering(jobOrdering1);
@@ -554,7 +534,7 @@ FwdScheduler::init()
     _setSid = true;
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 FwdScheduler::initRun(SchedulingContext* context) const
@@ -573,7 +553,7 @@ FwdScheduler::initRun(SchedulingContext* context) const
     }
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 FwdScheduler::releaseJob(Job* job, SchedulingContext* context) const
@@ -590,12 +570,12 @@ FwdScheduler::releaseJob(Job* job, SchedulingContext* context) const
         {
             if (_setSid)
             {
-//                 if (job->id() == 6)
-//                 {
-//                     utl::cout << "job:" << job->id()
-//                               << ", numAllSops:" << Uint(job->allSops().size())
-//                               << utl::endlf;
-//                 }
+                //                 if (job->id() == 6)
+                //                 {
+                //                     utl::cout << "job:" << job->id()
+                //                               << ", numAllSops:" << Uint(job->allSops().size())
+                //                               << utl::endlf;
+                //                 }
                 jobop_vector_t opVect;
                 const jobop_set_id_t& ops = job->allSops();
                 jobop_set_id_t::const_iterator opIt;
@@ -604,8 +584,7 @@ FwdScheduler::releaseJob(Job* job, SchedulingContext* context) const
                     JobOp* op = *opIt;
                     opVect.push_back(op);
                 }
-                std::stable_sort(opVect.begin(), opVect.end(),
-                                 JobOpFDsuccessorDepthDecOrdering());
+                std::stable_sort(opVect.begin(), opVect.end(), JobOpFDsuccessorDepthDecOrdering());
                 jobop_vector_t::iterator it;
                 for (it = opVect.begin(); it != opVect.end(); it++)
                 {
@@ -620,24 +599,16 @@ FwdScheduler::releaseJob(Job* job, SchedulingContext* context) const
         }
 #ifdef DEBUG_UNIT
         clp::CycleGroup* cg = job->cycleGroup();
-        utl::cout << "Release job:" << job->id()
-                  << " in " << cg->toString()
-                  << ", " << cg->predCGsString()
-                  << ", " << cg->succCGsString()
-                  << utl::endlf;
-        utl::cout << "   jobId:" << job->id()
-                  << ", jobSid:" << job->serialId()
-                  << ", dueTime:" << job->dueTime()
-                  << ", successorDepth:" << job->successorDepth()
-                  << ", active:" << job->active()
-                  << ", #unreleasedJobs:" << _unreleasedJobs.size()
-                  << ", latenessCost:" << job->latenessCost()
-                  << utl::endl;
+        utl::cout << "Release job:" << job->id() << " in " << cg->toString() << ", "
+                  << cg->predCGsString() << ", " << cg->succCGsString() << utl::endlf;
+        utl::cout << "   jobId:" << job->id() << ", jobSid:" << job->serialId()
+                  << ", dueTime:" << job->dueTime() << ", successorDepth:" << job->successorDepth()
+                  << ", active:" << job->active() << ", #unreleasedJobs:" << _unreleasedJobs.size()
+                  << ", latenessCost:" << job->latenessCost() << utl::endl;
 #endif
     }
 }
 
-
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 CSE_NS_END;

@@ -4,13 +4,13 @@
 #include "PtMutate.h"
 #include "ClevorDataSet.h"
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 #ifdef DEBUG
 #define DEBUG_UNIT
 #endif
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 UTL_NS_USE;
 LUT_NS_USE;
@@ -18,15 +18,15 @@ GOP_NS_USE;
 CLP_NS_USE;
 CLS_NS_USE;
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 UTL_CLASS_IMPL(cse::PtMutate, gop::RevOperator);
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 CSE_NS_BEGIN;
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 PtMutate::copy(const Object& rhs)
@@ -44,7 +44,7 @@ PtMutate::copy(const Object& rhs)
     _movePt = arm._movePt;
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 PtMutate::initialize(const gop::DataSet* p_dataSet)
@@ -61,18 +61,15 @@ PtMutate::initialize(const gop::DataSet* p_dataSet)
     {
         JobOp* op = (JobOp*)_acts[i]->owner();
         _numPtChoices += _ptExps[i]->size();
-        addOperatorVar(i,1,2,op->job()->activeP());
+        addOperatorVar(i, 1, 2, op->job()->activeP());
     }
     setNumChoices(_numPtChoices);
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 bool
-PtMutate::execute(
-    gop::Ind* ind,
-    gop::IndBuilderContext* p_context,
-    bool singleStep)
+PtMutate::execute(gop::Ind* ind, gop::IndBuilderContext* p_context, bool singleStep)
 {
     ASSERTD(dynamic_cast<SchedulingContext*>(p_context) != nullptr);
     ASSERTD(dynamic_cast<StringInd<uint_t>*>(ind) != nullptr);
@@ -84,10 +81,8 @@ PtMutate::execute(
     // choose activity
     uint_t actIdx = getSelectedVarIdx();
 #ifdef DEBUG_UNIT
-    utl::cout
-        << "                                                   "
-        << "varSucRate:" << getSelectedVarP()
-        << ", idx:" << actIdx;
+    utl::cout << "                                                   "
+              << "varSucRate:" << getSelectedVarP() << ", idx:" << actIdx;
 #endif
     _movePtIdx = _stringBase + actIdx;
     _movePt = string[_movePtIdx];
@@ -102,10 +97,10 @@ PtMutate::execute(
     if (singleStep)
     {
         uint_t oldPtIdx = 0;
-        for (uint_vector_t::iterator it = pts->begin();
-             it != pts->end(); it++)
+        for (uint_vector_t::iterator it = pts->begin(); it != pts->end(); it++)
         {
-            if (_movePt == *it) break;
+            if (_movePt == *it)
+                break;
             oldPtIdx++;
         }
         ASSERTD(oldPtIdx < numPts);
@@ -135,16 +130,14 @@ PtMutate::execute(
     {
         ptIdx = _rng->evali(pts->size() - 1);
         pt = (*pts)[ptIdx];
-        if (pt >= _movePt) pt = (*pts)[++ptIdx];
+        if (pt >= _movePt)
+            pt = (*pts)[++ptIdx];
     }
     string[_movePtIdx] = pt;
 
     ASSERTD(pt != _movePt);
 #ifdef DEBUG_UNIT
-    utl::cout << ", task:" << act->id()
-              << ", oldPt:" << _movePt
-              << ", newPt:" << pt
-              << utl::endl;
+    utl::cout << ", task:" << act->id() << ", oldPt:" << _movePt << ", newPt:" << pt << utl::endl;
 #endif
     ASSERTD(act->possiblePts().has(pt));
     act->selectPt(pt);
@@ -152,22 +145,24 @@ PtMutate::execute(
     return true;
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 PtMutate::accept()
 {
     ASSERTD(_moveSchedule != nullptr);
-    if (_moveSchedule->newString()) _moveSchedule->acceptNewString();
+    if (_moveSchedule->newString())
+        _moveSchedule->acceptNewString();
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 PtMutate::undo()
 {
     ASSERTD(_moveSchedule != nullptr);
-    if (_moveSchedule->newString()) _moveSchedule->deleteNewString();
+    if (_moveSchedule->newString())
+        _moveSchedule->deleteNewString();
     gop::String<uint_t>& string = _moveSchedule->string();
 
     if (_movePtIdx != uint_t_max)
@@ -177,7 +172,7 @@ PtMutate::undo()
     }
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 PtMutate::init()
@@ -188,7 +183,7 @@ PtMutate::init()
     _movePt = uint_t_max;
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 PtMutate::deInit()
@@ -196,7 +191,7 @@ PtMutate::deInit()
     deleteCont(_ptExps);
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 PtMutate::setActPtExps(const ClevorDataSet* dataSet)
@@ -209,10 +204,12 @@ PtMutate::setActPtExps(const ClevorDataSet* dataSet)
     for (it = ops.begin(); it != ops.end(); ++it)
     {
         JobOp* jobOp = *it;
-        if (jobOp->frozen()) continue;
+        if (jobOp->frozen())
+            continue;
         Activity* act = jobOp->activity();
         ASSERTD(act != nullptr);
-        if (!act->isA(PtActivity)) continue;
+        if (!act->isA(PtActivity))
+            continue;
         PtActivity* ptact = (PtActivity*)act;
         const IntExp* ptExp = ptact->possiblePts();
         if (!ptExp->isBound())
@@ -236,6 +233,6 @@ PtMutate::setActPtExps(const ClevorDataSet* dataSet)
     }
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 CSE_NS_END;

@@ -6,7 +6,7 @@
 #include "SchedulingRun.h"
 #include "TotalCostEvaluator.h"
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 UTL_NS_USE;
 LUT_NS_USE;
@@ -14,47 +14,49 @@ CLP_NS_USE;
 CLS_NS_USE;
 GOP_NS_USE;
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 UTL_CLASS_IMPL(cse::SchedulingRun, utl::Object);
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 CSE_NS_BEGIN;
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
-SchedulingRun::initialize(
-    ClevorDataSet* dataSet,
-    Scheduler* scheduler,
-    const objective_vector_t& objectives)
+SchedulingRun::initialize(ClevorDataSet* dataSet,
+                          Scheduler* scheduler,
+                          const objective_vector_t& objectives)
 {
-    delete _optimizer; _optimizer = nullptr;
+    delete _optimizer;
+    _optimizer = nullptr;
 
     // context
     delete _context;
     _context = new SchedulingContext();
 
     // scheduler
-    delete _scheduler; _scheduler = scheduler;
+    delete _scheduler;
+    _scheduler = scheduler;
 
     // objectives
-    deleteCont(_objectives); _objectives = objectives;
+    deleteCont(_objectives);
+    _objectives = objectives;
 
     // initialize context
     _context->initialize(dataSet);
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
-SchedulingRun::initialize(
-    ClevorDataSet* dataSet,
-    Optimizer* optimizer,
-    OptimizerConfiguration* optimizerConfig)
+SchedulingRun::initialize(ClevorDataSet* dataSet,
+                          Optimizer* optimizer,
+                          OptimizerConfiguration* optimizerConfig)
 {
-    delete _scheduler; _scheduler = nullptr;
+    delete _scheduler;
+    _scheduler = nullptr;
     deleteCont(_objectives);
 
     // context
@@ -63,14 +65,15 @@ SchedulingRun::initialize(
     optimizerConfig->context() = _context;
 
     // optimizer
-    delete _optimizer; _optimizer = optimizer;
+    delete _optimizer;
+    _optimizer = optimizer;
 
     // initialize context
     _context->initialize(dataSet);
     _optimizer->initialize(optimizerConfig);
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 bool
 SchedulingRun::run()
@@ -99,7 +102,7 @@ SchedulingRun::run()
             utl::cout << "Forward, ";
             if (score != nullptr)
             {
-                switch(score->getType())
+                switch (score->getType())
                 {
                 case score_failed:
                     utl::cout << "(failed), ";
@@ -108,16 +111,14 @@ SchedulingRun::run()
                     utl::cout << "(ct_vialated), ";
                     break;
                 case score_succeeded:
-                    utl::cout << score->toString()
-                              << ", ";
+                    utl::cout << score->toString() << ", ";
                     break;
                 default:
                     ABORT();
                 }
             }
             // see note in Optimizer.cpp
-            utl::cout << Duration(difftime(endTime,startTime)).toString()
-                      << utl::endlf;
+            utl::cout << Duration(difftime(endTime, startTime)).toString() << utl::endlf;
             _context->store();
         }
     }
@@ -133,7 +134,7 @@ SchedulingRun::run()
     return true;
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 SchedulingRun::stop()
@@ -142,19 +143,19 @@ SchedulingRun::stop()
         _optimizer->stop();
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 SchedulingRun::audit()
 {
-   if (_optimizer == nullptr)
-   {
-      return;
-   }
-   _optimizer->audit();
+    if (_optimizer == nullptr)
+    {
+        return;
+    }
+    _optimizer->audit();
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 uint_t
 SchedulingRun::numObjectives() const
@@ -169,7 +170,7 @@ SchedulingRun::numObjectives() const
     }
 }
 
-/////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////////////
 
 time_t
 SchedulingRun::makespan() const
@@ -177,7 +178,7 @@ SchedulingRun::makespan() const
     return _context->makespan();
 }
 
-/////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////////////
 
 Score*
 SchedulingRun::bestScore(uint_t objectiveIdx) const
@@ -193,7 +194,7 @@ SchedulingRun::bestScore(uint_t objectiveIdx) const
     }
 }
 
-/////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////////////
 
 Score*
 SchedulingRun::bestScore(const std::string& objectiveName) const
@@ -216,12 +217,11 @@ SchedulingRun::bestScore(const std::string& objectiveName) const
     }
 }
 
-/////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////////////
 
 int
-SchedulingRun::bestScoreComponent(
-    const std::string& objectiveName,
-    const std::string& componentName) const
+SchedulingRun::bestScoreComponent(const std::string& objectiveName,
+                                  const std::string& componentName) const
 {
     if (_optimizer == nullptr)
     {
@@ -237,14 +237,11 @@ SchedulingRun::bestScoreComponent(
     }
     else
     {
-        return
-            _optimizer->bestScoreComponent(
-                objectiveName,
-                componentName);
+        return _optimizer->bestScoreComponent(objectiveName, componentName);
     }
 }
 
-/////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////////////
 
 const std::string&
 SchedulingRun::bestScoreAudit() const
@@ -262,7 +259,7 @@ SchedulingRun::bestScoreAudit() const
     }
 }
 
-/////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////////////
 
 const AuditReport*
 SchedulingRun::bestScoreAuditReport() const
@@ -286,7 +283,7 @@ SchedulingRun::bestScoreAuditReport() const
     return report;
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 SchedulingRun::init()
@@ -300,7 +297,7 @@ SchedulingRun::init()
 #endif
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 SchedulingRun::deInit()
@@ -311,6 +308,6 @@ SchedulingRun::deInit()
     deleteCont(_objectives);
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 CSE_NS_END;

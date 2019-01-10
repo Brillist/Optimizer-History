@@ -6,41 +6,37 @@
 #include "MPSitem.h"
 #include "MPSitemPeriod.h"
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 #ifdef DEBUG
 #define DEBUG_UNIT
 #endif
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 UTL_NS_USE;
 LUT_NS_USE;
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 UTL_CLASS_IMPL(mps::MPSitemPeriod, utl::Object);
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 MPS_NS_BEGIN;
 
-/////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////////////
 
 bool
-MPSitemPeriodOrderingIncId::operator()(
-    const MPSitemPeriod* lhs,
-    const MPSitemPeriod* rhs) const
+MPSitemPeriodOrderingIncId::operator()(const MPSitemPeriod* lhs, const MPSitemPeriod* rhs) const
 {
     return (lhs->id() < rhs->id());
 }
 
-/////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////////////
 
 bool
-MPSitemPeriodOrderingIncItemId::operator()(
-    const MPSitemPeriod* lhs,
-    const MPSitemPeriod* rhs) const
+MPSitemPeriodOrderingIncItemId::operator()(const MPSitemPeriod* lhs, const MPSitemPeriod* rhs) const
 {
     if (lhs->item()->id() == rhs->item()->id())
     {
@@ -52,30 +48,27 @@ MPSitemPeriodOrderingIncItemId::operator()(
     }
 }
 
-/////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////////////
 
 bool
-MPSitemPeriodOrderingIncST::operator()(
-    const MPSitemPeriod* lhs,
-    const MPSitemPeriod* rhs) const
+MPSitemPeriodOrderingIncST::operator()(const MPSitemPeriod* lhs, const MPSitemPeriod* rhs) const
 {
     return (lhs->startTime() < rhs->startTime());
 }
 
-/////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////////////
 
-MPSitemPeriod::MPSitemPeriod(
-    MPSitem* item,
-    uint_t id,
-    time_t startTime,
-    time_t endTime,
-    uint_t forecast,
-    uint_t customerOrder,
-    int_t pab,
-    uint_t mpsQuantity,
-    uint_t atp,
-    mpsitemperiod_status_t status,
-    uint_t onHand)
+MPSitemPeriod::MPSitemPeriod(MPSitem* item,
+                             uint_t id,
+                             time_t startTime,
+                             time_t endTime,
+                             uint_t forecast,
+                             uint_t customerOrder,
+                             int_t pab,
+                             uint_t mpsQuantity,
+                             uint_t atp,
+                             mpsitemperiod_status_t status,
+                             uint_t onHand)
 {
     init();
     _item = item;
@@ -91,7 +84,7 @@ MPSitemPeriod::MPSitemPeriod(
     _onHand = onHand;
 }
 
-/////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 MPSitemPeriod::copy(const Object& rhs)
@@ -125,7 +118,7 @@ MPSitemPeriod::copy(const Object& rhs)
     _latenessCostPeriod = mip._latenessCostPeriod;
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 MPSitemPeriod::serialize(Stream& stream, uint_t io, uint_t mode)
@@ -147,17 +140,18 @@ MPSitemPeriod::serialize(Stream& stream, uint_t io, uint_t mode)
     utl::serialize((uint_t&)_latenessCostPeriod, stream, io);
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 MPSitemPeriod::setItem(MPSitem* item, bool owner)
 {
-    if (_itemOwner) delete _item;
+    if (_itemOwner)
+        delete _item;
     _item = item;
     _itemOwner = owner;
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 MPSitemPeriod::calculate1()
@@ -194,8 +188,7 @@ MPSitemPeriod::calculate1()
         // post-process: takin care of negative pab.
         if ((_pab < 0) && _status == (periodstatus_unplanned))
         {
-            uint_t extraQuantity = _item->eoq() *
-                (1 - (_pab / (int_t)_item->eoq()));
+            uint_t extraQuantity = _item->eoq() * (1 - (_pab / (int_t)_item->eoq()));
             _mpsQuantity += extraQuantity;
             _pab += extraQuantity;
         }
@@ -205,7 +198,7 @@ MPSitemPeriod::calculate1()
 #endif
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 MPSitemPeriod::calculate2()
@@ -272,38 +265,32 @@ MPSitemPeriod::calculate2()
 #endif
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 String
 MPSitemPeriod::toString() const
 {
     MemStream str;
     str << "MPSitemPeriod:"
-        << " item:" << _item->id()
-        << ", id:" << _id
+        << " item:" << _item->id() << ", id:" << _id
         << ", st:" << Time(_startTime).toString("$yyyy/$m/$d")
-        << ", et:" << Time(_endTime).toString("$yyyy/$m/$d")
-        << ", fcst:" << _forecast
-        << ", custOrder:" << _customerOrder
-        << ", PAB:" << _pab
-        << ", MPSqnty:" << _mpsQuantity
+        << ", et:" << Time(_endTime).toString("$yyyy/$m/$d") << ", fcst:" << _forecast
+        << ", custOrder:" << _customerOrder << ", PAB:" << _pab << ", MPSqnty:" << _mpsQuantity
         << ", ATP:";
     if (_atp == uint_t_max)
         str << "null";
     else
-        str  << _atp;
+        str << _atp;
     str << ", onHand:";
     if (_onHand == uint_t_max)
         str << "null";
     else
         str << _onHand;
-    str << ", status:" << _status
-        << ", itemOwner:" << Bool(_itemOwner).toString()
-        << '\0';
+    str << ", status:" << _status << ", itemOwner:" << Bool(_itemOwner).toString() << '\0';
     return String((char*)str.get());
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 MPSitemPeriod::init()
@@ -330,7 +317,7 @@ MPSitemPeriod::init()
     _latenessCostPeriod = period_undefined;
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 MPSitemPeriod::deInit()
@@ -338,6 +325,6 @@ MPSitemPeriod::deInit()
     setItem(nullptr);
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 MPS_NS_END;

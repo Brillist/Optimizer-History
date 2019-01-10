@@ -6,31 +6,29 @@
 #include <mrp/StepAltResCapPts.h>
 #include "ProcessStep.h"
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 UTL_NS_USE;
 LUT_NS_USE;
 CSE_NS_USE;
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 UTL_CLASS_IMPL(mrp::ProcessStep, utl::Object);
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 MRP_NS_BEGIN;
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 bool
-StepOrderingIncId::operator()(
-    const ProcessStep* lhs,
-    const ProcessStep* rhs) const
+StepOrderingIncId::operator()(const ProcessStep* lhs, const ProcessStep* rhs) const
 {
     return (lhs->id() < rhs->id());
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 ProcessStep::copy(const Object& rhs)
@@ -50,7 +48,7 @@ ProcessStep::copy(const Object& rhs)
     _resCapPts = ps._resCapPts;
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 ProcessStep::serialize(Stream& stream, uint_t io, uint_t)
@@ -68,7 +66,7 @@ ProcessStep::serialize(Stream& stream, uint_t io, uint_t)
     _resCapPts.serialize(stream, io);
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 JobOp*
 ProcessStep::createJobOp(uint_t id, uint_t quantity)
@@ -87,8 +85,8 @@ ProcessStep::createJobOp(uint_t id, uint_t quantity)
             else
             {
                 ASSERT(_ptBatchSize != 0);
-                op->processingTime() = _processingTime *
-                    (uint_t)ceil((double)quantity / (double)_ptBatchSize);
+                op->processingTime() =
+                    _processingTime * (uint_t)ceil((double)quantity / (double)_ptBatchSize);
             }
         }
         else // pt_per_piece or pt_per_undefined
@@ -107,8 +105,7 @@ ProcessStep::createJobOp(uint_t id, uint_t quantity)
             else
             {
                 ASSERT(_fcBatchSize != 0);
-                op->cost() = _fixedCost *
-                    ceil((double)quantity / (double)_fcBatchSize);
+                op->cost() = _fixedCost * ceil((double)quantity / (double)_fcBatchSize);
             }
         }
         else // fc_per_piece or fc_per_undefined
@@ -122,21 +119,18 @@ ProcessStep::createJobOp(uint_t id, uint_t quantity)
     return op;
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 String
 ProcessStep::toString() const
 {
     MemStream str;
-    str << "processstep:" << _id
-        << ", name:" << _name.c_str()
-        << ", pt:" << _processingTime;
-    if(_ptPer == pt_per_batch)
+    str << "processstep:" << _id << ", name:" << _name.c_str() << ", pt:" << _processingTime;
+    if (_ptPer == pt_per_batch)
     {
         if (_ptBatchSize != uint_t_max)
         {
-            str << "/batch("
-                << _ptBatchSize << ")";
+            str << "/batch(" << _ptBatchSize << ")";
         }
         else
         {
@@ -154,8 +148,7 @@ ProcessStep::toString() const
         {
             if (_fcBatchSize != uint_t_max)
             {
-                str << "/batch("
-                    << _fcBatchSize << ")";
+                str << "/batch(" << _fcBatchSize << ")";
             }
             else
             {
@@ -167,23 +160,21 @@ ProcessStep::toString() const
             str << "/piece";
         }
     }
-    forEachIt(Array, _itemReqs, StepItemRequirement, itemReq)
-        str << '\n' << "   "
-            << itemReq.toString();
-    endForEach
-    forEachIt(Array, _resReqs, StepResourceRequirement, resReq)
-        str << '\n' << "   "
-            << resReq.toString();
-    endForEach
-    forEachIt(Array, _resCapPts, StepAltResCapPts, capPts)
-        str << '\n' << "   "
-            << capPts.toString();
+    forEachIt(Array, _itemReqs, StepItemRequirement, itemReq) str << '\n'
+                                                                  << "   " << itemReq.toString();
+    endForEach forEachIt(Array, _resReqs, StepResourceRequirement, resReq) str << '\n'
+                                                                               << "   "
+                                                                               << resReq.toString();
+    endForEach forEachIt(Array, _resCapPts, StepAltResCapPts, capPts) str << '\n'
+                                                                          << "   "
+                                                                          << capPts.toString();
     endForEach
 
-    str << '\0';
+            str
+        << '\0';
     return String((char*)str.get());
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 MRP_NS_END;

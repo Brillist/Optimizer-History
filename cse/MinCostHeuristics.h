@@ -1,7 +1,7 @@
 #ifndef CSE_MINCOSTHEURISTICS_H
 #define CSE_MINCOSTHEURISTICS_H
 
-///////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////////
 
 #include <libutl/RandNumGen.h>
 #include <libutl/R250.h>
@@ -9,11 +9,11 @@
 #include "ResourceCost.h"
 #include "JobOp.h"
 
-///////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////////
 
 CSE_NS_BEGIN;
 
-///////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
    MinCostHeuristics is a heuristics designed for the selection of 
@@ -27,16 +27,17 @@ CSE_NS_BEGIN;
    -Joe, August 24, 2005.  
 */
 
-///////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////////
 
 typedef std::vector<utl::uint_t> uint_vector_t;
 
-///////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////////
 
 class MinCostAltResPt : public utl::Object
 {
     UTL_CLASS_DECL(MinCostAltResPt);
     UTL_CLASS_NO_COPY;
+
 public:
     MinCostAltResPt(utl::uint_t pt, uint_vector_t altResIdxs)
     {
@@ -45,27 +46,39 @@ public:
     }
 
     /** get pt. */
-    const utl::uint_t pt() const
-    { return _pt; }
+    const utl::uint_t
+    pt() const
+    {
+        return _pt;
+    }
 
     /** get altResIdxs. */
-    const uint_vector_t& altResIdxs() const
-    { return _altResIdxs; }
+    const uint_vector_t&
+    altResIdxs() const
+    {
+        return _altResIdxs;
+    }
+
 private:
-    void init()
-    { _pt = 0; }
+    void
+    init()
+    {
+        _pt = 0;
+    }
     void deInit(){};
+
 private:
     utl::uint_t _pt;
-    uint_vector_t _altResIdxs; 
+    uint_vector_t _altResIdxs;
 };
 
-///////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////////
 
 class MinCostHeuristics : public utl::Object
 {
     UTL_CLASS_DECL(MinCostHeuristics);
     UTL_CLASS_NO_COPY;
+
 public:
     void initialize(ClevorDataSet* dataSet);
 
@@ -73,30 +86,26 @@ public:
 
     const MinCostAltResPt* getMinCostAltResPt(const JobOp* op) const;
 
-    utl::uint_t findCap(
-        const cls::ResourceCapPts* resCapPts,
-        utl::uint_t p_pt);
+    utl::uint_t findCap(const cls::ResourceCapPts* resCapPts, utl::uint_t p_pt);
 
-    double getResCost(
-        utl::uint_t cap, 
-        utl::uint_t pt, 
-        const ResourceCost* cost);
+    double getResCost(utl::uint_t cap, utl::uint_t pt, const ResourceCost* cost);
+
 private:
-    typedef std::map<const JobOp*, MinCostAltResPt*, 
-        JobOpIdOrdering> jobop_altrespt_map_t;
+    typedef std::map<const JobOp*, MinCostAltResPt*, JobOpIdOrdering> jobop_altrespt_map_t;
+
 private:
     void init();
     void deInit();
 
-    utl::RandNumGen* _rng; 
+    utl::RandNumGen* _rng;
     utl::uint_t _timeStep;
     jobop_altrespt_map_t _opAltResPt;
 };
 
-///////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////////
 
 CSE_NS_END;
 
-///////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////////
 
 #endif

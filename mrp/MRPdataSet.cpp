@@ -5,27 +5,27 @@
 #include <mrp/DiscreteResource.h>
 #include <mrp/PurchaseItem.h>
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 #ifdef DEBUG
 #define DEBUG_UNIT
 #endif
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 UTL_NS_USE;
 LUT_NS_USE;
 CSE_NS_USE;
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 UTL_CLASS_IMPL(mrp::MRPdataSet, cse::ClevorDataSet);
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 MRP_NS_BEGIN;
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 MRPdataSet::copy(const Object& rhs)
@@ -49,7 +49,7 @@ MRPdataSet::copy(const Object& rhs)
     _purchaseOrderIds = ds._purchaseOrderIds;
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 MRPdataSet::add(SetupGroup* setupGroup)
@@ -57,7 +57,7 @@ MRPdataSet::add(SetupGroup* setupGroup)
     _setupGroups.insert(setupGroup);
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 MRPdataSet::add(Resource* resource)
@@ -66,13 +66,12 @@ MRPdataSet::add(Resource* resource)
     if (dynamic_cast<DiscreteResource*>(resource) != nullptr)
     {
         DiscreteResource* disRes = (DiscreteResource*)resource;
-        SetupGroup* realResGroup
-            = lut::setFind(_setupGroups, disRes->setupGroup());
+        SetupGroup* realResGroup = lut::setFind(_setupGroups, disRes->setupGroup());
         disRes->setSetupGroup(realResGroup);
     }
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 MRPdataSet::add(ResourceGroup* resourceGroup)
@@ -93,7 +92,7 @@ MRPdataSet::add(ResourceGroup* resourceGroup)
     }
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 MRPdataSet::add(Item* item)
@@ -101,7 +100,7 @@ MRPdataSet::add(Item* item)
     _items.insert(item);
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 MRPdataSet::add(InventoryRecord* record)
@@ -119,7 +118,7 @@ MRPdataSet::add(InventoryRecord* record)
     item->inventoryRecord() = record;
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 MRPdataSet::add(BOM* bom)
@@ -131,8 +130,10 @@ MRPdataSet::add(BOM* bom)
     {
         String* str = new String();
         *str = "BOM contains an unknown item";
-        if (item == nullptr) *str += Uint(bom->item()->id()).toString();
-        else *str += Uint(bom->childItem()->id()).toString();
+        if (item == nullptr)
+            *str += Uint(bom->item()->id()).toString();
+        else
+            *str += Uint(bom->childItem()->id()).toString();
         throw clp::FailEx(str);
     }
     item->boms().push_back(bom);
@@ -140,7 +141,7 @@ MRPdataSet::add(BOM* bom)
     bom->setChildItem(childItem);
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 MRPdataSet::add(ProcessPlan* plan)
@@ -148,7 +149,7 @@ MRPdataSet::add(ProcessPlan* plan)
     _plans.insert(plan);
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 MRPdataSet::add(ItemPlanRelation* itemPlan)
@@ -167,7 +168,7 @@ MRPdataSet::add(ItemPlanRelation* itemPlan)
     itemPlan->setPlan(plan);
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 MRPdataSet::add(ProcessStep* step)
@@ -175,7 +176,7 @@ MRPdataSet::add(ProcessStep* step)
     _steps.insert(step);
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 MRPdataSet::add(PlanStepRelation* planStep)
@@ -194,7 +195,7 @@ MRPdataSet::add(PlanStepRelation* planStep)
     plan->planSteps().push_back(planStep);
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 MRPdataSet::add(PurchaseOrder* po)
@@ -202,7 +203,7 @@ MRPdataSet::add(PurchaseOrder* po)
     _purchaseOrders.insert(po);
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 MRPdataSet::add(WorkOrder* wo)
@@ -212,37 +213,34 @@ MRPdataSet::add(WorkOrder* wo)
     if (item == nullptr)
     {
         String* str = new String();
-        *str = "WorkOrder (" + Uint(wo->id()).toString()
-            + ") requests an unknown item ("
-            + Uint(wo->item()->id()).toString() + ")";
+        *str = "WorkOrder (" + Uint(wo->id()).toString() + ") requests an unknown item (" +
+               Uint(wo->item()->id()).toString() + ")";
         throw clp::FailEx(str);
     }
     if (dynamic_cast<ManufactureItem*>(item) == nullptr)
     {
         String* str = new String();
-        *str = "WorkOrder (" + Uint(wo->id()).toString()
-            + ") requests a non-manufactureItem ("
-            + Uint(wo->item()->id()).toString() + ")";
+        *str = "WorkOrder (" + Uint(wo->id()).toString() + ") requests a non-manufactureItem (" +
+               Uint(wo->item()->id()).toString() + ")";
         throw clp::FailEx(str);
     }
     ManufactureItem* mItem = (ManufactureItem*)item;
     wo->setItem(mItem);
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
-MRPdataSet::initialize(
-    Array& setupGroups,
-    Array& resources,
-    Array& resourceGroups,
-    Array& items,
-    Array& records,
-    Array& boms,
-    Array& plans,
-    Array& itemPlans,
-    Array& steps,
-    Array& planSteps)
+MRPdataSet::initialize(Array& setupGroups,
+                       Array& resources,
+                       Array& resourceGroups,
+                       Array& items,
+                       Array& records,
+                       Array& boms,
+                       Array& plans,
+                       Array& itemPlans,
+                       Array& steps,
+                       Array& planSteps)
 {
     // clear out existing data that could be results of a MPS run.
     deInit();
@@ -259,47 +257,36 @@ MRPdataSet::initialize(
     steps.setOwner(false);
     planSteps.setOwner(false);
 
-
     //SetupGroups and their Setups
-    forEachIt(Array, setupGroups, SetupGroup, setupGroup)
-        add(setupGroup);
+    forEachIt(Array, setupGroups, SetupGroup, setupGroup) add(setupGroup);
     endForEach
 
-    //Resources, including discrete, composite and alternateResources
-    forEachIt(Array, resources, Resource, resource)
-        add(resource);
+        //Resources, including discrete, composite and alternateResources
+        forEachIt(Array, resources, Resource, resource) add(resource);
     endForEach
 
-    forEachIt(Array, resourceGroups, ResourceGroup, resourceGroup)
-        add(resourceGroup);
+        forEachIt(Array, resourceGroups, ResourceGroup, resourceGroup) add(resourceGroup);
     endForEach
 
-    forEachIt(Array, items, Item, item)
-       add(item);
+        forEachIt(Array, items, Item, item) add(item);
     endForEach
 
-    forEachIt(Array, records, InventoryRecord, record)
-        add(record);
+        forEachIt(Array, records, InventoryRecord, record) add(record);
     endForEach
 
-    forEachIt(Array, boms, BOM, bom)
-        add(bom);
+        forEachIt(Array, boms, BOM, bom) add(bom);
     endForEach
 
-    forEachIt(Array, plans, ProcessPlan, plan)
-        add(plan);
+        forEachIt(Array, plans, ProcessPlan, plan) add(plan);
     endForEach
 
-    forEachIt(Array, itemPlans, ItemPlanRelation, itemPlan)
-        add(itemPlan);
+        forEachIt(Array, itemPlans, ItemPlanRelation, itemPlan) add(itemPlan);
     endForEach
 
-    forEachIt(Array, steps, ProcessStep, step)
-        add(step);
+        forEachIt(Array, steps, ProcessStep, step) add(step);
     endForEach
 
-    forEachIt(Array, planSteps, PlanStepRelation, planStep)
-        add(planStep);
+        forEachIt(Array, planSteps, PlanStepRelation, planStep) add(planStep);
     endForEach
 
 #ifdef DEBUG_UNIT
@@ -307,7 +294,7 @@ MRPdataSet::initialize(
 #endif
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 MRPdataSet::resetItems(Array& items)
@@ -316,12 +303,11 @@ MRPdataSet::resetItems(Array& items)
 
     // so we don't have to make copies.
     items.setOwner(false);
-    forEachIt(Array, items, Item, item)
-        add(item);
+    forEachIt(Array, items, Item, item) add(item);
     endForEach
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 MRPdataSet::resetWorkOrders(Array& workOrders)
@@ -330,12 +316,11 @@ MRPdataSet::resetWorkOrders(Array& workOrders)
 
     // so we don't have to make copies.
     workOrders.setOwner(false);
-    forEachIt(Array, workOrders, WorkOrder, workOrder)
-        add(workOrder);
+    forEachIt(Array, workOrders, WorkOrder, workOrder) add(workOrder);
     endForEach
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 MRPdataSet::resetJobIds(Array& jobIds)
@@ -344,12 +329,11 @@ MRPdataSet::resetJobIds(Array& jobIds)
 
     // so we don't have to make copies.
     jobIds.setOwner(false);
-    forEachIt(Array, jobIds, Uint, jobId)
-        _jobIds.insert((uint_t)jobId);
+    forEachIt(Array, jobIds, Uint, jobId) _jobIds.insert((uint_t)jobId);
     endForEach
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 MRPdataSet::resetOpIds(Array& opIds)
@@ -358,11 +342,10 @@ MRPdataSet::resetOpIds(Array& opIds)
 
     // so we don't have to make copies.
     opIds.setOwner(false);
-    forEachIt(Array, opIds, Uint, opId)
-        _opIds.insert((uint_t)opId);
+    forEachIt(Array, opIds, Uint, opId) _opIds.insert((uint_t)opId);
     endForEach
 }
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 MRPdataSet::resetJobGroupIds(Array& jobGroupIds)
@@ -371,12 +354,11 @@ MRPdataSet::resetJobGroupIds(Array& jobGroupIds)
 
     // so we don't have to make copies.
     jobGroupIds.setOwner(false);
-    forEachIt(Array, jobGroupIds, Uint, jobGroupId)
-        _jobGroupIds.insert((uint_t)jobGroupId);
+    forEachIt(Array, jobGroupIds, Uint, jobGroupId) _jobGroupIds.insert((uint_t)jobGroupId);
     endForEach
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 MRPdataSet::resetPurchaseOrderIds(Array& purchaseOrderIds)
@@ -390,24 +372,21 @@ MRPdataSet::resetPurchaseOrderIds(Array& purchaseOrderIds)
     endForEach
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 MRPdataSet::checkData() const
 {
     utl::cout << "SetupGroups:" << utl::endlf;
-    for (setupgroup_set_id_t::iterator it = _setupGroups.begin();
-         it != _setupGroups.end(); it++)
+    for (setupgroup_set_id_t::iterator it = _setupGroups.begin(); it != _setupGroups.end(); it++)
         utl::cout << (*it)->toString() << utl::endlf;
 
     utl::cout << utl::endl << "Resources:" << utl::endlf;
-    for (resource_set_id_t::iterator it = _resources.begin();
-         it != _resources.end(); it++)
+    for (resource_set_id_t::iterator it = _resources.begin(); it != _resources.end(); it++)
         utl::cout << (*it)->toString() << utl::endlf;
 
     utl::cout << utl::endl << "Items:" << utl::endlf;
-    for (item_set_id_t::iterator it = _items.begin();
-         it != _items.end(); it++)
+    for (item_set_id_t::iterator it = _items.begin(); it != _items.end(); it++)
         utl::cout << (*it)->toString() << utl::endlf;
 
     utl::cout << utl::endl << "InventoryRecords:" << utl::endlf;
@@ -416,22 +395,19 @@ MRPdataSet::checkData() const
         utl::cout << (*it)->toString() << utl::endlf;
 
     utl::cout << utl::endl << "ProcessPlans:" << utl::endlf;
-    for (plan_set_id_t::iterator it = _plans.begin();
-         it != _plans.end(); it++)
+    for (plan_set_id_t::iterator it = _plans.begin(); it != _plans.end(); it++)
         utl::cout << (*it)->toString() << utl::endlf;
 
     utl::cout << utl::endl << "ProcessSteps:" << utl::endlf;
-    for (step_set_id_t::iterator it = _steps.begin();
-         it != _steps.end(); it++)
+    for (step_set_id_t::iterator it = _steps.begin(); it != _steps.end(); it++)
         utl::cout << (*it)->toString() << utl::endlf;
 
     utl::cout << utl::endl << "WorkOrders:" << utl::endlf;
-    for (workorder_set_duetime_t::iterator it = _workOrders.begin();
-         it != _workOrders.end(); it++)
+    for (workorder_set_duetime_t::iterator it = _workOrders.begin(); it != _workOrders.end(); it++)
         utl::cout << (*it)->toString() << utl::endlf;
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 Resource*
 MRPdataSet::findMRPresource(uint_t id)
@@ -439,11 +415,12 @@ MRPdataSet::findMRPresource(uint_t id)
     Resource dummy;
     dummy.id() = id;
     resource_set_id_t::const_iterator it = _resources.find(&dummy);
-    if (it == _resources.end()) return nullptr;
+    if (it == _resources.end())
+        return nullptr;
     return *it;
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 ResourceGroup*
 MRPdataSet::findMRPresourceGroup(uint_t id)
@@ -451,11 +428,12 @@ MRPdataSet::findMRPresourceGroup(uint_t id)
     ResourceGroup dummy;
     dummy.id() = id;
     resourcegroup_set_id_t::const_iterator it = _resourceGroups.find(&dummy);
-    if (it == _resourceGroups.end()) return nullptr;
+    if (it == _resourceGroups.end())
+        return nullptr;
     return *it;
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 Item*
 MRPdataSet::findMRPitem(uint_t id)
@@ -463,11 +441,12 @@ MRPdataSet::findMRPitem(uint_t id)
     Item dummy;
     dummy.id() = id;
     item_set_id_t::const_iterator it = _items.find(&dummy);
-    if (it == _items.end()) return nullptr;
+    if (it == _items.end())
+        return nullptr;
     return *it;
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 MRPdataSet::deInit()
@@ -490,6 +469,6 @@ MRPdataSet::deInit()
     _purchaseOrderIds.clear();
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 MRP_NS_END;

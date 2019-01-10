@@ -4,13 +4,13 @@
 #include "AltResMutate.h"
 #include "ClevorDataSet.h"
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 #ifdef DEBUG
 #define DEBUG_UNIT
 #endif
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 UTL_NS_USE;
 LUT_NS_USE;
@@ -18,15 +18,15 @@ GOP_NS_USE;
 CLP_NS_USE;
 CLS_NS_USE;
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 UTL_CLASS_IMPL(cse::AltResMutate, gop::RevOperator);
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 CSE_NS_BEGIN;
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 AltResMutate::copy(const Object& rhs)
@@ -43,7 +43,7 @@ AltResMutate::copy(const Object& rhs)
     _moveResIdx = arm._moveResIdx;
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 AltResMutate::initialize(const gop::DataSet* p_dataSet)
@@ -58,27 +58,22 @@ AltResMutate::initialize(const gop::DataSet* p_dataSet)
     uint_t numResGroupReqs = _resGroupReqs.size();
     for (uint_t i = 0; i < numResGroupReqs; i++)
     {
-        cls::DiscreteResourceRequirement* clsResGroupReq
-            = _resGroupReqs[i];
-        const Hashtable& resCapPtsSet
-            = clsResGroupReq->resCapPtsSet();
+        cls::DiscreteResourceRequirement* clsResGroupReq = _resGroupReqs[i];
+        const Hashtable& resCapPtsSet = clsResGroupReq->resCapPtsSet();
         uint_t numAltRess = resCapPtsSet.size();
         ASSERTD(numAltRess > 1);
         BrkActivity* act = clsResGroupReq->activity();
         JobOp* op = (JobOp*)act->owner();
-        addOperatorVar(i,1,2,op->job()->activeP());
+        addOperatorVar(i, 1, 2, op->job()->activeP());
         _numResGroupReqChoices += numAltRess;
     }
     setNumChoices(_numResGroupReqChoices);
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 bool
-AltResMutate::execute(
-    gop::Ind* ind,
-    gop::IndBuilderContext* p_context,
-    bool singleStep)
+AltResMutate::execute(gop::Ind* ind, gop::IndBuilderContext* p_context, bool singleStep)
 {
     ASSERTD(dynamic_cast<SchedulingContext*>(p_context) != nullptr);
     ASSERTD(dynamic_cast<StringInd<uint_t>*>(ind) != nullptr);
@@ -90,8 +85,7 @@ AltResMutate::execute(
 
     // choose a resGroupReq
     uint_t resGroupReqIdx = getSelectedVarIdx();
-    cls::DiscreteResourceRequirement* resGroupReq
-        = _resGroupReqs[resGroupReqIdx];
+    cls::DiscreteResourceRequirement* resGroupReq = _resGroupReqs[resGroupReqIdx];
     _moveResGroupReqIdx = _stringBase + resGroupReqIdx;
     _moveResIdx = string[_moveResGroupReqIdx];
 
@@ -121,12 +115,13 @@ AltResMutate::execute(
                 resIdx = _moveResIdx + 1;
             }
         }
-        ASSERTD(resIdx >= 0 && resIdx <= numResources -1);
+        ASSERTD(resIdx >= 0 && resIdx <= numResources - 1);
     }
     else
     {
         resIdx = _rng->evali(numResources - 1);
-        if (resIdx >= _moveResIdx) ++resIdx;
+        if (resIdx >= _moveResIdx)
+            ++resIdx;
     }
     string[_moveResGroupReqIdx] = resIdx;
     uint_t resId = resGroupReq->resIdxCapPts(resIdx)->resourceId();
@@ -134,38 +129,36 @@ AltResMutate::execute(
     //selectResource(resId)
 #ifdef DEBUG_UNIT
     BrkActivity* act = resGroupReq->activity();
-    utl::cout
-        << "                                                   "
-        << "task:" << act->id()
-        << ", oldAltRes:"
-        << resGroupReq->resIdxCapPts(_moveResIdx)->resource()->id()
-        << "(idx=" << _moveResIdx << ")"
-        << ", newAltRes:"
-        << resGroupReq->resIdxCapPts(resIdx)->resource()->id()
-        << "(idx=" << resIdx << ")"
-        << utl::endl;
+    utl::cout << "                                                   "
+              << "task:" << act->id()
+              << ", oldAltRes:" << resGroupReq->resIdxCapPts(_moveResIdx)->resource()->id()
+              << "(idx=" << _moveResIdx << ")"
+              << ", newAltRes:" << resGroupReq->resIdxCapPts(resIdx)->resource()->id()
+              << "(idx=" << resIdx << ")" << utl::endl;
 #endif
     resGroupReq->selectResource(resId);
     mgr->propagate();
     return true;
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 AltResMutate::accept()
 {
     ASSERTD(_moveSchedule != nullptr);
-    if (_moveSchedule->newString()) _moveSchedule->acceptNewString();
+    if (_moveSchedule->newString())
+        _moveSchedule->acceptNewString();
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 AltResMutate::undo()
 {
     ASSERTD(_moveSchedule != nullptr);
-    if (_moveSchedule->newString()) _moveSchedule->deleteNewString();
+    if (_moveSchedule->newString())
+        _moveSchedule->deleteNewString();
     gop::String<uint_t>& string = _moveSchedule->string();
 
     if (_moveResGroupReqIdx != uint_t_max)
@@ -175,7 +168,7 @@ AltResMutate::undo()
     }
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 AltResMutate::init()
@@ -186,14 +179,14 @@ AltResMutate::init()
     _moveResIdx = uint_t_max;
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 AltResMutate::deInit()
 {
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 AltResMutate::setResGroupReqs(const ClevorDataSet* dataSet)
@@ -206,25 +199,21 @@ AltResMutate::setResGroupReqs(const ClevorDataSet* dataSet)
     {
         JobOp* op = *it;
         //skip if (!op.breakable()) || op.frozen()
-        if (!op->breakable() || op->frozen()) continue;
+        if (!op->breakable() || op->frozen())
+            continue;
         uint_t numResGroupReqs = op->numResGroupReqs();
         for (uint_t i = 0; i < numResGroupReqs; ++i)
         {
-            cse::ResourceGroupRequirement* cseResGroupReq
-                = op->getResGroupReq(i);
-            cls::DiscreteResourceRequirement* clsResGroupReq
-                = cseResGroupReq->clsResReq();
+            cse::ResourceGroupRequirement* cseResGroupReq = op->getResGroupReq(i);
+            cls::DiscreteResourceRequirement* clsResGroupReq = cseResGroupReq->clsResReq();
             uint_t numResources = clsResGroupReq->resCapPtsSet().size();
             if (numResources > 1)
                 _resGroupReqs.push_back(clsResGroupReq);
         }
     }
-    std::sort(
-        _resGroupReqs.begin(),
-        _resGroupReqs.end(),
-        UTLordering());
+    std::sort(_resGroupReqs.begin(), _resGroupReqs.end(), UTLordering());
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 CSE_NS_END;

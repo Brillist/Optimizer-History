@@ -1,7 +1,7 @@
 #ifndef GOP_OPTIMIZER_H
 #define GOP_OPTIMIZER_H
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 #include <libutl/RandNumGen.h>
 /* #include <libutl/OStimer.h> */
@@ -13,11 +13,11 @@
 #include <gop/RunStatus.h>
 #include <gop/Score.h>
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 GOP_NS_BEGIN;
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
    Optimizer (abstract).
@@ -29,11 +29,12 @@ GOP_NS_BEGIN;
    \author Adam McKee
 */
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 class Optimizer : public utl::Object
 {
     UTL_CLASS_DECL_ABC(Optimizer);
+
 public:
     /// \name Run Control
     //@{
@@ -51,7 +52,7 @@ public:
        \return true if new best result or run complete, false otherwise
        \param numIterations maximum number of iterations to run
     */
-    virtual bool run()=0;
+    virtual bool run() = 0;
 
     /** iteration run: run just one iteration. */
     virtual bool iterationRun(Operator* op = nullptr, bool audit = false);
@@ -62,32 +63,54 @@ public:
     /// \name Accessors
     //@{
     /** Get the random number generator. */
-    utl::RandNumGen* rng() const
-    { return _rng; }
+    utl::RandNumGen*
+    rng() const
+    {
+        return _rng;
+    }
 
     /** Get the ind-builder. */
-    const IndBuilder* indBuilder() const
-    { return _indBuilder; }
+    const IndBuilder*
+    indBuilder() const
+    {
+        return _indBuilder;
+    }
 
     /** Get the iteration number. */
-    utl::uint_t iteration() const
-    { return _iteration; }
+    utl::uint_t
+    iteration() const
+    {
+        return _iteration;
+    }
 
     /** Get the last improvement iteration number. */
-    utl::uint_t improvementIteration() const
-    { return _improvementIteration; }
+    utl::uint_t
+    improvementIteration() const
+    {
+        return _improvementIteration;
+    }
 
     /** Get the maximum number of iterations. */
-    utl::uint_t maxIterations() const
-    { return _maxIterations; }
+    utl::uint_t
+    maxIterations() const
+    {
+        return _maxIterations;
+    }
 
     /** Get the optimization goal for the given objective. */
-    minmax_goal_t goal(utl::uint_t idx = 0) const
-    { ASSERTD(_objectives.size() > idx); return _objectives[idx]->goal(); }
+    minmax_goal_t
+    goal(utl::uint_t idx = 0) const
+    {
+        ASSERTD(_objectives.size() > idx);
+        return _objectives[idx]->goal();
+    }
 
     /** Get the list of objectives. */
-    const std::vector<Objective*>& objectives() const
-    { return _objectives; }
+    const std::vector<Objective*>&
+    objectives() const
+    {
+        return _objectives;
+    }
 
     /** Get the best score for the given objective. */
     Score* bestScore(utl::uint_t objectiveIdx = 0) const;
@@ -96,54 +119,74 @@ public:
     Score* bestScore(const std::string& objectiveName) const;
 
     /** Get a named component of the best score. */
-    int bestScoreComponent(
-        const std::string& objectiveName,
-        const std::string& componentName) const;
+    int bestScoreComponent(const std::string& objectiveName,
+                           const std::string& componentName) const;
 
     /** Get the audit text for the best score. */
     const std::string& bestScoreAudit() const;
 
     /** Get the number of operators. */
-    utl::uint_t numOperators() const
-    { return _ops.size(); }
+    utl::uint_t
+    numOperators() const
+    {
+        return _ops.size();
+    }
 
     /** Get the list of operators. */
-    const std::vector<Operator*>& operators() const
-    { return _ops; }
+    const std::vector<Operator*>&
+    operators() const
+    {
+        return _ops;
+    }
 
-//    /** Get the statistics flag. */
-//    bool calcStats() const
-//    { return _calcStatsEnable; }
+    //    /** Get the statistics flag. */
+    //    bool calcStats() const
+    //    { return _calcStatsEnable; }
 
-//    /** Set the statistic flag. */
-//    void setCalcStats(bool calcStats)
-//    { _calcStatsEnable = calcStats; }
+    //    /** Set the statistic flag. */
+    //    void setCalcStats(bool calcStats)
+    //    { _calcStatsEnable = calcStats; }
 
-//    /** Requires reversible operators? */
-//    virtual bool requiresRevOp() const
-//    { return false; }
+    //    /** Requires reversible operators? */
+    //    virtual bool requiresRevOp() const
+    //    { return false; }
 
     /** Get _runStatus. */
-    RunStatus* runStatus()
-    { return _runStatus; }
+    RunStatus*
+    runStatus()
+    {
+        return _runStatus;
+    }
     //@}
 
     /** Audit the run result. */
-    virtual void audit()=0;
+    virtual void audit() = 0;
 
     /** Get a human-readable status string. */
     virtual utl::String iterationString() const;
     virtual utl::String initString(bool feasible) const;
     virtual utl::String finalString(bool feasible) const;
 
-    void setBestScore(Score* score)
-    { delete _bestScore; _bestScore = score; }
+    void
+    setBestScore(Score* score)
+    {
+        delete _bestScore;
+        _bestScore = score;
+    }
 
-    void setInitScore(Score* score)
-    { delete _initScore; _initScore = score; }
+    void
+    setInitScore(Score* score)
+    {
+        delete _initScore;
+        _initScore = score;
+    }
 
-    void setNewScore(Score* score)
-    { delete _newScore; _newScore = score; }
+    void
+    setNewScore(Score* score)
+    {
+        delete _newScore;
+        _newScore = score;
+    }
 
 protected:
     void initializeStats();
@@ -157,11 +200,11 @@ protected:
     /** Choose the Operator randomly 
         for single step move in a direction. */
     Operator* chooseRandomStepOp() const;
- 
+
     /** Choose the Operator with highest success rate. */
     Operator* chooseSuccessOp() const;
 
-//    virtual void calcStats(const Population& pop) const;
+    //    virtual void calcStats(const Population& pop) const;
 protected:
     // misc
     mutable utl::RandNumGen* _rng;
@@ -174,7 +217,7 @@ protected:
     IndBuilder* _indBuilder;
     IndBuilderContext* _context;
     RunStatus* _runStatus;
-    bool _singleStep;//singleStep Mutate
+    bool _singleStep; //singleStep Mutate
 
     // iteration status
     Score* _initScore;
@@ -190,23 +233,23 @@ protected:
 
     // operators
     std::vector<Operator*> _ops;
-//    double* _opsCumPct;
+    //    double* _opsCumPct;
 
     // timer
-/*     utl::OStimer* _timer; */
+    /*     utl::OStimer* _timer; */
 
-//    // statistics
-//    bool _calcStatsEnable;
-//    OperatorStats* _opStats;
+    //    // statistics
+    //    bool _calcStatsEnable;
+    //    OperatorStats* _opStats;
 private:
     void init();
     void deInit();
 };
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 GOP_NS_END;
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 #endif

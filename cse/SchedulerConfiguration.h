@@ -1,11 +1,11 @@
 #ifndef CSE_SCHEDULERCONFIGURATION_H
 #define CSE_SCHEDULERCONFIGURATION_H
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 CSE_NS_BEGIN;
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
    Scheduler configuration.
@@ -15,90 +15,143 @@ CSE_NS_BEGIN;
    \author Adam McKee
 */
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 class SchedulerConfiguration : public utl::Object
 {
     UTL_CLASS_DECL(SchedulerConfiguration);
+
 public:
     virtual void copy(const utl::Object& rhs);
 
-    virtual void serialize(
-        utl::Stream& stream,
-        utl::uint_t io,
-        utl::uint_t mode = utl::ser_default);
+    virtual void
+    serialize(utl::Stream& stream, utl::uint_t io, utl::uint_t mode = utl::ser_default);
 
     /** Get the originTime. */
-    time_t originTime() const
-    { return _originTime; }
+    time_t
+    originTime() const
+    {
+        return _originTime;
+    }
 
     /** Get the originTime. */
-    time_t& originTime()
-    { return _originTime; }
+    time_t&
+    originTime()
+    {
+        return _originTime;
+    }
 
     /** Get the origin time-slot. */
-    int originTimeSlot() const
-    { return 0; }
+    int
+    originTimeSlot() const
+    {
+        return 0;
+    }
 
     /** Get the horizonTime. */
-    time_t horizonTime() const
-    { return _horizonTime; }
+    time_t
+    horizonTime() const
+    {
+        return _horizonTime;
+    }
 
     /** Get the horizonTime. */
-    time_t& horizonTime()
-    { return _horizonTime; }
+    time_t&
+    horizonTime()
+    {
+        return _horizonTime;
+    }
 
     /** Get the horizon time-slot. */
-    int horizonTimeSlot() const
-    { return timeToTimeSlot(_horizonTime); }
+    int
+    horizonTimeSlot() const
+    {
+        return timeToTimeSlot(_horizonTime);
+    }
 
     /** Get the time-step. */
-    utl::uint_t timeStep() const
-    { return _timeStep; }
+    utl::uint_t
+    timeStep() const
+    {
+        return _timeStep;
+    }
 
     /** Get the time-step. */
-    utl::uint_t& timeStep()
-    { return _timeStep; }
+    utl::uint_t&
+    timeStep()
+    {
+        return _timeStep;
+    }
 
     /** Get schedulingOriginTime. */
-    time_t schedulingOriginTime() const
-    { return _schedulingOriginTime; }
+    time_t
+    schedulingOriginTime() const
+    {
+        return _schedulingOriginTime;
+    }
 
     /** Get scheduling-origin-time. */
-    time_t& schedulingOriginTime()
-    { return _schedulingOriginTime; }
+    time_t&
+    schedulingOriginTime()
+    {
+        return _schedulingOriginTime;
+    }
 
     /** Get scheduling-origin time-slot. */
-    int schedulingOriginTimeSlot() const
-    { return timeToTimeSlot(_schedulingOriginTime); }
+    int
+    schedulingOriginTimeSlot() const
+    {
+        return timeToTimeSlot(_schedulingOriginTime);
+    }
 
     /** Get the auto-freeze duration. */
-    utl::uint_t autoFreezeDuration() const
-    { return _autoFreezeDuration; }
+    utl::uint_t
+    autoFreezeDuration() const
+    {
+        return _autoFreezeDuration;
+    }
 
     /** Get the auto-freeze duration. */
-    utl::uint_t& autoFreezeDuration()
-    { return _autoFreezeDuration; }
+    utl::uint_t&
+    autoFreezeDuration()
+    {
+        return _autoFreezeDuration;
+    }
 
     /** Get the initial seed flag */
-    bool useInitialAsSeed() const
-    { return _useInitialAsSeed; }
+    bool
+    useInitialAsSeed() const
+    {
+        return _useInitialAsSeed;
+    }
 
     /** Get the initial seed flag */
-    bool& useInitialAsSeed()
-    { return _useInitialAsSeed; }
+    bool&
+    useInitialAsSeed()
+    {
+        return _useInitialAsSeed;
+    }
 
     /** Get forward-scheduling flag. */
-    bool forward() const
-    { return !_backward; }
+    bool
+    forward() const
+    {
+        return !_backward;
+    }
 
     /** Get backward-scheduling flag. */
-    bool backward() const
-    { return _backward; }
+    bool
+    backward() const
+    {
+        return _backward;
+    }
 
     /** Get backward-scheduling flag. */
-    bool& backward()
-    { return _backward; }
+    bool&
+    backward()
+    {
+        return _backward;
+    }
 
     /** Convert a time-slot to a time. */
     time_t timeSlotToTime(int ts) const;
@@ -117,9 +170,14 @@ public:
 
     /** Convert a duration to a time-slot. */
     utl::uint_t durationToTimeSlot(utl::uint_t) const;
+
 private:
     void init();
-    void deInit() {}
+    void
+    deInit()
+    {
+    }
+
 private:
     time_t _originTime;
     time_t _horizonTime;
@@ -130,10 +188,10 @@ private:
     bool _backward;
 };
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 CSE_NS_END;
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 #endif

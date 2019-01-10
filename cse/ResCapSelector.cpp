@@ -6,13 +6,13 @@
 #include "ForwardScheduler.h"
 #include "ResCapSelector.h"
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 #ifdef DEBUG
 #define DEBUG_UNIT
 #endif
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 UTL_NS_USE;
 LUT_NS_USE;
@@ -20,15 +20,15 @@ CLP_NS_USE;
 CLS_NS_USE;
 GOP_NS_USE;
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 UTL_CLASS_IMPL(cse::ResCapSelector, cse::Scheduler);
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 CSE_NS_BEGIN;
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 ResCapSelector::copy(const Object& rhs)
@@ -39,7 +39,7 @@ ResCapSelector::copy(const Object& rhs)
     _resources = rcs._resources;
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 ResCapSelector::setStringBase(Operator* op) const
@@ -56,7 +56,7 @@ ResCapSelector::setStringBase(Operator* op) const
     _nestedScheduler->setStringBase(op);
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 uint_t
 ResCapSelector::stringSize(const ClevorDataSet& dataSet) const
@@ -67,12 +67,10 @@ ResCapSelector::stringSize(const ClevorDataSet& dataSet) const
     return stringSize;
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
-ResCapSelector::initialize(
-    const gop::DataSet* p_dataSet,
-    uint_t stringBase)
+ResCapSelector::initialize(const gop::DataSet* p_dataSet, uint_t stringBase)
 {
     ASSERTD(_nestedScheduler != nullptr);
     ASSERTD(dynamic_cast<const ClevorDataSet*>(p_dataSet) != nullptr);
@@ -83,14 +81,10 @@ ResCapSelector::initialize(
     _nestedScheduler->initialize(dataSet, _stringBase + _resources.size());
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
-ResCapSelector::initializeInd(
-    Ind* p_ind,
-    const gop::DataSet* p_dataSet,
-    RandNumGen* rng,
-    void*)
+ResCapSelector::initializeInd(Ind* p_ind, const gop::DataSet* p_dataSet, RandNumGen* rng, void*)
 {
     ASSERTD(dynamic_cast<StringInd<uint_t>*>(p_ind) != nullptr);
     StringInd<uint_t>* ind = (StringInd<uint_t>*)p_ind;
@@ -107,29 +101,21 @@ ResCapSelector::initializeInd(
     for (uint_t i = 0; i < numResources; ++i)
     {
         DiscreteResource* res = _resources[i];
-        cls::DiscreteResource* clsRes
-            = (cls::DiscreteResource*)res->clsResource();
+        cls::DiscreteResource* clsRes = (cls::DiscreteResource*)res->clsResource();
         uint_t maxReqCap = roundUp(clsRes->maxReqCap(), (uint_t)100);
-        uint_t initCap =
-            utl::max(
-                res->minCap(),
-                utl::min(
-                    res->maxCap(),
-                    maxReqCap));
+        uint_t initCap = utl::max(res->minCap(), utl::min(res->maxCap(), maxReqCap));
         string[_stringBase + i] = initCap;
     }
-    _nestedScheduler->initializeInd(
-        ind, dataSet, rng, (void*)size_t_max);
+    _nestedScheduler->initializeInd(ind, dataSet, rng, (void*)size_t_max);
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
-ResCapSelector::initializeRandomInd(
-    Ind* p_ind,
-    const gop::DataSet* p_dataSet,
-    RandNumGen* rng,
-    void*)
+ResCapSelector::initializeRandomInd(Ind* p_ind,
+                                    const gop::DataSet* p_dataSet,
+                                    RandNumGen* rng,
+                                    void*)
 {
     ASSERTD(dynamic_cast<StringInd<uint_t>*>(p_ind) != nullptr);
     StringInd<uint_t>* ind = (StringInd<uint_t>*)p_ind;
@@ -145,18 +131,15 @@ ResCapSelector::initializeRandomInd(
     }
     for (uint_t i = 0; i < numResources; ++i)
     {
-        uint_t range
-            = (_resources[i]->maxCap() - _resources[i]->minCap()) / 100;
-        uint_t cap
-            = _resources[i]->minCap() + (rng->evali(range)) * 100;
+        uint_t range = (_resources[i]->maxCap() - _resources[i]->minCap()) / 100;
+        uint_t cap = _resources[i]->minCap() + (rng->evali(range)) * 100;
         string[_stringBase + i] = cap;
         //_rng((_resources[i]->maxCap();
     }
-    _nestedScheduler->initializeRandomInd(
-        ind, dataSet, rng, (void*)size_t_max);
+    _nestedScheduler->initializeRandomInd(ind, dataSet, rng, (void*)size_t_max);
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 ResCapSelector::run(Ind* p_ind, IndBuilderContext* p_context) const
@@ -171,7 +154,7 @@ ResCapSelector::run(Ind* p_ind, IndBuilderContext* p_context) const
     _nestedScheduler->run(ind, context);
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 ResCapSelector::init()
@@ -179,7 +162,7 @@ ResCapSelector::init()
     _nestedScheduler = new ForwardScheduler();
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 ResCapSelector::setResources(const ClevorDataSet* dataSet)
@@ -187,15 +170,12 @@ ResCapSelector::setResources(const ClevorDataSet* dataSet)
     // note all resources with minCap < maxCap
     _resources.clear();
     res_set_id_t::const_iterator it;
-    for (it = dataSet->resources().begin();
-         it != dataSet->resources().end();
-         ++it)
+    for (it = dataSet->resources().begin(); it != dataSet->resources().end(); ++it)
     {
-        cse::DiscreteResource* res
-            = dynamic_cast<DiscreteResource*>(*it);
-        if (res == nullptr) continue;
-        cls::DiscreteResource* clsRes
-            = (cls::DiscreteResource*)(res->clsResource());
+        cse::DiscreteResource* res = dynamic_cast<DiscreteResource*>(*it);
+        if (res == nullptr)
+            continue;
+        cls::DiscreteResource* clsRes = (cls::DiscreteResource*)(res->clsResource());
         uint_t minReqCap = roundUp(clsRes->minReqCap(), (uint_t)100);
         uint_t maxReqCap = roundUp(clsRes->maxReqCap(), (uint_t)100);
         ASSERTD(res->maxCap() >= res->minCap());
@@ -203,12 +183,7 @@ ResCapSelector::setResources(const ClevorDataSet* dataSet)
         if ((res->maxCap() - res->minCap()) >= res->stepCap())
         {
             uint_t minCap = utl::max(res->minCap(), minReqCap);
-            uint_t maxCap
-                = utl::max(
-                    minCap,
-                    utl::min(
-                        res->maxCap(),
-                        maxReqCap));
+            uint_t maxCap = utl::max(minCap, utl::min(res->maxCap(), maxReqCap));
             if (maxCap > minCap)
             {
                 _resources.push_back(res);
@@ -217,12 +192,10 @@ ResCapSelector::setResources(const ClevorDataSet* dataSet)
     }
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
-ResCapSelector::setSelectedResCaps(
-    StringInd<uint_t>* ind,
-    SchedulingContext* context) const
+ResCapSelector::setSelectedResCaps(StringInd<uint_t>* ind, SchedulingContext* context) const
 {
     ASSERTD(_config != nullptr);
     gop::String<uint_t>& string = ind->string();
@@ -231,20 +204,20 @@ ResCapSelector::setSelectedResCaps(
     for (uint_t i = 0; i < numResources; ++i)
     {
         const cse::DiscreteResource* res = _resources[i];
-        if (res->selectedCap() != uint_t_max) continue;
+        if (res->selectedCap() != uint_t_max)
+            continue;
         cls::DiscreteResource* clsRes = res->clsResource();
         uint_t selCap = string[_stringBase + i];
         uint_t minReqCap = roundUp(clsRes->minReqCap(), (uint_t)100);
 
         if (selCap < minReqCap)
         {
-            if (!ind->newString()) ind->createNewString();
+            if (!ind->newString())
+                ind->createNewString();
             gop::String<uint_t>& newStr = *(ind->newString());
 #ifdef DEBUG_UNIT
-            utl::cout << "Warning(ResCapSelector.cpp): " << selCap
-                      << " is less the minReqCap("
-                      << minReqCap << ") of resource("
-                      << clsRes->id() << ")." << utl::endl;
+            utl::cout << "Warning(ResCapSelector.cpp): " << selCap << " is less the minReqCap("
+                      << minReqCap << ") of resource(" << clsRes->id() << ")." << utl::endl;
 #endif
             selCap = minReqCap;
             newStr[_stringBase + i] = selCap;
@@ -254,6 +227,6 @@ ResCapSelector::setSelectedResCaps(
     }
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 CSE_NS_END;

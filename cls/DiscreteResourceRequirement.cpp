@@ -10,25 +10,24 @@
 #include "LFboundTimetable.h"
 #include "DiscreteResourceRequirement.h"
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 UTL_NS_USE;
 LUT_NS_USE;
 CLP_NS_USE;
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 UTL_CLASS_IMPL(cls::DiscreteResourceRequirement, utl::Object);
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 CLS_NS_BEGIN;
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
-DiscreteResourceRequirement::DiscreteResourceRequirement(
-    BrkActivity* act,
-    ResourceCapPts* resCapPts)
+DiscreteResourceRequirement::DiscreteResourceRequirement(BrkActivity* act,
+                                                         ResourceCapPts* resCapPts)
 {
     utl::RBtree rcps(false);
     rcps += resCapPts;
@@ -37,43 +36,41 @@ DiscreteResourceRequirement::DiscreteResourceRequirement(
     init(act, rcps, numRequiredDomain);
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
-DiscreteResourceRequirement::DiscreteResourceRequirement(
-    BrkActivity* act,
-    const Collection& rcps,
-    uint_t numRequired)
+DiscreteResourceRequirement::DiscreteResourceRequirement(BrkActivity* act,
+                                                         const Collection& rcps,
+                                                         uint_t numRequired)
 {
     uint_set_t numRequiredDomain;
     numRequiredDomain.insert(numRequired);
     init(act, rcps, numRequiredDomain);
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
-DiscreteResourceRequirement::DiscreteResourceRequirement(
-    BrkActivity* act,
-    const Collection& rcps,
-    const uint_set_t& numRequiredDomain)
+DiscreteResourceRequirement::DiscreteResourceRequirement(BrkActivity* act,
+                                                         const Collection& rcps,
+                                                         const uint_set_t& numRequiredDomain)
 {
     init(act, rcps, numRequiredDomain);
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 int
 DiscreteResourceRequirement::compare(const Object& rhs) const
 {
     ASSERTD(rhs.isA(DiscreteResourceRequirement));
-    const DiscreteResourceRequirement& dr
-        = (const DiscreteResourceRequirement&)rhs;
+    const DiscreteResourceRequirement& dr = (const DiscreteResourceRequirement&)rhs;
     int res = utl::compare(_act->id(), dr._act->id());
-    if (res != 0) return res;
+    if (res != 0)
+        return res;
     res = _rcpsArray.compare(dr._rcpsArray);
     return res;
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 DiscreteResourceRequirement::initialize(BrkActivity* act)
@@ -90,7 +87,7 @@ DiscreteResourceRequirement::initialize(BrkActivity* act)
     checkAllSelected();
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 DiscreteResourceRequirement::selectNumRequired(uint_t numRequired)
@@ -99,7 +96,7 @@ DiscreteResourceRequirement::selectNumRequired(uint_t numRequired)
     checkAllSelected();
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 bool
 DiscreteResourceRequirement::selectResource(uint_t resId)
@@ -112,7 +109,7 @@ DiscreteResourceRequirement::selectResource(uint_t resId)
     return true;
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 DiscreteResourceRequirement::excludeResource(uint_t resId)
@@ -130,7 +127,7 @@ DiscreteResourceRequirement::excludeResource(uint_t resId)
     }
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 Manager*
 DiscreteResourceRequirement::manager() const
@@ -138,7 +135,7 @@ DiscreteResourceRequirement::manager() const
     return _act->manager();
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 const ResourceCapPts*
 DiscreteResourceRequirement::resCapPts() const
@@ -147,13 +144,12 @@ DiscreteResourceRequirement::resCapPts() const
     return (const ResourceCapPts*)_rcps.first();
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
-DiscreteResourceRequirement::init(
-    BrkActivity* act,
-    const Collection& rcps,
-    const uint_set_t& numRequiredDomain)
+DiscreteResourceRequirement::init(BrkActivity* act,
+                                  const Collection& rcps,
+                                  const uint_set_t& numRequiredDomain)
 {
     _act = act;
     _rcps.setOwner(false);
@@ -167,31 +163,15 @@ DiscreteResourceRequirement::init(
     uint_set_t allResIds;
     getAllResIds(allResIds);
 
-    _numRequired
-        = new IntVar(
-            mgr,
-            new IntExpDomainAR(
-                mgr,
-                numRequiredDomain));
+    _numRequired = new IntVar(mgr, new IntExpDomainAR(mgr, numRequiredDomain));
 
-    _possibleResources
-        = new IntVar(
-            mgr,
-            new IntExpDomainAR(
-                mgr,
-                allResIds));
+    _possibleResources = new IntVar(mgr, new IntExpDomainAR(mgr, allResIds));
     _possibleResources->failOnEmpty() = false;
 
-    _selectedResources
-        = new IntVar(
-            mgr,
-            new IntExpDomainAR(
-                mgr,
-                allResIds,
-                true));
+    _selectedResources = new IntVar(mgr, new IntExpDomainAR(mgr, allResIds, true));
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 DiscreteResourceRequirement::deInit()
@@ -201,7 +181,7 @@ DiscreteResourceRequirement::deInit()
     delete _selectedResources;
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 DiscreteResourceRequirement::getSelectedCalendarIds(uint_set_t& calendarIds)
@@ -219,7 +199,7 @@ DiscreteResourceRequirement::getSelectedCalendarIds(uint_set_t& calendarIds)
     }
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 DiscreteResourceRequirement::selectPt(uint_t pt)
@@ -229,9 +209,7 @@ DiscreteResourceRequirement::selectPt(uint_t pt)
     // remove resources for which the pt is not workable
     IntExpDomainIt* it;
     AutoPtr<IntExpDomainIt> itPtr;
-    for (itPtr = it = _possibleResources->begin();
-         !it->atEnd() && !_allSelected;
-         it->next())
+    for (itPtr = it = _possibleResources->begin(); !it->atEnd() && !_allSelected; it->next())
     {
         resId = **it;
         ResourceCapPts* resCapPts = this->resCapPts(resId);
@@ -250,7 +228,7 @@ DiscreteResourceRequirement::selectPt(uint_t pt)
     }
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 DiscreteResourceRequirement::checkAllSelected()
@@ -279,11 +257,9 @@ DiscreteResourceRequirement::checkAllSelected()
         if (numPossible < numRequired)
         {
             String& str = *new String();
-            str = "act-" + Uint(_act->id()).toString() + ": "
-                + Uint(numRequired).toString()
-                + " additional resource(s) needed, but only "
-                + Uint(numPossible).toString()
-                + " possible";
+            str = "act-" + Uint(_act->id()).toString() + ": " + Uint(numRequired).toString() +
+                  " additional resource(s) needed, but only " + Uint(numPossible).toString() +
+                  " possible";
             throw FailEx(str);
         }
 
@@ -291,9 +267,7 @@ DiscreteResourceRequirement::checkAllSelected()
         ASSERTD(numPossible == numRequired);
         IntExpDomainIt* it;
         AutoPtr<IntExpDomainIt> itPtr;
-        for (itPtr = it = _possibleResources->begin();
-             !it->atEnd();
-             it->next())
+        for (itPtr = it = _possibleResources->begin(); !it->atEnd(); it->next())
         {
             int resId = **it;
             _selectResource(resId);
@@ -303,12 +277,11 @@ DiscreteResourceRequirement::checkAllSelected()
     // all required resources known
     ASSERTD(_selectedResources->size() == (uint_t)_numRequired->getValue());
     manager()->revToggle(_allSelected);
-    _possibleResources->remove(
-        _possibleResources->min(), _possibleResources->max());
+    _possibleResources->remove(_possibleResources->min(), _possibleResources->max());
     _act->decrementUnknownReqs();
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 bool
 DiscreteResourceRequirement::_selectResource(uint_t resId)
@@ -332,7 +305,7 @@ DiscreteResourceRequirement::_selectResource(uint_t resId)
     return true;
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 DiscreteResourceRequirement::addTimetableBounds()
@@ -349,16 +322,14 @@ DiscreteResourceRequirement::addTimetableBounds()
         if (capPt == nullptr)
         {
             String& str = *new String();
-            str = "act-" + Uint(_act->id()).toString() + ": "
-                + "could not find CapPt for pt = "
-                + Uint(pt).toString();
+            str = "act-" + Uint(_act->id()).toString() + ": " +
+                  "could not find CapPt for pt = " + Uint(pt).toString();
             throw FailEx(str);
         }
         if (forward)
         {
             ESbound* esb = (ESbound&)_act->esBound();
-            ESboundTimetable* ttBound
-                = (ESboundTimetable*)capPt->object();
+            ESboundTimetable* ttBound = (ESboundTimetable*)capPt->object();
             ASSERTD(ttBound != nullptr);
             esb->add(ttBound);
             if (!esb->suspended())
@@ -369,8 +340,7 @@ DiscreteResourceRequirement::addTimetableBounds()
         else
         {
             LFbound* lfb = (LFbound&)_act->lfBound();
-            LFboundTimetable* ttBound
-                = (LFboundTimetable*)capPt->object();
+            LFboundTimetable* ttBound = (LFboundTimetable*)capPt->object();
             ASSERTD(ttBound != nullptr);
             lfb->add(ttBound);
             if (!lfb->suspended())
@@ -381,29 +351,27 @@ DiscreteResourceRequirement::addTimetableBounds()
     }
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 DiscreteResourceRequirement::getAllPts(uint_set_t& pts)
 {
-    forEachIt(Hashtable, _rcps, ResourceCapPts, rcp)
-        forEachIt(ResourceCapPts, rcp, CapPt, capPt)
-            uint_t pt = capPt.processingTime();
-            pts.insert(pt);
-        endForEach;
+    forEachIt(Hashtable, _rcps, ResourceCapPts, rcp) forEachIt(ResourceCapPts, rcp, CapPt, capPt)
+        uint_t pt = capPt.processingTime();
+    pts.insert(pt);
+    endForEach;
     endForEach;
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 DiscreteResourceRequirement::getAllResIds(uint_set_t& resIds)
 {
-    forEachIt(Hashtable, _rcps, ResourceCapPts, rcp)
-        resIds.insert(rcp.resourceId());
+    forEachIt(Hashtable, _rcps, ResourceCapPts, rcp) resIds.insert(rcp.resourceId());
     endForEach;
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 CLS_NS_END;

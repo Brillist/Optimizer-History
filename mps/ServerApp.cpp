@@ -8,19 +8,19 @@
 #include <mps/MPSserver.h>
 #include "ServerApp.h"
 
-///////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////////
 
 UTL_NS_USE;
 
-///////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////////
 
 UTL_CLASS_IMPL(mps::ServerApp, utl::Application);
 
-///////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////////
 
 MPS_NS_BEGIN;
 
-///////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////////
 
 int
 ServerApp::run(int argc, char** argv)
@@ -80,10 +80,7 @@ ServerApp::run(int argc, char** argv)
         InetHostAddress hostAddr = InetHostname::localInetHostname().address();
         if (hostAddr != InetHostname("localhost").address())
         {
-            serverSocket =
-                new TCPserverSocket(
-                    hostAddr,
-                    port);
+            serverSocket = new TCPserverSocket(hostAddr, port);
             server->addServer(serverSocket);
         }
     }
@@ -95,17 +92,12 @@ ServerApp::run(int argc, char** argv)
     // (this must succeed)
     try
     {
-        serverSocket =
-            new TCPserverSocket(
-                InetHostname("localhost").address(),
-                port);
+        serverSocket = new TCPserverSocket(InetHostname("localhost").address(), port);
         server->addServer(serverSocket);
     }
     catch (NetworkEx&)
     {
-        utl::cerr
-            << "failed to bind server socket -- another instance running?"
-            << endl;
+        utl::cerr << "failed to bind server socket -- another instance running?" << endl;
         delete server;
         return 1;
     }
@@ -118,16 +110,14 @@ ServerApp::run(int argc, char** argv)
     return 0;
 }
 
-///////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 ServerApp::usage()
 {
-    utl::cout <<
-"usage: clevor_se [-d] [-m] [-r] [-p <port>]"
-         << endl;
+    utl::cout << "usage: clevor_se [-d] [-m] [-r] [-p <port>]" << endl;
 }
 
-///////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////////
 
 MPS_NS_END;

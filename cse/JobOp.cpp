@@ -8,21 +8,21 @@
 #include <cse/DiscreteResource.h>
 #include "JobOp.h"
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 UTL_NS_USE;
 LUT_NS_USE;
 CLS_NS_USE;
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 UTL_CLASS_IMPL(cse::JobOp, utl::Object);
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 CSE_NS_BEGIN;
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 JobOp::copy(const Object& rhs)
@@ -87,7 +87,7 @@ JobOp::copy(const Object& rhs)
     _act = op._act;
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 JobOp::serialize(Stream& stream, uint_t io, uint_t)
@@ -131,40 +131,37 @@ JobOp::serialize(Stream& stream, uint_t io, uint_t)
 
     // item-requirements
     // uncommment it when we do inventory system
-//     if (io == io_rd)
-//     {
-//         deleteCont(_itemReqs);
-//         Array array;
-//         array.serializeIn(stream);
-//         forEachIt(Array, array, ItemRequirement, itemReq)
-//             addItemReq(&itemReq);
-//         endForEach
-//         array.setOwner(false);
-//     }
-//     else
-//     {
-//         Array array(false);
-//         itemreq_vector_t::iterator it;
-//         for (it = _itemReqs.begin(); it != _itemReqs.end(); it++)
-//         {
-//             array += *it;
-//         }
-//         array.serializeOut(stream);
-//     }
+    //     if (io == io_rd)
+    //     {
+    //         deleteCont(_itemReqs);
+    //         Array array;
+    //         array.serializeIn(stream);
+    //         forEachIt(Array, array, ItemRequirement, itemReq)
+    //             addItemReq(&itemReq);
+    //         endForEach
+    //         array.setOwner(false);
+    //     }
+    //     else
+    //     {
+    //         Array array(false);
+    //         itemreq_vector_t::iterator it;
+    //         for (it = _itemReqs.begin(); it != _itemReqs.end(); it++)
+    //         {
+    //             array += *it;
+    //         }
+    //         array.serializeOut(stream);
+    //     }
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 bool
 JobOp::schedulable() const
 {
-    return
-        hasRequirements()
-        && (_type != op_summary)
-        && (_status != opstatus_complete);
+    return hasRequirements() && (_type != op_summary) && (_status != opstatus_complete);
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 bool
 JobOp::ignorable() const
@@ -172,8 +169,7 @@ JobOp::ignorable() const
     // not scheduled => ignorable iff completed precedenceLag
     if (!isScheduled())
     {
-        return ((_type == op_precedenceLag)
-                && (_status == opstatus_complete));
+        return ((_type == op_precedenceLag) && (_status == opstatus_complete));
     }
 
     // not complete => not ignorable
@@ -186,20 +182,21 @@ JobOp::ignorable() const
     const ClevorDataSet* dataSet = this->dataSet();
     const SchedulerConfiguration* config = dataSet->schedulerConfig();
     ASSERTD(config != nullptr);
-    return ((_scheduledStartTime < config->originTime())
-            || (_scheduledEndTime > config->horizonTime()));
+    return ((_scheduledStartTime < config->originTime()) ||
+            (_scheduledEndTime > config->horizonTime()));
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 const ClevorDataSet*
 JobOp::dataSet() const
 {
-    if (_job == nullptr) return nullptr;
+    if (_job == nullptr)
+        return nullptr;
     return _job->dataSet();
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 JobOp::processUnaryCts()
@@ -240,7 +237,7 @@ JobOp::processUnaryCts()
     }
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 JobOp::clearResReqs()
@@ -257,7 +254,7 @@ JobOp::clearResReqs()
     }
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 const ResourceCapPts*
 JobOp::resCapPts(uint_t resId) const
@@ -265,7 +262,7 @@ JobOp::resCapPts(uint_t resId) const
     return (const ResourceCapPts*)_resCapPts.find(Uint(resId));
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 ResourceCapPts*
 JobOp::resCapPtsAdj(uint_t resId) const
@@ -273,7 +270,7 @@ JobOp::resCapPtsAdj(uint_t resId) const
     return (ResourceCapPts*)_resCapPtsAdj.find(Uint(resId));
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 JobOp::setResCapPtsAdj(uint_t timeStep)
@@ -289,7 +286,7 @@ JobOp::setResCapPtsAdj(uint_t timeStep)
     }
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 JobOp::removeResCapPtsAdj(uint_t resId)
@@ -297,7 +294,7 @@ JobOp::removeResCapPtsAdj(uint_t resId)
     _resCapPtsAdj.remove(Uint(resId));
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 JobOp::getAllResIds(uint_set_t& resIds) const
@@ -307,7 +304,7 @@ JobOp::getAllResIds(uint_set_t& resIds) const
     getResGroupResIds(resIds);
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 JobOp::unschedule()
@@ -327,7 +324,7 @@ JobOp::unschedule()
     }
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 JobOp::unscheduleResReqs()
@@ -340,7 +337,7 @@ JobOp::unscheduleResReqs()
     }
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 JobOp::removeImproperResReqs()
@@ -420,7 +417,7 @@ JobOp::removeImproperResReqs()
     removeResReqs(resIds);
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 JobOp::removeSystemResReqs()
@@ -430,7 +427,7 @@ JobOp::removeSystemResReqs()
     removeResReqs(resIds);
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 bool
 JobOp::isScheduled() const
@@ -438,8 +435,7 @@ JobOp::isScheduled() const
     // started op must define remaining-pt and resume-time
     if (_status == opstatus_started)
     {
-        if ((_scheduledRemainingPt == 0)
-            || (_scheduledRemainingPt == uint_t_max))
+        if ((_scheduledRemainingPt == 0) || (_scheduledRemainingPt == uint_t_max))
         {
             return false;
         }
@@ -452,10 +448,8 @@ JobOp::isScheduled() const
 
     // must define scheduled-{pt,start,end}
     // must define scheduled-capacity for all res-reqs
-    if ((_scheduledProcessingTime == uint_t_max)
-        || (_scheduledStartTime < 0)
-        || (_scheduledEndTime < 0)
-        || !resReqsScheduled())
+    if ((_scheduledProcessingTime == uint_t_max) || (_scheduledStartTime < 0) ||
+        (_scheduledEndTime < 0) || !resReqsScheduled())
     {
         return false;
     }
@@ -463,7 +457,7 @@ JobOp::isScheduled() const
     return true;
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 bool
 JobOp::resReqsScheduled() const
@@ -472,13 +466,15 @@ JobOp::resReqsScheduled() const
     for (it = _resReqs.begin(); it != _resReqs.end(); ++it)
     {
         ResourceRequirement* resReq = *it;
-        if (_type == op_interruptible) continue;
-        if (resReq->scheduledCapacity() == uint_t_max) return false;
+        if (_type == op_interruptible)
+            continue;
+        if (resReq->scheduledCapacity() == uint_t_max)
+            return false;
     }
     return true;
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 bool
 JobOp::hasRequirements() const
@@ -486,12 +482,13 @@ JobOp::hasRequirements() const
     return ((_resReqs.size() > 0) || (_resGroupReqs.size() > 0));
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 bool
 JobOp::hasCapacityRequirement() const
 {
-    if (!hasRequirements() || (_processingTime == 0)) return false;
+    if (!hasRequirements() || (_processingTime == 0))
+        return false;
 
     if (_processingTime < uint_t_max)
     {
@@ -518,8 +515,7 @@ JobOp::hasCapacityRequirement() const
     {
         ResourceGroupRequirement* resGroupReq = *rgrIt;
         uint_t resGroupId = resGroupReq->resourceGroupId();
-        const ResourceGroup* resGroup
-            = dataSet->findResourceGroup(resGroupId);
+        const ResourceGroup* resGroup = dataSet->findResourceGroup(resGroupId);
         ASSERTD(resGroup != nullptr);
         if (resGroupReq->hasNonZeroCapPt(this, resGroup))
         {
@@ -530,19 +526,17 @@ JobOp::hasCapacityRequirement() const
     return false;
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 bool
 JobOp::isFixed() const
 {
-    bool fixedStart =
-        ((_minStartTime != -1) && (_minStartTime == _maxStartTime));
-    bool fixedEnd =
-        ((_minEndTime != -1) && (_minEndTime == _maxEndTime));
+    bool fixedStart = ((_minStartTime != -1) && (_minStartTime == _maxStartTime));
+    bool fixedEnd = ((_minEndTime != -1) && (_minEndTime == _maxEndTime));
     return (fixedStart || fixedEnd || _manuallyFrozen);
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 JobOp::init()
@@ -570,7 +564,7 @@ JobOp::init()
     _act = nullptr;
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 JobOp::deInit()
@@ -580,7 +574,7 @@ JobOp::deInit()
     deleteCont(_itemReqs);
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 JobOp::removeResReqs(const uint_set_t& resIds)
@@ -605,7 +599,7 @@ JobOp::removeResReqs(const uint_set_t& resIds)
     }
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 JobOp::getSystemResIds(uint_set_t& resIds) const
@@ -621,7 +615,7 @@ JobOp::getSystemResIds(uint_set_t& resIds) const
     }
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 JobOp::getCompositeResIds(uint_set_t& resIds) const
@@ -640,14 +634,13 @@ JobOp::getCompositeResIds(uint_set_t& resIds) const
             continue;
         }
         CompositeResource* cres = (CompositeResource*)res;
-        const ResourceGroup* resGroup
-            = dataSet->findResourceGroup(cres->resourceGroupId());
+        const ResourceGroup* resGroup = dataSet->findResourceGroup(cres->resourceGroupId());
         ASSERTD(resGroup != nullptr);
         addItems(resIds, resGroup->resIds());
     }
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 JobOp::getDiscreteResIds(uint_set_t& resIds) const
@@ -669,7 +662,7 @@ JobOp::getDiscreteResIds(uint_set_t& resIds) const
     }
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 JobOp::getResGroupResIds(uint_set_t& resIds) const
@@ -688,25 +681,22 @@ JobOp::getResGroupResIds(uint_set_t& resIds) const
     }
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 String
 JobOp::toString() const
 {
     MemStream str;
-    str << "op:" << _id
-        << ", type:" << _type
-        << ", status:" << _status
-        << ", frozen:" << Bool(_frozen).toString()
-        << ", st:[" << Time(_minStartTime).toString("$yy/$m/$d-$h:$nn")
-        << "," << Time(_maxStartTime).toString("$yy/$m/$d-$h:$nn")
-        << "], et:[" << Time(_minEndTime).toString("$yy/$m/$d-$h:$nn")
-        << "," << Time(_maxEndTime).toString("$yy/$m/$d-$h:$nn")
-        << "]";
+    str << "op:" << _id << ", type:" << _type << ", status:" << _status
+        << ", frozen:" << Bool(_frozen).toString() << ", st:["
+        << Time(_minStartTime).toString("$yy/$m/$d-$h:$nn") << ","
+        << Time(_maxStartTime).toString("$yy/$m/$d-$h:$nn") << "], et:["
+        << Time(_minEndTime).toString("$yy/$m/$d-$h:$nn") << ","
+        << Time(_maxEndTime).toString("$yy/$m/$d-$h:$nn") << "]";
     str << '\0';
     return String((char*)str.get());
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 CSE_NS_END;

@@ -9,7 +9,7 @@
 #include "SchedulingContext.h"
 #include "MinCostHeuristics.h"
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 UTL_NS_USE;
 LUT_NS_USE;
@@ -17,25 +17,22 @@ CLP_NS_USE;
 CLS_NS_USE;
 GOP_NS_USE;
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 UTL_CLASS_IMPL(cse::MinCostResourcePtSelector, cse::Scheduler);
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 CSE_NS_BEGIN;
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
-MinCostResourcePtSelector::run(
-    Ind* ind,
-    IndBuilderContext* p_context) const
+MinCostResourcePtSelector::run(Ind* ind, IndBuilderContext* p_context) const
 {
     ASSERTD(dynamic_cast<SchedulingContext*>(p_context) != nullptr);
     SchedulingContext* context = (SchedulingContext*)p_context;
-    const MinCostHeuristics* minCostHeuristics
-        = context->clevorDataSet()->minCostHeuristics();
+    const MinCostHeuristics* minCostHeuristics = context->clevorDataSet()->minCostHeuristics();
     Manager* mgr = context->manager();
 
     // handle inactive jobs
@@ -57,10 +54,11 @@ MinCostResourcePtSelector::run(
     {
         // identify op
         JobOp* op = *it;
-        if (!op->job()->active()) continue;
-        const MinCostAltResPt* minCostAltResPt
-            = minCostHeuristics->getMinCostAltResPt(op);
-        if (minCostAltResPt == nullptr) continue;
+        if (!op->job()->active())
+            continue;
+        const MinCostAltResPt* minCostAltResPt = minCostHeuristics->getMinCostAltResPt(op);
+        if (minCostAltResPt == nullptr)
+            continue;
         Activity* act = op->activity();
         ASSERTD(act->isA(PtActivity));
         PtActivity* ptact = (PtActivity*)act;
@@ -77,30 +75,25 @@ MinCostResourcePtSelector::run(
     _nestedScheduler->run(ind, context);
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
-MinCostResourcePtSelector::setSelectedResources(
-    JobOp* op,
-    const uint_vector_t& altResIdx) const
+MinCostResourcePtSelector::setSelectedResources(JobOp* op, const uint_vector_t& altResIdx) const
 {
     uint_t numResGroupReqs = altResIdx.size();
     for (uint_t i = 0; i < numResGroupReqs; ++i)
     {
-        const cse::ResourceGroupRequirement* cseResGroupReq
-            = op->getResGroupReq(i);
-        cls::DiscreteResourceRequirement* clsResReq
-            = cseResGroupReq->clsResReq();
-        const ResourceCapPts* resCapPts
-            = clsResReq->resIdxCapPts(altResIdx[i]);
+        const cse::ResourceGroupRequirement* cseResGroupReq = op->getResGroupReq(i);
+        cls::DiscreteResourceRequirement* clsResReq = cseResGroupReq->clsResReq();
+        const ResourceCapPts* resCapPts = clsResReq->resIdxCapPts(altResIdx[i]);
         clsResReq->selectResource(resCapPts->resourceId());
-//         std::cout << "op:" << op->id()
-//                   << ", resGrp:" << cseResGroupReq->resourceGroupId()
-//                   << ", res:" << resCapPts->resourceId()
-//                   << std::endl;
+        //         std::cout << "op:" << op->id()
+        //                   << ", resGrp:" << cseResGroupReq->resourceGroupId()
+        //                   << ", res:" << resCapPts->resourceId()
+        //                   << std::endl;
     }
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 CSE_NS_END;

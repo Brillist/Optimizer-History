@@ -1,23 +1,23 @@
 #ifndef CLS_DISCRETERESOURCEREQUIREMENT_H
 #define CLS_DISCRETERESOURCEREQUIREMENT_H
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 #include <libutl/Hashtable.h>
 #include <libutl/Uint.h>
 #include <clp/IntVar.h>
 #include <cls/ResourceCapPts.h>
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 CLS_NS_BEGIN;
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 class BrkActivity;
 class DiscreteResource;
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
    Resource requirement.
@@ -25,32 +25,30 @@ class DiscreteResource;
    \author Adam McKee
 */
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 class DiscreteResourceRequirement : public utl::Object
 {
     friend class BrkActivity;
     UTL_CLASS_DECL(DiscreteResourceRequirement);
     UTL_CLASS_NO_COPY;
+
 public:
     typedef std::set<utl::uint_t> uint_set_t;
+
 public:
     /** Constructor. */
-    DiscreteResourceRequirement(
-        BrkActivity* act,
-        ResourceCapPts* resCapPts);
+    DiscreteResourceRequirement(BrkActivity* act, ResourceCapPts* resCapPts);
 
     /** Constructor. */
-    DiscreteResourceRequirement(
-        BrkActivity* act,
-        const utl::Collection& rcps,
-        utl::uint_t numRequired = 1);
+    DiscreteResourceRequirement(BrkActivity* act,
+                                const utl::Collection& rcps,
+                                utl::uint_t numRequired = 1);
 
     /** Constructor. */
-    DiscreteResourceRequirement(
-        BrkActivity* act,
-        const utl::Collection& rcps,
-        const uint_set_t& numRequiredDomain);
+    DiscreteResourceRequirement(BrkActivity* act,
+                                const utl::Collection& rcps,
+                                const uint_set_t& numRequiredDomain);
 
     virtual int compare(const utl::Object& rhs) const;
 
@@ -70,53 +68,81 @@ public:
     clp::Manager* manager() const;
 
     /** Get the activity. */
-    BrkActivity* activity() const
-    { return _act; }
+    BrkActivity*
+    activity() const
+    {
+        return _act;
+    }
 
     /// \name Resource-Cap-Pts
     //@{
     /** How many resource-cap-pts ? */
-    utl::uint_t numCapPts() const
-    { return _rcps.size(); }
+    utl::uint_t
+    numCapPts() const
+    {
+        return _rcps.size();
+    }
 
     /** Get the resource-cap-pts at the given index. */
-    const ResourceCapPts* resIdxCapPts(utl::uint_t idx) const
-    { return (const ResourceCapPts*)_rcpsArray[idx]; }
+    const ResourceCapPts*
+    resIdxCapPts(utl::uint_t idx) const
+    {
+        return (const ResourceCapPts*)_rcpsArray[idx];
+    }
 
     /** Get the one-and-only res-cap-pts. */
     const ResourceCapPts* resCapPts() const;
 
     /** Find the resource-cap-pts for the given resource. */
-    const ResourceCapPts* resCapPts(utl::uint_t resId) const
-    { return (ResourceCapPts*)_rcps.find(utl::Uint(resId)); }
+    const ResourceCapPts*
+    resCapPts(utl::uint_t resId) const
+    {
+        return (ResourceCapPts*)_rcps.find(utl::Uint(resId));
+    }
 
     /** Find the resource-cap-pts for the given resource. */
-    ResourceCapPts* resCapPts(utl::uint_t resId)
-    { return (ResourceCapPts*)_rcps.find(utl::Uint(resId)); }
+    ResourceCapPts*
+    resCapPts(utl::uint_t resId)
+    {
+        return (ResourceCapPts*)_rcps.find(utl::Uint(resId));
+    }
 
     /** Get the set of res-cap-pts. */
-    const utl::Hashtable& resCapPtsSet() const
-    { return _rcps; }
+    const utl::Hashtable&
+    resCapPtsSet() const
+    {
+        return _rcps;
+    }
 
     /** Get number of required resources. */
-    const clp::IntVar& numRequired() const
-    { return *_numRequired; }
+    const clp::IntVar&
+    numRequired() const
+    {
+        return *_numRequired;
+    }
 
     /** Get possible resources. */
-    const clp::IntVar& possibleResources() const
-    { return *_possibleResources; }
+    const clp::IntVar&
+    possibleResources() const
+    {
+        return *_possibleResources;
+    }
 
     /** Get selected resources. */
-    const clp::IntVar& selectedResources() const
-    { return *_selectedResources; }
-private:
-    void init()
-    { ABORT(); }
+    const clp::IntVar&
+    selectedResources() const
+    {
+        return *_selectedResources;
+    }
 
-    void init(
-        BrkActivity* act,
-        const utl::Collection& rcps,
-        const uint_set_t& numRequiredDomain);
+private:
+    void
+    init()
+    {
+        ABORT();
+    }
+
+    void init(BrkActivity* act, const utl::Collection& rcps, const uint_set_t& numRequiredDomain);
 
     void deInit();
 
@@ -133,6 +159,7 @@ private:
     void getAllPts(uint_set_t& pts);
 
     void getAllResIds(uint_set_t& resIds);
+
 private:
     BrkActivity* _act;
     utl::Hashtable _rcps;
@@ -143,10 +170,10 @@ private:
     clp::IntVar* _selectedResources;
 };
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 CLS_NS_END;
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 #endif

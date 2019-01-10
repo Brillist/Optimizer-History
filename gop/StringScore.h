@@ -1,16 +1,16 @@
 #ifndef GOP_STRINGSCORE_H
 #define GOP_STRINGSCORE_H
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 #include <gop/String.h>
 #include <gop/Score.h>
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 GOP_NS_BEGIN;
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /** 
     StringScore has two major attributes: a string and its corresponding 
@@ -24,11 +24,12 @@ GOP_NS_BEGIN;
     Note: this class was defined in HillClimber.h before.
 */
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 class StringScore : public utl::Object
 {
     UTL_CLASS_DECL(StringScore);
+
 public:
     StringScore(utl::uint_t id, String<utl::uint_t>* string, Score* score)
     {
@@ -36,46 +37,75 @@ public:
         _id = id;
         setString(string);
         setScore(score);
-/*         _string = string; */
-/*         _score = score; */
+        /*         _string = string; */
+        /*         _score = score; */
     }
 
     virtual void copy(const utl::Object& rhs);
 
-    utl::uint_t getId()
-    { return _id; }
+    utl::uint_t
+    getId()
+    {
+        return _id;
+    }
 
-    String<utl::uint_t>* getString()
-    { return _string; }
+    String<utl::uint_t>*
+    getString()
+    {
+        return _string;
+    }
 
-    void setString(String<utl::uint_t>* string)
-    { delete _string; _string = string; }
+    void
+    setString(String<utl::uint_t>* string)
+    {
+        delete _string;
+        _string = string;
+    }
 
-    Score* getScore() 
-    { return _score; }
+    Score*
+    getScore()
+    {
+        return _score;
+    }
 
-    void setScore(Score* score)
-    { delete _score; _score = score; }
+    void
+    setScore(Score* score)
+    {
+        delete _score;
+        _score = score;
+    }
 
-    double getScoreValue()
-    { return _score->getValue(); }
+    double
+    getScoreValue()
+    {
+        return _score->getValue();
+    }
+
 private:
-    void init() 
-    { _string = nullptr; _score = nullptr; }
-    void deInit()
-    { delete _string; delete _score; }
+    void
+    init()
+    {
+        _string = nullptr;
+        _score = nullptr;
+    }
+    void
+    deInit()
+    {
+        delete _string;
+        delete _score;
+    }
 
     utl::uint_t _id;
     String<utl::uint_t>* _string;
     Score* _score;
 };
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
-struct stringScoreOrdering
-    : public std::binary_function<StringScore*,StringScore*,bool>
+struct stringScoreOrdering : public std::binary_function<StringScore*, StringScore*, bool>
 {
-    bool operator()(StringScore* strScore1, StringScore* strScore2)
+    bool
+    operator()(StringScore* strScore1, StringScore* strScore2)
     {
         double score1 = strScore1->getScoreValue();
         double score2 = strScore2->getScoreValue();
@@ -83,14 +113,14 @@ struct stringScoreOrdering
     }
 };
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 typedef std::vector<StringScore*> stringscore_vector_t;
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 GOP_NS_END;
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 #endif

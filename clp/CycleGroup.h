@@ -1,45 +1,44 @@
 #ifndef CLP_CYCLEGROUP_H
 #define CLP_CYCLEGROUP_H
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 #include <libutl/Object.h>
 #include <clp/ConstrainedBound.h>
 #include <clp/RevSet.h>
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 CLP_NS_BEGIN;
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /** Precedence relationship. */
 enum cg_precedence_rel_t
 {
-    pr_precedes,      /**< lhs precedes rhs */
-    pr_succeeds,      /**< lhs succeeds rhs */
-    pr_none,          /**< no precedence relationship */
-    pr_undefined      /**< undefined/nullptr */
+    pr_precedes, /**< lhs precedes rhs */
+    pr_succeeds, /**< lhs succeeds rhs */
+    pr_none,     /**< no precedence relationship */
+    pr_undefined /**< undefined/nullptr */
 };
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 class CycleGroup;
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
-struct CycleGroupIdOrdering
-    : public std::binary_function<CycleGroup*,CycleGroup*,bool>
+struct CycleGroupIdOrdering : public std::binary_function<CycleGroup*, CycleGroup*, bool>
 {
     bool operator()(const CycleGroup* lhs, const CycleGroup* rhs) const;
 };
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 typedef std::set<CycleGroup*, CycleGroupIdOrdering> cg_set_id_t;
 typedef RevSet<CycleGroup> cg_revset_t;
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
    A set of ConstrainedBound objects s.t. any CB object in the set
@@ -48,16 +47,18 @@ typedef RevSet<CycleGroup> cg_revset_t;
    \author Adam McKee
 */
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 class CycleGroup : public utl::Object
 {
     UTL_CLASS_DECL(CycleGroup);
     UTL_CLASS_NO_COPY;
+
 public:
     typedef RevSet<ConstrainedBound> cb_revset_t;
     typedef cb_revset_t::iterator iterator;
     typedef cg_revset_t::iterator cg_iterator;
+
 public:
     /** Constructor. */
     CycleGroup(Manager* mgr);
@@ -86,8 +87,11 @@ public:
     void removeIndirectPred(CycleGroup* cg);
 
     /** Group is finalized iff all member bounds are finalized */
-    bool finalized() const
-    { return (_numUnfinalizedCBs == 0); }
+    bool
+    finalized() const
+    {
+        return (_numUnfinalizedCBs == 0);
+    }
 
     /** Enable propagation of member bounds. */
     virtual void unsuspend();
@@ -113,72 +117,123 @@ public:
     /// \name General Accessors
     //@{
     /** Get the id. */
-    utl::uint_t id() const
-    { return _id; }
+    utl::uint_t
+    id() const
+    {
+        return _id;
+    }
 
     /** Get the id. */
-    utl::uint_t& id()
-    { return _id; }
+    utl::uint_t&
+    id()
+    {
+        return _id;
+    }
 
     /** Get visited flag. */
-    bool visited() const
-    { return (_visitedIdx != utl::uint_t_max); }
+    bool
+    visited() const
+    {
+        return (_visitedIdx != utl::uint_t_max);
+    }
 
     /** Get visited index. */
-    utl::uint_t visitedIdx() const
-    { return _visitedIdx; }
+    utl::uint_t
+    visitedIdx() const
+    {
+        return _visitedIdx;
+    }
 
     /** Get visited count. */
-    utl::uint_t& visitedIdx()
-    { return _visitedIdx; }
+    utl::uint_t&
+    visitedIdx()
+    {
+        return _visitedIdx;
+    }
 
     /** Propagation suspended? */
-    bool suspended()
-    { return (_numUnfinalizedPredCGs > 0); }
+    bool
+    suspended()
+    {
+        return (_numUnfinalizedPredCGs > 0);
+    }
 
     /** Get size. */
-    utl::uint_t size() const
-    { return _cbs.size(); }
+    utl::uint_t
+    size() const
+    {
+        return _cbs.size();
+    }
 
     /** Constrained-Bounds begin iterator. */
-    iterator begin() const
-    { return _cbs.begin(); }
+    iterator
+    begin() const
+    {
+        return _cbs.begin();
+    }
 
     /** Constrained-Bounds end iterator. */
-    iterator end() const
-    { return _cbs.end(); }
+    iterator
+    end() const
+    {
+        return _cbs.end();
+    }
 
     /** Predecessor cycle-groups. */
-    const cg_revset_t& predCGs() const
-    { return _predCGs; }
+    const cg_revset_t&
+    predCGs() const
+    {
+        return _predCGs;
+    }
 
     /** Successor cycle-groups. */
-    const cg_revset_t& succCGs() const
-    { return _succCGs; }
+    const cg_revset_t&
+    succCGs() const
+    {
+        return _succCGs;
+    }
 
     /** All predecessor cycle-groups (transitive closure). */
-    const cg_revset_t& allPredCGs() const
-    { return _allPredCGs; }
+    const cg_revset_t&
+    allPredCGs() const
+    {
+        return _allPredCGs;
+    }
 
     /** All successor cycle-groups (transitive closure). */
-    const cg_revset_t& allSuccCGs() const
-    { return _allSuccCGs; }
+    const cg_revset_t&
+    allSuccCGs() const
+    {
+        return _allSuccCGs;
+    }
 
     /** Get the successor-count. */
-    utl::uint_t successorCount() const
-    { return _successorCount; }
+    utl::uint_t
+    successorCount() const
+    {
+        return _successorCount;
+    }
 
     /** Get the successor-depth. */
-    utl::uint_t& successorCount()
-    { return _successorCount; }
+    utl::uint_t&
+    successorCount()
+    {
+        return _successorCount;
+    }
 
     /** Get the successor-depth. */
-    utl::uint_t successorDepth() const
-    { return _successorDepth; }
+    utl::uint_t
+    successorDepth() const
+    {
+        return _successorDepth;
+    }
 
     /** Get the successor-depth. */
-    utl::uint_t& successorDepth()
-    { return _successorDepth; }
+    utl::uint_t&
+    successorDepth()
+    {
+        return _successorDepth;
+    }
     //@}
 
     virtual utl::String toString() const;
@@ -186,20 +241,30 @@ public:
     virtual utl::String allPredCGsString() const;
     virtual utl::String succCGsString() const;
     virtual utl::String allSuccCGsString() const;
+
 private:
-    void init()
-    { ABORT(); }
+    void
+    init()
+    {
+        ABORT();
+    }
 
-    void deInit() {}
+    void
+    deInit()
+    {
+    }
 
-    void saveState()
+    void
+    saveState()
     {
         utl::uint_t d = _mgr->depth();
-        if (d <= _stateDepth) return;
+        if (d <= _stateDepth)
+            return;
         _saveState();
     }
 
     void _saveState();
+
 private:
     Manager* _mgr;
     BoundPropagator* _bp;
@@ -208,7 +273,7 @@ private:
     utl::uint_t _successorCount;
     utl::uint_t _successorDepth;
 
-    // reversible ///////////////////////
+    // reversible /////////////////////////////////////////////
     cb_revset_t _cbs;
     cg_revset_t _predCGs;
     cg_revset_t _succCGs;
@@ -217,13 +282,13 @@ private:
     utl::uint_t _stateDepth;
     utl::uint_t _numUnfinalizedCBs;
     utl::uint_t _numUnfinalizedPredCGs;
-    /////////////////////////////////////
+    ///////////////////////////////////////////////////////////
 };
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 CLP_NS_END;
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 #endif

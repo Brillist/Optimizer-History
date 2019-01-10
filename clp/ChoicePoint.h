@@ -1,17 +1,17 @@
 #ifndef CLP_CHOICEPOINT_H
 #define CLP_CHOICEPOINT_H
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 CLP_NS_BEGIN;
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 class Goal;
 class Manager;
 class Or;
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
    Choice point.
@@ -30,204 +30,308 @@ class Or;
    \author Adam McKee
 */
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 class ChoicePoint
 {
 public:
-   typedef std::stack<Goal*> goal_stack_t;
+    typedef std::stack<Goal*> goal_stack_t;
+
 public:
-   /** Constructor. */
-   ChoicePoint()
-      { init(); }
+    /** Constructor. */
+    ChoicePoint()
+    {
+        init();
+    }
 
-   /** Constructor. */
-   ChoicePoint(Or* orGoal, const goal_stack_t& goalStack)
-      { init(); set(orGoal, goalStack); }
+    /** Constructor. */
+    ChoicePoint(Or* orGoal, const goal_stack_t& goalStack)
+    {
+        init();
+        set(orGoal, goalStack);
+    }
 
-   /** Destructor. */
-   virtual ~ChoicePoint()
-      { deInit(); }
+    /** Destructor. */
+    virtual ~ChoicePoint()
+    {
+        deInit();
+    }
 
-   /** Re-initialize. */
-   void clear();
+    /** Re-initialize. */
+    void clear();
 
-   /** Set attributes. */
-   void set(Or* orGoal, const goal_stack_t& goalStack);
+    /** Set attributes. */
+    void set(Or* orGoal, const goal_stack_t& goalStack);
 
 #if UTL_HOST_WORDSIZE == 64
-   /** Get rev-longs index. */
-   utl::uint_t getRevLongsIdx() const
-      { return _revLongsIdx; }
+    /** Get rev-longs index. */
+    utl::uint_t
+    getRevLongsIdx() const
+    {
+        return _revLongsIdx;
+    }
 
-   /** Set rev-longs index. */
-   void setRevLongsIdx(utl::uint_t revLongsIdx)
-      { _revLongsIdx = revLongsIdx; }
+    /** Set rev-longs index. */
+    void
+    setRevLongsIdx(utl::uint_t revLongsIdx)
+    {
+        _revLongsIdx = revLongsIdx;
+    }
 
-   /** Get rev-long-arrays index. */
-   utl::uint_t getRevLongArraysIdx() const
-      { return _revLongArraysIdx; }
+    /** Get rev-long-arrays index. */
+    utl::uint_t
+    getRevLongArraysIdx() const
+    {
+        return _revLongArraysIdx;
+    }
 
-   /** Set rev-long-arrays index. */
-   void setRevLongArraysIdx(utl::uint_t revLongArraysIdx)
-      { _revLongArraysIdx = revLongArraysIdx; }
+    /** Set rev-long-arrays index. */
+    void
+    setRevLongArraysIdx(utl::uint_t revLongArraysIdx)
+    {
+        _revLongArraysIdx = revLongArraysIdx;
+    }
 
-   /** Get rev-longs indirect index. */
-   utl::uint_t getRevLongsIndIdx() const
-      { return _revLongsIndIdx; }
+    /** Get rev-longs indirect index. */
+    utl::uint_t
+    getRevLongsIndIdx() const
+    {
+        return _revLongsIndIdx;
+    }
 
-   /** Set rev-longs indirect index. */
-   void setRevLongsIndIdx(utl::uint_t revLongsIndIdx)
-      { _revLongsIndIdx = revLongsIndIdx; }
+    /** Set rev-longs indirect index. */
+    void
+    setRevLongsIndIdx(utl::uint_t revLongsIndIdx)
+    {
+        _revLongsIndIdx = revLongsIndIdx;
+    }
 
-   /** Get rev-long-arrays indirect index. */
-   utl::uint_t getRevLongArraysIndIdx() const
-      { return _revLongArraysIndIdx; }
+    /** Get rev-long-arrays indirect index. */
+    utl::uint_t
+    getRevLongArraysIndIdx() const
+    {
+        return _revLongArraysIndIdx;
+    }
 
-   /** Set rev-long-arrays indirect index. */
-   void setRevLongArraysIndIdx(utl::uint_t revLongArraysIndIdx)
-      { _revLongArraysIndIdx = revLongArraysIndIdx; }
+    /** Set rev-long-arrays indirect index. */
+    void
+    setRevLongArraysIndIdx(utl::uint_t revLongArraysIndIdx)
+    {
+        _revLongArraysIndIdx = revLongArraysIndIdx;
+    }
 #endif
 
-   /** Get rev-ints index. */
-   utl::uint_t getRevIntsIdx() const
-      { return _revIntsIdx; }
+    /** Get rev-ints index. */
+    utl::uint_t
+    getRevIntsIdx() const
+    {
+        return _revIntsIdx;
+    }
 
-   /** Set rev-ints index. */
-   void setRevIntsIdx(utl::uint_t revIntsIdx)
-      { _revIntsIdx = revIntsIdx; }
+    /** Set rev-ints index. */
+    void
+    setRevIntsIdx(utl::uint_t revIntsIdx)
+    {
+        _revIntsIdx = revIntsIdx;
+    }
 
-   /** Get rev-arrays index. */
-   utl::uint_t getRevIntArraysIdx() const
-      { return _revIntArraysIdx; }
+    /** Get rev-arrays index. */
+    utl::uint_t
+    getRevIntArraysIdx() const
+    {
+        return _revIntArraysIdx;
+    }
 
-   /** Set rev-arrays index. */
-   void setRevIntArraysIdx(utl::uint_t revIntArraysIdx)
-      { _revIntArraysIdx = revIntArraysIdx; }
+    /** Set rev-arrays index. */
+    void
+    setRevIntArraysIdx(utl::uint_t revIntArraysIdx)
+    {
+        _revIntArraysIdx = revIntArraysIdx;
+    }
 
-   /** Get rev-ints indirect index. */
-   utl::uint_t getRevIntsIndIdx() const
-      { return _revIntsIndIdx; }
+    /** Get rev-ints indirect index. */
+    utl::uint_t
+    getRevIntsIndIdx() const
+    {
+        return _revIntsIndIdx;
+    }
 
-   /** Set rev-ints indirect index. */
-   void setRevIntsIndIdx(utl::uint_t revIntsIndIdx)
-      { _revIntsIndIdx = revIntsIndIdx; }
+    /** Set rev-ints indirect index. */
+    void
+    setRevIntsIndIdx(utl::uint_t revIntsIndIdx)
+    {
+        _revIntsIndIdx = revIntsIndIdx;
+    }
 
-   /** Get rev-arrays indirect index. */
-   utl::uint_t getRevIntArraysIndIdx() const
-      { return _revIntArraysIndIdx; }
+    /** Get rev-arrays indirect index. */
+    utl::uint_t
+    getRevIntArraysIndIdx() const
+    {
+        return _revIntArraysIndIdx;
+    }
 
-   /** Set rev-arrays indirect index. */
-   void setRevIntArraysIndIdx(utl::uint_t revIntArraysIndIdx)
-      { _revIntArraysIndIdx = revIntArraysIndIdx; }
+    /** Set rev-arrays indirect index. */
+    void
+    setRevIntArraysIndIdx(utl::uint_t revIntArraysIndIdx)
+    {
+        _revIntArraysIndIdx = revIntArraysIndIdx;
+    }
 
-   /** Get rev-delta-vars index. */
-   utl::uint_t getRevDeltaVarsIdx() const
-      { return _revDeltaVarsIdx; }
+    /** Get rev-delta-vars index. */
+    utl::uint_t
+    getRevDeltaVarsIdx() const
+    {
+        return _revDeltaVarsIdx;
+    }
 
-   /** Set rev-delta-vars index. */
-   void setRevDeltaVarsIdx(utl::uint_t revDeltaVarsIdx)
-      { _revDeltaVarsIdx = revDeltaVarsIdx; }
+    /** Set rev-delta-vars index. */
+    void
+    setRevDeltaVarsIdx(utl::uint_t revDeltaVarsIdx)
+    {
+        _revDeltaVarsIdx = revDeltaVarsIdx;
+    }
 
-   /** Get rev-cts index. */
-   utl::uint_t getRevCtsIdx() const
-      { return _revCtsIdx; }
+    /** Get rev-cts index. */
+    utl::uint_t
+    getRevCtsIdx() const
+    {
+        return _revCtsIdx;
+    }
 
-   /** Set rev-cts index. */
-   void setRevCtsIdx(utl::uint_t revCtsIdx)
-      { _revCtsIdx = revCtsIdx; }
+    /** Set rev-cts index. */
+    void
+    setRevCtsIdx(utl::uint_t revCtsIdx)
+    {
+        _revCtsIdx = revCtsIdx;
+    }
 
-   /** Get rev-toggles index. */
-   utl::uint_t getRevTogglesIdx() const
-      { return _revTogglesIdx; }
+    /** Get rev-toggles index. */
+    utl::uint_t
+    getRevTogglesIdx() const
+    {
+        return _revTogglesIdx;
+    }
 
-   /** Set rev-toggles index. */
-   void setRevTogglesIdx(utl::uint_t revTogglesIdx)
-      { _revTogglesIdx = revTogglesIdx; }
+    /** Set rev-toggles index. */
+    void
+    setRevTogglesIdx(utl::uint_t revTogglesIdx)
+    {
+        _revTogglesIdx = revTogglesIdx;
+    }
 
-   /** Get rev-allocations index. */
-   utl::uint_t getRevAllocationsIdx() const
-      { return _revAllocationsIdx; }
+    /** Get rev-allocations index. */
+    utl::uint_t
+    getRevAllocationsIdx() const
+    {
+        return _revAllocationsIdx;
+    }
 
-   /** Set rev-allocations index. */
-   void setRevAllocationsIdx(utl::uint_t revAllocationsIdx)
-      { _revAllocationsIdx = revAllocationsIdx; }
+    /** Set rev-allocations index. */
+    void
+    setRevAllocationsIdx(utl::uint_t revAllocationsIdx)
+    {
+        _revAllocationsIdx = revAllocationsIdx;
+    }
 
-   /** Get rev-actions index. */
-   utl::uint_t getRevActionsIdx() const
-      { return _revActionsIdx; }
+    /** Get rev-actions index. */
+    utl::uint_t
+    getRevActionsIdx() const
+    {
+        return _revActionsIdx;
+    }
 
-   /** Set rev-actions index. */
-   void setRevActionsIdx(utl::uint_t revActionsIdx)
-      { _revActionsIdx = revActionsIdx; }
+    /** Set rev-actions index. */
+    void
+    setRevActionsIdx(utl::uint_t revActionsIdx)
+    {
+        _revActionsIdx = revActionsIdx;
+    }
 
-   /** Get the manager. */
-   Manager* manager() const
-      { return _mgr; }
+    /** Get the manager. */
+    Manager*
+    manager() const
+    {
+        return _mgr;
+    }
 
-   /** Set the manager. */
-   void setManager(Manager* mgr)
-      { _mgr = mgr; }
+    /** Set the manager. */
+    void
+    setManager(Manager* mgr)
+    {
+        _mgr = mgr;
+    }
 
-   /** Get the or goal. */
-   Or* orGoal() const
-      { return _or; }
+    /** Get the or goal. */
+    Or*
+    orGoal() const
+    {
+        return _or;
+    }
 
-   /** Get the or-index. */
-   utl::uint_t orIdx() const
-      { return _orIdx; }
+    /** Get the or-index. */
+    utl::uint_t
+    orIdx() const
+    {
+        return _orIdx;
+    }
 
-   /** Is the root choice point? */
-   bool isRoot() const
-      { return (_or == nullptr); }
+    /** Is the root choice point? */
+    bool
+    isRoot() const
+    {
+        return (_or == nullptr);
+    }
 
-   /** Has a remaining choice? */
-   bool hasRemainingChoice() const;
+    /** Has a remaining choice? */
+    bool hasRemainingChoice() const;
 
-   /** Get the next choice and increment the index. */
-   Goal* getNextChoice();
+    /** Get the next choice and increment the index. */
+    Goal* getNextChoice();
 
-   /** Has a label? */
-   bool isLabeled() const;
+    /** Has a label? */
+    bool isLabeled() const;
 
-   /** Get the label. */
-   utl::uint_t label() const;
+    /** Get the label. */
+    utl::uint_t label() const;
 
-   /** Backtrack. */
-   void backtrack(goal_stack_t& goalStack);
+    /** Backtrack. */
+    void backtrack(goal_stack_t& goalStack);
+
 private:
-   typedef std::vector<Goal*> goal_vector_t;
+    typedef std::vector<Goal*> goal_vector_t;
+
 private:
-   void init();
-   void deInit();
-   void saveGoalStack(const goal_stack_t& goalStack);
-   void restoreGoalStack(goal_stack_t& goalStack);
+    void init();
+    void deInit();
+    void saveGoalStack(const goal_stack_t& goalStack);
+    void restoreGoalStack(goal_stack_t& goalStack);
+
 private:
-   Manager* _mgr;
-   Or* _or;
-   goal_vector_t _goals;
-   utl::uint_t _orIdx;
+    Manager* _mgr;
+    Or* _or;
+    goal_vector_t _goals;
+    utl::uint_t _orIdx;
 #if UTL_HOST_WORDSIZE == 64
-   utl::uint_t _revLongsIdx;
-   utl::uint_t _revLongArraysIdx;
-   utl::uint_t _revLongsIndIdx;
-   utl::uint_t _revLongArraysIndIdx;
+    utl::uint_t _revLongsIdx;
+    utl::uint_t _revLongArraysIdx;
+    utl::uint_t _revLongsIndIdx;
+    utl::uint_t _revLongArraysIndIdx;
 #endif
-   utl::uint_t _revIntsIdx;
-   utl::uint_t _revIntArraysIdx;
-   utl::uint_t _revIntsIndIdx;
-   utl::uint_t _revIntArraysIndIdx;
-   utl::uint_t _revDeltaVarsIdx;
-   utl::uint_t _revCtsIdx;
-   utl::uint_t _revTogglesIdx;
-   utl::uint_t _revAllocationsIdx;
-   utl::uint_t _revActionsIdx;
+    utl::uint_t _revIntsIdx;
+    utl::uint_t _revIntArraysIdx;
+    utl::uint_t _revIntsIndIdx;
+    utl::uint_t _revIntArraysIndIdx;
+    utl::uint_t _revDeltaVarsIdx;
+    utl::uint_t _revCtsIdx;
+    utl::uint_t _revTogglesIdx;
+    utl::uint_t _revAllocationsIdx;
+    utl::uint_t _revActionsIdx;
 };
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 CLP_NS_END;
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 #endif

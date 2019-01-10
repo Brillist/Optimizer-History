@@ -1,16 +1,16 @@
 #ifndef CLP_INTEXPDOMAINCAR_H
 #define CLP_INTEXPDOMAINCAR_H
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 #include <libutl/Vector.h>
 #include <clp/IntExpDomain.h>
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 CLP_NS_BEGIN;
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
    Integer expression domain (counted array representation).
@@ -18,14 +18,16 @@ CLP_NS_BEGIN;
    \author Adam McKee
 */
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 class IntExpDomainCAR : public IntExpDomain
 {
     friend class IntExpDomainCARit;
     UTL_CLASS_DECL(IntExpDomainCAR);
+
 public:
     typedef std::map<int, utl::uint_t> int_uint_map_t;
+
 public:
     /** Constructor. */
     IntExpDomainCAR(Manager* mgr);
@@ -53,13 +55,19 @@ public:
 
     /** Get the minimum value > val. */
     virtual int getNext(int val) const;
+
 protected:
-    void saveState()
-        { if (_stateDepth < _mgr->depth()) saveState(); }
+    void
+    saveState()
+    {
+        if (_stateDepth < _mgr->depth())
+            saveState();
+    }
 
     virtual void _saveState();
 
     virtual void removeRange(int min, int max);
+
 private:
     void init();
     void init(const int_uint_map_t& domain);
@@ -67,13 +75,18 @@ private:
 
     utl::uint_t getCount(utl::uint_t idx) const;
 
-    bool zeroCount(utl::uint_t idx)
-    { return (setCount(idx, 0) != 0); }
+    bool
+    zeroCount(utl::uint_t idx)
+    {
+        return (setCount(idx, 0) != 0);
+    }
 
     utl::uint_t setCount(utl::uint_t idx, utl::uint_t count);
+
 private:
     typedef utl::Vector<int> int_vector_t;
     typedef utl::Vector<utl::uint32_t> uint32_vector_t;
+
 private:
     utl::uint_t _num;
     utl::uint_t _bits;
@@ -86,16 +99,16 @@ private:
     uint32_vector_t _countsArray;
     int* _values;
 
-    // reversible ///////////////
+    // reversible /////////////////////////////////////
     utl::uint32_t* _counts;
     utl::uint_t _stateDepth;
-    // reversible ///////////////
+    // reversible /////////////////////////////////////
 };
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 CLP_NS_END;
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 #endif

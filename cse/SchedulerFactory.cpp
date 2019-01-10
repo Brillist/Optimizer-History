@@ -10,65 +10,65 @@
 #include "OpSeqSelector.h"
 #include "SchedulerFactory.h"
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 LUT_NS_USE;
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 UTL_CLASS_IMPL(cse::SchedulerFactory, lut::Factory<Scheduler>);
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 CSE_NS_BEGIN;
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 Scheduler*
 SchedulerFactory::make(void* param, void*) const
 {
-   ASSERTD(param != nullptr);
-   Scheduler* scheduler = nullptr;
-   std::string name((const char*)param);
-   if (name == "AltResSelector")
-   {
-      scheduler = new AltResSelector();
-   }
-   else if (name == "ForwardScheduler")
-   {
-      scheduler = new ForwardScheduler();
-   }
-   else if (name == "MinCostResourcePtSelector")
-   {
-      scheduler = new MinCostResourcePtSelector();
-   }
-   else if (name == "PtSelector")
-   {
-      scheduler = new PtSelector();
-   }
-   else if (name == "CapSelector")
-   {
-      scheduler = new CapSelector();
-   }
-   else if (name == "ResCapSelector")
-   {
-      scheduler = new ResCapSelector();
-   }
-   else if (name == "JobSeqSelector")
-   {
-      scheduler = new JobSeqSelector();
-   }
-   else if (name == "JobOpSeqSelector")
-   {
-      scheduler = new JobOpSeqSelector();
-   }
-   else if (name == "OpSeqSelector")
-   {
-      scheduler = new OpSeqSelector();
-   }
-   return scheduler;
+    ASSERTD(param != nullptr);
+    Scheduler* scheduler = nullptr;
+    std::string name((const char*)param);
+    if (name == "AltResSelector")
+    {
+        scheduler = new AltResSelector();
+    }
+    else if (name == "ForwardScheduler")
+    {
+        scheduler = new ForwardScheduler();
+    }
+    else if (name == "MinCostResourcePtSelector")
+    {
+        scheduler = new MinCostResourcePtSelector();
+    }
+    else if (name == "PtSelector")
+    {
+        scheduler = new PtSelector();
+    }
+    else if (name == "CapSelector")
+    {
+        scheduler = new CapSelector();
+    }
+    else if (name == "ResCapSelector")
+    {
+        scheduler = new ResCapSelector();
+    }
+    else if (name == "JobSeqSelector")
+    {
+        scheduler = new JobSeqSelector();
+    }
+    else if (name == "JobOpSeqSelector")
+    {
+        scheduler = new JobOpSeqSelector();
+    }
+    else if (name == "OpSeqSelector")
+    {
+        scheduler = new OpSeqSelector();
+    }
+    return scheduler;
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 CSE_NS_END;

@@ -1,7 +1,7 @@
 #ifndef CSE_TOTALCOSTEVALUATOR_H
 #define CSE_TOTALCOSTEVALUATOR_H
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 #include <libutl/SpanCol.h>
 #include <cls/DiscreteResource.h>
@@ -10,15 +10,15 @@
 #include <cse/SchedulingContext.h>
 #include <cse/AuditReport.h>
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 CSE_NS_BEGIN;
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 class CapSpan;
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
    Evaluate the total cost of the schedule.
@@ -73,44 +73,48 @@ class CapSpan;
    \author Adam McKee
 */
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 class TotalCostEvaluator : public ScheduleEvaluator
 {
     UTL_CLASS_DECL(TotalCostEvaluator);
+
 public:
     virtual void copy(const utl::Object& rhs);
 
-    virtual std::string name() const
-    { return "TotalCost"; }
+    virtual std::string
+    name() const
+    {
+        return "TotalCost";
+    }
 
     virtual void initialize(const gop::IndEvaluatorConfiguration* cf);
 
     virtual double calcScore(const gop::IndBuilderContext* context) const;
 
-    AuditReport* auditReport() const
-    { return _auditReport; }
+    AuditReport*
+    auditReport() const
+    {
+        return _auditReport;
+    }
+
 private:
     typedef utl::SpanCol<int> ispancol_t;
     typedef std::list<CapSpan*> cslist_t;
+
 private:
     void init();
     void deInit();
 
     void calcResourceCost(const SchedulingContext& context) const;
-    void cslistBuild(
-        const SchedulingContext& context,
-        const cls::DiscreteResource& res,
-        cslist_t& cslist) const;
+    void cslistBuild(const SchedulingContext& context,
+                     const cls::DiscreteResource& res,
+                     cslist_t& cslist) const;
     void cslistDump(const cslist_t& cslist) const;
-    void cslistUnbuffer(
-        cslist_t& cslist,
-        cslist_t& cslist_buf,
-        const CapSpan* endCS) const;
-    void cslistCost(
-        const SchedulingContext& context,
-        const cls::DiscreteResource& res,
-        const cslist_t& cslist) const;
+    void cslistUnbuffer(cslist_t& cslist, cslist_t& cslist_buf, const CapSpan* endCS) const;
+    void cslistCost(const SchedulingContext& context,
+                    const cls::DiscreteResource& res,
+                    const cslist_t& cslist) const;
 
     void calcLatenessCost(const SchedulingContext& context) const;
     void calcFixedCost(const SchedulingContext& context) const;
@@ -118,27 +122,23 @@ private:
     void calcOverheadCost(const SchedulingContext& context) const;
     void calcInterestCost(const SchedulingContext& context) const;
 
-    void calcPeriodCost(
-        const utl::Span<int>& span,
-        double costPerTS) const;
+    void calcPeriodCost(const utl::Span<int>& span, double costPerTS) const;
     /* November 21, 2013 (Elisa) */
     /* added the lateness cost increment to this function */
-    void calcPeriodCost(
-	const utl::Span<int>& span,
-	double costPerTS,
-	double incr,
-        double pStep,
-        double tStep) const;
+    void calcPeriodCost(const utl::Span<int>& span,
+                        double costPerTS,
+                        double incr,
+                        double pStep,
+                        double tStep) const;
 
     /* January 3, 2014 (Elisa) */
     /* calculate the overhead for each job */
     void calcJobOverheadCost(const SchedulingContext& context) const;
-    void calcJobPeriodCost(
-        const utl::Span<int>& span,
-        double constPerTS) const;
+    void calcJobPeriodCost(const utl::Span<int>& span, double constPerTS) const;
 
 private:
-   typedef utl::TRBtree< utl::Span<int> > spanip_col_t;
+    typedef utl::TRBtree<utl::Span<int>> spanip_col_t;
+
 private:
     mutable std::ostringstream* _os;
     int _originTS;
@@ -166,13 +166,13 @@ private:
     mutable size_t _dayCostPeriodsSize;
     spanip_col_t _spanIPs;
     mutable AuditReport* _auditReport;
-    mutable std::map<utl::uint_t,double> _auditIpCosts;
+    mutable std::map<utl::uint_t, double> _auditIpCosts;
 };
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 CSE_NS_END;
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 #endif

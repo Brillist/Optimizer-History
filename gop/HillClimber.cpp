@@ -4,28 +4,28 @@
 #include "RevOperator.h"
 #include "HillClimber.h"
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 #ifdef DEBUG
 #define DEBUG_UNIT
 #endif
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 UTL_NS_USE;
 LUT_NS_USE;
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 UTL_CLASS_IMPL(gop::HillClimber, gop::Optimizer);
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 GOP_NS_BEGIN;
 
-//////////////////////////////////////////////////////////////////////////////
-/// HillClimber //////////////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
+/// HillClimber ////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 HillClimber::initialize(const OptimizerConfiguration* config)
@@ -39,7 +39,8 @@ HillClimber::initialize(const OptimizerConfiguration* config)
     iterationRun();
     setInitScore(_newScore->clone());
     setBestScore(_newScore->clone());
-    if (_ind->newString()) _ind->acceptNewString();
+    if (_ind->newString())
+        _ind->acceptNewString();
     objective->setBestScore(_bestScore->clone());
 
 #ifdef DEBUG_UNIT
@@ -47,7 +48,7 @@ HillClimber::initialize(const OptimizerConfiguration* config)
 #endif
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 HillClimber::acceptanceEval(RevOperator* op)
@@ -55,9 +56,9 @@ HillClimber::acceptanceEval(RevOperator* op)
     Objective* objective = _objectives[0];
     int cmpResult;
     cmpResult = objective->compare(_newScore, _bestScore);
-    _accept = (cmpResult >= 0);//_accept
-    _sameScore = (cmpResult == 0);//_sameScore
-    _newBest = (cmpResult > 0);//_newScore
+    _accept = (cmpResult >= 0);    //_accept
+    _sameScore = (cmpResult == 0); //_sameScore
+    _newBest = (cmpResult > 0);    //_newScore
     if (_accept)
     {
         op->accept();
@@ -78,7 +79,7 @@ HillClimber::acceptanceEval(RevOperator* op)
 #endif
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 bool
 HillClimber::HCiterationRun()
@@ -98,9 +99,7 @@ HillClimber::HCiterationRun()
     RevOperator* rop = (RevOperator*)op;
     rop->addTotalIter();
 #ifdef DEBUG_UNIT
-    utl::cout
-        << "                                      "
-        << op->toString() << utl::endl;
+    utl::cout << "                                      " << op->toString() << utl::endl;
 #endif
 
     // generate a schedule
@@ -116,7 +115,7 @@ HillClimber::HCiterationRun()
     return complete;
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 bool
 HillClimber::run()
@@ -124,61 +123,61 @@ HillClimber::run()
     ASSERTD(!complete());
     ASSERTD(_ind != nullptr);
 
-//     Objective* objective = _objectives[0];
+    //     Objective* objective = _objectives[0];
     bool complete = this->complete();
-//     int cmpResult;
+    //     int cmpResult;
 
     while (!complete)
         complete = HCiterationRun();
-//     {
-//         _iteration++;
+    //     {
+    //         _iteration++;
 
-//         // choose an operator
-//         Operator* op = chooseSuccessOp();
-//         if (op == nullptr)
-//         {
-//             _iteration = _maxIterations;
-//             complete = this->complete();
-//             break;
-//         }
-//         ASSERTD(dynamic_cast<RevOperator*>(op) != nullptr);
-//         RevOperator* rop = (RevOperator*)op;
-//         rop->addTotalIter();
-// #ifdef DEBUG_UNIT
-//         utl::cout
-//             << "                                      "
-//             << "operator: " << op->toString() << utl::endl;
-// #endif
+    //         // choose an operator
+    //         Operator* op = chooseSuccessOp();
+    //         if (op == nullptr)
+    //         {
+    //             _iteration = _maxIterations;
+    //             complete = this->complete();
+    //             break;
+    //         }
+    //         ASSERTD(dynamic_cast<RevOperator*>(op) != nullptr);
+    //         RevOperator* rop = (RevOperator*)op;
+    //         rop->addTotalIter();
+    // #ifdef DEBUG_UNIT
+    //         utl::cout
+    //             << "                                      "
+    //             << "operator: " << op->toString() << utl::endl;
+    // #endif
 
-//         // generate a schedule
-//         iterationRun(rop);
-//         cmpResult = objective->compare(_newScore, _bestScore);
-//         _accept = (cmpResult >= 0);//_accept
-//         _sameScore = (cmpResult == 0);//_sameScore
-//         _newBest = (cmpResult > 0);//_newScore
-//         if (_accept)
-//         {
-//             rop->accept();
-//             if (_newBest)
-//             {
-//                 _improvementIteration = _iteration;
-//                 rop->addSuccessIter();
-//                 setBestScore(_newScore->clone());
-//                 objective->setBestScore(_bestScore->clone());
-//             }
-//         }
-//         else
-//         {
-//             rop->undo();
-//         }
-// #ifdef DEBUG_UNIT
-//         utl::cout << iterationString() << utl::endl;
-// #endif
-//         // update run status
-//         complete = this->complete();
-//         if (!complete)
-//             updateRunStatus(complete);
-//     }
+    //         // generate a schedule
+    //         iterationRun(rop);
+    //         cmpResult = objective->compare(_newScore, _bestScore);
+    //         _accept = (cmpResult >= 0);//_accept
+    //         _sameScore = (cmpResult == 0);//_sameScore
+    //         _newBest = (cmpResult > 0);//_newScore
+    //         if (_accept)
+    //         {
+    //             rop->accept();
+    //             if (_newBest)
+    //             {
+    //                 _improvementIteration = _iteration;
+    //                 rop->addSuccessIter();
+    //                 setBestScore(_newScore->clone());
+    //                 objective->setBestScore(_bestScore->clone());
+    //             }
+    //         }
+    //         else
+    //         {
+    //             rop->undo();
+    //         }
+    // #ifdef DEBUG_UNIT
+    //         utl::cout << iterationString() << utl::endl;
+    // #endif
+    //         // update run status
+    //         complete = this->complete();
+    //         if (!complete)
+    //             updateRunStatus(complete);
+    //     }
 
     ASSERT(this->complete());
     //re-generate the best schedule and get audit text
@@ -192,15 +191,16 @@ HillClimber::run()
     return scheduleFeasible;
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 HillClimber::audit()
 {
-    if (!iterationRun(nullptr, true)) ABORT();
+    if (!iterationRun(nullptr, true))
+        ABORT();
     ASSERTD(*_bestScore == *_newScore);
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 GOP_NS_END;

@@ -1,23 +1,23 @@
 #ifndef GOP_IND_H
 #define GOP_IND_H
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 #include <functional>
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 GOP_NS_BEGIN;
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 class OSID;
 class Objective;
 class Population;
 
-//////////////////////////////////////////////////////////////////////////////
-/// Ind //////////////////////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
+/// Ind ////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
    Individual problem solution (abstract).
@@ -31,94 +31,134 @@ class Population;
    \author Adam McKee
 */
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 class Ind : public utl::Object
 {
     UTL_CLASS_DECL_ABC(Ind);
+
 public:
     /** Copy another instance. */
     virtual void copy(const utl::Object& rhs);
 
     /** Serialize from a stream. */
-    virtual void serializeIn(std::istream& is) {}
+    virtual void
+    serializeIn(std::istream& is)
+    {
+    }
 
     /** Has self been built? */
-    virtual bool isBuilt() const=0;
+    virtual bool isBuilt() const = 0;
 
     /** Clear the build. */
-    virtual void buildClear()=0;
+    virtual void buildClear() = 0;
 
     /** Does self dominate the given individual? */
-    bool dominates(
-        const Ind* rhs,
-        const std::vector<Objective*>& objectives) const;
+    bool dominates(const Ind* rhs, const std::vector<Objective*>& objectives) const;
 
     /** Get a human-readable string representation. */
     virtual utl::String toString() const;
 
     /** Get the population that self belongs to. */
-    const Population* getPop() const
-    { return _pop; }
+    const Population*
+    getPop() const
+    {
+        return _pop;
+    }
 
     /** Get the number of scores. */
-    utl::uint_t numScores() const
-    { return _scores.size(); }
+    utl::uint_t
+    numScores() const
+    {
+        return _scores.size();
+    }
 
     /** Get the score for the given objective. */
-    double getScore(utl::uint_t idx = 0) const
-    { ASSERTD(idx < _scores.size()); return _scores[idx]; }
+    double
+    getScore(utl::uint_t idx = 0) const
+    {
+        ASSERTD(idx < _scores.size());
+        return _scores[idx];
+    }
 
     /** Set the score. */
-    void setScore(double score)
-    { setScore(0, score); }
+    void
+    setScore(double score)
+    {
+        setScore(0, score);
+    }
 
     /** Set the score for the given objective. */
     void setScore(utl::uint_t idx, double score);
 
     /** Get the fitness. */
-    double fitness() const
-    { return _fitness; }
+    double
+    fitness() const
+    {
+        return _fitness;
+    }
 
     /** Get the fitness. */
-    double getFitness() const
-    { return _fitness; }
+    double
+    getFitness() const
+    {
+        return _fitness;
+    }
 
     /** Set the fitness. */
     void setFitness(double fitness);
 
     /** Get the parent score for the given objective. */
-    double getParentScore(utl::uint_t idx = 0) const
-    { ASSERTD(idx < _parentScores.size()); return _parentScores[idx]; }
+    double
+    getParentScore(utl::uint_t idx = 0) const
+    {
+        ASSERTD(idx < _parentScores.size());
+        return _parentScores[idx];
+    }
 
     /** Set the parent score for the given objective. */
-    void setParentScore(utl::uint_t idx, double parentScore)
+    void
+    setParentScore(utl::uint_t idx, double parentScore)
     {
-        if (idx >= _parentScores.size()) _parentScores.resize(idx + 1);
+        if (idx >= _parentScores.size())
+            _parentScores.resize(idx + 1);
         _parentScores[idx] = parentScore;
     }
 
     /** Get operator index. */
-    utl::uint_t getOpIdx() const
-    { return _opIdx; }
+    utl::uint_t
+    getOpIdx() const
+    {
+        return _opIdx;
+    }
 
     /** Set operator index. */
-    void setOpIdx(utl::uint_t opIdx)
-    { _opIdx = opIdx; }
+    void
+    setOpIdx(utl::uint_t opIdx)
+    {
+        _opIdx = opIdx;
+    }
 
     /** Get the optimizer-specific related data. */
-    const OSID* osid() const
-    { return _osid; }
+    const OSID*
+    osid() const
+    {
+        return _osid;
+    }
 
     /** Get the optimizer-specific related data. */
-    OSID* osid()
-    { return _osid; }
+    OSID*
+    osid()
+    {
+        return _osid;
+    }
 
     /** Set optimizer-specific related data. */
     void setOSID(OSID* osid);
 
     /** Clear optimizer-specific related data. */
     void clearOSID();
+
 private:
     void init();
     void deInit();
@@ -133,9 +173,9 @@ private:
     OSID* _osid;
 };
 
-//////////////////////////////////////////////////////////////////////////////
-/// OSID /////////////////////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
+/// OSID ///////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
    Abstract base for optimizer-specific individual data.
@@ -147,23 +187,30 @@ private:
    \author Adam McKee
 */
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 class OSID : public utl::Object
 {
     UTL_CLASS_DECL_ABC(OSID);
     UTL_CLASS_DEFID;
+
 public:
     /** Copy another instance. */
-    virtual void copy(const utl::Object& rhs) {}
+    virtual void
+    copy(const utl::Object& rhs)
+    {
+    }
 
     /** Clear data. */
-    virtual void clear() {}
+    virtual void
+    clear()
+    {
+    }
 };
 
-//////////////////////////////////////////////////////////////////////////////
-/// IndOrdering //////////////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
+/// IndOrdering ////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
    Abstract base for individual ordering strategies.
@@ -174,16 +221,19 @@ public:
    \author Adam McKee
 */
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 class IndOrdering : public utl::Object
 {
     UTL_CLASS_DECL_ABC(IndOrdering);
     UTL_CLASS_NO_COPY;
+
 public:
     /** Constructor. */
     IndOrdering(bool inverted)
-    { init(inverted); }
+    {
+        init(inverted);
+    }
 
     /**
        Compare two individuals.  You should override this method to
@@ -194,30 +244,47 @@ public:
        \param lhs left-hand-side individual
        \param rhs right-hand-side individual
     */
-    virtual int compare(const Ind* lhs, const Ind* rhs) const=0;
+    virtual int compare(const Ind* lhs, const Ind* rhs) const = 0;
 
     /** Inverted ordering? */
-    bool inverted() const
-    { return _inverted; }
+    bool
+    inverted() const
+    {
+        return _inverted;
+    }
 
     /** Set the inverted flag. */
-    void setInverted(bool inverted)
-    { _inverted = inverted; }
+    void
+    setInverted(bool inverted)
+    {
+        _inverted = inverted;
+    }
 
     /** Compare two individuals. */
-    int operator()(const Ind* lhs, const Ind* rhs)
-    { return compare(lhs, rhs); }
+    int
+    operator()(const Ind* lhs, const Ind* rhs)
+    {
+        return compare(lhs, rhs);
+    }
+
 protected:
     bool _inverted;
+
 private:
-    void init(bool inverted = false)
-    { _inverted = inverted; }
-    void deInit() {}
+    void
+    init(bool inverted = false)
+    {
+        _inverted = inverted;
+    }
+    void
+    deInit()
+    {
+    }
 };
 
-//////////////////////////////////////////////////////////////////////////////
-/// IndOrderingSTL ///////////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
+/// IndOrderingSTL /////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
    STL adaptor for IndOrdering.
@@ -225,27 +292,31 @@ private:
    \author Adam McKee
 */
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
-struct IndOrderingSTL : public std::binary_function<Ind*,Ind*,bool>
+struct IndOrderingSTL : public std::binary_function<Ind*, Ind*, bool>
 {
     /** Constructor. */
     IndOrderingSTL(IndOrdering* ordering)
-    { _ordering = ordering; }
+    {
+        _ordering = ordering;
+    }
 
     /** Compare two individuals. */
-    bool operator()(const Ind* lhs, const Ind* rhs) const
+    bool
+    operator()(const Ind* lhs, const Ind* rhs) const
     {
         ASSERTD(_ordering != nullptr);
         return (_ordering->compare(lhs, rhs) < 0);
     }
-    private:
+
+private:
     IndOrdering* _ordering;
 };
 
-//////////////////////////////////////////////////////////////////////////////
-/// IndScoreOrdering /////////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
+/// IndScoreOrdering ///////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
    Individual ordering based on score.
@@ -254,18 +325,21 @@ struct IndOrderingSTL : public std::binary_function<Ind*,Ind*,bool>
    \author Adam McKee
 */
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 class IndScoreOrdering : public IndOrdering
 {
     UTL_CLASS_DECL(IndScoreOrdering);
+
 public:
     /**
        Constructor.
        \param inverted inverted ordering?
     */
     IndScoreOrdering(bool inverted)
-        : IndOrdering(inverted) {}
+        : IndOrdering(inverted)
+    {
+    }
 
     /**
        Constructor.
@@ -274,21 +348,31 @@ public:
     */
     IndScoreOrdering(utl::uint_t objectiveIdx, bool inverted = false)
         : IndOrdering(inverted)
-    { init(objectiveIdx); }
+    {
+        init(objectiveIdx);
+    }
 
     virtual int compare(const Ind* lhs, const Ind* rhs) const;
-private:
-    void init(utl::uint_t objectiveIdx = 0)
-    { _objectiveIdx = objectiveIdx; }
 
-    void deInit() {}
+private:
+    void
+    init(utl::uint_t objectiveIdx = 0)
+    {
+        _objectiveIdx = objectiveIdx;
+    }
+
+    void
+    deInit()
+    {
+    }
+
 private:
     utl::uint_t _objectiveIdx;
 };
 
-//////////////////////////////////////////////////////////////////////////////
-/// IndFitnessOrdering ///////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
+/// IndFitnessOrdering /////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
    Individual ordering based on fitness.
@@ -297,24 +381,27 @@ private:
    \author Adam McKee
 */
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 class IndFitnessOrdering : public IndOrdering
 {
     UTL_CLASS_DECL(IndFitnessOrdering);
     UTL_CLASS_DEFID;
+
 public:
     /** Constructor. */
     IndFitnessOrdering(bool inverted)
-        : IndOrdering(inverted) {}
+        : IndOrdering(inverted)
+    {
+    }
 
     virtual int compare(const Ind* lhs, const Ind* rhs) const;
 };
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 GOP_NS_END;
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 #endif

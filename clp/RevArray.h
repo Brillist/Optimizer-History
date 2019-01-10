@@ -1,27 +1,27 @@
 #ifndef CLP_REVARRAY_H
 #define CLP_REVARRAY_H
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 #include <clp/ConstrainedVar.h>
 #include <clp/Manager.h>
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 CLP_NS_BEGIN;
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /** Precedence relationship. */
 enum ra_btmode_t
 {
-    ra_bt_full,         /**< save entire array */
-    ra_bt_elem          /**< save individually modified elements */
+    ra_bt_full, /**< save entire array */
+    ra_bt_elem  /**< save individually modified elements */
 };
 
-//////////////////////////////////////////////////////////////////////////////
-//// RevArray ////////////////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
+//// RevArray //////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
    Reversible array.
@@ -32,47 +32,69 @@ enum ra_btmode_t
    \author Adam McKee
 */
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
-template <class T>
-class RevArray : public utl::Object
+template <class T> class RevArray : public utl::Object
 {
     UTL_CLASS_DECL_TPL(RevArray, T);
     UTL_CLASS_NO_COPY;
+
 public:
     typedef T value_type;
     typedef T* iterator;
     typedef const T* const_iterator;
+
 public:
     /** Constructor. */
     RevArray(Manager* mgr, ra_btmode_t btMode = ra_bt_full)
-    { init(); initialize(mgr, btMode); }
+    {
+        init();
+        initialize(mgr, btMode);
+    }
 
     /** Get the manager. */
-    Manager* manager() const
-    { return _mgr; }
+    Manager*
+    manager() const
+    {
+        return _mgr;
+    }
 
     /** Initialize. */
-    void initialize(Manager* mgr, ra_btmode_t btMode = ra_bt_full)
-    { ASSERTD(_mgr == nullptr); _mgr = mgr; _btMode = btMode; }
+    void
+    initialize(Manager* mgr, ra_btmode_t btMode = ra_bt_full)
+    {
+        ASSERTD(_mgr == nullptr);
+        _mgr = mgr;
+        _btMode = btMode;
+    }
 
     /** Empty the array. */
     void clear();
 
     /** Get the size. */
-    utl::uint_t size() const
-    { return _size; }
+    utl::uint_t
+    size() const
+    {
+        return _size;
+    }
 
     /** Empty? */
-    bool empty() const
-    { return (_size == 0); }
+    bool
+    empty() const
+    {
+        return (_size == 0);
+    }
 
     /** Add the given object to the end of the array. */
     void add(const T& val);
 
     /** Index into the array. */
-    const T& get(utl::uint_t idx) const
-    { ASSERTD(idx < _size); return _array[idx]; }
+    const T&
+    get(utl::uint_t idx) const
+    {
+        ASSERTD(idx < _size);
+        return _array[idx];
+    }
 
     /** Set the value of an array element. */
     void set(utl::uint_t idx, const T& val);
@@ -81,26 +103,43 @@ public:
     void remove(utl::uint_t idx);
 
     /** Get a begin iterator. */
-    const_iterator begin() const
-    { return _array; }
+    const_iterator
+    begin() const
+    {
+        return _array;
+    }
 
     /** Get an end iterator. */
-    const_iterator end() const
-    { return (_array + _size); }
+    const_iterator
+    end() const
+    {
+        return (_array + _size);
+    }
 
     /** Get a begin iterator. */
-    iterator begin()
-    { return _array; }
+    iterator
+    begin()
+    {
+        return _array;
+    }
 
     /** Get an end iterator. */
-    iterator end()
-    { return (_array + _size); }
+    iterator
+    end()
+    {
+        return (_array + _size);
+    }
 
     /** Index into the array. */
     const T& operator[](utl::uint_t idx) const
-    { ASSERTD(idx < _size); return _array[idx]; }
+    {
+        ASSERTD(idx < _size);
+        return _array[idx];
+    }
+
 private:
-    void init()
+    void
+    init()
     {
         _mgr = nullptr;
         _btMode = ra_bt_full;
@@ -110,29 +149,37 @@ private:
         _array = nullptr;
     }
 
-    void deInit()
-    { delete [] _array; }
+    void
+    deInit()
+    {
+        delete[] _array;
+    }
 
-    void saveState()
-    { if (_stateDepth < _mgr->depth()) _saveState(); }
+    void
+    saveState()
+    {
+        if (_stateDepth < _mgr->depth())
+            _saveState();
+    }
 
     void _saveState();
+
 private:
     Manager* _mgr;
     ra_btmode_t _btMode;
     utl::uint_t _btFullDepth;
 
-    /// reversible ////////////////////
+    /// reversible //////////////////////////////////////////
     utl::uint_t _stateDepth;
     utl::uint_t _maxSize;
     utl::uint_t _size;
-    /// reversible ////////////////////
+    /// reversible //////////////////////////////////////////
 
     T* _array;
     size_t _allocSize;
 };
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 template <class T>
 void
@@ -142,7 +189,7 @@ RevArray<T>::clear()
     _size = 0;
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 template <class T>
 void
@@ -179,7 +226,7 @@ RevArray<T>::add(const T& val)
     _array[_size++] = val;
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 template <class T>
 void
@@ -205,7 +252,7 @@ RevArray<T>::set(utl::uint_t idx, const T& val)
     _array[idx] = val;
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 template <class T>
 void
@@ -247,7 +294,7 @@ RevArray<T>::remove(utl::uint_t idx)
     _array[idx] = _array[_size];
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 template <class T>
 void
@@ -258,14 +305,14 @@ RevArray<T>::_saveState()
     _maxSize = utl::max(_maxSize, _size);
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 CLP_NS_END;
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 UTL_CLASS_IMPL_TPL(clp::RevArray, T, utl::Object);
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 #endif

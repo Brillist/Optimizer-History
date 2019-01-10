@@ -1,11 +1,11 @@
 #ifndef CSE_RESOURCECOST_H
 #define CSE_RESOURCECOST_H
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 CSE_NS_BEGIN;
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
    Record costs associated with resource employment.
@@ -26,113 +26,170 @@ CSE_NS_BEGIN;
    \author Adam McKee
 */
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 class ResourceCost : public utl::Object
 {
     UTL_CLASS_DECL(ResourceCost);
+
 public:
-   /** Clear self. */
-   virtual void clear();
+    /** Clear self. */
+    virtual void clear();
 
-   /** Copy another instance. */
-   virtual void copy(const utl::Object& rhs);
+    /** Copy another instance. */
+    virtual void copy(const utl::Object& rhs);
 
-    virtual void serialize(
-        utl::Stream& stream,
-        utl::uint_t io,
-        utl::uint_t mode = utl::ser_default);
+    virtual void
+    serialize(utl::Stream& stream, utl::uint_t io, utl::uint_t mode = utl::ser_default);
 
-   /** Get the cost. */
-   double cost() const
-      { return _cost; }
+    /** Get the cost. */
+    double
+    cost() const
+    {
+        return _cost;
+    }
 
-   /** Get the cost. */
-   double& cost()
-      { return _cost; }
+    /** Get the cost. */
+    double&
+    cost()
+    {
+        return _cost;
+    }
 
-   /** Get the resolution. */
-   utl::uint_t resolution() const
-      { return _resolution; }
+    /** Get the resolution. */
+    utl::uint_t
+    resolution() const
+    {
+        return _resolution;
+    }
 
-   /** Get the resolution. */
-   utl::uint_t& resolution()
-      { return _resolution; }
+    /** Get the resolution. */
+    utl::uint_t&
+    resolution()
+    {
+        return _resolution;
+    }
 
-   /** Get the cost per unit hired. */
-   double costPerUnitHired() const
-      { return _costPerUnitHired; }
+    /** Get the cost per unit hired. */
+    double
+    costPerUnitHired() const
+    {
+        return _costPerUnitHired;
+    }
 
-   /** Get the cost per unit hired. */
-   double& costPerUnitHired()
-      { return _costPerUnitHired; }
+    /** Get the cost per unit hired. */
+    double&
+    costPerUnitHired()
+    {
+        return _costPerUnitHired;
+    }
 
-   /** Get the cost per hour. */
-   double costPerHour() const
-      { return _costPerHour; }
+    /** Get the cost per hour. */
+    double
+    costPerHour() const
+    {
+        return _costPerHour;
+    }
 
-   /** Get the cost per hour. */
-   double& costPerHour()
-      { return _costPerHour; }
+    /** Get the cost per hour. */
+    double&
+    costPerHour()
+    {
+        return _costPerHour;
+    }
 
-   /** Get the cost per day. */
-   double costPerDay() const
-      { return _costPerDay; }
+    /** Get the cost per day. */
+    double
+    costPerDay() const
+    {
+        return _costPerDay;
+    }
 
-   /** Get the cost per day. */
-   double& costPerDay()
-      { return _costPerDay; }
+    /** Get the cost per day. */
+    double&
+    costPerDay()
+    {
+        return _costPerDay;
+    }
 
-   /** Get the cost per week. */
-   double costPerWeek() const
-      { return _costPerWeek; }
+    /** Get the cost per week. */
+    double
+    costPerWeek() const
+    {
+        return _costPerWeek;
+    }
 
-   /** Get the cost per week. */
-   double& costPerWeek()
-      { return _costPerWeek; }
+    /** Get the cost per week. */
+    double&
+    costPerWeek()
+    {
+        return _costPerWeek;
+    }
 
-   /** Get the cost per month. */
-   double costPerMonth() const
-      { return _costPerMonth; }
+    /** Get the cost per month. */
+    double
+    costPerMonth() const
+    {
+        return _costPerMonth;
+    }
 
-   /** Get the cost per month. */
-   double& costPerMonth()
-      { return _costPerMonth; }
+    /** Get the cost per month. */
+    double&
+    costPerMonth()
+    {
+        return _costPerMonth;
+    }
 
-   /** Get the minimum employment time. */
-   utl::uint_t minEmploymentTime() const
-      { return _minEmploymentTime; }
+    /** Get the minimum employment time. */
+    utl::uint_t
+    minEmploymentTime() const
+    {
+        return _minEmploymentTime;
+    }
 
-   /** Get the minimum unemployment time. */
-   utl::uint_t& minEmploymentTime()
-      { return _minEmploymentTime; }
+    /** Get the minimum unemployment time. */
+    utl::uint_t&
+    minEmploymentTime()
+    {
+        return _minEmploymentTime;
+    }
 
-   /** Get the maximum idle time. */
-   utl::uint_t maxIdleTime() const
-      { return _maxIdleTime; }
+    /** Get the maximum idle time. */
+    utl::uint_t
+    maxIdleTime() const
+    {
+        return _maxIdleTime;
+    }
 
-   /** Get the maximum idle time. */
-   utl::uint_t& maxIdleTime()
-      { return _maxIdleTime; }
+    /** Get the maximum idle time. */
+    utl::uint_t&
+    maxIdleTime()
+    {
+        return _maxIdleTime;
+    }
+
 private:
-   void init();
-   void deInit() {}
+    void init();
+    void
+    deInit()
+    {
+    }
 
-   double _cost;
-   utl::uint_t _resolution;
-   double _costPerUnitHired;
-   double _costPerHour;
-   double _costPerDay;
-   double _costPerWeek;
-   double _costPerMonth;
-   utl::uint_t _minEmploymentTime;
-   utl::uint_t _maxIdleTime;
+    double _cost;
+    utl::uint_t _resolution;
+    double _costPerUnitHired;
+    double _costPerHour;
+    double _costPerDay;
+    double _costPerWeek;
+    double _costPerMonth;
+    utl::uint_t _minEmploymentTime;
+    utl::uint_t _maxIdleTime;
 };
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 CSE_NS_END;
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 #endif

@@ -3,25 +3,25 @@
 #include <libutl/MemStream.h>
 #include "JobGroup.h"
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 #ifdef DEBUG
 #define DEBUG_UNIT
 #endif
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 UTL_NS_USE;
 LUT_NS_USE;
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 UTL_CLASS_IMPL(cse::JobGroup, utl::Object);
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 CSE_NS_BEGIN;
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 bool
 JobGroupIdOrdering::operator()(const JobGroup* lhs, const JobGroup* rhs) const
@@ -29,7 +29,7 @@ JobGroupIdOrdering::operator()(const JobGroup* lhs, const JobGroup* rhs) const
     return (lhs->id() < rhs->id());
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 JobGroup::copy(const Object& rhs)
@@ -42,7 +42,7 @@ JobGroup::copy(const Object& rhs)
     _activeJob = jg._activeJob;
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 JobGroup::serialize(Stream& stream, uint_t io, uint_t)
@@ -58,8 +58,8 @@ JobGroup::serialize(Stream& stream, uint_t io, uint_t)
         _activeJob = nullptr;
         lut::serialize<uint_t>(jobIds, stream, io);
         utl::serialize(activeJobId, stream, io);
-//         ASSERTD(jobIds.size() > 1);
-//         ASSERTD(activeJobId != uint_t_max);
+        //         ASSERTD(jobIds.size() > 1);
+        //         ASSERTD(activeJobId != uint_t_max);
         _jobsOwner = true;
         uint_vect_t::iterator it;
         for (it = jobIds.begin(); it != jobIds.end(); it++)
@@ -67,16 +67,16 @@ JobGroup::serialize(Stream& stream, uint_t io, uint_t)
             Job* job = new Job();
             job->id() = *it;
             job->preference() = *it; //necessary for job_set_preference_t
-//             utl::cout << "JobGroup::serialize jobId: "
-//                       << job->id() << utl::endlf;
+                                     //             utl::cout << "JobGroup::serialize jobId: "
+                                     //                       << job->id() << utl::endlf;
             _jobs.insert(job);
             if (job->id() == activeJobId)
             {
                 _activeJob = job;
             }
         }
-//         ASSERTD(_jobs.size() > 1);
-//         ASSERTD(_activeJob != nullptr);
+        //         ASSERTD(_jobs.size() > 1);
+        //         ASSERTD(_activeJob != nullptr);
     }
     else
     {
@@ -94,17 +94,18 @@ JobGroup::serialize(Stream& stream, uint_t io, uint_t)
     }
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 JobGroup::setJobs(job_set_pref_t jobs, bool owner)
 {
-    if (_jobsOwner) deleteCont(_jobs);
+    if (_jobsOwner)
+        deleteCont(_jobs);
     _jobs = jobs;
     _jobsOwner = owner;
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 JobGroup::setActiveJob(uint_t jobIdx)
@@ -118,8 +119,7 @@ JobGroup::setActiveJob(uint_t jobIdx)
         _activeJob->serialId() = uint_t_max;
     }
     uint_t k = 0;
-    for (job_set_pref_t::const_iterator it = _jobs.begin();
-         it != _jobs.end(); it++)
+    for (job_set_pref_t::const_iterator it = _jobs.begin(); it != _jobs.end(); it++)
     {
         Job* job = (*it);
         if (jobIdx == k)
@@ -132,20 +132,16 @@ JobGroup::setActiveJob(uint_t jobIdx)
         k++;
     }
 #ifdef DEBUG_UNIT
-    for (job_set_pref_t::const_iterator it = _jobs.begin();
-         it != _jobs.end(); it++)
+    for (job_set_pref_t::const_iterator it = _jobs.begin(); it != _jobs.end(); it++)
     {
         Job* job = (*it);
-        utl::cout << "setActiveJob: group:" << _id
-                  << ", job:" << job->id()
-                  << ", active:" << job->active()
-                  << ", sid:" << job->serialId()
-                  << utl::endlf;
+        utl::cout << "setActiveJob: group:" << _id << ", job:" << job->id()
+                  << ", active:" << job->active() << ", sid:" << job->serialId() << utl::endlf;
     }
 #endif
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 JobGroup::setActiveJob(Job* job)
@@ -153,7 +149,8 @@ JobGroup::setActiveJob(Job* job)
     ASSERTD(job != nullptr);
     ASSERTD(job->active());
 
-    if (_activeJob == job) return;
+    if (_activeJob == job)
+        return;
 
     uint_t jobSid = uint_t_max;
     if (_activeJob != nullptr)
@@ -166,7 +163,7 @@ JobGroup::setActiveJob(Job* job)
     _activeJob = job;
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 // String
 // JobGroup::toString() const
@@ -189,7 +186,7 @@ JobGroup::setActiveJob(Job* job)
 //     return String((char*)str.get());
 // }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 JobGroup::init()
@@ -199,7 +196,7 @@ JobGroup::init()
     _jobsOwner = false;
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 JobGroup::deInit()
@@ -214,6 +211,6 @@ JobGroup::deInit()
     }
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 CSE_NS_END;

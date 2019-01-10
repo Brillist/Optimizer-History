@@ -16,7 +16,7 @@
 #include "TimeSlot.h"
 #include "Server.h"
 
-///////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////////
 
 UTL_NS_USE;
 LUT_NS_USE;
@@ -24,15 +24,15 @@ GOP_NS_USE;
 CLP_NS_USE;
 CLS_NS_USE;
 
-///////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////////
 
 UTL_CLASS_IMPL(cse::Server, utl::NetCmdServer);
 
-///////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////////
 
 CSE_NS_BEGIN;
 
-///////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void*
 Server::run(void* arg)
@@ -44,7 +44,7 @@ Server::run(void* arg)
     return nullptr;
 }
 
-///////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////////
 
 NetServerClient*
 Server::clientMake(FDstream* socket, const InetHostAddress& addr)
@@ -53,7 +53,7 @@ Server::clientMake(FDstream* socket, const InetHostAddress& addr)
     return new SEclient(server, socket, addr, _recording);
 }
 
-///////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 Server::clientWriteServerBusyMsg(Stream& os)
@@ -61,7 +61,7 @@ Server::clientWriteServerBusyMsg(Stream& os)
     os << "001 maximum number of clients would be exceeded." << endlf;
 }
 
-///////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 Server::onClientConnect(NetServerClient* p_client)
@@ -71,32 +71,28 @@ Server::onClientConnect(NetServerClient* p_client)
     client->setSocket(new BufferedStream(client->socket()));
     const InetHostAddress& clientAddr = client->addr();
     Stream& clientSocket = client->socket();
-    clientSocket << "000 CSE-Server welcomes client at "
-                 << clientAddr << endlf;
+    clientSocket << "000 CSE-Server welcomes client at " << clientAddr << endlf;
     // also write the challenge ...
     Uint(client->challenge()).serializeOut(clientSocket);
     clientSocket.flush();
 }
 
-///////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 Server::onClientDisconnect(NetServerClient* client)
 {
 }
 
-///////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 Server::addHandler(const char* cmd, hfn handler)
 {
-    _handlers.insert(
-        handler_map_t::value_type(
-            std::string(cmd),
-            handler));
+    _handlers.insert(handler_map_t::value_type(std::string(cmd), handler));
 }
 
-///////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 Server::handleCmd(NetServerClient* client, const Array& cmd)
@@ -142,7 +138,7 @@ Server::handleCmd(NetServerClient* client, const Array& cmd)
     (this->*handler)(seClient, cmd);
 }
 
-///////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 Server::handle_authorizeClient(SEclient* client, const utl::Array& cmd)
@@ -167,7 +163,7 @@ Server::handle_authorizeClient(SEclient* client, const utl::Array& cmd)
     }
 }
 
-///////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 Server::handle_exit(SEclient* client, const utl::Array& cmd)
@@ -176,7 +172,7 @@ Server::handle_exit(SEclient* client, const utl::Array& cmd)
     finishCmd(client);
 }
 
-///////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 Server::handle_initSimpleRun(SEclient* client, const Array& cmd)
@@ -188,29 +184,21 @@ Server::handle_initSimpleRun(SEclient* client, const Array& cmd)
 
         || !cmd(2).isA(Scheduler)
 
-        || !cmd(3).isA(Array)
-        || !allAre(cmd(3), CLASS(Objective))
+        || !cmd(3).isA(Array) || !allAre(cmd(3), CLASS(Objective))
 
-        || !cmd(4).isA(Array)
-        || !allAre(cmd(4), CLASS(ScheduleEvaluatorConfiguration))
+        || !cmd(4).isA(Array) || !allAre(cmd(4), CLASS(ScheduleEvaluatorConfiguration))
 
-        || !cmd(5).isA(Array)
-        || !allAre(cmd(5), CLASS(Job))
+        || !cmd(5).isA(Array) || !allAre(cmd(5), CLASS(Job))
 
-        || !cmd(6).isA(Array)
-        || !allAre(cmd(6), CLASS(JobGroup))
+        || !cmd(6).isA(Array) || !allAre(cmd(6), CLASS(JobGroup))
 
-        || !cmd(7).isA(Array)
-        || !allAre(cmd(7), CLASS(PrecedenceCt))
+        || !cmd(7).isA(Array) || !allAre(cmd(7), CLASS(PrecedenceCt))
 
-        || !cmd(8).isA(Array)
-        || !allAre(cmd(8), CLASS(Resource))
+        || !cmd(8).isA(Array) || !allAre(cmd(8), CLASS(Resource))
 
-        || !cmd(9).isA(Array)
-        || !allAre(cmd(9), CLASS(ResourceGroup))
+        || !cmd(9).isA(Array) || !allAre(cmd(9), CLASS(ResourceGroup))
 
-        || !cmd(10).isA(Array)
-        || !allAre(cmd(10), CLASS(ResourceSequenceList)))
+        || !cmd(10).isA(Array) || !allAre(cmd(10), CLASS(ResourceSequenceList)))
     {
         Bool(false).serializeOut(client->socket());
         utl::String str = "initSimpleRun error: wrong cmd.";
@@ -237,15 +225,8 @@ Server::handle_initSimpleRun(SEclient* client, const Array& cmd)
 
     // create data-set
     ClevorDataSet* dataSet = new ClevorDataSet();
-    initClevorDataSet(
-        schedulerConfig,
-        jobs,
-        jobGroups,
-        precedenceCts,
-        resources,
-        resourceGroups,
-        resourceSequenceLists,
-        *dataSet);
+    initClevorDataSet(schedulerConfig, jobs, jobGroups, precedenceCts, resources, resourceGroups,
+                      resourceSequenceLists, *dataSet);
 
     // configure scheduler
     scheduler = scheduler->clone();
@@ -271,7 +252,8 @@ Server::handle_initSimpleRun(SEclient* client, const Array& cmd)
     catch (FailEx& failEx)
     {
         res = false;
-        if (failEx.str() != nullptr) str = *failEx.str();
+        if (failEx.str() != nullptr)
+            str = *failEx.str();
     }
 
     // write result (and error message if initialization failed)
@@ -289,7 +271,7 @@ Server::handle_initSimpleRun(SEclient* client, const Array& cmd)
     return;
 }
 
-///////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 Server::handle_initOptimizerRun(SEclient* client, const Array& cmd)
@@ -303,26 +285,19 @@ Server::handle_initOptimizerRun(SEclient* client, const Array& cmd)
 
         || !cmd(3).isA(OptimizerConfiguration)
 
-        || !cmd(4).isA(Array)
-        || !allAre(cmd(4), CLASS(ScheduleEvaluatorConfiguration))
+        || !cmd(4).isA(Array) || !allAre(cmd(4), CLASS(ScheduleEvaluatorConfiguration))
 
-        || !cmd(5).isA(Array)
-        || !allAre(cmd(5), CLASS(Job))
+        || !cmd(5).isA(Array) || !allAre(cmd(5), CLASS(Job))
 
-        || !cmd(6).isA(Array)
-        || !allAre(cmd(6), CLASS(JobGroup))
+        || !cmd(6).isA(Array) || !allAre(cmd(6), CLASS(JobGroup))
 
-        || !cmd(7).isA(Array)
-        || !allAre(cmd(7), CLASS(PrecedenceCt))
+        || !cmd(7).isA(Array) || !allAre(cmd(7), CLASS(PrecedenceCt))
 
-        || !cmd(8).isA(Array)
-        || !allAre(cmd(8), CLASS(Resource))
+        || !cmd(8).isA(Array) || !allAre(cmd(8), CLASS(Resource))
 
-        || !cmd(9).isA(Array)
-        || !allAre(cmd(9), CLASS(ResourceGroup))
+        || !cmd(9).isA(Array) || !allAre(cmd(9), CLASS(ResourceGroup))
 
-        || !cmd(10).isA(Array)
-        || !allAre(cmd(10), CLASS(ResourceSequenceList)))
+        || !cmd(10).isA(Array) || !allAre(cmd(10), CLASS(ResourceSequenceList)))
     {
         clientDisconnect(client);
         return;
@@ -342,25 +317,15 @@ Server::handle_initOptimizerRun(SEclient* client, const Array& cmd)
 
     // create data-set
     ClevorDataSet* dataSet = new ClevorDataSet();
-    initClevorDataSet(
-        schedulerConfig,
-        jobs,
-        jobGroups,
-        precedenceCts,
-        resources,
-        resourceGroups,
-        resourceSequenceLists,
-        *dataSet);
+    initClevorDataSet(schedulerConfig, jobs, jobGroups, precedenceCts, resources, resourceGroups,
+                      resourceSequenceLists, *dataSet);
 
     // init scheduler
     Scheduler* scheduler = (Scheduler*)optimizerConfig->indBuilder();
     scheduler->setConfig(schedulerConfig->clone());
 
     // init objectives
-    initObjectives(
-        schedulerConfig,
-        optimizerConfig->objectives(),
-        evalConfigs);
+    initObjectives(schedulerConfig, optimizerConfig->objectives(), evalConfigs);
 
     // initialize optimization run
     bool res = true;
@@ -377,7 +342,8 @@ Server::handle_initOptimizerRun(SEclient* client, const Array& cmd)
     catch (FailEx& failEx)
     {
         res = false;
-        if (failEx.str() != nullptr) str = *failEx.str();
+        if (failEx.str() != nullptr)
+            str = *failEx.str();
     }
 
     Bool(res).serializeOut(client->socket());
@@ -394,7 +360,7 @@ Server::handle_initOptimizerRun(SEclient* client, const Array& cmd)
     return;
 }
 
-///////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 Server::handle_run(SEclient* client, const utl::Array& cmd)
@@ -413,13 +379,14 @@ Server::handle_run(SEclient* client, const utl::Array& cmd)
     {
         try
         {
-//             client->run()->run(client);
+            //             client->run()->run(client);
             client->run()->run();
         }
         catch (FailEx& failEx)
         {
             res = false;
-            if (failEx.str() != nullptr) str = *failEx.str();
+            if (failEx.str() != nullptr)
+                str = *failEx.str();
         }
     }
     // optimization run
@@ -444,7 +411,7 @@ Server::handle_run(SEclient* client, const utl::Array& cmd)
     return;
 }
 
-///////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 Server::handle_getRunStatus(SEclient* client, const utl::Array& cmd)
@@ -469,21 +436,18 @@ Server::handle_getRunStatus(SEclient* client, const utl::Array& cmd)
         uint_t iteration;
         uint_t bestIter;
         Score* bestScore;
-        optimizer->runStatus()->get(
-            complete,
-            iteration,
-            bestIter,
-            bestScore);
+        optimizer->runStatus()->get(complete, iteration, bestIter, bestScore);
         Bool(complete).serializeOut(client->socket());
         Uint(iteration).serializeOut(client->socket());
         Uint(bestIter).serializeOut(client->socket());
         Score(*bestScore).serializeOut(client->socket());
-        if (complete) client->deleteRunningThread();
+        if (complete)
+            client->deleteRunningThread();
     }
     finishCmd(client);
 }
 
-///////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 Server::handle_getBestScore(SEclient* client, const utl::Array& cmd)
@@ -518,7 +482,7 @@ Server::handle_getBestScore(SEclient* client, const utl::Array& cmd)
     finishCmd(client);
 }
 
-///////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 Server::handle_getBestScoreAudit(SEclient* client, const utl::Array& cmd)
@@ -538,12 +502,10 @@ Server::handle_getBestScoreAudit(SEclient* client, const utl::Array& cmd)
     finishCmd(client);
 }
 
-///////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
-Server::handle_getBestScoreAuditReport(
-    SEclient* client,
-    const utl::Array& cmd)
+Server::handle_getBestScoreAuditReport(SEclient* client, const utl::Array& cmd)
 {
     if (cmd.size() != 1)
     {
@@ -563,14 +525,12 @@ Server::handle_getBestScoreAuditReport(
     finishCmd(client);
 }
 
-///////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 Server::handle_getBestScoreComponent(SEclient* client, const utl::Array& cmd)
 {
-    if ((cmd.size() != 3)
-        || !cmd(1).isA(utl::String)
-        || !cmd(2).isA(utl::String))
+    if ((cmd.size() != 3) || !cmd(1).isA(utl::String) || !cmd(2).isA(utl::String))
     {
         clientDisconnect(client);
         return;
@@ -588,12 +548,10 @@ Server::handle_getBestScoreComponent(SEclient* client, const utl::Array& cmd)
     finishCmd(client);
 }
 
-///////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
-Server::handle_getBestSchedule(
-    SEclient* client,
-    const utl::Array& cmd)
+Server::handle_getBestSchedule(SEclient* client, const utl::Array& cmd)
 {
     if (cmd.size() != 1)
     {
@@ -645,10 +603,7 @@ Server::handle_getBestSchedule(
         utl::serialize(op->id(), socket, io_wr);
 
         // scheduled?
-        bool scheduled
-            = !op->ignorable()
-            && op->isScheduled()
-            && (op->scheduledBy() == sa_clevor);
+        bool scheduled = !op->ignorable() && op->isScheduled() && (op->scheduledBy() == sa_clevor);
         utl::serialize(scheduled, socket, io_wr);
         if (!scheduled)
         {
@@ -686,7 +641,7 @@ Server::handle_getBestSchedule(
     finishCmd(client);
 }
 
-///////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 Server::handle_getMakespan(SEclient* client, const utl::Array& cmd)
@@ -703,7 +658,7 @@ Server::handle_getMakespan(SEclient* client, const utl::Array& cmd)
     finishCmd(client);
 }
 
-///////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 Server::handle_getTimetable(SEclient* client, const utl::Array& cmd)
@@ -735,19 +690,16 @@ Server::handle_getTimetable(SEclient* client, const utl::Array& cmd)
     const clp::IntSpan* ts;
     const clp::IntSpan* head = tt.head();
     const clp::IntSpan* tail = tt.tail()->prev();
-    while (head->max() < 0) head = head->next();
+    while (head->max() < 0)
+        head = head->next();
     for (ts = head; ts != tail; ts = ts->next())
     {
         int beginTS = ts->min();
         int endTS = ts->max() + 1;
         uint_t reqCap = ts->v0();
         uint_t prvCap = ts->v1();
-        TimeSlot* timeSlot =
-            new TimeSlot(
-                context->timeSlotToTime(beginTS),
-                context->timeSlotToTime(endTS),
-                reqCap,
-                prvCap);
+        TimeSlot* timeSlot = new TimeSlot(context->timeSlotToTime(beginTS),
+                                          context->timeSlotToTime(endTS), reqCap, prvCap);
         timeSlots += timeSlot;
     }
 
@@ -755,7 +707,7 @@ Server::handle_getTimetable(SEclient* client, const utl::Array& cmd)
     finishCmd(client);
 }
 
-///////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 Server::handle_NOP(SEclient* client, const utl::Array& cmd)
@@ -770,7 +722,7 @@ Server::handle_NOP(SEclient* client, const utl::Array& cmd)
     finishCmd(client);
 }
 
-///////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 Server::handle_stop(SEclient* client, const utl::Array& cmd)
@@ -787,7 +739,7 @@ Server::handle_stop(SEclient* client, const utl::Array& cmd)
     //clientEnableMsgs(client);
 }
 
-///////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 Server::finishCmd(SEclient* client)
@@ -795,12 +747,10 @@ Server::finishCmd(SEclient* client)
     utl::String("___END_RESPONSE___").serializeOut(client->socket());
 }
 
-///////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////////
 
 bool
-Server::allAre(
-    const Object* object,
-    const RunTimeClass* rtc) const
+Server::allAre(const Object* object, const RunTimeClass* rtc) const
 {
     if (!object->isA(Collection))
     {
@@ -819,18 +769,17 @@ Server::allAre(
     return true;
 }
 
-///////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
-Server::initClevorDataSet(
-    SchedulerConfiguration* schedulerConfig,
-    Array& jobs,
-    Array& jobGroups,
-    Array& precedenceCts,
-    Array& resources,
-    Array& resourceGroups,
-    Array& resourceSequenceLists,
-    ClevorDataSet& dataSet)
+Server::initClevorDataSet(SchedulerConfiguration* schedulerConfig,
+                          Array& jobs,
+                          Array& jobGroups,
+                          Array& precedenceCts,
+                          Array& resources,
+                          Array& resourceGroups,
+                          Array& resourceSequenceLists,
+                          ClevorDataSet& dataSet)
 {
     dataSet.set(schedulerConfig->clone());
 
@@ -843,79 +792,69 @@ Server::initClevorDataSet(
     resourceSequenceLists.setOwner(false);
 
     // jobs
-    forEachIt(Array, jobs, Job, job)
-        dataSet.add(job);
+    forEachIt(Array, jobs, Job, job) dataSet.add(job);
     endForEach
 
-    // job groups
-    forEachIt (Array, jobGroups, JobGroup, jobGroup)
-        dataSet.add(jobGroup);
+        // job groups
+        forEachIt(Array, jobGroups, JobGroup, jobGroup) dataSet.add(jobGroup);
     endForEach
 
-    // precedence-cts
-    forEachIt(Array, precedenceCts, PrecedenceCt, pct)
-        dataSet.add(pct);
+        // precedence-cts
+        forEachIt(Array, precedenceCts, PrecedenceCt, pct) dataSet.add(pct);
     endForEach
 
-    // resources
-    forEachIt(Array, resources, Resource, resource)
-        dataSet.add(resource);
+        // resources
+        forEachIt(Array, resources, Resource, resource) dataSet.add(resource);
     endForEach
 
-    // resource-groups
-    forEachIt(Array, resourceGroups, ResourceGroup, resourceGroup)
-        dataSet.add(resourceGroup);
+        // resource-groups
+        forEachIt(Array, resourceGroups, ResourceGroup, resourceGroup) dataSet.add(resourceGroup);
     endForEach
 
-    // resource-sequence-lists
-    forEachIt(Array, resourceSequenceLists, ResourceSequenceList, rsl)
-        dataSet.add(rsl);
+        // resource-sequence-lists
+        forEachIt(Array, resourceSequenceLists, ResourceSequenceList, rsl) dataSet.add(rsl);
     endForEach
 }
 
-///////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
-Server::initObjectives(
-    SchedulerConfiguration* schedulerConfig,
-    const objective_vector_t& objectives,
-    Array& evalConfigs)
+Server::initObjectives(SchedulerConfiguration* schedulerConfig,
+                       const objective_vector_t& objectives,
+                       Array& evalConfigs)
 {
     uint_t objIdx = 0;
     forEachIt(Array, evalConfigs, ScheduleEvaluatorConfiguration, evalConfig)
         evalConfig.setSchedulerConfig(schedulerConfig->clone());
-        Objective* objective = objectives[objIdx++];
-        objective->indEvaluator()->initialize(evalConfig);
+    Objective* objective = objectives[objIdx++];
+    objective->indEvaluator()->initialize(evalConfig);
     endForEach
 }
 
-
-///////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 Server::init(bool recording)
 {
     _exit = false;
     _recording = recording;
-    addHandler("authorizeClient",   &Server::handle_authorizeClient);
-    addHandler("exit",              &Server::handle_exit);
-    addHandler("initSimpleRun",     &Server::handle_initSimpleRun);
-    addHandler("initOptimizerRun",  &Server::handle_initOptimizerRun);
-    addHandler("run",               &Server::handle_run);
-    addHandler("getRunStatus",      &Server::handle_getRunStatus);
-    addHandler("getBestScore",      &Server::handle_getBestScore);
+    addHandler("authorizeClient", &Server::handle_authorizeClient);
+    addHandler("exit", &Server::handle_exit);
+    addHandler("initSimpleRun", &Server::handle_initSimpleRun);
+    addHandler("initOptimizerRun", &Server::handle_initOptimizerRun);
+    addHandler("run", &Server::handle_run);
+    addHandler("getRunStatus", &Server::handle_getRunStatus);
+    addHandler("getBestScore", &Server::handle_getBestScore);
     addHandler("getBestScoreAudit", &Server::handle_getBestScoreAudit);
-    addHandler("getBestScoreAuditReport",
-               &Server::handle_getBestScoreAuditReport);
-    addHandler("getBestScoreComponent",
-               &Server::handle_getBestScoreComponent);
-    addHandler("getBestSchedule",   &Server::handle_getBestSchedule);
-    addHandler("getMakespan",       &Server::handle_getMakespan);
-    addHandler("getTimetable",      &Server::handle_getTimetable);
-    addHandler("NOP",               &Server::handle_NOP);
-    addHandler("stop",              &Server::handle_stop);
+    addHandler("getBestScoreAuditReport", &Server::handle_getBestScoreAuditReport);
+    addHandler("getBestScoreComponent", &Server::handle_getBestScoreComponent);
+    addHandler("getBestSchedule", &Server::handle_getBestSchedule);
+    addHandler("getMakespan", &Server::handle_getMakespan);
+    addHandler("getTimetable", &Server::handle_getTimetable);
+    addHandler("NOP", &Server::handle_NOP);
+    addHandler("stop", &Server::handle_stop);
 }
 
-///////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////////
 
 CSE_NS_END;

@@ -1,27 +1,27 @@
 #ifndef GOP_OBJECTIVE_H
 #define GOP_OBJECTIVE_H
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 #include <gop/IndBuilderContext.h>
 #include <gop/IndEvaluator.h>
 #include <gop/Score.h>
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 GOP_NS_BEGIN;
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /// minimization or maximization goal
 enum minmax_goal_t
 {
-   mmg_minimize,  /**< minimize score */
-   mmg_maximize,  /**< maximize score */
-   mmg_undefined  /**< goal is undefined */
+    mmg_minimize, /**< minimize score */
+    mmg_maximize, /**< maximize score */
+    mmg_undefined /**< goal is undefined */
 };
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
    Optimization objective.
@@ -32,57 +32,74 @@ enum minmax_goal_t
    \author Adam McKee
 */
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 class Objective : public utl::Object
 {
     UTL_CLASS_DECL(Objective);
+
 public:
     /** Constructor. */
     Objective(IndEvaluator* indEvaluator, minmax_goal_t mmg);
-   
+
     /** Copy another instance. */
     virtual void copy(const utl::Object& rhs);
 
-    virtual void serialize(
-        utl::Stream& stream,
-        utl::uint_t io,
-        utl::uint_t mode = utl::ser_default);
+    virtual void
+    serialize(utl::Stream& stream, utl::uint_t io, utl::uint_t mode = utl::ser_default);
 
     /** Get the name. */
-    virtual std::string name() const
-    { ASSERTD(_indEvaluator != nullptr); return _indEvaluator->name(); }
+    virtual std::string
+    name() const
+    {
+        ASSERTD(_indEvaluator != nullptr);
+        return _indEvaluator->name();
+    }
 
     /** Get the evaluator. */
-    IndEvaluator* indEvaluator() const
-    { return _indEvaluator; }
+    IndEvaluator*
+    indEvaluator() const
+    {
+        return _indEvaluator;
+    }
 
     /** Get the goal. */
-    minmax_goal_t goal() const
-    { return _mmg; }
+    minmax_goal_t
+    goal() const
+    {
+        return _mmg;
+    }
 
     /** Minimizing? */
-    bool minimize() const
-    { return (_mmg == mmg_minimize); }
+    bool
+    minimize() const
+    {
+        return (_mmg == mmg_minimize);
+    }
 
     /** Maximizing? */
-    bool maximize() const
-    { return (_mmg == mmg_maximize); }
+    bool
+    maximize() const
+    {
+        return (_mmg == mmg_maximize);
+    }
 
     /** Get the best score. */
-    Score* getBestScore() const
-    { ASSERTD(_bestScore != nullptr); return _bestScore; }
+    Score*
+    getBestScore() const
+    {
+        ASSERTD(_bestScore != nullptr);
+        return _bestScore;
+    }
 
-/*     double getBestScoreValue() const */
-/*     { return _bestScore->getValue(); } */
-
+    /*     double getBestScoreValue() const */
+    /*     { return _bestScore->getValue(); } */
 
     /** Set the best score. */
     void setBestScore(Score* bestScore);
 
     /** Get a best score component. */
-    int getBestScoreComponent(
-        const std::string& componentName) const;
+    int getBestScoreComponent(const std::string& componentName) const;
 
     double worstPossibleScoreValue() const;
 
@@ -96,10 +113,10 @@ public:
     Score* eval(IndBuilderContext* context) const;
 
     /** Get the fail score from the given individual. */
-/*     double failScore(IndBuilderContext* context) const; */
+    /*     double failScore(IndBuilderContext* context) const; */
 
     /** Get the best fail score from the given individual. */
-/*     double bestFailScore(IndBuilderContext* context) const; */
+    /*     double bestFailScore(IndBuilderContext* context) const; */
 
     /**
        Compare two scores.
@@ -118,9 +135,10 @@ public:
     */
     double scoreDiff(Score* lhs, Score* rhs) const;
     double scoreDiff(double lhs, double rhs) const;
-        
+
 private:
     typedef std::map<std::string, int> string_int_map_t;
+
 private:
     void init();
     void deInit();
@@ -131,14 +149,14 @@ private:
     string_int_map_t _bestScoreComponents;
 };
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 typedef std::vector<Objective*> objective_vector_t;
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 GOP_NS_END;
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 #endif

@@ -3,33 +3,29 @@
 #include "ConstrainedBound.h"
 #include "BoundPropagator.h"
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 #ifdef DEBUG
 //#define DEBUG_UNIT
 #endif
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 UTL_NS_USE;
 LUT_NS_USE;
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 UTL_CLASS_IMPL(clp::BoundPropagator, utl::Object);
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 CLP_NS_BEGIN;
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
-BoundPropagator::addBoundCt(
-    ConstrainedBound* src,
-    ConstrainedBound* dst,
-    int d,
-    bool cycleCheck)
+BoundPropagator::addBoundCt(ConstrainedBound* src, ConstrainedBound* dst, int d, bool cycleCheck)
 {
     // initially constrain dst bound
     dst->set(src->get() + d);
@@ -51,13 +47,10 @@ BoundPropagator::addBoundCt(
     addPrecedenceLink(src->cycleGroup(), dst->cycleGroup(), cycleCheck);
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
-BoundPropagator::addPrecedenceLink(
-    CycleGroup* src,
-    CycleGroup* dst,
-    bool cycleCheck)
+BoundPropagator::addPrecedenceLink(CycleGroup* src, CycleGroup* dst, bool cycleCheck)
 {
     // do nothing else if src and dst are the same
     if (src == dst)
@@ -73,7 +66,7 @@ BoundPropagator::addPrecedenceLink(
     }
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 BoundPropagator::staticAnalysis()
@@ -81,7 +74,7 @@ BoundPropagator::staticAnalysis()
     setSuccessorDepth();
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 BoundPropagator::unsuspendInitial()
@@ -105,7 +98,7 @@ BoundPropagator::unsuspendInitial()
     }
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 BoundPropagator::unsuspend(ConstrainedBound* cb)
@@ -113,7 +106,7 @@ BoundPropagator::unsuspend(ConstrainedBound* cb)
     cb->invalidate();
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 BoundPropagator::finalize(ConstrainedBound* cb)
@@ -124,30 +117,31 @@ BoundPropagator::finalize(ConstrainedBound* cb)
     // release an inactive job's successor jobs for scheduling.
     // the if-condition is used to stop to finalize the cg again
     // during normal scheduling. Joe, Nov 1, 2006
-    if (cg->finalized()) return;
-//     ASSERTD(!cg->suspended());
+    if (cg->finalized())
+        return;
+    //     ASSERTD(!cg->suspended());
     cb->queueFind();
     cg->finalizeMember();
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 CycleGroup*
 BoundPropagator::newCycleGroup(CycleGroup* cg)
 {
-//     static uint_t cgId = 0;
+    //     static uint_t cgId = 0;
     if (cg == nullptr)
     {
         cg = new CycleGroup(_mgr);
     }
     cg->id() = _initCgId++;
-//     cg->id() = cgId++;
+    //     cg->id() = cgId++;
     _mgr->revAllocate(cg);
     _cgs.add(cg);
     return cg;
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 BoundPropagator::propagate()
@@ -163,7 +157,7 @@ BoundPropagator::propagate()
     _boundInProcess = nullptr;
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 BoundPropagator::clearPropQ()
@@ -180,7 +174,7 @@ BoundPropagator::clearPropQ()
     }
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 #ifdef DEBUG
 void
@@ -194,7 +188,7 @@ BoundPropagator::enQ(ConstrainedBound* bound)
 }
 #endif
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 BoundPropagator::init(Manager* mgr)
@@ -210,15 +204,15 @@ BoundPropagator::init(Manager* mgr)
     _initCgId = 0;
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 BoundPropagator::deInit()
 {
-    delete [] _cgArray;
+    delete[] _cgArray;
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 BoundPropagator::dfs(CycleGroup* src, CycleGroup* dst)
@@ -239,7 +233,7 @@ BoundPropagator::dfs(CycleGroup* src, CycleGroup* dst)
     }
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 BoundPropagator::dfs(CycleGroup* cg)
@@ -279,7 +273,7 @@ BoundPropagator::dfs(CycleGroup* cg)
     dfs_pop();
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 BoundPropagator::dfs_push(CycleGroup* cg)
@@ -300,7 +294,7 @@ BoundPropagator::dfs_push(CycleGroup* cg)
     *_cgArrayPtr++ = cg;
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 BoundPropagator::dfs_pop()
@@ -314,7 +308,7 @@ BoundPropagator::dfs_pop()
     cg->visitedIdx() = uint_t_max;
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 BoundPropagator::makeCycleGroup()
@@ -343,16 +337,16 @@ BoundPropagator::makeCycleGroup()
     // for each predecessor of motherCG
     cg_revset_t::iterator predIt, predNext;
     cg_revset_t::iterator predLim = motherCG->allPredCGs().end();
-    for (predIt = motherCG->allPredCGs().begin();
-         predIt != predLim;
-         predIt = predNext)
+    for (predIt = motherCG->allPredCGs().begin(); predIt != predLim; predIt = predNext)
     {
-        predNext = predIt; ++predNext;
+        predNext = predIt;
+        ++predNext;
 
         CycleGroup* predCG = *predIt;
 
         // skip predCG if it's not part of the new cycle
-        if (predCG->visitedIdx() == uint_t_max) continue;
+        if (predCG->visitedIdx() == uint_t_max)
+            continue;
 
         // remove the (predCG ==> motherCG) link
         motherCG->removePred(predCG);
@@ -361,16 +355,16 @@ BoundPropagator::makeCycleGroup()
     // for each successor of motherCG
     cg_revset_t::iterator succIt, succNext;
     cg_revset_t::iterator succLim = motherCG->allSuccCGs().end();
-    for (succIt = motherCG->allSuccCGs().begin();
-         succIt != succLim;
-         succIt = succNext)
+    for (succIt = motherCG->allSuccCGs().begin(); succIt != succLim; succIt = succNext)
     {
-        succNext = succIt; ++succNext;
+        succNext = succIt;
+        ++succNext;
 
         CycleGroup* succCG = *succIt;
 
         // skip succCG if it's not part of the new cycle
-        if (succCG->visitedIdx() == uint_t_max) continue;
+        if (succCG->visitedIdx() == uint_t_max)
+            continue;
 
         // remove the (succCG => cg) link
         succCG->removePred(motherCG);
@@ -381,14 +375,16 @@ BoundPropagator::makeCycleGroup()
     {
         // if cg is not motherCG, then clear its indirect lists
         CycleGroup* cg = *cgIt;
-        if (cg == motherCG) continue;
+        if (cg == motherCG)
+            continue;
         cg->clearIndirectLists();
     }
     for (cgIt = _cgArray; cgIt != cgLim; ++cgIt)
     {
         // if cg is not motherCG, then motherCG swallows it
         CycleGroup* cg = *cgIt;
-        if (cg == motherCG) continue;
+        if (cg == motherCG)
+            continue;
         motherCG->eclipse(cg);
         _cgs.remove(cg);
     }
@@ -401,7 +397,7 @@ BoundPropagator::makeCycleGroup()
 #endif
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 BoundPropagator::setSuccessorDepth()
@@ -435,7 +431,7 @@ BoundPropagator::setSuccessorDepth()
     }
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 BoundPropagator::setSuccessorDepth(CycleGroup* cg)
@@ -457,7 +453,7 @@ BoundPropagator::setSuccessorDepth(CycleGroup* cg)
     }
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 #ifdef DEBUG
 void
@@ -472,7 +468,7 @@ BoundPropagator::sanityCheckCGs()
 }
 #endif
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 #ifdef DEBUG
 void
@@ -482,13 +478,12 @@ BoundPropagator::sanityCheckCG(CycleGroup* cg)
     uint_t num = 0;
     CycleGroup* last = nullptr;
     cg_revset_t::iterator predIt;
-    for (predIt = cg->predCGs().begin();
-         predIt != cg->predCGs().end();
-         ++predIt, ++num)
+    for (predIt = cg->predCGs().begin(); predIt != cg->predCGs().end(); ++predIt, ++num)
     {
         CycleGroup* predCG = *predIt;
         ASSERT(_cgs.has(predCG));
-        ASSERT(predCG > last); last = predCG;
+        ASSERT(predCG > last);
+        last = predCG;
         ASSERT(predCG != cg);
         ASSERT(predCG->succCGs().has(cg));
     }
@@ -498,13 +493,12 @@ BoundPropagator::sanityCheckCG(CycleGroup* cg)
     num = 0;
     last = nullptr;
     cg_revset_t::iterator succIt;
-    for (succIt = cg->succCGs().begin();
-         succIt != cg->succCGs().end();
-         ++succIt, ++num)
+    for (succIt = cg->succCGs().begin(); succIt != cg->succCGs().end(); ++succIt, ++num)
     {
         CycleGroup* succCG = *succIt;
         ASSERT(_cgs.has(succCG));
-        ASSERT(succCG > last); last = succCG;
+        ASSERT(succCG > last);
+        last = succCG;
         ASSERT(succCG != cg);
         ASSERT(succCG->predCGs().has(cg));
     }
@@ -512,6 +506,6 @@ BoundPropagator::sanityCheckCG(CycleGroup* cg)
 }
 #endif
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 CLP_NS_END;

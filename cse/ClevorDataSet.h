@@ -1,7 +1,7 @@
 #ifndef CSE_CLEVORDATASET_H
 #define CSE_CLEVORDATASET_H
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 #include <gop/DataSet.h>
 #include <cse/Job.h>
@@ -14,11 +14,11 @@
 #include <cse/MinCostHeuristics.h>
 #include <cse/JobGroup.h>
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 CSE_NS_BEGIN;
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
    Store a description of a scheduling problem.
@@ -26,11 +26,12 @@ CSE_NS_BEGIN;
    \author Adam McKee
 */
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 class ClevorDataSet : public gop::DataSet
 {
     UTL_CLASS_DECL(ClevorDataSet);
+
 public:
     /** Copy another instance. */
     virtual void copy(const utl::Object& rhs);
@@ -47,12 +48,18 @@ public:
     utl::uint_t hardCtScore() const;
 
     /** Get the manager. */
-    clp::Manager* manager() const
-    { return _mgr; }
+    clp::Manager*
+    manager() const
+    {
+        return _mgr;
+    }
 
     /** Get the schedule. */
-    cls::Schedule* schedule() const
-    { return _schedule; }
+    cls::Schedule*
+    schedule() const
+    {
+        return _schedule;
+    }
     //@}
 
     /// \name Add objects
@@ -82,77 +89,134 @@ public:
     /// \name Access collections
     //@{
     /** Get the list of jobs. */
-    const job_set_id_t& jobs() const
-    { return _jobs; }
+    const job_set_id_t&
+    jobs() const
+    {
+        return _jobs;
+    }
 
-    job_set_id_t& jobs()
-    { return _jobs; }
+    job_set_id_t&
+    jobs()
+    {
+        return _jobs;
+    }
 
     /** Get list of alternative jobs. */
-    const jobgroup_set_id_t& jobGroups() const
-    { return _jobGroups; }
+    const jobgroup_set_id_t&
+    jobGroups() const
+    {
+        return _jobGroups;
+    }
 
-    jobgroup_set_id_t& jobGroups()
-    { return _jobGroups; }
+    jobgroup_set_id_t&
+    jobGroups()
+    {
+        return _jobGroups;
+    }
 
     /** Get the list of ops. */
-    const jobop_set_id_t& ops() const
-    { return _ops; }
+    const jobop_set_id_t&
+    ops() const
+    {
+        return _ops;
+    }
 
     /** Get the list of resources. */
-    const res_set_id_t& resources() const
-    { return _resources; }
+    const res_set_id_t&
+    resources() const
+    {
+        return _resources;
+    }
 
-    res_set_id_t& resources()
-    { return _resources; }
+    res_set_id_t&
+    resources()
+    {
+        return _resources;
+    }
 
     /** Get the list of resource-groups. */
-    const resgroup_set_t& resourceGroups() const
-    { return _resGroups; }
+    const resgroup_set_t&
+    resourceGroups() const
+    {
+        return _resGroups;
+    }
 
-    resgroup_set_t& resourceGroups()
-    { return _resGroups; }
+    resgroup_set_t&
+    resourceGroups()
+    {
+        return _resGroups;
+    }
 
     /** Get the list of resource-sequence-lists. */
-    const rsl_set_t& resourceSequenceLists() const
-    { return _rsls; }
+    const rsl_set_t&
+    resourceSequenceLists() const
+    {
+        return _rsls;
+    }
 
-    rsl_set_t& resourceSequenceLists()
-    { return _rsls; }
+    rsl_set_t&
+    resourceSequenceLists()
+    {
+        return _rsls;
+    }
 
     /** Get list of precedence-cts. */
-    const pct_vector_t& precedenceCts() const
-    { return _pcts; }
+    const pct_vector_t&
+    precedenceCts() const
+    {
+        return _pcts;
+    }
 
-    pct_vector_t& precedenceCts()
-    { return _pcts; }
+    pct_vector_t&
+    precedenceCts()
+    {
+        return _pcts;
+    }
 
     /** Get the list of schedulable ops. */
-    const jobop_set_id_t& sops() const
-    { return _sops; }
+    const jobop_set_id_t&
+    sops() const
+    {
+        return _sops;
+    }
 
     /** Get list of ops ordered by decreasing successor-id. */
-    const utl::TRBtree<JobOp>& opsDecSD() const
-    { return _opsDecSD; }
+    const utl::TRBtree<JobOp>&
+    opsDecSD() const
+    {
+        return _opsDecSD;
+    }
 
     /** Get list of summary ops ordered by increasing successor-id. */
-    const utl::TRBtree<JobOp>& summaryOpsIncSD() const
-    { return _summaryOpsIncSD; }
+    const utl::TRBtree<JobOp>&
+    summaryOpsIncSD() const
+    {
+        return _summaryOpsIncSD;
+    }
 
     /** Get list of ops with hard constraints. */
-    const utl::Array& hardCtOps() const
-    { return  _hardCtOps; }
+    const utl::Array&
+    hardCtOps() const
+    {
+        return _hardCtOps;
+    }
 
     /** Get MinCostHeuristics. */
-    const MinCostHeuristics* minCostHeuristics() const
-    { return _minCostHeuristics; }
+    const MinCostHeuristics*
+    minCostHeuristics() const
+    {
+        return _minCostHeuristics;
+    }
     //@}
 
     /// \name Access objects
     //@{
     /** Get scheduler configuration. */
-    const SchedulerConfiguration* schedulerConfig() const
-    { return _config; }
+    const SchedulerConfiguration*
+    schedulerConfig() const
+    {
+        return _config;
+    }
 
     /** Find a job by unique id. */
     Job* findJob(utl::uint_t id) const;
@@ -174,6 +238,7 @@ public:
     //@}
 
     void clearProblemData();
+
 private:
     void init();
     void deInit();
@@ -203,6 +268,7 @@ private:
     void modelBuildResourceGroupCts();
     void modelBuildCompositeResourceCts();
     void modelBuildHeuristics();
+
 private:
     clp::Manager* _mgr;
     cls::Schedule* _schedule;
@@ -221,8 +287,8 @@ private:
     pct_vector_t _pcts;
 
     // views
-    jobop_set_id_t _ops;//static list of all ops in _jobs
-    jobop_set_id_t _sops;//static list of all sops in _jobs
+    jobop_set_id_t _ops;  //static list of all ops in _jobs
+    jobop_set_id_t _sops; //static list of all sops in _jobs
     utl::Array _hardCtOps;
     utl::TRBtree<JobOp> _opsDecSD;
     utl::TRBtree<JobOp> _summaryOpsIncSD;
@@ -231,10 +297,10 @@ private:
     MinCostHeuristics* _minCostHeuristics;
 };
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 CSE_NS_END;
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 #endif

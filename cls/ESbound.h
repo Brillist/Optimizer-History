@@ -1,18 +1,18 @@
 #ifndef CLS_ESBOUND_H
 #define CLS_ESBOUND_H
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 #include <clp/RevArray.h>
 #include <cls/BrkActivity.h>
 #include <cls/EFbound.h>
 #include <cls/SchedulableBound.h>
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 CLS_NS_BEGIN;
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
    Earliest valid time for an activity to begin execution.
@@ -20,14 +20,16 @@ CLS_NS_BEGIN;
    \author Adam McKee
 */
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 class ESbound : public SchedulableBound
 {
     friend class EFbound;
     UTL_CLASS_DECL(ESbound);
+
 public:
     typedef clp::RevArray<clp::Bound*> bound_array_t;
+
 public:
     /** Constructor. */
     ESbound(clp::Manager* mgr, int lb);
@@ -53,20 +55,32 @@ public:
     /// \name Accessors
     //@{
     /** Get the activity. */
-    const BrkActivity* act() const
-    { return _act; }
+    const BrkActivity*
+    act() const
+    {
+        return _act;
+    }
 
     /** Get the activity. */
-    BrkActivity*& act()
-    { return _act; }
+    BrkActivity*&
+    act()
+    {
+        return _act;
+    }
 
     /** Get the ef-bound. */
-    const EFbound* efBound() const
-    { return _efBound; }
+    const EFbound*
+    efBound() const
+    {
+        return _efBound;
+    }
 
     /** Get the ef-bound. */
-    EFbound*& efBound()
-    { return _efBound; }
+    EFbound*&
+    efBound()
+    {
+        return _efBound;
+    }
     //@}
 
     /** Do something special for allocated bound. */
@@ -77,21 +91,29 @@ public:
 
 protected:
     virtual int find();
-private:
-    void init()
-    { ABORT(); }
 
-    void deInit() {}
+private:
+    void
+    init()
+    {
+        ABORT();
+    }
+
+    void
+    deInit()
+    {
+    }
+
 private:
     BrkActivity* _act;
     EFbound* _efBound;
     bound_array_t _bounds;
 };
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 CLS_NS_END;
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 #endif

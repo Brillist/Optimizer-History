@@ -7,13 +7,13 @@
 #include "AltResSelector.h"
 #include "MinCostHeuristics.h"
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 #ifdef DEBUG
 #define DEBUG_UNIT
 #endif
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 UTL_NS_USE;
 LUT_NS_USE;
@@ -21,15 +21,15 @@ CLP_NS_USE;
 CLS_NS_USE;
 GOP_NS_USE;
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 UTL_CLASS_IMPL(cse::AltResSelector, cse::Scheduler);
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 CSE_NS_BEGIN;
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 AltResSelector::copy(const Object& rhs)
@@ -40,7 +40,7 @@ AltResSelector::copy(const Object& rhs)
     _resGroupReqs = ars._resGroupReqs;
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 AltResSelector::setStringBase(Operator* op) const
@@ -57,7 +57,7 @@ AltResSelector::setStringBase(Operator* op) const
     _nestedScheduler->setStringBase(op);
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 uint_t
 AltResSelector::stringSize(const ClevorDataSet& dataSet) const
@@ -68,12 +68,10 @@ AltResSelector::stringSize(const ClevorDataSet& dataSet) const
     return stringSize;
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
-AltResSelector::initialize(
-    const gop::DataSet* p_dataSet,
-    uint_t stringBase)
+AltResSelector::initialize(const gop::DataSet* p_dataSet, uint_t stringBase)
 {
     ASSERTD(_nestedScheduler != nullptr);
     ASSERTD(dynamic_cast<const ClevorDataSet*>(p_dataSet) != nullptr);
@@ -84,14 +82,10 @@ AltResSelector::initialize(
     _nestedScheduler->initialize(dataSet, _stringBase + _resGroupReqs.size());
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
-AltResSelector::initializeInd(
-    Ind* p_ind,
-    const gop::DataSet* p_dataSet,
-    RandNumGen* rng,
-    void*)
+AltResSelector::initializeInd(Ind* p_ind, const gop::DataSet* p_dataSet, RandNumGen* rng, void*)
 {
     ASSERTD(dynamic_cast<StringInd<uint_t>*>(p_ind) != nullptr);
     StringInd<uint_t>* ind = (StringInd<uint_t>*)p_ind;
@@ -99,8 +93,7 @@ AltResSelector::initializeInd(
 
     ASSERTD(dynamic_cast<const ClevorDataSet*>(p_dataSet) != nullptr);
     const ClevorDataSet* dataSet = (const ClevorDataSet*)p_dataSet;
-    const MinCostHeuristics* minCostHeuristics
-        = dataSet->minCostHeuristics();
+    const MinCostHeuristics* minCostHeuristics = dataSet->minCostHeuristics();
 
     uint_t numResGroupReqs = _resGroupReqs.size();
     if (_stringBase == 0)
@@ -109,12 +102,10 @@ AltResSelector::initializeInd(
     }
     for (uint_t i = 0; i < numResGroupReqs; ++i)
     {
-
         cls::DiscreteResourceRequirement* resGroupReq = _resGroupReqs[i];
         BrkActivity* act = resGroupReq->activity();
         JobOp* op = (JobOp*)(act->owner());
-        const MinCostAltResPt* minCostAltResPt
-            = minCostHeuristics->getMinCostAltResPt(op);
+        const MinCostAltResPt* minCostAltResPt = minCostHeuristics->getMinCostAltResPt(op);
         uint_vector_t altResIdxs = minCostAltResPt->altResIdxs();
         for (uint_t j = 0; j < altResIdxs.size(); j++)
         {
@@ -122,21 +113,19 @@ AltResSelector::initializeInd(
             uint_t resIdx = altResIdxs[j];
             string[_stringBase + i] = resIdx;
         }
-//         string[_stringBase + i] = rng->evali(
-//             _resGroupReqs[i]->possibleResources().size());
+        //         string[_stringBase + i] = rng->evali(
+        //             _resGroupReqs[i]->possibleResources().size());
     }
-    _nestedScheduler->initializeInd(
-        ind, dataSet, rng, (void*)size_t_max);
+    _nestedScheduler->initializeInd(ind, dataSet, rng, (void*)size_t_max);
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
-AltResSelector::initializeRandomInd(
-    Ind* p_ind,
-    const gop::DataSet* p_dataSet,
-    RandNumGen* rng,
-    void*)
+AltResSelector::initializeRandomInd(Ind* p_ind,
+                                    const gop::DataSet* p_dataSet,
+                                    RandNumGen* rng,
+                                    void*)
 {
     ASSERTD(dynamic_cast<StringInd<uint_t>*>(p_ind) != nullptr);
     StringInd<uint_t>* ind = (StringInd<uint_t>*)p_ind;
@@ -154,11 +143,10 @@ AltResSelector::initializeRandomInd(
     {
         string[_stringBase + i] = 0;
     }
-    _nestedScheduler->initializeRandomInd(
-        ind, dataSet, rng, (void*)size_t_max);
+    _nestedScheduler->initializeRandomInd(ind, dataSet, rng, (void*)size_t_max);
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 AltResSelector::run(Ind* p_ind, IndBuilderContext* p_context) const
@@ -173,7 +161,7 @@ AltResSelector::run(Ind* p_ind, IndBuilderContext* p_context) const
     _nestedScheduler->run(ind, context);
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 AltResSelector::init()
@@ -181,7 +169,7 @@ AltResSelector::init()
     _nestedScheduler = new ForwardScheduler();
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 AltResSelector::setResGroupReqs(const ClevorDataSet* dataSet)
@@ -194,31 +182,25 @@ AltResSelector::setResGroupReqs(const ClevorDataSet* dataSet)
     {
         JobOp* op = *it;
         //skip if (!op.breakable()) || op.frozen()
-        if (!op->breakable() || op->frozen()) continue;
+        if (!op->breakable() || op->frozen())
+            continue;
         uint_t numResGroupReqs = op->numResGroupReqs();
         for (uint_t i = 0; i < numResGroupReqs; ++i)
         {
-            cse::ResourceGroupRequirement* cseResGroupReq
-                = op->getResGroupReq(i);
-            cls::DiscreteResourceRequirement* clsResGroupReq
-                = cseResGroupReq->clsResReq();
+            cse::ResourceGroupRequirement* cseResGroupReq = op->getResGroupReq(i);
+            cls::DiscreteResourceRequirement* clsResGroupReq = cseResGroupReq->clsResReq();
             uint_t numResources = clsResGroupReq->resCapPtsSet().size();
             if (numResources > 1)
                 _resGroupReqs.push_back(clsResGroupReq);
         }
     }
-    std::sort(
-        _resGroupReqs.begin(),
-        _resGroupReqs.end(),
-        UTLordering());
+    std::sort(_resGroupReqs.begin(), _resGroupReqs.end(), UTLordering());
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
-AltResSelector::setSelectedResources(
-    StringInd<uint_t>* ind,
-    SchedulingContext* context) const
+AltResSelector::setSelectedResources(StringInd<uint_t>* ind, SchedulingContext* context) const
 {
     ASSERTD(_config != nullptr);
     gop::String<uint_t>& string = ind->string();
@@ -231,7 +213,8 @@ AltResSelector::setSelectedResources(
 
         BrkActivity* act = resGroupReq->activity();
         JobOp* op = (JobOp*)act->owner();
-        if (!op->job()->active()) continue;
+        if (!op->job()->active())
+            continue;
 
         const clp::IntExp* possibleRes = resGroupReq->possibleResources();
         const clp::IntExp* selectedRes = resGroupReq->selectedResources();
@@ -243,7 +226,8 @@ AltResSelector::setSelectedResources(
             ASSERT((possibleRes->size() == 0) && (selectedRes->size() == 1));
             if (!selectedRes->has(resId))
             {
-                if (!ind->newString()) ind->createNewString();
+                if (!ind->newString())
+                    ind->createNewString();
                 gop::String<uint_t>& newStr = *(ind->newString());
                 uint_t newResId = selectedRes->getValue();
                 uint_t newResIdx = uint_t_max;
@@ -270,27 +254,25 @@ AltResSelector::setSelectedResources(
         else
         {
             ASSERT(possibleRes->size() > 0);
-            if (!ind->newString()) ind->createNewString();
+            if (!ind->newString())
+                ind->createNewString();
             gop::String<uint_t>& newStr = *(ind->newString());
             int prevResId = possibleRes->getPrev(resId);
             int nextResId = possibleRes->getNext(resId);
             uint_t newResIdx = uint_t_max;
             uint_t idx = resIdx;
-            if ((prevResId > 0)
-                && ((int)resId - prevResId) < (nextResId - (int)resId))
+            if ((prevResId > 0) && ((int)resId - prevResId) < (nextResId - (int)resId))
             {
                 do
                 {
                     --idx;
-                    int newResId
-                        = resGroupReq->resIdxCapPts(idx)->resourceId();
+                    int newResId = resGroupReq->resIdxCapPts(idx)->resourceId();
                     if (newResId == prevResId)
                     {
                         newResIdx = idx;
                         break;
                     }
-                }
-                while (idx != 0);
+                } while (idx != 0);
                 resGroupReq->selectResource(prevResId);
             }
             else
@@ -298,28 +280,24 @@ AltResSelector::setSelectedResources(
                 do
                 {
                     ++idx;
-                    int newResId
-                        = resGroupReq->resIdxCapPts(idx)->resourceId();
+                    int newResId = resGroupReq->resIdxCapPts(idx)->resourceId();
                     if (newResId == nextResId)
                     {
                         newResIdx = idx;
                         break;
                     }
-                }
-                while (idx != (resGroupReq->resCapPtsSet().size() - 1));
+                } while (idx != (resGroupReq->resCapPtsSet().size() - 1));
                 resGroupReq->selectResource(nextResId);
             }
             ASSERTD(newResIdx != uint_t_max);
             newStr[_stringBase + i] = newResIdx;
 
 #ifdef DEBUG_UNIT
-            utl::cout << "Warning(AltResSelector.cpp): " << resId
-                      << "(idx=" << resIdx
-                      << ") is not a valid resId in "
-                      << possibleRes->toString().get()
+            utl::cout << "Warning(AltResSelector.cpp): " << resId << "(idx=" << resIdx
+                      << ") is not a valid resId in " << possibleRes->toString().get()
                       << ". New resId is set to "
-                      << resGroupReq->resIdxCapPts(newResIdx)->resourceId()
-                      << "(idx=" << newResIdx << ")." << utl::endl;
+                      << resGroupReq->resIdxCapPts(newResIdx)->resourceId() << "(idx=" << newResIdx
+                      << ")." << utl::endl;
 #endif
         }
 
@@ -327,6 +305,6 @@ AltResSelector::setSelectedResources(
     }
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 CSE_NS_END;

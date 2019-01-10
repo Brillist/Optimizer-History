@@ -1,7 +1,7 @@
 #ifndef CLS_BREAKABLEACTIVITY_H
 #define CLS_BREAKABLEACTIVITY_H
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 #include <libutl/Array.h>
 #include <clp/Bound.h>
@@ -9,15 +9,15 @@
 #include <cls/PtActivity.h>
 #include <cls/ResourceCalendar.h>
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 CLS_NS_BEGIN;
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 class ESbound;
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
    Breakable activity.
@@ -42,14 +42,16 @@ class ESbound;
    \author Adam McKee
 */
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 class BrkActivity : public PtActivity
 {
     friend class DiscreteResourceRequirement;
     UTL_CLASS_DECL(BrkActivity);
+
 public:
     typedef std::set<utl::uint_t> uint_set_t;
+
 public:
     /**
        Constructor.
@@ -57,7 +59,9 @@ public:
     */
     BrkActivity(Schedule* schedule)
         : PtActivity(schedule)
-    { init(); }
+    {
+        init();
+    }
 
     /** Add a requirement. */
     void add(DiscreteResourceRequirement* drr);
@@ -81,28 +85,44 @@ public:
     bool forward() const;
 
     /** Backward scheduling? */
-    bool backward() const
-    { return !forward(); }
+    bool
+    backward() const
+    {
+        return !forward();
+    }
 
     /** Get calendar. */
-    const ResourceCalendar* calendar() const
-    { return _calendar; }
+    const ResourceCalendar*
+    calendar() const
+    {
+        return _calendar;
+    }
 
     /** Get calendar. */
-    const ResourceCalendar*& calendar()
-    { return _calendar; }
+    const ResourceCalendar*&
+    calendar()
+    {
+        return _calendar;
+    }
 
     /** Get the list of all resource-ids. */
-/*     const uint_set_t& allResIds() const */
-/*     { return _allResIds; } */
+    /*     const uint_set_t& allResIds() const */
+    /*     { return _allResIds; } */
 
     /** Get resource-requirement ownership flag. */
-    bool resReqOwner() const
-    { return _discreteReqs.isOwner(); }
+    bool
+    resReqOwner() const
+    {
+        return _discreteReqs.isOwner();
+    }
 
     /** Get resource-requirement ownership flag. */
-    void setResReqOwner(bool owner)
-    { _discreteReqs.setOwner(owner); }
+    void
+    setResReqOwner(bool owner)
+    {
+        _discreteReqs.setOwner(owner);
+    }
+
 private:
     void init();
     void deInit();
@@ -112,19 +132,20 @@ private:
     void selectResource(utl::uint_t resId, DiscreteResourceRequirement* rr);
 
     void addTimetableBounds();
+
 private:
     const ResourceCalendar* _calendar;
-/*     uint_set_t _allResIds; */
+    /*     uint_set_t _allResIds; */
     clp::IntVar* _selectedResources;
     utl::uint_t _numUnknownReqs;
     utl::Array _discreteReqs;
     bool _addedTimetableBounds;
 };
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 CLS_NS_END;
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 #endif

@@ -1,7 +1,7 @@
 #ifndef CSE_JOBOPSEQMUTATE_H
 #define CSE_JOBOPSEQMUTATE_H
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 #include <clp/CycleGroup.h>
 #include <gop/RevOperator.h>
@@ -10,47 +10,47 @@
 #include <cse/JobOp.h>
 #include <cse/SchedulingContext.h>
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 CSE_NS_BEGIN;
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
    Change the sequence of the operations in a job for forward scheduler 
 */
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 class JobOpSeqMutate : public gop::RevOperator
 {
     UTL_CLASS_DECL(JobOpSeqMutate);
-//public:
-//   typedef std::set<utl::uint_t> uint_set_t;
+    //public:
+    //   typedef std::set<utl::uint_t> uint_set_t;
 public:
-   /**
+    /**
       Constructor.
       \param p probability
       \param rng PRNG
    */
-   JobOpSeqMutate(
-      double p,
-      utl::RandNumGen* rng = nullptr)
-      : RevOperator("JobOpSeqMutate", p, rng)
-      { init(); }
+    JobOpSeqMutate(double p, utl::RandNumGen* rng = nullptr)
+        : RevOperator("JobOpSeqMutate", p, rng)
+    {
+        init();
+    }
 
     virtual void copy(const utl::Object& rhs);
 
     virtual void initialize(const gop::DataSet* dataSet = nullptr);
 
-    virtual bool execute(
-        gop::Ind* ind = nullptr,
-        gop::IndBuilderContext* context = nullptr,
-        bool singleStep = false);
-   
+    virtual bool execute(gop::Ind* ind = nullptr,
+                         gop::IndBuilderContext* context = nullptr,
+                         bool singleStep = false);
+
     virtual void accept();
 
     virtual void undo();
+
 private:
     typedef std::vector<utl::uint_t> uint_vector_t;
     typedef std::set<utl::uint_t> uint_set_t;
@@ -78,10 +78,10 @@ private:
     uint_vector_t _moveOpIdxs;
 };
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 CSE_NS_END;
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 #endif

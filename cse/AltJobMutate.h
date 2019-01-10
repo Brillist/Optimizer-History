@@ -1,7 +1,7 @@
 #ifndef CSE_ALTJOBMUTATE_H
 #define CSE_ALTJOBMUTATE_H
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 #include <gop/RevOperator.h>
 #include <gop/StringInd.h>
@@ -10,11 +10,11 @@
 #include <cse/SchedulingContext.h>
 #include <cse/JobGroup.h>
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 CSE_NS_BEGIN;
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
    Change the alternative job selection for a mnaufacture item,
@@ -23,43 +23,46 @@ CSE_NS_BEGIN;
    \author Joe Zhou
 */
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 class AltJobMutate : public gop::RevOperator
 {
     UTL_CLASS_DECL(AltJobMutate);
+
 public:
     /**
        Constructor.
        \param p probability
        \param rng PRNG
     */
-    AltJobMutate(
-        double p,
-        utl::RandNumGen* rng = nullptr)
+    AltJobMutate(double p, utl::RandNumGen* rng = nullptr)
         : RevOperator("AltJobMutate", p, rng)
-    { init(); }
+    {
+        init();
+    }
 
     virtual void copy(const utl::Object& rhs);
 
     virtual void initialize(const gop::DataSet* dataSet = nullptr);
 
-    virtual bool execute(
-        gop::Ind* ind = nullptr,
-        gop::IndBuilderContext* context = nullptr,
-        bool singleStep = false);
+    virtual bool execute(gop::Ind* ind = nullptr,
+                         gop::IndBuilderContext* context = nullptr,
+                         bool singleStep = false);
 
     virtual void accept();
 
     virtual void undo();
 
     virtual void setAltJobGroups(const ClevorDataSet* dataSet);
+
 private:
     typedef std::vector<utl::uint_t> uint_vector_t;
-    typedef std::vector<uint_vector_t*> uint_vector_vector_t; 
+    typedef std::vector<uint_vector_t*> uint_vector_vector_t;
+
 private:
     void init();
     void deInit();
+
 private:
     utl::uint_t _numPlanChoices;
     jobgroup_vector_t _jobGroups;
@@ -68,10 +71,10 @@ private:
     utl::uint_t _moveJobIdx;
 };
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 CSE_NS_END;
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 #endif

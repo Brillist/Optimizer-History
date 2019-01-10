@@ -1,18 +1,18 @@
 #ifndef GOP_SAOPTIMIZER_H
 #define GOP_SAOPTIMIZER_H
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 #include <gop/Optimizer.h>
 #include <gop/StringScore.h>
 #include <gop/Score.h>
 #include <gop/RevOperator.h>
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 GOP_NS_BEGIN;
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /** 
     History of SA (Simulated Annealing), a general purpose optimization 
@@ -32,22 +32,31 @@ GOP_NS_BEGIN;
     Dec. 2005
 */
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 class SAoptimizer : public Optimizer
 {
     UTL_CLASS_DECL(SAoptimizer);
+
 public:
     /** Initialize. */
     virtual void initialize(const OptimizerConfiguration* config);
 
     /** set _acceptedScore. */
-    void setAcceptedScore(Score* score)
-    { delete _acceptedScore; _acceptedScore = score; }
+    void
+    setAcceptedScore(Score* score)
+    {
+        delete _acceptedScore;
+        _acceptedScore = score;
+    }
 
     /** set _bestStrScore. */
-    void setBestStrScore(StringScore* strScore)
-    { delete _bestStrScore; _bestStrScore = strScore; }
+    void
+    setBestStrScore(StringScore* strScore)
+    {
+        delete _bestStrScore;
+        _bestStrScore = strScore;
+    }
 
     /** store score difference. */
     void storeScoreDiff(double diff);
@@ -57,7 +66,7 @@ public:
 
     /** decide whether to accept the new solution. */
     virtual void acceptanceEval(RevOperator* op);
- 
+
     /** Run an iteration and return complete() or not. */
     virtual bool SAiterationRun();
 
@@ -69,32 +78,32 @@ public:
 
     /** Audit the result */
     virtual void audit();
+
 protected:
     StringScore* _bestStrScore;
     Score* _acceptedScore;
     double _scoreDiff;
     double _tempDcrRate;
-    double _initTemp;//initial temperature
-    double _currentTemp;//current temperature
-    double _stopTemp;//stop temperature
+    double _initTemp;    //initial temperature
+    double _currentTemp; //current temperature
+    double _stopTemp;    //stop temperature
 
-
-    double _totalScoreDiff;//total socre changes for every move
-    utl::uint_t _totalScoreDiffIter;//total #iters for _totalScoreDiff
+    double _totalScoreDiff;          //total socre changes for every move
+    utl::uint_t _totalScoreDiffIter; //total #iters for _totalScoreDiff
 
     /** Optimizer customization parameters */
     bool _fixedInitTemp;
-    utl::uint_t _populationSize; // #tries at each temperature. 
-    utl::uint_t _tempIteration; // count #iters at each temperature.
+    utl::uint_t _populationSize; // #tries at each temperature.
+    utl::uint_t _tempIteration;  // count #iters at each temperature.
 private:
     void init();
     void deInit();
 };
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 GOP_NS_END;
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 #endif

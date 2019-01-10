@@ -5,26 +5,26 @@
 #include <libutl/Float.h>
 #include <libutl/BufferedFDstream.h>
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 #ifdef DEBUG
 #define DEBUG_UNIT
 #endif
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 UTL_NS_USE;
 LUT_NS_USE;
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 UTL_CLASS_IMPL(gop::MultistartHC, gop::HillClimber);
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 GOP_NS_BEGIN;
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 MultistartHC::initialize(const OptimizerConfiguration* config)
@@ -38,18 +38,16 @@ MultistartHC::initialize(const OptimizerConfiguration* config)
     iterationRun();
     setInitScore(_newScore->clone());
     setBestScore(_newScore->clone());
-    if (_ind->newString()) _ind->acceptNewString();
+    if (_ind->newString())
+        _ind->acceptNewString();
     objective->setBestScore(_bestScore->clone());
 
-//     _ind->setScore(0, _bestScore); //?????
+    //     _ind->setScore(0, _bestScore); //?????
     _beamWidth = 10;
     String<utl::uint_t>* str = _ind->getString();
     for (uint_t i = 0; i < _beamWidth; i++)
     {
-        StringScore* strScore = new StringScore(
-            i,
-            str->clone(),
-            _bestScore->clone());
+        StringScore* strScore = new StringScore(i, str->clone(), _bestScore->clone());
         _strScores.push_back(strScore);
     }
     _ind->setString(nullptr, false);
@@ -59,8 +57,7 @@ MultistartHC::initialize(const OptimizerConfiguration* config)
 #endif
 }
 
-
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 bool
 MultistartHC::run()
@@ -72,24 +69,22 @@ MultistartHC::run()
     Bool complete = this->complete();
     int cmpResult;
 
-    while(!complete)
+    while (!complete)
     {
         // reduce the length of the _strScores list
         if (_iteration == roundUp(_minIterations / 20, _beamWidth) || //5%
-            _iteration == roundUp(_minIterations / 4, _beamWidth) || //25%
-            _iteration == roundUp(_minIterations, _beamWidth)) // 100%
+            _iteration == roundUp(_minIterations / 4, _beamWidth) ||  //25%
+            _iteration == roundUp(_minIterations, _beamWidth))        // 100%
         {
             std::sort(_strScores.begin(), _strScores.end(), stringScoreOrdering());
             _beamWidth = utl::max((uint_t)1, (_beamWidth / 2));
             stringscore_vector_t::iterator it;
-            for (it = _strScores.begin() + _beamWidth;
-                 it != _strScores.end(); ++it)
+            for (it = _strScores.begin() + _beamWidth; it != _strScores.end(); ++it)
             {
                 StringScore* strScore = *it;
                 delete strScore;
             }
-            _strScores.erase(_strScores.begin() + _beamWidth,
-                             _strScores.end());
+            _strScores.erase(_strScores.begin() + _beamWidth, _strScores.end());
         }
 
         for (uint_t i = 0; i < _beamWidth; i++)
@@ -107,18 +102,15 @@ MultistartHC::run()
             ASSERTD(dynamic_cast<RevOperator*>(op) != nullptr);
             RevOperator* rop = (RevOperator*)op;
             rop->addTotalIter();
-            _ind->setString(_strScores[i]->getString(), false);//
+            _ind->setString(_strScores[i]->getString(), false); //
 #ifdef DEBUG_UNIT
-            utl::cout
-                << "                                "
-                << op->toString() << utl::endl;
+            utl::cout << "                                " << op->toString() << utl::endl;
 #endif
 
             // generate a schedule
             iterationRun(rop);
-            cmpResult = objective->compare(
-                _newScore, _strScores[i]->getScore());
-            _accept = (cmpResult >= 0);//_accept
+            cmpResult = objective->compare(_newScore, _strScores[i]->getScore());
+            _accept = (cmpResult >= 0); //_accept
             _sameScore = _newBest = false;
             if (_accept)
             {
@@ -126,10 +118,9 @@ MultistartHC::run()
                 if (cmpResult > 0)
                 {
                     _strScores[i]->setScore(utl::clone(_newScore));
-                    int globalCmpResult = objective->
-                        compare(_newScore, _bestScore);
-                    _sameScore = (globalCmpResult == 0);//_sameScore
-                    _newBest = (globalCmpResult > 0);//_newBest
+                    int globalCmpResult = objective->compare(_newScore, _bestScore);
+                    _sameScore = (globalCmpResult == 0); //_sameScore
+                    _newBest = (globalCmpResult > 0);    //_newBest
                     if (_newBest)
                     {
                         _improvementIteration = _iteration;
@@ -144,12 +135,9 @@ MultistartHC::run()
                 rop->undo();
             }
 #ifdef DEBUG_UNIT
-            utl::cout << "startId:" << _strScores[i]->getId()
-                      << "(" << i
-                      << "/" << _beamWidth
+            utl::cout << "startId:" << _strScores[i]->getId() << "(" << i << "/" << _beamWidth
                       << ", "
-                      << Float(_strScores[i]->getScore()->getValue()).
-                toString("precision:0")
+                      << Float(_strScores[i]->getScore()->getValue()).toString("precision:0")
                       << "), " << iterationString() << utl::endl;
 #endif
 
@@ -180,17 +168,18 @@ MultistartHC::run()
     return scheduleFeasible;
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 MultistartHC::audit()
 {
     _ind->setString(_strScores[0]->getString(), false);
-    if (!iterationRun(nullptr, true)) ABORT();
+    if (!iterationRun(nullptr, true))
+        ABORT();
     ASSERTD(*_bestScore == *_newScore);
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 MultistartHC::init()
@@ -198,7 +187,7 @@ MultistartHC::init()
     _beamWidth = 0;
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 MultistartHC::deInit()
@@ -206,6 +195,6 @@ MultistartHC::deInit()
     deleteCont(_strScores);
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 GOP_NS_END;

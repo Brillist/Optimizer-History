@@ -5,13 +5,13 @@
 #include "CapMutate.h"
 #include "ClevorDataSet.h"
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 #ifdef DEBUG
 #define DEBUG_UNIT
 #endif
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 UTL_NS_USE;
 LUT_NS_USE;
@@ -19,15 +19,15 @@ GOP_NS_USE;
 CLP_NS_USE;
 CLS_NS_USE;
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 UTL_CLASS_IMPL(cse::CapMutate, gop::RevOperator);
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 CSE_NS_BEGIN;
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 CapMutate::copy(const Object& rhs)
@@ -46,7 +46,7 @@ CapMutate::copy(const Object& rhs)
     _moveCap = arm._moveCap;
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 CapMutate::initialize(const gop::DataSet* p_dataSet)
@@ -63,18 +63,15 @@ CapMutate::initialize(const gop::DataSet* p_dataSet)
         _numCapChoices += _maxCapMultiples[i] - _minCapMultiples[i];
         IntActivity* act = _acts[i];
         JobOp* op = (JobOp*)act->owner();
-        addOperatorVar(i,1,2,op->job()->activeP());
+        addOperatorVar(i, 1, 2, op->job()->activeP());
     }
     setNumChoices(_numCapChoices);
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 bool
-CapMutate::execute(
-    gop::Ind* ind,
-    gop::IndBuilderContext* p_context,
-    bool singleStep)
+CapMutate::execute(gop::Ind* ind, gop::IndBuilderContext* p_context, bool singleStep)
 {
     ASSERTD(dynamic_cast<SchedulingContext*>(p_context) != nullptr);
     ASSERTD(dynamic_cast<StringInd<uint_t>*>(ind) != nullptr);
@@ -84,10 +81,8 @@ CapMutate::execute(
     // choose activity
     uint_t actIdx = getSelectedVarIdx();
 #ifdef DEBUG_UNIT
-    utl::cout
-        << "                                                   "
-        << "varSucRate:" << getSelectedVarP()
-        << ", idx:" << actIdx;
+    utl::cout << "                                                   "
+              << "varSucRate:" << getSelectedVarP() << ", idx:" << actIdx;
 #endif
     _moveCapIdx = actIdx;
     _moveCap = string[_stringBase + _moveCapIdx];
@@ -117,45 +112,44 @@ CapMutate::execute(
                 cap = oldCap + 1;
             }
         }
-        ASSERTD(cap >= _minCapMultiples[actIdx] &&
-                cap <= _maxCapMultiples[actIdx]);
+        ASSERTD(cap >= _minCapMultiples[actIdx] && cap <= _maxCapMultiples[actIdx]);
     }
     else
     {
-        cap = _rng->evali(_minCapMultiples[actIdx],
-                          _maxCapMultiples[actIdx]);
-        if (cap >= oldCap) cap++;
+        cap = _rng->evali(_minCapMultiples[actIdx], _maxCapMultiples[actIdx]);
+        if (cap >= oldCap)
+            cap++;
     }
     string[_stringBase + _moveCapIdx] = cap;
 
     ASSERTD(cap != _moveCap);
 #ifdef DEBUG_UNIT
     IntActivity* act = _acts[actIdx];
-    utl::cout << ", task:" << act->id()
-              << ", oldCap:" << _moveCap
-              << ", newCap:" << cap
+    utl::cout << ", task:" << act->id() << ", oldCap:" << _moveCap << ", newCap:" << cap
               << utl::endl;
 #endif
     //no propagation is needed for CapMutate.
     return true;
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 CapMutate::accept()
 {
     ASSERTD(_moveSchedule != nullptr);
-    if (_moveSchedule->newString()) _moveSchedule->acceptNewString();
+    if (_moveSchedule->newString())
+        _moveSchedule->acceptNewString();
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 CapMutate::undo()
 {
     ASSERTD(_moveSchedule != nullptr);
-    if (_moveSchedule->newString()) _moveSchedule->deleteNewString();
+    if (_moveSchedule->newString())
+        _moveSchedule->deleteNewString();
     gop::String<uint_t>& string = _moveSchedule->string();
 
     if (_moveCapIdx != uint_t_max)
@@ -165,7 +159,7 @@ CapMutate::undo()
     }
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 CapMutate::init()
@@ -176,14 +170,14 @@ CapMutate::init()
     _moveCap = uint_t_max;
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 CapMutate::deInit()
 {
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 CapMutate::setActs(const ClevorDataSet* dataSet)
@@ -197,7 +191,8 @@ CapMutate::setActs(const ClevorDataSet* dataSet)
     for (it = ops.begin(); it != ops.end(); ++it)
     {
         JobOp* jobOp = *it;
-        if (jobOp->frozen() || !jobOp->interruptible()) continue;
+        if (jobOp->frozen() || !jobOp->interruptible())
+            continue;
         IntActivity* act = jobOp->intact();
         uint_t minCapMultiple, maxCapMultiple;
         if (act->forward())
@@ -211,7 +206,8 @@ CapMutate::setActs(const ClevorDataSet* dataSet)
             ABORT();
         }
         ASSERTD(minCapMultiple <= maxCapMultiple);
-        if (minCapMultiple == maxCapMultiple) continue;
+        if (minCapMultiple == maxCapMultiple)
+            continue;
         _acts.push_back(act);
         _minCapMultiples.push_back(minCapMultiple);
         _maxCapMultiples.push_back(maxCapMultiple);
@@ -224,6 +220,6 @@ CapMutate::setActs(const ClevorDataSet* dataSet)
     }
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 CSE_NS_END;

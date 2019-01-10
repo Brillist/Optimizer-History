@@ -8,21 +8,21 @@
 #include "SchedulableBound.h"
 #include "IntActivity.h"
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 UTL_NS_USE;
 LUT_NS_USE;
 CLP_NS_USE;
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 UTL_CLASS_IMPL(cls::IntActivity, cls::Activity);
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 CLS_NS_BEGIN;
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 IntActivity::add(CompositeResourceRequirement* crr)
@@ -30,7 +30,7 @@ IntActivity::add(CompositeResourceRequirement* crr)
     _compositeReqs += crr;
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 IntActivity::initRequirements()
@@ -42,8 +42,7 @@ IntActivity::initRequirements()
     }
     else if (_compositeReqs.size() == 1)
     {
-        CompositeResourceRequirement* crr
-            = (CompositeResourceRequirement*)_compositeReqs.first();
+        CompositeResourceRequirement* crr = (CompositeResourceRequirement*)_compositeReqs.first();
         CompositeResource* cres = crr->resource();
         ASSERTD(cres != nullptr);
         _breakList = cres->timetable().addCapExp(crr->minCapacity());
@@ -55,9 +54,9 @@ IntActivity::initRequirements()
         uint_set_t::iterator it;
         forEachIt(utl::RBtree, _compositeReqs, CompositeResourceRequirement, crr)
             CompositeResource* cres = crr.resource();
-            uint_t cap = crr.minCapacity();
-            resCaps.push_back(cres->serialId());
-            resCaps.push_back(cap);
+        uint_t cap = crr.minCapacity();
+        resCaps.push_back(cres->serialId());
+        resCaps.push_back(cap);
         endForEach;
         capExpMgr->add(resCaps);
         _breakList = capExpMgr->find(resCaps);
@@ -66,14 +65,12 @@ IntActivity::initRequirements()
     // update _allResIds, and update discrete resources' maxCap
     forEachIt(utl::RBtree, _compositeReqs, CompositeResourceRequirement, crr)
         CompositeResource* cres = crr.resource();
-        for (CompositeResource::iterator it = cres->begin();
-             it != cres->end();
-             ++it)
-        {
-            DiscreteResource* dres = *it;
-            dres->maxReqCap() += 100;
-            allResIds().insert(dres->id());
-        }
+    for (CompositeResource::iterator it = cres->begin(); it != cres->end(); ++it)
+    {
+        DiscreteResource* dres = *it;
+        dres->maxReqCap() += 100;
+        allResIds().insert(dres->id());
+    }
     endForEach;
 
     // initialize ES-bound (or LF-bound)
@@ -87,7 +84,7 @@ IntActivity::initRequirements()
     }
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 IntExp*
 IntActivity::breakList() const
@@ -95,7 +92,7 @@ IntActivity::breakList() const
     return _breakList;
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 bool
 IntActivity::selectResource(uint_t resId)
@@ -108,7 +105,7 @@ IntActivity::selectResource(uint_t resId)
     return false;
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 IntActivity::addAllocation(uint_t resId, uint_t min, uint_t max)
@@ -141,7 +138,7 @@ IntActivity::addAllocation(uint_t resId, uint_t min, uint_t max)
     }
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 IntActivity::deallocate()
@@ -150,7 +147,8 @@ IntActivity::deallocate()
     for (uint_t i = 0; i < _allocationsSize; ++i)
     {
         revarray_t* allocs = _allocations[i];
-        if (allocs == nullptr) continue;
+        if (allocs == nullptr)
+            continue;
         Resource* res = resourcesArray[i];
         ASSERTD(res->isA(DiscreteResource));
         DiscreteResource* dres = (DiscreteResource*)res;
@@ -171,17 +169,18 @@ IntActivity::deallocate()
     }
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 bool
 IntActivity::forward() const
 {
-    if (esBound().isA(SchedulableBound)) return true;
+    if (esBound().isA(SchedulableBound))
+        return true;
     ASSERTD(lfBound().isA(SchedulableBound));
     return false;
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 IntActivity::init()
@@ -194,7 +193,7 @@ IntActivity::init()
     utl::arrayGrow(_allocations, _allocationsSize, 256, 256, &nullPtr);
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 IntActivity::deInit()
@@ -203,9 +202,9 @@ IntActivity::deInit()
     {
         delete _allocations[i];
     }
-    delete [] _allocations;
+    delete[] _allocations;
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 CLS_NS_END;

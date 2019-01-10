@@ -1,11 +1,11 @@
 #ifndef LUT_QUEUE_H
 #define LUT_QUEUE_H
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 LUT_NS_BEGIN;
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
    Queue.
@@ -13,58 +13,79 @@ LUT_NS_BEGIN;
    \author Adam McKee
 */
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
-template <class T>
-class Queue : public utl::Object
+template <class T> class Queue : public utl::Object
 {
     UTL_CLASS_DECL_TPL(Queue, T);
+
 public:
     /** Copy another instance. */
     virtual void copy(const utl::Object& rhs);
 
     /** Get the size of the queue. */
-    utl::uint_t size() const
-    { return _size; }
+    utl::uint_t
+    size() const
+    {
+        return _size;
+    }
 
     /** Empty? */
-    bool empty() const
-    { return (_size == 0); }
+    bool
+    empty() const
+    {
+        return (_size == 0);
+    }
 
     /** Clear the queue. */
-    void clear()
-    { _head = _tail = _items; _size = 0; }
+    void
+    clear()
+    {
+        _head = _tail = _items;
+        _size = 0;
+    }
 
     /** Peek at the head of the queue. */
-    const T& head() const
+    const T&
+    head() const
     {
         ASSERTD(_size > 0);
         return *_head;
     }
 
     /** Add an item to the tail of the queue. */
-    INLINE void enQ(const T& item)
+    INLINE void
+    enQ(const T& item)
     {
-        if ((_head == _tail) && (_size > 0)) grow();
+        if ((_head == _tail) && (_size > 0))
+            grow();
         *_tail++ = item;
-        if (_tail == _itemsLim) _tail = _items;
+        if (_tail == _itemsLim)
+            _tail = _items;
         ++_size;
     }
 
     /** Get the item at the head of the queue. */
-    INLINE T deQ()
+    INLINE T
+    deQ()
     {
         ASSERTD(_size > 0);
         T item = *_head++;
-        if (_head == _itemsLim) _head = _items;
+        if (_head == _itemsLim)
+            _head = _items;
         --_size;
         return item;
     }
+
 private:
     void init();
-    void deInit()
-    { delete [] _items; }
+    void
+    deInit()
+    {
+        delete[] _items;
+    }
     void grow();
+
 private:
     T* _head;
     T* _tail;
@@ -73,7 +94,7 @@ private:
     utl::uint_t _size;
 };
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 template <class T>
 void
@@ -82,7 +103,7 @@ Queue<T>::copy(const utl::Object& rhs)
     ASSERTD(rhs.isA(Queue<T>));
     const Queue<T>& q = (const Queue<T>&)rhs;
     utl::uint_t itemsSize = (q._itemsLim - q._items);
-    delete [] _items;
+    delete[] _items;
     _items = new T[itemsSize];
     _itemsLim = _items + itemsSize;
     memcpy(_items, q._items, itemsSize * sizeof(T));
@@ -91,7 +112,7 @@ Queue<T>::copy(const utl::Object& rhs)
     _size = q._size;
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 template <class T>
 void
@@ -102,7 +123,7 @@ Queue<T>::init()
     _size = 0;
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 template <class T>
 void
@@ -128,21 +149,21 @@ Queue<T>::grow()
         *tail++ = deQ();
     }
 
-    delete [] _items;
+    delete[] _items;
     _head = _items = items;
     _tail = tail;
     _itemsLim = _items + newSize;
     _size = (_tail - _head);
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 LUT_NS_END;
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 UTL_CLASS_IMPL_TPL(lut::Queue, T, utl::Object);
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 #endif

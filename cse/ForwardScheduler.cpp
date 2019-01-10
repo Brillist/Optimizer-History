@@ -9,13 +9,13 @@
 #include "ForwardScheduler.h"
 #include <libutl/BufferedFDstream.h>
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 #ifdef DEBUG
 // #define DEBUG_SEQUENCE
 #endif
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 #ifdef DEBUG_SEQUENCE
 #undef new
@@ -23,7 +23,7 @@
 #include <libutl/gblnew_macros.h>
 #endif
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 UTL_NS_USE;
 LUT_NS_USE;
@@ -31,15 +31,15 @@ CLP_NS_USE;
 CLS_NS_USE;
 GOP_NS_USE;
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 UTL_CLASS_IMPL(cse::ForwardScheduler, cse::Scheduler);
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 CSE_NS_BEGIN;
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 ForwardScheduler::copy(const Object& rhs)
@@ -55,7 +55,7 @@ ForwardScheduler::copy(const Object& rhs)
     _sortedOps = fscheduler._sortedOps;
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 ForwardScheduler::run(Ind* p_ind, IndBuilderContext* p_context) const
@@ -77,9 +77,8 @@ ForwardScheduler::run(Ind* p_ind, IndBuilderContext* p_context) const
     SchedulingContext* context = (SchedulingContext*)p_context;
 
     // simple run or initialize optimization run?
-    bool simpleRun = (_sortedJobs.size() == 0 &&
-                      _sortedJobOps.size() == 0 &&
-                      _sortedOps.size() == 0);
+    bool simpleRun =
+        (_sortedJobs.size() == 0 && _sortedJobOps.size() == 0 && _sortedOps.size() == 0);
     bool initOptRun = false;
     if (!simpleRun && _initOptRun)
     {
@@ -142,7 +141,7 @@ ForwardScheduler::run(Ind* p_ind, IndBuilderContext* p_context) const
 #endif
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 ForwardScheduler::setJobs(const ClevorDataSet* dataSet) const
@@ -151,15 +150,14 @@ ForwardScheduler::setJobs(const ClevorDataSet* dataSet) const
     _sortedJobs.clear();
     const job_set_id_t& jobs = dataSet->jobs();
     job_set_id_t::const_iterator jobIt;
-    for (job_set_id_t::const_iterator jobIt = jobs.begin();
-         jobIt != jobs.end(); jobIt++)
+    for (job_set_id_t::const_iterator jobIt = jobs.begin(); jobIt != jobs.end(); jobIt++)
     {
         Job* job = *jobIt;
         _sortedJobs.push_back(job);
     }
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 ForwardScheduler::setJobOps(const ClevorDataSet* dataSet) const
@@ -178,12 +176,11 @@ ForwardScheduler::setJobOps(const ClevorDataSet* dataSet) const
             JobOp* op = *opIt;
             opVect->push_back(op);
         }
-        _sortedJobOps.insert(
-            job_jobopvector_map_t::value_type(job, opVect));
+        _sortedJobOps.insert(job_jobopvector_map_t::value_type(job, opVect));
     }
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 ForwardScheduler::setOps(const ClevorDataSet* dataSet) const
@@ -191,21 +188,17 @@ ForwardScheduler::setOps(const ClevorDataSet* dataSet) const
     _sortedOps.clear();
     const jobop_set_id_t& ops = dataSet->sops();
     jobop_set_id_t::const_iterator opIt;
-    for (opIt = ops.begin(); opIt != ops.end();
-         opIt++)
+    for (opIt = ops.begin(); opIt != ops.end(); opIt++)
     {
         JobOp* op = *opIt;
         _sortedOps.push_back(op);
     }
 }
 
-
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
-ForwardScheduler::setInitialSeq(
-        StringInd<uint_t>* ind,
-        SchedulingContext* context) const
+ForwardScheduler::setInitialSeq(StringInd<uint_t>* ind, SchedulingContext* context) const
 {
     //reset opSid for workorder-level scheduling
     if (_jobStartPosition != uint_t_max)
@@ -213,8 +206,7 @@ ForwardScheduler::setInitialSeq(
         ASSERTD(_sortedJobs.size() > 0);
         job_vector_t::iterator jobIt;
         uint_t opSid = 0;
-        for (jobIt = _sortedJobs.begin(); jobIt != _sortedJobs.end();
-             ++jobIt)
+        for (jobIt = _sortedJobs.begin(); jobIt != _sortedJobs.end(); ++jobIt)
         {
             Job* job = *jobIt;
             job_jobopvector_map_t::iterator jobMapIt = _sortedJobOps.find(job);
@@ -233,54 +225,42 @@ ForwardScheduler::setInitialSeq(
     setSequenceString(ind, context);
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
-ForwardScheduler::setDefaultInitialSeq(
-        StringInd<uint_t>* ind,
-        SchedulingContext* context) const
+ForwardScheduler::setDefaultInitialSeq(StringInd<uint_t>* ind, SchedulingContext* context) const
 {
     if (_jobStartPosition != uint_t_max)
     {
         //workorder-level scheduling
-        std::stable_sort(
-            _sortedJobs.begin(),
-            _sortedJobs.end(),
-            JobDueTimeOrdering());
-        std::stable_sort(
-            _sortedJobs.begin(),
-            _sortedJobs.end(),
-            JobLatenessCostDecOrdering());
-        std::stable_sort(
-            _sortedJobs.begin(),
-            _sortedJobs.end(),
-            JobSuccessorDepthDecOrdering());
+        std::stable_sort(_sortedJobs.begin(), _sortedJobs.end(), JobDueTimeOrdering());
+        std::stable_sort(_sortedJobs.begin(), _sortedJobs.end(), JobLatenessCostDecOrdering());
+        std::stable_sort(_sortedJobs.begin(), _sortedJobs.end(), JobSuccessorDepthDecOrdering());
 
         job_vector_t::iterator jobIt;
         uint_t jobSid = 0;
         uint_t opSid = 0;
-        for (jobIt = _sortedJobs.begin(); jobIt != _sortedJobs.end();
-             ++jobIt)
+        for (jobIt = _sortedJobs.begin(); jobIt != _sortedJobs.end(); ++jobIt)
         {
             Job* job = *jobIt;
             // for inactive jobs, set their sid=uint_t_max,
             // however their ops' sid are set normally.
-            if (job->active()) job->serialId() = jobSid++;
+            if (job->active())
+                job->serialId() = jobSid++;
             job_jobopvector_map_t::iterator jobMapIt = _sortedJobOps.find(job);
             ASSERTD(jobMapIt != _sortedJobOps.end());
             jobop_vector_t* ops = (*jobMapIt).second;
             if (_config->forward())
             {
-                std::stable_sort(ops->begin(), ops->end(),
-                                 JobOpFDsuccessorDepthDecOrdering());
+                std::stable_sort(ops->begin(), ops->end(), JobOpFDsuccessorDepthDecOrdering());
             }
             else
             {
-                std::stable_sort(ops->begin(), ops->end(),
-                                 JobOpBDsuccessorDepthDecOrdering());
+                std::stable_sort(ops->begin(), ops->end(), JobOpBDsuccessorDepthDecOrdering());
             }
             //reset opSid=0 for workorder-level scheduling
-            if (_jobStartPosition != uint_t_max) opSid = 0;
+            if (_jobStartPosition != uint_t_max)
+                opSid = 0;
             jobop_vector_t::iterator opIt;
             for (opIt = ops->begin(); opIt != ops->end(); opIt++)
             {
@@ -316,12 +296,10 @@ ForwardScheduler::setDefaultInitialSeq(
     setSequenceString(ind, context);
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
-ForwardScheduler::setSequenceString(
-        StringInd<uint_t>* ind,
-        SchedulingContext* context) const
+ForwardScheduler::setSequenceString(StringInd<uint_t>* ind, SchedulingContext* context) const
 {
     gop::String<uint_t>& string = ind->string();
     gop::String<uint_t>* newString = ind->newString();
@@ -332,28 +310,28 @@ ForwardScheduler::setSequenceString(
         uint_t jobStrPos = _jobStartPosition;
         uint_t opStrPos = _opStartPosition;
         const job_set_id_t& jobs = dataSet->jobs();
-        for (job_set_id_t::const_iterator it = jobs.begin();
-             it != jobs.end(); it++)
+        for (job_set_id_t::const_iterator it = jobs.begin(); it != jobs.end(); it++)
         {
             Job* job = *it;
-//             utl::cout << "job:" << job->id()
-//                       << ", jobStrPos:" << jobStrPos
-//                       << ", sid:" << job->serialId()
-//                       << utl::endl;
+            //             utl::cout << "job:" << job->id()
+            //                       << ", jobStrPos:" << jobStrPos
+            //                       << ", sid:" << job->serialId()
+            //                       << utl::endl;
             string[jobStrPos] = job->serialId();
-            if (newString) (*newString)[jobStrPos] = job->serialId();
+            if (newString)
+                (*newString)[jobStrPos] = job->serialId();
             jobStrPos++;
             const jobop_set_id_t& ops = job->allSops();
-            for (jobop_set_id_t::const_iterator opIt = ops.begin();
-                 opIt != ops.end(); opIt++)
+            for (jobop_set_id_t::const_iterator opIt = ops.begin(); opIt != ops.end(); opIt++)
             {
                 JobOp* op = *opIt;
-//                 utl::cout << "   op:" << op->id()
-//                           << ", opStrPos:" << opStrPos
-//                           << ", sid:" << op->serialId()
-//                           << utl::endl;
+                //                 utl::cout << "   op:" << op->id()
+                //                           << ", opStrPos:" << opStrPos
+                //                           << ", sid:" << op->serialId()
+                //                           << utl::endl;
                 string[opStrPos] = op->serialId();
-                if (newString) (*newString)[opStrPos] = op->serialId();
+                if (newString)
+                    (*newString)[opStrPos] = op->serialId();
                 opStrPos++;
             }
         }
@@ -363,33 +341,33 @@ ForwardScheduler::setSequenceString(
         //operation-level scheduling
         uint_t opStrPos = _opStartPosition;
         const jobop_set_id_t& ops = dataSet->sops();
-        for (jobop_set_id_t::const_iterator it = ops.begin();
-             it != ops.end(); it++)
+        for (jobop_set_id_t::const_iterator it = ops.begin(); it != ops.end(); it++)
         {
             JobOp* op = *it;
-//             utl::cout << "op(job):" << op->id()
-//                       << "(" << op->job()->id() << ")"
-//                       << ", opStrPos:" << opStrPos
-//                       << ", sid:" << op->serialId()
-//                       << utl::endl;
+            //             utl::cout << "op(job):" << op->id()
+            //                       << "(" << op->job()->id() << ")"
+            //                       << ", opStrPos:" << opStrPos
+            //                       << ", sid:" << op->serialId()
+            //                       << utl::endl;
             string[opStrPos] = op->serialId();
-            if (newString) (*newString)[opStrPos] = op->serialId();
+            if (newString)
+                (*newString)[opStrPos] = op->serialId();
             opStrPos++;
         }
     }
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 ForwardScheduler::init()
 {
-        _initOptRun = true;
-        _jobStartPosition = uint_t_max;
-        _opStartPosition = uint_t_max;
+    _initOptRun = true;
+    _jobStartPosition = uint_t_max;
+    _opStartPosition = uint_t_max;
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 ForwardScheduler::deInit()
@@ -397,6 +375,6 @@ ForwardScheduler::deInit()
     deleteMapSecond(_sortedJobOps);
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 CSE_NS_END;

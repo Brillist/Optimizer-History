@@ -9,32 +9,30 @@
 #include "Resource.h"
 #include "Schedule.h"
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 #ifdef DEBUG
 //#define DEBUG_UNIT
 #endif
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 UTL_NS_USE;
 LUT_NS_USE;
 CLP_NS_USE;
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 UTL_CLASS_IMPL(cls::CompositeTimetableDomain, utl::Object);
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 CLS_NS_BEGIN;
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
-CompositeTimetableDomain::initialize(
-    Schedule* schedule,
-    const uint_set_t& resIds)
+CompositeTimetableDomain::initialize(Schedule* schedule, const uint_set_t& resIds)
 {
     ASSERTD(_head->next() == _tail);
     _schedule = schedule;
@@ -56,7 +54,7 @@ CompositeTimetableDomain::initialize(
     set(int_t_min + 1, int_t_max - 1, 0, 0);
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 IntExp*
 CompositeTimetableDomain::addCapExp(uint_t cap)
@@ -74,18 +72,10 @@ CompositeTimetableDomain::addCapExp(uint_t cap)
     {
         IntExp* nullIntExpPtr = nullptr;
         uint_t zero = 0;
-        utl::arrayGrow(
-            _capExps,
-            _capExpsSize,
-            utl::max(K(1), ((size_t)cap + 1)),
-            K(1024),
-            &nullIntExpPtr);
-        utl::arrayGrow(
-            _capExpCounts,
-            _capExpCountsSize,
-            utl::max(K(1), ((size_t)cap + 1)),
-            K(1024),
-            &zero);
+        utl::arrayGrow(_capExps, _capExpsSize, utl::max(K(1), ((size_t)cap + 1)), K(1024),
+                       &nullIntExpPtr);
+        utl::arrayGrow(_capExpCounts, _capExpCountsSize, utl::max(K(1), ((size_t)cap + 1)), K(1024),
+                       &zero);
     }
 
     IntExp* capExp = new IntVar(_mgr);
@@ -120,7 +110,7 @@ CompositeTimetableDomain::addCapExp(uint_t cap)
     return capExp;
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 CompositeTimetableDomain::remCapExp(uint_t cap)
@@ -135,7 +125,7 @@ CompositeTimetableDomain::remCapExp(uint_t cap)
     }
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /*void
 CompositeTimetableDomain::add(int min, int max, uint_t resId)
@@ -278,7 +268,7 @@ CompositeTimetableDomain::add(int min, int max, uint_t resId)
 #endif
 }*/
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 CompositeTimetableDomain::add(int min, int max, uint_t resId)
@@ -396,18 +386,17 @@ CompositeTimetableDomain::add(int min, int max, uint_t resId)
 #endif
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
-CompositeTimetableDomain::allocate(
-    int min,
-    int max,
-    uint_t cap,
-    Activity* act,
-    const PreferredResources* pr,
-    const IntExp* breakList,
-    uint_t resId,
-    bool updateDiscrete)
+CompositeTimetableDomain::allocate(int min,
+                                   int max,
+                                   uint_t cap,
+                                   Activity* act,
+                                   const PreferredResources* pr,
+                                   const IntExp* breakList,
+                                   uint_t resId,
+                                   bool updateDiscrete)
 {
     ASSERTD(_mgr != nullptr);
 
@@ -436,16 +425,16 @@ CompositeTimetableDomain::allocate(
     {
         breakList = act->breakList();
     }
-    if ((act != nullptr) && act->isA(IntActivity)) intact = (IntActivity*)act;
+    if ((act != nullptr) && act->isA(IntActivity))
+        intact = (IntActivity*)act;
 
     // ttSpan iterator
     IntSpan* prev[CLP_INTSPAN_MAXDEPTH];
     CompositeSpan* ttSpan = (CompositeSpan*)findPrev(min, prev);
 
     // blSpan iterator
-    const IntSpan* blSpan
-        = (breakList == nullptr) ? _dummyIntSpan
-                              : breakList->domainRISC()->find(min);
+    const IntSpan* blSpan =
+        (breakList == nullptr) ? _dummyIntSpan : breakList->domainRISC()->find(min);
 
     // should not be in break at min
     if (blSpan->v0() == 0)
@@ -546,9 +535,11 @@ CompositeTimetableDomain::allocate(
         if (blSpan->v0() == 0)
         {
             blSpan = blSpan->next();
-            if (blSpan->v0() == 0) blSpan = blSpan->next();
+            if (blSpan->v0() == 0)
+                blSpan = blSpan->next();
         }
-        while (blSpan->max() < t) blSpan = blSpan->next()->next();
+        while (blSpan->max() < t)
+            blSpan = blSpan->next()->next();
         t = utl::max(t, blSpan->min());
 
         // adjust ttSpan
@@ -572,72 +563,45 @@ CompositeTimetableDomain::allocate(
 #endif
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 CompositeSpan*
-CompositeTimetableDomain::newCS(
-    int min,
-    int max,
-    IntExpDomainAR* resIds,
-    uint_t level)
+CompositeTimetableDomain::newCS(int min, int max, IntExpDomainAR* resIds, uint_t level)
 {
     ASSERTD(_values != nullptr);
 
     if (resIds == nullptr)
     {
-        resIds
-            = new IntExpDomainAR(
-                _mgr,
-                _numValues,
-                _values,
-                false,
-                true);
+        resIds = new IntExpDomainAR(_mgr, _numValues, _values, false, true);
         _mgr->revAllocate(resIds);
     }
 
-    CompositeSpan* span
-        = new CompositeSpan(
-            min,
-            max,
-            resIds,
-            level);
+    CompositeSpan* span = new CompositeSpan(min, max, resIds, level);
 
     _mgr->revAllocate(span);
     return span;
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 IntSpan*
-CompositeTimetableDomain::newIntSpan(
-    int min,
-    int max,
-    uint_t,             // v0 (unused)
-    uint_t,             // v1 (unused)
-    uint_t level)
+CompositeTimetableDomain::newIntSpan(int min,
+                                     int max,
+                                     uint_t, // v0 (unused)
+                                     uint_t, // v1 (unused)
+                                     uint_t level)
 {
     ASSERTD(_values != nullptr);
 
-    IntExpDomainAR* resIds
-        = new IntExpDomainAR(
-            _mgr,
-            _numValues,
-            _values,
-            false,
-            true);
+    IntExpDomainAR* resIds = new IntExpDomainAR(_mgr, _numValues, _values, false, true);
     _mgr->revAllocate(resIds);
 
-    CompositeSpan* span
-        = new CompositeSpan(
-            min,
-            max,
-            resIds,
-            level);
+    CompositeSpan* span = new CompositeSpan(min, max, resIds, level);
 
     return span;
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 CompositeTimetableDomain::init()
@@ -658,41 +622,40 @@ CompositeTimetableDomain::init()
     _events = 0;
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 CompositeTimetableDomain::deInit()
 {
     delete _dummyIntSpan;
-    delete [] _values;
-    delete [] _capExps;
-    delete [] _capExpCounts;
+    delete[] _values;
+    delete[] _capExps;
+    delete[] _capExpCounts;
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 bool
-CompositeTimetableDomain::allocate(
-    IntExpDomainAR* resIds,
-    uint_t cap,
-    IntActivity* act,
-    const PreferredResources* pr,
-    int min,
-    int max,
-    utl::uint_t resId,
-    bool updateDiscrete)
+CompositeTimetableDomain::allocate(IntExpDomainAR* resIds,
+                                   uint_t cap,
+                                   IntActivity* act,
+                                   const PreferredResources* pr,
+                                   int min,
+                                   int max,
+                                   utl::uint_t resId,
+                                   bool updateDiscrete)
 {
     ASSERTD(cap > 0);
 
     // sanity check params
 #ifdef DEBUG
     ASSERT((min == int_t_max) == (max == int_t_max));
-    if (resId != uint_t_max) ASSERT(cap == 1);
+    if (resId != uint_t_max)
+        ASSERT(cap == 1);
 #endif
 
     // can't perform the allocation?
-    if ((resIds->size() < cap)
-        || (((resId != uint_t_max) && !resIds->has(resId))))
+    if ((resIds->size() < cap) || (((resId != uint_t_max) && !resIds->has(resId))))
     {
         return false;
     }
@@ -731,7 +694,8 @@ CompositeTimetableDomain::allocate(
         }
         resIds->remove(curResId);
 
-        if ((min == int_t_max) || (act == nullptr)) continue;
+        if ((min == int_t_max) || (act == nullptr))
+            continue;
 
         // update composite-allocations in act
         act->addAllocation(curResId, min, max);
@@ -751,7 +715,8 @@ CompositeTimetableDomain::allocate(
         // remove cur-res from other composite timetables
         const uint_vector_t& crIds = dres->crIds();
         ASSERTD(crIds.size() >= 1);
-        if (crIds.size() == 1) continue;
+        if (crIds.size() == 1)
+            continue;
         uint_vector_t::const_iterator it;
         for (it = crIds.begin(); it != crIds.end(); ++it)
         {
@@ -760,13 +725,15 @@ CompositeTimetableDomain::allocate(
             ASSERTD(res->isA(CompositeResource));
             CompositeResource* cres = (CompositeResource*)res;
             // skip over self...
-            if (cres->timetable().domain() == this) continue;
+            if (cres->timetable().domain() == this)
+                continue;
             // allocate curResId in cres
             cres->allocate(min, max, 1, nullptr, nullptr, nullptr, curResId, false);
         }
     }
 
-    if (min == int_t_max) return true;
+    if (min == int_t_max)
+        return true;
 
     // update cap-exps
     if (_capExpsSize > 0)
@@ -776,13 +743,14 @@ CompositeTimetableDomain::allocate(
         for (uint_t cap = newCap + 1; cap <= lim; ++cap)
         {
             IntExp* capExp = _capExps[cap];
-            if (capExp == nullptr) continue;
+            if (capExp == nullptr)
+                continue;
             capExp->remove(min, max);
         }
     }
     return true;
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 CLS_NS_END;

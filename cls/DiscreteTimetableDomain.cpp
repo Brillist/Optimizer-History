@@ -3,27 +3,27 @@
 #include <clp/Manager.h>
 #include "DiscreteTimetableDomain.h"
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 #ifdef DEBUG
 //#define DEBUG_UNIT
 #endif
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 UTL_NS_USE;
 LUT_NS_USE;
 CLP_NS_USE;
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 UTL_CLASS_IMPL(cls::DiscreteTimetableDomain, utl::Object);
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 CLS_NS_BEGIN;
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 DiscreteTimetableDomain::initialize(Manager* mgr)
@@ -33,7 +33,7 @@ DiscreteTimetableDomain::initialize(Manager* mgr)
     set(int_t_min + 1, int_t_max - 1, 0, 0);
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 IntExp*
 DiscreteTimetableDomain::addCapExp(uint_t cap)
@@ -49,18 +49,10 @@ DiscreteTimetableDomain::addCapExp(uint_t cap)
     {
         IntExp* nullIntExpPtr = nullptr;
         uint_t zero = 0;
-        utl::arrayGrow(
-            _capExps,
-            _capExpsSize,
-            utl::max(K(1), ((size_t)cap + 1)),
-            K(1024),
-            &nullIntExpPtr);
-        utl::arrayGrow(
-            _capExpCounts,
-            _capExpCountsSize,
-            utl::max(K(1), ((size_t)cap + 1)),
-            K(1024),
-            &zero);
+        utl::arrayGrow(_capExps, _capExpsSize, utl::max(K(1), ((size_t)cap + 1)), K(1024),
+                       &nullIntExpPtr);
+        utl::arrayGrow(_capExpCounts, _capExpCountsSize, utl::max(K(1), ((size_t)cap + 1)), K(1024),
+                       &zero);
     }
 
     IntExp* capExp = new IntVar(_mgr);
@@ -95,7 +87,7 @@ DiscreteTimetableDomain::addCapExp(uint_t cap)
     return capExp;
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 DiscreteTimetableDomain::remCapExp(uint_t cap)
@@ -110,7 +102,7 @@ DiscreteTimetableDomain::remCapExp(uint_t cap)
     }
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 utl::uint_t
 DiscreteTimetableDomain::add(int min, int max, int v0, int v1)
@@ -161,15 +153,14 @@ DiscreteTimetableDomain::add(int min, int max, int v0, int v1)
     int minv1 = (int)minSpan->v1();
     int newminv0 = minv0 + v0;
     int newminv1 = minv1 + v1;
-    if ((newminv1 < newminv0) && (v1 < 0)) newminv1 = newminv0;
+    if ((newminv1 < newminv0) && (v1 < 0))
+        newminv1 = newminv0;
     minCap = utl::min((int)minCap, newminv1 - newminv0);
     bool minEdge, minMerge;
     if (min == minSpan->min())
     {
         minEdge = true;
-        minMerge
-            = (((int)prev0->v0() == newminv0)
-               && ((int)prev0->v1() == newminv1));
+        minMerge = (((int)prev0->v0() == newminv0) && ((int)prev0->v1() == newminv1));
     }
     else
     {
@@ -181,15 +172,14 @@ DiscreteTimetableDomain::add(int min, int max, int v0, int v1)
     int maxv1 = (int)maxSpan->v1();
     int newmaxv0 = maxv0 + v0;
     int newmaxv1 = maxv1 + v1;
-    if ((newmaxv1 < newmaxv0) && (v1 < 0)) newmaxv1 = newmaxv0;
+    if ((newmaxv1 < newmaxv0) && (v1 < 0))
+        newmaxv1 = newmaxv0;
     minCap = utl::min((int)minCap, newmaxv1 - newmaxv0);
     bool maxEdge, maxMerge;
     if (max == maxSpan->max())
     {
         maxEdge = true;
-        maxMerge
-            = (((int)next0->v0() == newmaxv0)
-               && ((int)next0->v1() == newmaxv1));
+        maxMerge = (((int)next0->v0() == newmaxv0) && ((int)next0->v1() == newmaxv1));
     }
     else
     {
@@ -344,12 +334,7 @@ DiscreteTimetableDomain::add(int min, int max, int v0, int v1)
     else
     {
         int minSpanMax = minSpan->max();
-        IntSpan* newSpan =
-            new IntSpan(
-                min,
-                minSpanMax,
-                newminv0,
-                newminv1);
+        IntSpan* newSpan = new IntSpan(min, minSpanMax, newminv0, newminv1);
         _mgr->revAllocate(newSpan);
         findPrevForward(minSpanMax + 1, prev);
         insertAfter(newSpan, prev);
@@ -386,12 +371,7 @@ DiscreteTimetableDomain::add(int min, int max, int v0, int v1)
     else
     {
         int maxSpanMin = maxSpan->min();
-        IntSpan* newSpan =
-            new IntSpan(
-                maxSpanMin,
-                max,
-                newmaxv0,
-                newmaxv1);
+        IntSpan* newSpan = new IntSpan(maxSpanMin, max, newmaxv0, newmaxv1);
         _mgr->revAllocate(newSpan);
         findPrevForward(maxSpanMin, prev);
         insertAfter(newSpan, prev);
@@ -408,7 +388,8 @@ DiscreteTimetableDomain::add(int min, int max, int v0, int v1)
         uint_t oldCap = span->capacity();
         int spanV0 = (int)span->v0() + v0;
         int spanV1 = (int)span->v1() + v1;
-        if ((spanV1 < spanV0) && (v1 < 0)) spanV1 = spanV0;
+        if ((spanV1 < spanV0) && (v1 < 0))
+            spanV1 = spanV0;
         span->v0() = spanV0;
         span->v1() = spanV1;
         if (span->v0() > span->v1())
@@ -442,7 +423,7 @@ DiscreteTimetableDomain::add(int min, int max, int v0, int v1)
     return minCap;
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 DiscreteTimetableDomain::init()
@@ -454,15 +435,15 @@ DiscreteTimetableDomain::init()
     _events = 0;
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 DiscreteTimetableDomain::deInit()
 {
-    delete [] _capExps;
-    delete [] _capExpCounts;
+    delete[] _capExps;
+    delete[] _capExpCounts;
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 CLS_NS_END;

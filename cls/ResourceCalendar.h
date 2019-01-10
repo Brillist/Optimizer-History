@@ -1,63 +1,77 @@
 #ifndef CLS_RESOURCECALENDAR_H
 #define CLS_RESOURCECALENDAR_H
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 #include <libutl/SpanCol.h>
 #include <clp/Manager.h>
 #include <clp/IntVar.h>
 #include <cls/ResourceCalendarSpan.h>
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 CLS_NS_BEGIN;
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 enum rescal_t
 {
-    rc_simple,           /**< simple resource calendar */
-    rc_allAvailable,     /**< all resources are available */
-    rc_anyAvailable,     /**< any resource is available */
-    rc_undefined         /**< undefined type */
+    rc_simple,       /**< simple resource calendar */
+    rc_allAvailable, /**< all resources are available */
+    rc_anyAvailable, /**< any resource is available */
+    rc_undefined     /**< undefined type */
 };
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 class ResourceCalendarSpec : public utl::Object
 {
     UTL_CLASS_DECL(ResourceCalendarSpec);
+
 public:
     typedef std::set<utl::uint_t> uint_set_t;
+
 public:
     /** Constructor. */
-    ResourceCalendarSpec(
-        rescal_t type,
-        const uint_set_t& calIds);
+    ResourceCalendarSpec(rescal_t type, const uint_set_t& calIds);
 
     /** Copy another instance. */
     virtual void copy(const utl::Object& rhs);
 
     /** Get type. */
-    rescal_t type() const
-    { return _type; }
+    rescal_t
+    type() const
+    {
+        return _type;
+    }
 
     /** Get composite calendar ids. */
-    const uint_set_t& calIds() const
-    { return _calIds; }
+    const uint_set_t&
+    calIds() const
+    {
+        return _calIds;
+    }
 
     /** Less-than comparison operator. */
     bool operator<(const ResourceCalendarSpec& rhs) const;
+
 private:
-    void init()
-    { _type = rc_undefined; }
-    void deInit() {}
+    void
+    init()
+    {
+        _type = rc_undefined;
+    }
+    void
+    deInit()
+    {
+    }
+
 private:
-    rescal_t _type;         // type of calendar
-    uint_set_t _calIds;     // composite calendar ids
+    rescal_t _type;     // type of calendar
+    uint_set_t _calIds; // composite calendar ids
 };
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
    Resource calendar.
@@ -68,40 +82,49 @@ private:
    \author Adam McKee
 */
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 class ResourceCalendar : public utl::SpanCol<int>
 {
     UTL_CLASS_DECL(ResourceCalendar);
+
 public:
     virtual int compare(const utl::Object& rhs) const;
 
-    virtual void serialize(
-        utl::Stream& stream,
-        utl::uint_t io,
-        utl::uint_t mode = utl::ser_default);
+    virtual void
+    serialize(utl::Stream& stream, utl::uint_t io, utl::uint_t mode = utl::ser_default);
 
-    virtual bool isMergeable(
-        const utl::Object& lhs,
-        const utl::Object& rhs) const;
+    virtual bool isMergeable(const utl::Object& lhs, const utl::Object& rhs) const;
 
     void dump(utl::Stream& os, time_t originTime, utl::uint_t timeStep);
 
     /** Get spec. */
-    const ResourceCalendarSpec& spec() const
-    { return _spec; }
+    const ResourceCalendarSpec&
+    spec() const
+    {
+        return _spec;
+    }
 
     /** Get spec. */
-    ResourceCalendarSpec& spec()
-    { return _spec; }
+    ResourceCalendarSpec&
+    spec()
+    {
+        return _spec;
+    }
 
     /** Get serial id. */
-    utl::uint_t serialId() const
-    { return _serialId; }
+    utl::uint_t
+    serialId() const
+    {
+        return _serialId;
+    }
 
     /** Get serial id. */
-    utl::uint_t& serialId()
-    { return _serialId; }
+    utl::uint_t&
+    serialId()
+    {
+        return _serialId;
+    }
 
     /** Get unique id. */
     utl::uint_t id() const;
@@ -116,8 +139,11 @@ public:
     void makeBreakList(clp::Manager* mgr);
 
     /** Get break-list. */
-    clp::IntVar* breakList() const
-    { return _breakList; }
+    clp::IntVar*
+    breakList() const
+    {
+        return _breakList;
+    }
 
     /** Find a valid es,ef pair. */
     void findForward(int& es, int& ef, utl::uint_t pt) const;
@@ -126,13 +152,14 @@ public:
     void findBackward(int& lf, int& ls, utl::uint_t pt) const;
 
     /** Add compiled spans to another calendar. */
-    void addCompiledSpansTo(
-        ResourceCalendar* cal,
-        rcs_status_t status) const;
+    void addCompiledSpansTo(ResourceCalendar* cal, rcs_status_t status) const;
 
     /** Get non-break time in the given time span. */
-    utl::uint_t getNonBreakTime(int begin, int end) const
-    { return ((end - begin + 1) - getBreakTime(begin, end)); }
+    utl::uint_t
+    getNonBreakTime(int begin, int end) const
+    {
+        return ((end - begin + 1) - getBreakTime(begin, end));
+    }
 
     /** Get break time during the given span. */
     utl::uint_t getBreakTime(int begin, int end) const;
@@ -154,6 +181,7 @@ public:
 
     /** Get end-time corresponding to a start time. */
     int getEndTimeForStartTime(int startTime, utl::uint_t pt) const;
+
 private:
     void init();
     void deInit();
@@ -163,6 +191,7 @@ private:
     int ptTS(utl::uint_t pt) const;
     const ResourceCalendarSpan* findSpanByTime(int ts) const;
     const ResourceCalendarSpan* findSpanByPt(int pt) const;
+
 private:
     //
     // A few notes that might be helpful...
@@ -188,7 +217,7 @@ private:
     mutable ResourceCalendarSpan _searchSpan;
 };
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
    Order ResourceCalendar objects by comparing their spans.
@@ -196,20 +225,19 @@ private:
    \author Adam McKee
 */
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 struct ResourceCalendarOrdering
-    : public std::binary_function<ResourceCalendar*,ResourceCalendar*,bool>
+    : public std::binary_function<ResourceCalendar*, ResourceCalendar*, bool>
 {
-    bool operator()(
-        const ResourceCalendar* lhs,
-        const ResourceCalendar* rhs) const
+    bool
+    operator()(const ResourceCalendar* lhs, const ResourceCalendar* rhs) const
     {
         return (lhs->compare(*rhs) < 0);
     }
 };
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
    Order ResourceCalendar objects by specification.
@@ -217,23 +245,22 @@ struct ResourceCalendarOrdering
    \author Adam McKee
 */
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 struct ResourceCalendarSpecOrdering
-    : public std::binary_function<ResourceCalendar*,ResourceCalendar*,bool>
+    : public std::binary_function<ResourceCalendar*, ResourceCalendar*, bool>
 {
-    bool operator()(
-        const ResourceCalendar* lhs,
-        const ResourceCalendar* rhs) const
+    bool
+    operator()(const ResourceCalendar* lhs, const ResourceCalendar* rhs) const
     {
         return (lhs->spec() < rhs->spec());
     }
 };
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 CLS_NS_END;
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 #endif

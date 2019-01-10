@@ -5,26 +5,26 @@
 #include <libutl/Float.h>
 #include <libutl/BufferedFDstream.h>
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 #ifdef DEBUG
 #define DEBUG_UNIT
 #endif
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 UTL_NS_USE;
 LUT_NS_USE;
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 UTL_CLASS_IMPL(gop::ID_SAoptimizer, gop::SAoptimizer);
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 GOP_NS_BEGIN;
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 ID_SAoptimizer::initialize(const OptimizerConfiguration* config)
@@ -38,7 +38,7 @@ ID_SAoptimizer::initialize(const OptimizerConfiguration* config)
     init();
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 bool
 ID_SAoptimizer::run()
@@ -58,15 +58,14 @@ ID_SAoptimizer::run()
 #ifdef DEBUG_UNIT
         utl::cout << utl::endl << ID_SAinitTempString() << utl::endl;
 #endif
-        while (!complete &&
-               (objective->compare(_bestScore, _targetScore) < 0))
+        while (!complete && (objective->compare(_bestScore, _targetScore) < 0))
         {
             ////_tempDcrRate = exp((log(tempN/temp0)) / numProbes);
             _tempDcrRate = pow((_stopTemp / _initTemp), (1.0 / _numProbes));
 
             //try k times for each initTemp + tempDcrRate + numProbes setting
-            for (_repeatId = 0; (_repeatId < _numRepeats) &&
-                     (objective->compare(_bestScore, _targetScore) < 0);
+            for (_repeatId = 0;
+                 (_repeatId < _numRepeats) && (objective->compare(_bestScore, _targetScore) < 0);
                  _repeatId++)
             {
                 _currentTemp = _initTemp;
@@ -75,14 +74,10 @@ ID_SAoptimizer::run()
 #ifdef DEBUG_UNIT
                 utl::cout << utl::endl << ID_SAinitTempString2() << utl::endl;
 #endif
-                while (!complete
-                       &&
-                       (((_iteration - _improvementIteration)
-                         < (uint_t)(_numProbes * 0.2)) //20% more iters
-                        ||
-                        ((_iteration < maxIter)
-                         &&
-                         (objective->compare(_bestScore, _targetScore) < 0))))
+                while (!complete && (((_iteration - _improvementIteration) <
+                                      (uint_t)(_numProbes * 0.2)) //20% more iters
+                                     || ((_iteration < maxIter) &&
+                                         (objective->compare(_bestScore, _targetScore) < 0))))
                     complete = SAiterationRun();
             }
             _numProbes = 2 * _numProbes;
@@ -95,7 +90,6 @@ ID_SAoptimizer::run()
             _scoreStep = fabs(_bestScore->getValue() * 0.01);
             _targetScore->setType(_bestScore->getType());
             _targetScore->setValue(_bestScore->getValue() - _scoreStep);
-
         }
         else
         {
@@ -118,7 +112,7 @@ ID_SAoptimizer::run()
     return scheduleFeasible;
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 utl::String
 ID_SAoptimizer::ID_SAinitTempString()
@@ -139,28 +133,24 @@ ID_SAoptimizer::ID_SAinitTempString()
         << ", ratioDcrRate:" << Float(_ratioDcrRate).toString("precision:2")
         << ", initNumProbes:" << _initNumProbes;
     if (_totalScoreDiffIter > 0)
-        str << ", avgDiffScore:"
-            << (_totalScoreDiff / _totalScoreDiffIter);
+        str << ", avgDiffScore:" << (_totalScoreDiff / _totalScoreDiffIter);
     str << '\0';
     return utl::String((char*)str.get());
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 utl::String
 ID_SAoptimizer::ID_SAinitTempString2()
 {
     utl::MemStream str;
-    str << "repeatId:" << _repeatId
-        << ", numProbes:" << _numProbes
+    str << "repeatId:" << _repeatId << ", numProbes:" << _numProbes
         << ", tempDcrRate:" << _tempDcrRate
-        << ", targetScore:"
-        << Float(_targetScore->getValue()).toString("precision:2")
-        << '\0';
+        << ", targetScore:" << Float(_targetScore->getValue()).toString("precision:2") << '\0';
     return utl::String((char*)str.get());
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 ID_SAoptimizer::init()
@@ -175,6 +165,6 @@ ID_SAoptimizer::init()
     _repeatId = 0;
 }
 
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 GOP_NS_END;

@@ -104,7 +104,7 @@ public:
     void add(uint_t lhsOpSequenceId, uint_t rhsOpSequenceId, int delay, double cost);
 
 private:
-    typedef std::set<ResourceSequenceDelay*, lut::ObjectSTLordering<ResourceSequenceDelay>>
+    typedef std::set<ResourceSequenceDelay*, lut::ObjectOrdering>
         rsd_set_t;
 
 private:

@@ -113,12 +113,7 @@ And::execute()
 void
 And::addRefs()
 {
-    goal_vector_t::const_iterator it;
-    for (it = _goals.begin(); it != _goals.end(); ++it)
-    {
-        Goal* goal = *it;
-        goal->addRef();
-    }
+    addRefCont(_goals);
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////

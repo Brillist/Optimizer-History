@@ -3,12 +3,6 @@
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-#undef new
-#include <iomanip>
-#include <libutl/gblnew_macros.h>
-
-////////////////////////////////////////////////////////////////////////////////////////////////////
-
 UTL_NS_USE;
 LUT_NS_USE;
 
@@ -18,37 +12,46 @@ LUT_NS_BEGIN;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-void
-serialize(std::string& str, Stream& stream, uint_t io)
+template <>
+int
+compare(const double& lhs, const double& rhs)
 {
-    if (io == utl::io_rd)
+    if (fabs(lhs - rhs) < 0.0000000001)
     {
-        String utlString;
-        utlString.serialize(stream, io_rd, ser_default);
-        str = utlString.get();
+        return 0;
+    }
+    else if (lhs < rhs)
+    {
+        return -1;
     }
     else
     {
-        String utlString(str.c_str(), false);
-        utlString.serialize(stream, io_wr, ser_default);
+        return 1;
     }
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-void
-serialize(time_t& tt, Stream& stream, uint_t io)
+bool
+getFlag(uint32_t flags, uint32_t bit)
 {
-    if (io == io_rd)
+    uint32_t mask = 1U << bit;
+    return (flags & mask);
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
+void
+setFlag(uint32_t& flags, uint32_t bit, bool val)
+{
+    uint32_t mask = 1U << bit;
+    if (val)
     {
-        int i;
-        utl::serialize(i, stream, io, ser_default);
-        tt = i;
+        flags |= mask;
     }
     else
     {
-        int i = tt;
-        utl::serialize(i, stream, io, ser_default);
+        flags &= ~mask;
     }
 }
 
@@ -76,66 +79,27 @@ heading(const std::string& title, char ch, uint_t width)
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-std::string
-getTimeString(time_t t)
+void*
+realloc(void* ptr, size_t oldSize, size_t newSize)
 {
-    struct tm* tm = localtime(&t);
-    char buf[256];
-    sprintf(buf, "%02u-%02u-%02u %02u:%02u:%02u", tm->tm_year + 1900, tm->tm_mon + 1, tm->tm_mday,
-            tm->tm_hour, tm->tm_min, tm->tm_sec);
-    return std::string(buf);
-}
-
-////////////////////////////////////////////////////////////////////////////////////////////////////
-
-period_t
-stringToPeriod(const std::string& p_str)
-{
-    std::string str = tolower(p_str);
-    if ((str == "hour") || (str == "hourly"))
-    {
-        return period_hour;
-    }
-    else if ((str == "day") || (str == "daily"))
-    {
-        return period_day;
-    }
-    else if ((str == "week") || (str == "weekly"))
-    {
-        return period_week;
-    }
-    else if ((str == "month") || (str == "monthly"))
-    {
-        return period_month;
-    }
-    else if ((str == "year") || (str == "yearly") || (str == "annually"))
-    {
-        return period_year;
-    }
-    return period_undefined;
+    ASSERT(ptr != nullptr);
+    void* newPtr = malloc(newSize);
+    ASSERT(newPtr != nullptr);
+    memcpy(newPtr, ptr, oldSize);
+    free(ptr);
+    return newPtr;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 std::string
-periodToString(period_t period)
+readLine(std::istream& is)
 {
-    switch (period)
-    {
-    case period_hour:
-        return "hour";
-    case period_day:
-        return "day";
-    case period_week:
-        return "week";
-    case period_month:
-        return "month";
-    case period_year:
-        return "year";
-    default:
-        ABORT();
-    }
-    return "(null)";
+    char* line = new char[1024];
+    is.getline(line, 1024);
+    std::string str(line);
+    delete[] line;
+    return str;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -163,15 +127,90 @@ periodToSeconds(period_t period)
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-void*
-realloc(void* ptr, size_t oldSize, size_t newSize)
+std::string
+periodToString(period_t period)
 {
-    ASSERT(ptr != nullptr);
-    void* newPtr = malloc(newSize);
-    ASSERT(newPtr != nullptr);
-    memcpy(newPtr, ptr, oldSize);
-    free(ptr);
-    return newPtr;
+    switch (period)
+    {
+    case period_hour:
+        return "hour";
+    case period_day:
+        return "day";
+    case period_week:
+        return "week";
+    case period_month:
+        return "month";
+    case period_year:
+        return "year";
+    default:
+        ABORT();
+    }
+    return "(null)";
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
+period_t
+periodFromString(const std::string& p_str)
+{
+    std::string str = tolower(p_str);
+    if ((str == "hour") || (str == "hourly"))
+    {
+        return period_hour;
+    }
+    else if ((str == "day") || (str == "daily"))
+    {
+        return period_day;
+    }
+    else if ((str == "week") || (str == "weekly"))
+    {
+        return period_week;
+    }
+    else if ((str == "month") || (str == "monthly"))
+    {
+        return period_month;
+    }
+    else if ((str == "year") || (str == "yearly") || (str == "annually"))
+    {
+        return period_year;
+    }
+    return period_undefined;
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
+void
+serialize(std::string& str, Stream& stream, uint_t io)
+{
+    if (io == utl::io_rd)
+    {
+        String utlString;
+        utlString.serialize(stream, io_rd, ser_default);
+        str = utlString.get();
+    }
+    else
+    {
+        String utlString(str.c_str(), false);
+        utlString.serialize(stream, io_wr, ser_default);
+    }
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
+void
+serialize(time_t& t, Stream& stream, uint_t io)
+{
+    if (io == io_rd)
+    {
+        int64_t i;
+        utl::serialize(i, stream, io, ser_default);
+        t = i;
+    }
+    else
+    {
+        int64_t i = t;
+        utl::serialize(i, stream, io, ser_default);
+    }
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -205,70 +244,11 @@ time_dayOfWeek(time_t t)
 std::string
 time_str(time_t t)
 {
-    std::ostringstream ss;
-    struct tm* tms = localtime(&t);
-    ss << (1900 + tms->tm_year) << "/" << std::setfill('0') << std::setw(2) << (tms->tm_mon + 1)
-       << "/" << std::setfill('0') << std::setw(2) << tms->tm_mday << " " << std::setfill('0')
-       << std::setw(2) << tms->tm_hour << ":" << std::setfill('0') << std::setw(2) << tms->tm_min
-       << ":" << std::setfill('0') << std::setw(2) << tms->tm_sec;
-    return ss.str();
-}
-
-////////////////////////////////////////////////////////////////////////////////////////////////////
-
-bool
-getFlag(uint32_t flags, uint32_t bit)
-{
-    uint32_t mask = 1U << bit;
-    return (flags & mask);
-}
-
-////////////////////////////////////////////////////////////////////////////////////////////////////
-
-void
-setFlag(uint32_t& flags, uint32_t bit, bool val)
-{
-    uint32_t mask = 1U << bit;
-    if (val)
-    {
-        flags |= mask;
-    }
-    else
-    {
-        flags &= ~mask;
-    }
-}
-
-////////////////////////////////////////////////////////////////////////////////////////////////////
-
-template <>
-int
-compare(const double& lhs, const double& rhs)
-{
-    if (fabs(lhs - rhs) < 0.0000000001)
-    {
-        return 0;
-    }
-    else if (lhs < rhs)
-    {
-        return -1;
-    }
-    else
-    {
-        return 1;
-    }
-}
-
-////////////////////////////////////////////////////////////////////////////////////////////////////
-
-std::string
-readLine(std::istream& is)
-{
-    char* line = new char[1024];
-    is.getline(line, 1024);
-    std::string str(line);
-    delete[] line;
-    return str;
+    auto tm = localtime(&t);
+    char buf[128];
+    sprintf(buf, "%02u-%02u-%02u %02u:%02u:%02u", tm->tm_year + 1900, tm->tm_mon + 1, tm->tm_mday,
+        tm->tm_hour, tm->tm_min, tm->tm_sec);
+    return std::string(buf);
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////

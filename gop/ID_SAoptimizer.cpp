@@ -60,10 +60,9 @@ ID_SAoptimizer::run()
 #endif
         while (!complete && (objective->compare(_bestScore, _targetScore) < 0))
         {
-            ////_tempDcrRate = exp((log(tempN/temp0)) / numProbes);
             _tempDcrRate = pow((_stopTemp / _initTemp), (1.0 / _numProbes));
 
-            //try k times for each initTemp + tempDcrRate + numProbes setting
+            // try k times for each initTemp + tempDcrRate + numProbes setting
             for (_repeatId = 0;
                  (_repeatId < _numRepeats) && (objective->compare(_bestScore, _targetScore) < 0);
                  _repeatId++)
@@ -82,7 +81,7 @@ ID_SAoptimizer::run()
             }
             _numProbes = 2 * _numProbes;
         }
-        ////init run with _initNumProbes or half numProbes of previous run
+        // init run with _initNumProbes or half numProbes of previous run
         _numProbes = max(_initNumProbes, _numProbes / 4);
         ASSERTD(_bestScore->getType() >= _targetScore->getType());
         if (_bestScore->getType() > _targetScore->getType())
@@ -100,7 +99,7 @@ ID_SAoptimizer::run()
     }
 
     ASSERT(this->complete());
-    //re-generate the best schedule and get audit text
+    // re-generate the best schedule and get audit text
     _ind->setString(_bestStrScore->getString()->clone());
     bool scheduleFeasible = iterationRun(nullptr, true);
 #ifdef DEBUG

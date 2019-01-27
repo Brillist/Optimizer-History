@@ -200,10 +200,9 @@ protected:
     int _max;
     uint_t _v0;
     uint_t _v1;
+    uint_t _level;
     IntSpan* _prev;
     IntSpan** _next;
-    uint_t _level;
-
 private:
     void init();
     void deInit();

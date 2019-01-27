@@ -2,10 +2,7 @@
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-/* #include <gop/IndEvaluator.h> */
-/* #include <gop/Objective.h> */
 #include <gop/Optimizer.h>
-/* #include <gop/StringInd.h> */
 #include <gop/RevOperator.h>
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -43,9 +40,6 @@ class HillClimber : public Optimizer
     UTL_CLASS_DECL(HillClimber, Optimizer);
 
 public:
-    //     virtual bool requiresRevOp() const
-    //     { return true; }
-
     /** Initialize. */
     virtual void initialize(const OptimizerConfiguration* config);
 

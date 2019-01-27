@@ -195,8 +195,8 @@ MRPrun::run()
 
 #ifdef DEBUG_UNIT
             utl::cout << "wo_job:" << job->id() << ", active:" << job->active()
-                      << ", releaseT:" << getTimeString(job->releaseTime()).c_str()
-                      << ", dueT:" << getTimeString(job->dueTime()).c_str()
+                      << ", releaseT:" << time_str(job->releaseTime()).c_str()
+                      << ", dueT:" << time_str(job->dueTime()).c_str()
                       << ", ivntC:" << Float(job->inventoryCost()).toString("precisioin:2")
                       << ", opporC:" << Float(job->opportunityCost()).toString(2)
                       << ", lateC:" << Float(job->latenessCost()).toString(2) << utl::endlf;
@@ -453,8 +453,8 @@ MRPrun::createJobOps(Job* job, ProcessPlan* plan)
         //                 if (jobGroup != nullptr) utl::cout << jobGroup->id();
         //                 else utl::cout << "null";
         utl::cout << ", active:" << job->active()
-                  << ", releaseT:" << getTimeString(job->releaseTime()).c_str()
-                  << ", dueT:" << getTimeString(job->dueTime()).c_str()
+                  << ", releaseT:" << time_str(job->releaseTime()).c_str()
+                  << ", dueT:" << time_str(job->dueTime()).c_str()
                   << ", item:" << job->itemId() << ", qnty:" << job->itemQuantity()
                   << ", status:" << job->status() << ", plan:" << plan->id()
                   << ", step:" << step->id() << ", op:" << op->id()

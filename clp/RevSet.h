@@ -22,8 +22,8 @@ class Manager;
 /**
    Reversible set.
 
-   RevSet is a set of objects that tracks changes to itself, so they can
-   be reversed in the event of backtracking.
+   RevSet is a set of objects that tracks changes to itself, so they can be reversed in the event
+   of backtracking.
 
    \author Adam McKee
 */
@@ -141,22 +141,28 @@ void
 RevSet<T>::backtrack()
 {
     ASSERTD(!_deltaStack.empty());
-    RevSetDelta* delta = _deltaStack.top();
+    auto delta = _deltaStack.top();
     _deltaStack.pop();
 
     // so we can safely call add() and remove()...
-    Manager* saveMgr = _mgr;
+    auto saveMgr = _mgr;
     _mgr = nullptr;
 
     // add removed items
-    const utl::Hashtable& removedItems = delta->removedItems();
-    forEachIt(utl::Hashtable, removedItems, T, object) add(object);
-    endForEach;
+    auto& removedItems = delta->removedItems();
+    for (auto obj_ : removedItems)
+    {
+        auto obj = utl::cast<T>(obj_);
+        add(obj);
+    }
 
     // remove added items
-    const utl::Hashtable& addedItems = delta->addedItems();
-    forEachIt(utl::Hashtable, addedItems, T, object) remove(object);
-    endForEach;
+    auto& addedItems = delta->addedItems();
+    for (auto obj_ : addedItems)
+    {
+        auto obj = utl::cast<T>(obj_);
+        remove(obj);
+    }
 
     delete delta;
     _mgr = saveMgr;
@@ -176,15 +182,15 @@ RevSet<T>::initialize(Manager* mgr, rsd_t type)
 
 template <class T>
 bool
-RevSet<T>::add(const utl::Object* object)
+RevSet<T>::add(const utl::Object* obj_)
 {
-    ASSERTD(object->isA(T));
-    if (_set.add((const T*)object))
+    auto obj = utl::cast<T>(obj_);
+    if (_set.add(obj))
     {
-        RevSetDelta* delta = getDelta();
+        auto delta = getDelta();
         if (delta != nullptr)
         {
-            delta->add(object);
+            delta->add(obj);
         }
         return true;
     }
@@ -196,18 +202,18 @@ RevSet<T>::add(const utl::Object* object)
 
 template <class T>
 bool
-RevSet<T>::remove(const utl::Object* object)
+RevSet<T>::remove(const utl::Object* obj_)
 {
-    if (_set.remove(*object))
+    auto obj = utl::cast<T>(obj_);
+    if (_set.remove(*obj))
     {
-        RevSetDelta* delta = getDelta();
+        auto delta = getDelta();
         if (delta != nullptr)
         {
-            delta->remove(object);
+            delta->remove(obj);
         }
         return true;
     }
-
     return false;
 }
 
@@ -238,7 +244,7 @@ RevSet<T>::clearDeltaStack()
 {
     while (!_deltaStack.empty())
     {
-        RevSetDelta* delta = _deltaStack.top();
+        auto delta = _deltaStack.top();
         _deltaStack.pop();
         delete delta;
     }

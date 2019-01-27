@@ -11,16 +11,12 @@ GOP_NS_BEGIN;
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /** 
-    ID_SA (Iterative Deepening Simulated Annealing) was originally designed 
-    by Yixin Chen. 
-    Chen, Yixin, "Optimal Anytime Search For Constrained Nonlinear 
-    Programming", Thesis for the degree of Master of Science, 
-    University of Illinois at Urbana-Champaign, 2001.
+    ID_SA (Iterative Deepening Simulated Annealing) originally designed by Yixin Chen. 
+
+    Chen, Yixin, "Optimal Anytime Search For Constrained Nonlinear Programming", Thesis for the
+    degree of Master of Science, University of Illinois at Urbana-Champaign, 2001.
 
     This implementation contains some modifications.
-
-    Joe Zhou
-    Dec. 2005
 */
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////

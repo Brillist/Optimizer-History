@@ -55,9 +55,12 @@ LUT_NS_DECLARE;
 // for convenience
 using utl::byte_t;
 using utl::String;
+using utl::uint_t;
+using utl::uint_t_max;
 using utl::uint32_t;
 using utl::uint32_t_max;
 using utl::uint64_t;
 using utl::uint64_t_max;
-using utl::uint_t;
-using utl::uint_t_max;
+using utl::int64_t;
+using utl::int64_t_min;
+using utl::int64_t_max;

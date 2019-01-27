@@ -188,7 +188,7 @@ AltResSelector::setResGroupReqs(const ClevorDataSet* dataSet)
                 _resGroupReqs.push_back(clsResGroupReq);
         }
     }
-    std::sort(_resGroupReqs.begin(), _resGroupReqs.end(), UTLordering());
+    std::sort(_resGroupReqs.begin(), _resGroupReqs.end(), ObjectOrdering());
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////

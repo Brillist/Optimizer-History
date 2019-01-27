@@ -431,8 +431,8 @@ TotalCostEvaluator::calcScore(const IndBuilderContext* p_context) const
         uint_t timeStep = _schedulerConfig->timeStep();
 
         *_os << heading("Configuration", '=', 80) << std::endl;
-        std::string originTimeStr = getTimeString(origTime);
-        std::string horizonTimeStr = getTimeString(horiTime);
+        std::string originTimeStr = time_str(origTime);
+        std::string horizonTimeStr = time_str(horiTime);
         *_os << "origin: " << originTimeStr << std::endl;
         *_os << "horizon: " << horizonTimeStr << std::endl;
         *_os << "time-step: " << timeStep << " sec." << std::endl;
@@ -452,7 +452,7 @@ TotalCostEvaluator::calcScore(const IndBuilderContext* p_context) const
             time_t begin = origTime + (sip->begin() * timeStep);
             time_t end = origTime + (sip->end() * timeStep);
             *_os << "i.p. " << ipIdx << ": "
-                 << "[" << getTimeString(begin) << "," << getTimeString(end) << ")" << std::endl;
+                 << "[" << time_str(begin) << "," << time_str(end) << ")" << std::endl;
             InterestPeriodInfo* info = new InterestPeriodInfo();
             info->idx = ipIdx;
             info->begin = begin;
@@ -1076,8 +1076,8 @@ TotalCostEvaluator::cslistDump(const cslist_t& cslist) const
         CapSpan* cs = *it;
         time_t begin = cs->begin() * timeStep + origin;
         time_t end = cs->end() * timeStep + origin;
-        std::cout << "[" << getTimeString(begin) << "<" << cs->begin() << ">"
-                  << "," << getTimeString(end) << "<" << cs->end() << ">"
+        std::cout << "[" << time_str(begin) << "<" << cs->begin() << ">"
+                  << "," << time_str(end) << "<" << cs->end() << ">"
                   << "): " << cs->cap() << std::endl;
     }
 }
@@ -1610,7 +1610,7 @@ TotalCostEvaluator::cslistCost(const SchedulingContext& context,
             {
                 time_t originTime = _schedulerConfig->originTime();
                 time_t curTime = originTime + (t * timeStep);
-                *_os << "Day: " << day << ": " << getTimeString(curTime) << std::endl;
+                *_os << "Day: " << day << ": " << time_str(curTime) << std::endl;
 
                 ResourceCostReport* report = _auditReport->resourceCost(res.id());
                 ResourceCostInfo* newCost = new ResourceCostInfo();
@@ -2231,7 +2231,7 @@ TotalCostEvaluator::calcPeriodCost(const utl::Span<int>& p_span, double costPerT
         time_t originTime = _schedulerConfig->originTime();
         time_t beginTime = originTime + (span.begin() * timeStep);
         time_t endTime = originTime + (span.end() * timeStep);
-        *_os << " => calcPeriodCost(" << getTimeString(beginTime) << ", " << getTimeString(endTime)
+        *_os << " => calcPeriodCost(" << time_str(beginTime) << ", " << time_str(endTime)
              << ", "
              << "$" << costPerTS << ")" << std::endl;
     }
@@ -2290,7 +2290,7 @@ TotalCostEvaluator::calcPeriodCost(const utl::Span<int>& p_span,
         time_t originTime = _schedulerConfig->originTime();
         time_t beginTime = originTime + (span.begin() * timeStep);
         time_t endTime = originTime + (span.end() * timeStep);
-        *_os << " => calcPeriodCost(" << getTimeString(beginTime) << ", " << getTimeString(endTime)
+        *_os << " => calcPeriodCost(" << time_str(beginTime) << ", " << time_str(endTime)
              << ", "
              << "$" << costPerTS << ", "
              << "%" << incrCost << ", " << periodS << ", " << timeStep << ")" << std::endl;
@@ -2717,8 +2717,8 @@ TotalCostEvaluator::calcJobPeriodCost(const utl::Span<int>& p_span, double costP
         time_t originTime = _schedulerConfig->originTime();
         time_t beginTime = originTime + (span.begin() * timeStep);
         time_t endTime = originTime + (span.end() * timeStep);
-        *_os << " => calcJobPeriodCost(" << getTimeString(beginTime) << ", "
-             << getTimeString(endTime) << ", "
+        *_os << " => calcJobPeriodCost(" << time_str(beginTime) << ", "
+             << time_str(endTime) << ", "
              << "$" << costPerTS << ")" << std::endl;
     }
     for (spanip_col_t::iterator it = _spanIPs.findFirstIt(span);

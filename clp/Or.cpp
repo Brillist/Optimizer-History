@@ -93,12 +93,7 @@ Or::clear()
 void
 Or::addRefs()
 {
-    goal_vector_t::const_iterator it;
-    for (it = _choices.begin(); it != _choices.end(); ++it)
-    {
-        Goal* goal = *it;
-        goal->addRef();
-    }
+    addRefCont(_choices);
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////

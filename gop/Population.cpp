@@ -1,5 +1,4 @@
 #include "libgop.h"
-#include <libutl/R250.h>
 #include "Population.h"
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -9,7 +8,7 @@ LUT_NS_USE;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-UTL_CLASS_IMPL(gop::Population, utl::Object);
+UTL_CLASS_IMPL(gop::Population);
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -26,7 +25,7 @@ Population::copy(const Object& rhs)
     _inds.reserve(pop.size());
     for (Population::const_iterator it = pop.begin(); it != pop.end(); ++it)
     {
-        StringInd<utl::uint_t>& ind = **it;
+        StringInd<uint_t>& ind = **it;
         add(ind);
     }
 }
@@ -39,7 +38,7 @@ Population::clear()
     // remove references
     for (uint_t i = 0; i < _inds.size(); i++)
     {
-        StringInd<utl::uint_t>* ind = _inds[i];
+        StringInd<uint_t>* ind = _inds[i];
         if (_owner)
         {
             delete ind;
@@ -63,7 +62,7 @@ Population::add(const Population& rhs, uint_t beginIdx, uint_t endIdx)
     Population::const_iterator endIt = rhs.begin() + endIdx;
     for (Population::const_iterator it = rhs.begin() + beginIdx; it != endIt; ++it)
     {
-        StringInd<utl::uint_t>& ind = **it;
+        StringInd<uint_t>& ind = **it;
         add(ind);
     }
 }
@@ -71,7 +70,7 @@ Population::add(const Population& rhs, uint_t beginIdx, uint_t endIdx)
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
-Population::add(StringInd<utl::uint_t>* ind)
+Population::add(StringInd<uint_t>* ind)
 {
     const Population* indPop = ind->getPop();
     ASSERTD(indPop != this);
@@ -85,7 +84,7 @@ Population::add(StringInd<utl::uint_t>* ind)
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
-Population::set(utl::uint_t idx, StringInd<utl::uint_t>* ind)
+Population::set(uint_t idx, StringInd<uint_t>* ind)
 {
     ASSERTD(idx < size());
     const Population* indPop = ind->getPop();
@@ -108,20 +107,9 @@ Population::sort(IndOrdering* ordering)
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
-Population::shuffle(RandNumGen* rng)
+Population::shuffle(rng_t& rng)
 {
-    bool rngGiven = (rng != nullptr);
-    if (!rngGiven)
-    {
-        rng = new R250();
-    }
-
-    lut::shuffle(_inds, *rng);
-
-    if (!rngGiven)
-    {
-        delete rng;
-    }
+    rng.shuffle(_inds);
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -133,7 +121,7 @@ Population::totalScore() const
     {
         for (const_iterator it = begin(); it != end(); ++it)
         {
-            const StringInd<utl::uint_t>& ind = **it;
+            const StringInd<uint_t>& ind = **it;
             _totalScore += ind.getScore();
         }
     }
@@ -165,7 +153,7 @@ Population::totalFitness() const
     {
         for (const_iterator it = begin(); it != end(); ++it)
         {
-            const StringInd<utl::uint_t>& ind = **it;
+            const StringInd<uint_t>& ind = **it;
             _totalFitness += ind.getFitness();
         }
     }

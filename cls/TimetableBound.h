@@ -15,8 +15,7 @@ CLS_NS_BEGIN;
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
-   An activity's execution time cannot overlap with any period of
-   insufficient available resource capacity.
+   An activity's execution time cannot overlap with any period of insufficient resource capacity.
 
    \author Adam McKee
 */
@@ -25,7 +24,7 @@ CLS_NS_BEGIN;
 
 class TimetableBound : public clp::Bound
 {
-    UTL_CLASS_DECL_ABC(TimetableBound);
+    UTL_CLASS_DECL_ABC(TimetableBound, clp::Bound);
 
 public:
     /** Constructor. */
@@ -71,7 +70,7 @@ public:
     }
 
     /** Get capacity. */
-    utl::uint_t
+    uint_t
     capacity() const
     {
         ASSERTD(_capPt != nullptr);
@@ -87,8 +86,8 @@ protected:
     const CapPt* _capPt;
     clp::IntExp* _capExp;
     const clp::RevIntSpanCol* _tt;
-    utl::uint_t _ttv0;
-    utl::uint_t _ttv1;
+    uint_t _ttv0;
+    uint_t _ttv1;
 
 private:
     void

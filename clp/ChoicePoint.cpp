@@ -27,12 +27,10 @@ ChoicePoint::clear()
         _or->removeRef();
     _or = nullptr;
     _orIdx = 0;
-#if UTL_HOST_WORDSIZE == 64
     _revLongsIdx = 0;
     _revLongArraysIdx = 0;
     _revLongsIndIdx = 0;
     _revLongArraysIndIdx = 0;
-#endif
     _revIntsIdx = 0;
     _revIntArraysIdx = 0;
     _revIntsIndIdx = 0;
@@ -86,7 +84,7 @@ ChoicePoint::hasRemainingChoice() const
 bool
 ChoicePoint::isLabeled() const
 {
-    return ((_or == nullptr) || (_or->label() != utl::uint_t_max));
+    return ((_or == nullptr) || (_or->label() != uint_t_max));
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -94,7 +92,7 @@ ChoicePoint::isLabeled() const
 uint_t
 ChoicePoint::label() const
 {
-    return (_or == nullptr) ? utl::uint_t_max - 1 : _or->label();
+    return (_or == nullptr) ? uint_t_max - 1 : _or->label();
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////

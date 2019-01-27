@@ -25,7 +25,7 @@ CSE_NS_BEGIN;
 
 class SchedulerFactory : public lut::Factory<Scheduler>
 {
-    UTL_CLASS_DECL(SchedulerFactory);
+    UTL_CLASS_DECL(SchedulerFactory, lut::Factory<Scheduler>);
     UTL_CLASS_DEFID;
 
 public:

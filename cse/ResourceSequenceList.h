@@ -19,13 +19,13 @@ CSE_NS_BEGIN;
 
 class ResourceSequenceRule : public utl::Object
 {
-    UTL_CLASS_DECL(ResourceSequenceRule);
+    UTL_CLASS_DECL(ResourceSequenceRule, utl::Object);
 
 public:
     /** Constructor. */
-    ResourceSequenceRule(utl::uint_t lhsOpSequenceId,
-                         utl::uint_t rhsOpSequenceId,
-                         utl::uint_t delay,
+    ResourceSequenceRule(uint_t lhsOpSequenceId,
+                         uint_t rhsOpSequenceId,
+                         uint_t delay,
                          double cost)
     {
         _lhsOpSequenceId = lhsOpSequenceId;
@@ -41,24 +41,24 @@ public:
     virtual int compare(const utl::Object& rhs) const;
 
     virtual void
-    serialize(utl::Stream& stream, utl::uint_t io, utl::uint_t mode = utl::ser_default);
+    serialize(utl::Stream& stream, uint_t io, uint_t mode = utl::ser_default);
 
     /** Get lhs-op-sequence-id. */
-    utl::uint_t
+    uint_t
     lhsOpSequenceId() const
     {
         return _lhsOpSequenceId;
     }
 
     /** Get rhs-op-sequence-id. */
-    utl::uint_t
+    uint_t
     rhsOpSequenceId() const
     {
         return _rhsOpSequenceId;
     }
 
     /** Get the delay. */
-    utl::uint_t
+    uint_t
     delay() const
     {
         return _delay;
@@ -79,9 +79,9 @@ private:
     }
 
 private:
-    utl::uint_t _lhsOpSequenceId;
-    utl::uint_t _rhsOpSequenceId;
-    utl::uint_t _delay;
+    uint_t _lhsOpSequenceId;
+    uint_t _rhsOpSequenceId;
+    uint_t _delay;
     double _cost;
 };
 
@@ -107,7 +107,7 @@ typedef std::set<ResourceSequenceRule*, lut::ObjectSTLordering<ResourceSequenceR
 
 class ResourceSequenceList : public utl::Object
 {
-    UTL_CLASS_DECL(ResourceSequenceList);
+    UTL_CLASS_DECL(ResourceSequenceList, utl::Object);
 
 public:
     typedef rsr_set_t::const_iterator iterator;
@@ -122,29 +122,29 @@ public:
     virtual bool equals(const ResourceSequenceList& rhs) const;
 
     virtual void
-    serialize(utl::Stream& stream, utl::uint_t io, utl::uint_t mode = utl::ser_default);
+    serialize(utl::Stream& stream, uint_t io, uint_t mode = utl::ser_default);
 
     /** Get id. */
-    utl::uint_t
+    uint_t
     id() const
     {
         return _id;
     }
 
     /** Get the resource-sequence-id. */
-    utl::uint_t&
+    uint_t&
     id()
     {
         return _id;
     }
 
     /** Find the first record to match the give op-sequence-ids. */
-    const ResourceSequenceRule* findRule(utl::uint_t lhsOpSequenceId,
-                                         utl::uint_t rhsOpSequenceId) const;
+    const ResourceSequenceRule* findRule(uint_t lhsOpSequenceId,
+                                         uint_t rhsOpSequenceId) const;
 
     /** Add a delay/cost for the given sequencing. */
     void
-    add(utl::uint_t lhsOpSequenceId, utl::uint_t rhsOpSequenceId, utl::uint_t delay, double cost);
+    add(uint_t lhsOpSequenceId, uint_t rhsOpSequenceId, uint_t delay, double cost);
 
     /** Get begin iterator. */
     iterator
@@ -164,7 +164,7 @@ private:
     void init();
     void deInit();
 
-    utl::uint_t _id;
+    uint_t _id;
     rsr_set_t _rsl;
 };
 

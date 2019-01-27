@@ -8,10 +8,8 @@ GOP_NS_BEGIN;
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /** 
-    Score has two major attributes: a value and a type. It is designed 
-    to handle all types of scores (failed_score, constraint_violated_score,
-    succeeded_score, etc.).
-    far).
+    Score has two major attributes: a value and a type. It is designed to handle all types of scores.
+
 
     Joe Zhou
     Nov. 2005
@@ -31,7 +29,7 @@ enum score_type_t
 
 class Score : public utl::Object
 {
-    UTL_CLASS_DECL(Score);
+    UTL_CLASS_DECL(Score, utl::Object);
 
 public:
     Score(double value, score_type_t type = score_undefined);
@@ -41,7 +39,9 @@ public:
     virtual int compare(const utl::Object& rhs) const;
 
     virtual void
-    serialize(utl::Stream& stream, utl::uint_t io, utl::uint_t mode = utl::ser_default);
+    serialize(utl::Stream& stream, uint_t io, uint_t mode = utl::ser_default);
+
+    virtual utl::String toString() const;
 
     double
     getValue()
@@ -67,8 +67,6 @@ public:
         _type = type;
     }
 
-    utl::String toString() const;
-
 private:
     void init();
     void
@@ -82,7 +80,7 @@ private:
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-typedef std::map<utl::uint_t, Score*> uint_score_map_t;
+typedef std::map<uint_t, Score*> uint_score_map_t;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 

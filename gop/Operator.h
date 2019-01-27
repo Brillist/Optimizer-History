@@ -32,7 +32,7 @@ class Optimizer;
 
 class Operator : public utl::Object
 {
-    UTL_CLASS_DECL_ABC(Operator);
+    UTL_CLASS_DECL_ABC(Operator, utl::Object);
 
 public:
     /**
@@ -41,7 +41,7 @@ public:
        \param p probability
        \param rng PRNG
     */
-    Operator(const std::string& name, double p, utl::RandNumGen* rng = nullptr)
+    Operator(const std::string& name, double p, lut::rng_t* rng = nullptr)
     {
         init();
         _name = name;
@@ -53,7 +53,7 @@ public:
     virtual void copy(const utl::Object& rhs);
 
     virtual void
-    serialize(utl::Stream& stream, utl::uint_t io, utl::uint_t mode = utl::ser_default);
+    serialize(utl::Stream& stream, uint_t io, uint_t mode = utl::ser_default);
 
     virtual utl::String toString() const;
 
@@ -74,7 +74,7 @@ public:
     }
 
     /** Get the RNG. */
-    utl::RandNumGen*
+    lut::rng_t*
     getRNG() const
     {
         return _rng;
@@ -82,13 +82,13 @@ public:
 
     /** Set the RNG. */
     virtual void
-    setRNG(utl::RandNumGen* rng)
+    setRNG(lut::rng_t* rng)
     {
         _rng = rng;
     }
 
     /** Get the string base. */
-    utl::uint_t
+    uint_t
     getStringBase() const
     {
         return _stringBase;
@@ -96,7 +96,7 @@ public:
 
     /** Set the string base. */
     virtual void
-    setStringBase(utl::uint_t stringBase)
+    setStringBase(uint_t stringBase)
     {
         _stringBase = stringBase;
     }
@@ -145,7 +145,7 @@ public:
 
     /** Set the number of choices in the operator. */
     void
-    setNumChoices(utl::uint_t numChoices)
+    setNumChoices(uint_t numChoices)
     {
         _numChoices = numChoices;
     }
@@ -161,13 +161,13 @@ public:
     utl::int_t getSelectedVarIdx() const;
 
     /** Creat a new operator variable. */
-    virtual void addOperatorVar(utl::uint_t idx,
-                                utl::uint_t successIter,
-                                utl::uint_t totalIter,
+    virtual void addOperatorVar(uint_t idx,
+                                uint_t successIter,
+                                uint_t totalIter,
                                 bool* active = &_active);
 
     /** Select an operator variable for mutation. */
-    virtual utl::uint_t selectOperatorVarIdx();
+    virtual uint_t selectOperatorVarIdx();
 
     /** Increase successIter of the selected OperatorVar. */
     void addSuccessIter();
@@ -210,11 +210,11 @@ public:
 protected:
     void setParentScores(Ind& child, const std::vector<Ind*>& parents);
 
-    utl::RandNumGen* _rng;
-    utl::uint_t _stringBase;
+    lut::rng_t* _rng;
+    uint_t _stringBase;
 
 private:
-    typedef std::set<utl::uint_t> uint_set_t;
+    typedef std::set<uint_t> uint_set_t;
 
 private:
     void init();
@@ -223,12 +223,12 @@ private:
     Optimizer* _optimizer;
     std::string _name;
     double _p; //not used for now
-    utl::uint_t _successIter;
-    utl::uint_t _totalIter;
+    uint_t _successIter;
+    uint_t _totalIter;
     opvar_set_t _varSet;
     OperatorVar* _selectedVar;
-    utl::uint_t _numChoices;
-    utl::uint_t _numValidVars;
+    uint_t _numChoices;
+    uint_t _numValidVars;
 
     // default value for OpVar' _active
     static bool _active;

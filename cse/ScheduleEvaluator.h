@@ -16,8 +16,7 @@ CSE_NS_BEGIN;
 /**
    Schedule evaluation strategy (abstract).
 
-   ScheduleEvaluator provides a standard interface for different schedule
-   evaluation strategies.
+   ScheduleEvaluator provides a standard interface for different schedule evaluation strategies.
 
    \author Adam McKee
 */
@@ -26,7 +25,7 @@ CSE_NS_BEGIN;
 
 class ScheduleEvaluator : public gop::IndEvaluator
 {
-    UTL_CLASS_DECL_ABC(ScheduleEvaluator);
+    UTL_CLASS_DECL_ABC(ScheduleEvaluator, gop::IndEvaluator);
 
 public:
     /** Copy another instance. */

@@ -22,29 +22,29 @@ class Manager;
 
 class IntSpan : public utl::Object
 {
-    UTL_CLASS_DECL(IntSpan);
+    UTL_CLASS_DECL(IntSpan, utl::Object);
 
 public:
-    IntSpan(int min, int max, utl::uint_t v0, utl::uint_t v1, utl::uint_t level = utl::uint_t_max);
+    IntSpan(int min, int max, uint_t v0, uint_t v1, uint_t level = uint_t_max);
 
     virtual void copy(const utl::Object& rhs);
 
-    virtual utl::String toString() const;
+    virtual String toString() const;
 
     virtual bool canMergeWith(const IntSpan* rhs) const;
 
     void clearPointers();
 
-    virtual utl::uint_t capacity() const;
+    virtual uint_t capacity() const;
 
-    utl::uint_t
+    uint_t
     getStateDepth() const
     {
         return _stateDepth;
     }
 
     void
-    setStateDepth(utl::uint_t stateDepth)
+    setStateDepth(uint_t stateDepth)
     {
         _stateDepth = stateDepth;
     }
@@ -58,7 +58,7 @@ public:
 
     void _saveState(Manager* mgr);
 
-    utl::uint_t
+    uint_t
     size() const
     {
         return (_max - _min + 1);
@@ -94,25 +94,25 @@ public:
         return utl::Span<int>(_min, _max + 1);
     }
 
-    utl::uint_t
+    uint_t
     v0() const
     {
         return _v0;
     }
 
-    utl::uint_t
+    uint_t
     v1() const
     {
         return _v1;
     }
 
-    utl::uint_t&
+    uint_t&
     v0()
     {
         return _v0;
     }
 
-    utl::uint_t&
+    uint_t&
     v1()
     {
         return _v1;
@@ -161,13 +161,13 @@ public:
     }
 
     IntSpan*
-    next(utl::uint_t idx) const
+    next(uint_t idx) const
     {
         return _next[idx];
     }
 
     IntSpan*&
-    next(utl::uint_t idx)
+    next(uint_t idx)
     {
         return _next[idx];
     }
@@ -179,31 +179,31 @@ public:
     }
 
     void
-    setNext(utl::uint_t idx, IntSpan* span)
+    setNext(uint_t idx, IntSpan* span)
     {
         _next[idx] = span;
     }
 
-    utl::uint_t
+    uint_t
     getLevel() const
     {
         return _level;
     }
 
-    void setLevel(utl::uint_t level);
+    void setLevel(uint_t level);
 
 protected:
 #ifdef DEBUG
     size_t _id;
 #endif
-    utl::uint_t _stateDepth;
+    uint_t _stateDepth;
     int _min;
     int _max;
-    utl::uint_t _v0;
-    utl::uint_t _v1;
+    uint_t _v0;
+    uint_t _v1;
     IntSpan* _prev;
     IntSpan** _next;
-    utl::uint_t _level;
+    uint_t _level;
 
 private:
     void init();

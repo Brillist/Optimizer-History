@@ -29,7 +29,7 @@ CSE_NS_BEGIN;
 
 class ReleaseTimeMutate : public gop::RevOperator
 {
-    UTL_CLASS_DECL(ReleaseTimeMutate);
+    UTL_CLASS_DECL(ReleaseTimeMutate, gop::RevOperator);
 
 public:
     /**
@@ -37,7 +37,7 @@ public:
        \param p probability
        \param rng PRNG
     */
-    ReleaseTimeMutate(double p, utl::RandNumGen* rng = nullptr)
+    ReleaseTimeMutate(double p, lut::rng_t* rng = nullptr)
         : RevOperator("ReleaseTimeMutate", p, rng)
     {
         init();
@@ -62,14 +62,14 @@ private:
     void deInit();
 
 private:
-    utl::uint_t _numRlsTimeChoices;
+    uint_t _numRlsTimeChoices;
     cls::act_vect_t _acts; // root op's act only
     lut::uint_vect_t _minRlsTimes;
-    utl::uint_t _changeStep;
+    uint_t _changeStep;
 
-    gop::StringInd<utl::uint_t>* _moveSchedule;
-    utl::uint_t _moveActIdx;
-    utl::uint_t _moveActRlsTime;
+    gop::StringInd<uint_t>* _moveSchedule;
+    uint_t _moveActIdx;
+    uint_t _moveActRlsTime;
 };
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////

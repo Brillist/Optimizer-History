@@ -25,7 +25,7 @@ MRP_NS_USE;
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////
 
-UTL_CLASS_IMPL(mps::MPSserver, mrp::MRPserver);
+UTL_CLASS_IMPL(mps::MPSserver);
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -45,7 +45,7 @@ MPSserver::clientMake(FDstream* socket, const InetHostAddress& addr)
 void
 MPSserver::addHandler(const char* cmd, MPShfn handler)
 {
-    Server::addHandler(cmd, (hfn)handler);
+    Server::addHandler(cmd, reinterpret_cast<hfn>(handler));
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -64,7 +64,7 @@ MPSserver::handle_initMPS(MPSclient* client, const Array& cmd)
         || !cmd(2).isA(Array) || !allAre(cmd(2), CLASS(MPSitemPeriod)))
     {
         Bool(false).serializeOut(client->socket());
-        utl::String str = "initMPS error: wrong cmd.";
+        String str = "initMPS error: wrong cmd.";
         str.serializeOut(client->socket());
         finishCmd(client);
         clientDisconnect(client); //?
@@ -74,7 +74,7 @@ MPSserver::handle_initMPS(MPSclient* client, const Array& cmd)
     Array& mpsItemPeriods = (Array&)cmd(2);
 
     bool result = true;
-    utl::String errStr;
+    String errStr;
     MPSdataSet* dataSet = new MPSdataSet();
     try
     {
@@ -117,7 +117,7 @@ MPSserver::handle_mpsRun(MPSclient* client, const Array& cmd)
     if (cmd.size() != 1)
     {
         Bool(false).serializeOut(client->socket());
-        utl::String str = "initMPS error: wrong cmd.";
+        String str = "initMPS error: wrong cmd.";
         str.serializeOut(client->socket());
         finishCmd(client);
         clientDisconnect(client); //?
@@ -125,7 +125,7 @@ MPSserver::handle_mpsRun(MPSclient* client, const Array& cmd)
     }
 
     bool result = false;
-    utl::String errStr = "initMPS erro: ";
+    String errStr = "initMPS erro: ";
     try
     {
         client->mpsRun()->run();
@@ -167,14 +167,14 @@ MPSserver::handle_getMPS(MPSclient* client, const Array& cmd)
     if (cmd.size() != 1)
     {
         Bool(false).serializeOut(client->socket());
-        utl::String str = "getMPS error: wrong cmd.";
+        String str = "getMPS error: wrong cmd.";
         str.serializeOut(client->socket());
         finishCmd(client);
         clientDisconnect(client); //?
         return;
     }
 
-    utl::String errStr;
+    String errStr;
     MPSdataSet* dataSet = client->mpsRun()->dataSet();
     ASSERTD(dataSet != nullptr);
     Bool(true).serializeOut(client->socket());
@@ -211,7 +211,7 @@ MPSserver::handle_generateWorkOrders(MPSclient* client, const Array& cmd)
         || !cmd(3).isA(Array) || !allAre(cmd(3), CLASS(Uint)))
     {
         Bool(false).serializeOut(client->socket());
-        utl::String str = "generateWorkOrders error: wrong cmd.";
+        String str = "generateWorkOrders error: wrong cmd.";
         str.serializeOut(client->socket());
         finishCmd(client);
         clientDisconnect(client);
@@ -222,7 +222,7 @@ MPSserver::handle_generateWorkOrders(MPSclient* client, const Array& cmd)
     Array& items = (Array&)cmd(2);
     Array& woIds = (Array&)cmd(3);
     bool result = false;
-    utl::String errStr = "generateWorkOrders error: ";
+    String errStr = "generateWorkOrders error: ";
     try
     {
         dataSet->resetMPSitemPeriods(mpsItemPeriods);
@@ -289,7 +289,7 @@ MPSserver::handle_getWorkOrders(MPSclient* client, const Array& cmd)
     if (cmd.size() != 1)
     {
         Bool(false).serializeOut(client->socket());
-        utl::String str = "getWorkOrders error: wrong cmd.";
+        String str = "getWorkOrders error: wrong cmd.";
         str.serializeOut(client->socket());
         finishCmd(client);
         clientDisconnect(client);

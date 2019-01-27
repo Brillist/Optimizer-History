@@ -25,13 +25,13 @@ class MRPclient;
 
 class MRPserver : public cse::Server
 {
-    UTL_CLASS_DECL(MRPserver);
+    UTL_CLASS_DECL(MRPserver, cse::Server);
     UTL_CLASS_NO_COPY;
     UTL_CLASS_NO_SERIALIZE;
 
 public:
     /** Constructor. */
-    MRPserver(utl::uint_t maxClients, bool recording = false)
+    MRPserver(uint_t maxClients, bool recording = false)
         : cse::Server(maxClients, recording)
     {
         init();

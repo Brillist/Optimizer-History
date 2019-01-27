@@ -25,7 +25,7 @@ CSE_NS_BEGIN;
 
 class OperatorFactory : public lut::Factory<gop::Operator>
 {
-    UTL_CLASS_DECL(OperatorFactory);
+    UTL_CLASS_DECL(OperatorFactory, lut::Factory<gop::Operator>);
     UTL_CLASS_DEFID;
 
 public:

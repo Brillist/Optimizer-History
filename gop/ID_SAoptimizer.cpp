@@ -18,7 +18,7 @@ LUT_NS_USE;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-UTL_CLASS_IMPL(gop::ID_SAoptimizer, gop::SAoptimizer);
+UTL_CLASS_IMPL(gop::ID_SAoptimizer);
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -121,16 +121,16 @@ ID_SAoptimizer::ID_SAinitTempString()
     str << "targetScore:";
     if (_targetScore)
     {
-        str << Float(_targetScore->getValue()).toString("precision:2");
+        str << Float(_targetScore->getValue()).toString(2);
     }
     else
     {
         str << "(no_target_score)";
     }
-    str << ", scoreStep:" << Float(_scoreStep).toString("precision:2")
-        << ", initTemp:" << Float(_initTemp).toString("precision:2")
-        << ", acceptanceRatio:" << Float(_acceptanceRatio).toString("precision:4")
-        << ", ratioDcrRate:" << Float(_ratioDcrRate).toString("precision:2")
+    str << ", scoreStep:" << Float(_scoreStep).toString(2)
+        << ", initTemp:" << Float(_initTemp).toString(2)
+        << ", acceptanceRatio:" << Float(_acceptanceRatio).toString(4)
+        << ", ratioDcrRate:" << Float(_ratioDcrRate).toString(2)
         << ", initNumProbes:" << _initNumProbes;
     if (_totalScoreDiffIter > 0)
         str << ", avgDiffScore:" << (_totalScoreDiff / _totalScoreDiffIter);
@@ -146,7 +146,7 @@ ID_SAoptimizer::ID_SAinitTempString2()
     utl::MemStream str;
     str << "repeatId:" << _repeatId << ", numProbes:" << _numProbes
         << ", tempDcrRate:" << _tempDcrRate
-        << ", targetScore:" << Float(_targetScore->getValue()).toString("precision:2") << '\0';
+        << ", targetScore:" << Float(_targetScore->getValue()).toString(2) << '\0';
     return utl::String((char*)str.get());
 }
 

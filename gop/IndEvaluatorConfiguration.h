@@ -24,7 +24,7 @@ GOP_NS_BEGIN;
 
 class IndEvaluatorConfiguration : public utl::Object
 {
-    UTL_CLASS_DECL_ABC(IndEvaluatorConfiguration);
+    UTL_CLASS_DECL_ABC(IndEvaluatorConfiguration, utl::Object);
     UTL_CLASS_DEFID;
 
 public:

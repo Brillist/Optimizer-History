@@ -21,7 +21,7 @@ CLS_NS_BEGIN;
 
 class SchedulableBound : public clp::ConstrainedBound
 {
-    UTL_CLASS_DECL_ABC(SchedulableBound);
+    UTL_CLASS_DECL_ABC(SchedulableBound, clp::ConstrainedBound);
     UTL_CLASS_DEFID;
 
 public:

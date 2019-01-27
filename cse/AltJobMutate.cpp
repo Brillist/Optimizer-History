@@ -19,7 +19,7 @@ CLS_NS_USE;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-UTL_CLASS_IMPL(cse::AltJobMutate, gop::RevOperator);
+UTL_CLASS_IMPL(cse::AltJobMutate);
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -69,19 +69,11 @@ AltJobMutate::execute(gop::Ind* ind, gop::IndBuilderContext* p_context, bool sin
 {
     ASSERTD(dynamic_cast<SchedulingContext*>(p_context) != nullptr);
     ASSERTD(dynamic_cast<StringInd<uint_t>*>(ind) != nullptr);
-    //     SchedulingContext* context = (SchedulingContext*)p_context;
-    //     Manager* mgr = context->manager();
     _moveSchedule = (StringInd<uint_t>*)ind;
     gop::String<uint_t>& string = _moveSchedule->string();
 
     // choose an item
     uint_t groupIdx = getSelectedVarIdx();
-    // #ifdef DEBUG_UNIT
-    //     utl::cout
-    //         << "                                                   "
-    //         << "varSucRate:" << getSelectedVarP()
-    //         << ", idx:" << itemIdx;
-    // #endif
     _moveGroupIdx = _stringBase + groupIdx;
     _moveJobIdx = string[_moveGroupIdx];
     JobGroup* group = _jobGroups[groupIdx];
@@ -104,7 +96,7 @@ AltJobMutate::execute(gop::Ind* ind, gop::IndBuilderContext* p_context, bool sin
         }
         else
         {
-            uint_t randomNum = _rng->evali(2);
+            uint_t randomNum = _rng->uniform(0, 1);
             if (randomNum == 0)
             {
                 jobIdx = oldJobIdx - 1;
@@ -117,7 +109,7 @@ AltJobMutate::execute(gop::Ind* ind, gop::IndBuilderContext* p_context, bool sin
     }
     else
     {
-        jobIdx = _rng->evali(numJobs - 1);
+        jobIdx = _rng->uniform((uint_t)0, numJobs - 2);
         if (jobIdx >= _moveJobIdx)
             jobIdx++;
     }
@@ -200,28 +192,6 @@ AltJobMutate::setAltJobGroups(const ClevorDataSet* dataSet)
         JobGroup* jobGroup = *jobgroupIt;
         _jobGroups.push_back(jobGroup);
     }
-
-    //     ASSERT(dynamic_cast<const MRPdataSet*>(dataSet) != nullptr);
-    //     const MRPdataSet* mrpDataSet = (const MRPdataSet*)dataSet;
-
-    //     _jobGroups.clear();
-    //     item_set_id_t::const_iterator itemIt;
-    //     for (itemIt = mrpDataSet->items().begin();
-    //          itemIt != mrpDataSet->items().end(); itemIt++)
-    //     {
-    //         Item* item = *itemIt;
-    //         if (dynamic_cast<ManufactureItem*>(item) == nullptr)
-    //             continue;
-    //         ManufactureItem* mitem = (ManufactureItem*)item;
-    //         altjobsgroup_vector_t::const_iterator jobgroupIt;
-    //         for (jobgroupIt = mitem->jobGroups().begin();
-    //              jobgroupIt != mitem->jobGroups().end();
-    //              jobgroupIt++)
-    //         {
-    //             AltJobsGroup* jobGroup = *jobgroupIt;
-    //             _jobGroups.push_back(jobGroup);
-    //         }
-    //     }
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////

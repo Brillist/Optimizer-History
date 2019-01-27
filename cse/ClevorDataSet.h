@@ -30,7 +30,7 @@ CSE_NS_BEGIN;
 
 class ClevorDataSet : public gop::DataSet
 {
-    UTL_CLASS_DECL(ClevorDataSet);
+    UTL_CLASS_DECL(ClevorDataSet, gop::DataSet);
 
 public:
     /** Copy another instance. */
@@ -45,7 +45,7 @@ public:
     void modelBuild_1();
 
     /** Get the hard constraint score. */
-    utl::uint_t hardCtScore() const;
+    uint_t hardCtScore() const;
 
     /** Get the manager. */
     clp::Manager*
@@ -219,22 +219,22 @@ public:
     }
 
     /** Find a job by unique id. */
-    Job* findJob(utl::uint_t id) const;
+    Job* findJob(uint_t id) const;
 
     /** Find a job group by unique id. */
-    JobGroup* findJobGroup(utl::uint_t id) const;
+    JobGroup* findJobGroup(uint_t id) const;
 
     /** Find a job-op by unique id. */
-    JobOp* findOp(utl::uint_t id) const;
+    JobOp* findOp(uint_t id) const;
 
     /** Find a resource by unique id. */
-    Resource* findResource(utl::uint_t id) const;
+    Resource* findResource(uint_t id) const;
 
     /** Find a resource-group by unique id. */
-    ResourceGroup* findResourceGroup(utl::uint_t id) const;
+    ResourceGroup* findResourceGroup(uint_t id) const;
 
     /** Find a resource-sequence-list by unique id. */
-    ResourceSequenceList* findResourceSequenceList(utl::uint_t id) const;
+    ResourceSequenceList* findResourceSequenceList(uint_t id) const;
     //@}
 
     void clearProblemData();

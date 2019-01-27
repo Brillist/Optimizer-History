@@ -22,7 +22,7 @@ CLP_NS_BEGIN;
 
 class IntExpDomain : public utl::Object
 {
-    UTL_CLASS_DECL_ABC(IntExpDomain);
+    UTL_CLASS_DECL_ABC(IntExpDomain, utl::Object);
 
 public:
     /** Constructor. */
@@ -35,14 +35,14 @@ public:
     virtual void copy(const utl::Object& rhs);
 
     /** Get a human-readable string representation. */
-    virtual utl::String toString() const;
+    virtual String toString() const;
 
     /** Remove domain values that are not in the given array. */
-    virtual void intersect(const int* array, utl::uint_t size);
+    virtual void intersect(const int* array, uint_t size);
 
     /** Remove domain values that are not in the given array. */
     void
-    intersect(const utl::uint_t* array, utl::uint_t size)
+    intersect(const uint_t* array, uint_t size)
     {
         intersect((const int*)array, size);
     }
@@ -126,7 +126,7 @@ public:
     }
 
     /** Get the size. */
-    utl::uint_t
+    uint_t
     size() const
     {
         return _size;
@@ -220,12 +220,12 @@ protected:
 protected:
     Manager* _mgr;
 
-    utl::uint_t _events;
+    uint_t _events;
 
     // reversible //////////////////////////////////////
     int _min;
     int _max;
-    utl::uint_t _size;
+    uint_t _size;
     // reversible //////////////////////////////////////
 private:
     void init(Manager* mgr = nullptr);

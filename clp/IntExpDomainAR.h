@@ -23,11 +23,11 @@ CLP_NS_BEGIN;
 class IntExpDomainAR : public IntExpDomain
 {
     friend class IntExpDomainARit;
-    UTL_CLASS_DECL(IntExpDomainAR);
+    UTL_CLASS_DECL(IntExpDomainAR, IntExpDomain);
 
 public:
     typedef std::set<int> int_set_t;
-    typedef std::set<utl::uint_t> uint_set_t;
+    typedef std::set<uint_t> uint_set_t;
 
 public:
     /** Constructor. */
@@ -41,7 +41,7 @@ public:
 
     /** Constructor. */
     IntExpDomainAR(
-        Manager* mgr, utl::uint_t num, int* values, bool valuesOwner = true, bool empty = false);
+        Manager* mgr, uint_t num, int* values, bool valuesOwner = true, bool empty = false);
 
     /** Copy another instance. */
     virtual void copy(const utl::Object& rhs);
@@ -93,30 +93,30 @@ protected:
 private:
     void init();
     void init(const std::set<int>& domain, bool empty);
-    void init(utl::uint_t num, int* values, bool valuesOwner, bool empty);
+    void init(uint_t num, int* values, bool valuesOwner, bool empty);
     void deInit();
 
-    utl::uint_t findValueIdx(int val) const;
+    uint_t findValueIdx(int val) const;
 
-    utl::uint_t findForward(utl::uint_t idx) const;
+    uint_t findForward(uint_t idx) const;
 
-    utl::uint_t findBackward(utl::uint_t idx) const;
+    uint_t findBackward(uint_t idx) const;
 
-    bool getFlag(utl::uint_t idx) const;
+    bool getFlag(uint_t idx) const;
 
-    bool setFlag(utl::uint_t idx);
+    bool setFlag(uint_t idx);
 
-    bool clearFlag(utl::uint_t idx);
+    bool clearFlag(uint_t idx);
 
 private:
-    utl::uint_t _num;
+    uint_t _num;
     bool _valuesOwner;
     int* _values;
-    utl::uint_t _flagsSize;
+    uint_t _flagsSize;
 
     // reversible /////////////////////////////////////
-    utl::uint_t _stateDepth;
-    utl::uint32_t* _flags;
+    uint_t _stateDepth;
+    uint32_t* _flags;
     // reversible /////////////////////////////////////
 };
 

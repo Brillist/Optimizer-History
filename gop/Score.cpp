@@ -10,7 +10,7 @@ LUT_NS_USE;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-UTL_CLASS_IMPL(gop::Score, utl::Object);
+UTL_CLASS_IMPL(gop::Score);
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -66,7 +66,7 @@ String
 Score::toString() const
 {
     utl::MemStream str;
-    str << Float(_value).toString("precision:2");
+    str << Float(_value).toString(2);
     switch (_type)
     {
     case score_failed:
@@ -84,7 +84,7 @@ Score::toString() const
         ABORT();
     }
     str << '\0';
-    return utl::String((char*)str.get());
+    return String((char*)str.get());
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////

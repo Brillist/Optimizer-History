@@ -29,12 +29,12 @@ class SEclient;
 
 class Server : public utl::NetCmdServer
 {
-    UTL_CLASS_DECL(Server);
+    UTL_CLASS_DECL(Server, utl::NetCmdServer);
     UTL_CLASS_NO_COPY;
     UTL_CLASS_NO_SERIALIZE;
 
 public:
-    Server(utl::uint_t maxClients, bool recording = false)
+    Server(uint_t maxClients, bool recording = false)
         : utl::NetCmdServer(maxClients, 0)
     {
         init(recording);

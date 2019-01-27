@@ -30,7 +30,7 @@ class CycleGroup;
 class ConstrainedBound : public Bound
 {
     friend class BoundPropagator;
-    UTL_CLASS_DECL(ConstrainedBound);
+    UTL_CLASS_DECL(ConstrainedBound, Bound);
     UTL_CLASS_NO_COPY;
 
 public:
@@ -82,18 +82,18 @@ public:
     bool
     visited() const
     {
-        return (_visitedIdx != utl::uint_t_max);
+        return (_visitedIdx != uint_t_max);
     }
 
     /** Get visited index. */
-    utl::uint_t
+    uint_t
     visitedIdx() const
     {
         return _visitedIdx;
     }
 
     /** Get visited index. */
-    utl::uint_t&
+    uint_t&
     visitedIdx()
     {
         return _visitedIdx;
@@ -134,7 +134,7 @@ public:
     bool suspended() const;
 
     /** Get the successor-depth. */
-    utl::uint_t successorDepth() const;
+    uint_t successorDepth() const;
 
     /** Get the last propagated bound. */
     int
@@ -228,15 +228,13 @@ protected:
     BoundPropagator* _bp;
     utl::Object* _owner;
     const int* _twinBound;
-    utl::uint_t _visitedIdx;
+    uint_t _visitedIdx;
     bool _queued;
 
     // reversible ///////////////////////////////////////
     CycleGroup* _cycleGroup;
     int _oldBound;
-#if UTL_HOST_WORDSIZE == 64
     int _pad0;
-#endif
     /////////////////////////////////////////////////////
 
     // bound-cts

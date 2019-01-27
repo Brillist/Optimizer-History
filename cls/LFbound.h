@@ -25,7 +25,7 @@ CLS_NS_BEGIN;
 class LFbound : public SchedulableBound
 {
     friend class LSbound;
-    UTL_CLASS_DECL(LFbound);
+    UTL_CLASS_DECL(LFbound, SchedulableBound);
 
 public:
     typedef clp::RevArray<clp::Bound*> bound_array_t;

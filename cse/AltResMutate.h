@@ -26,7 +26,7 @@ CSE_NS_BEGIN;
 
 class AltResMutate : public gop::RevOperator
 {
-    UTL_CLASS_DECL(AltResMutate);
+    UTL_CLASS_DECL(AltResMutate, gop::RevOperator);
 
 public:
     /**
@@ -34,7 +34,7 @@ public:
       \param p probability
       \param rng PRNG
    */
-    AltResMutate(double p, utl::RandNumGen* rng = nullptr)
+    AltResMutate(double p, lut::rng_t* rng = nullptr)
         : RevOperator("AltResMutate", p, rng)
     {
         init();
@@ -43,7 +43,7 @@ public:
     virtual void copy(const utl::Object& rhs);
 
     /** Get the number of resource-group requirements. */
-    utl::uint_t
+    uint_t
     numResGroupReqs() const
     {
         return _resGroupReqs.size();
@@ -71,11 +71,11 @@ private:
     void setResGroupReqs(const ClevorDataSet* dataSet);
 
 private:
-    utl::uint_t _numResGroupReqChoices;
+    uint_t _numResGroupReqChoices;
     rgr_vector_t _resGroupReqs;
-    gop::StringInd<utl::uint_t>* _moveSchedule;
-    utl::uint_t _moveResGroupReqIdx;
-    utl::uint_t _moveResIdx;
+    gop::StringInd<uint_t>* _moveSchedule;
+    uint_t _moveResGroupReqIdx;
+    uint_t _moveResIdx;
 };
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////

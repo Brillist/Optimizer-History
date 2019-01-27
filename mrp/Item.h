@@ -28,7 +28,7 @@ class InventoryRecord;
 
 class Item : public utl::Object
 {
-    UTL_CLASS_DECL_ABC(Item);
+    UTL_CLASS_DECL_ABC(Item, utl::Object);
 
 public:
     virtual void copy(const utl::Object& rhs);
@@ -36,19 +36,19 @@ public:
     virtual int compare(const utl::Object& rhs) const;
 
     virtual void
-    serialize(utl::Stream& stream, utl::uint_t io, utl::uint_t mode = utl::ser_default);
+    serialize(utl::Stream& stream, uint_t io, uint_t mode = utl::ser_default);
 
     /// \name Accessors
     //@{
     /** Id. */
-    utl::uint_t
+    uint_t
     id() const
     {
         return _id;
     }
 
     /** Id. */
-    utl::uint_t&
+    uint_t&
     id()
     {
         return _id;
@@ -111,32 +111,32 @@ public:
     }
     //@}
 
-    utl::uint_t checkAndConsumeInventory(inv_transaction_op_type_t opType,
-                                         utl::uint_t opId,
+    uint_t checkAndConsumeInventory(inv_transaction_op_type_t opType,
+                                         uint_t opId,
                                          time_t t,
-                                         utl::uint_t reqQuantity,
+                                         uint_t reqQuantity,
                                          inv_transaction_status_t status);
 
     void consumeInventory(inv_transaction_op_type_t opType,
-                          utl::uint_t opId,
+                          uint_t opId,
                           time_t t,
-                          utl::uint_t reqQuantity,
+                          uint_t reqQuantity,
                           inv_transaction_status_t status);
 
     void produceInventory(inv_transaction_op_type_t opType,
-                          utl::uint_t opId,
+                          uint_t opId,
                           time_t t,
-                          utl::uint_t quantity,
+                          uint_t quantity,
                           inv_transaction_status_t status);
 
-    utl::String toString() const;
+    String toString() const;
 
 private:
     void init();
     void deInit();
 
 private:
-    utl::uint_t _id;
+    uint_t _id;
     std::string _name;
     bool _MPSitem;
     bom_vector_t _boms;

@@ -28,14 +28,14 @@ class ResourceCost;
 
 class MinCostResourcePtSelector : public Scheduler
 {
-    UTL_CLASS_DECL(MinCostResourcePtSelector);
+    UTL_CLASS_DECL(MinCostResourcePtSelector, Scheduler);
     UTL_CLASS_DEFID;
 
 public:
     virtual void run(gop::Ind* ind, gop::IndBuilderContext* context) const;
 
 private:
-    typedef std::vector<utl::uint_t> uint_vector_t;
+    typedef std::vector<uint_t> uint_vector_t;
 
 private:
     void setSelectedResources(JobOp* op, const uint_vector_t& altResIdx) const;

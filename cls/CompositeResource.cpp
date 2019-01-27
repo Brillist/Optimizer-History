@@ -16,7 +16,7 @@ CLP_NS_USE;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-UTL_CLASS_IMPL(cls::CompositeResource, cls::Resource);
+UTL_CLASS_IMPL(cls::CompositeResource);
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -70,8 +70,8 @@ CompositeResource::initialize()
             }
 
             // check for overlap
-            int calMin = calSpan->getBegin();
-            int calMax = calSpan->getEnd() - 1;
+            int calMin = calSpan->begin();
+            int calMax = calSpan->end() - 1;
             int ttMin = ttSpan->min();
             int ttMax = ttSpan->max();
             int overlapMin = utl::max(calMin, ttMin);

@@ -30,7 +30,7 @@ CSE_NS_BEGIN;
 
 class ResourceCost : public utl::Object
 {
-    UTL_CLASS_DECL(ResourceCost);
+    UTL_CLASS_DECL(ResourceCost, utl::Object);
 
 public:
     /** Clear self. */
@@ -40,7 +40,7 @@ public:
     virtual void copy(const utl::Object& rhs);
 
     virtual void
-    serialize(utl::Stream& stream, utl::uint_t io, utl::uint_t mode = utl::ser_default);
+    serialize(utl::Stream& stream, uint_t io, uint_t mode = utl::ser_default);
 
     /** Get the cost. */
     double
@@ -57,14 +57,14 @@ public:
     }
 
     /** Get the resolution. */
-    utl::uint_t
+    uint_t
     resolution() const
     {
         return _resolution;
     }
 
     /** Get the resolution. */
-    utl::uint_t&
+    uint_t&
     resolution()
     {
         return _resolution;
@@ -141,28 +141,28 @@ public:
     }
 
     /** Get the minimum employment time. */
-    utl::uint_t
+    uint_t
     minEmploymentTime() const
     {
         return _minEmploymentTime;
     }
 
     /** Get the minimum unemployment time. */
-    utl::uint_t&
+    uint_t&
     minEmploymentTime()
     {
         return _minEmploymentTime;
     }
 
     /** Get the maximum idle time. */
-    utl::uint_t
+    uint_t
     maxIdleTime() const
     {
         return _maxIdleTime;
     }
 
     /** Get the maximum idle time. */
-    utl::uint_t&
+    uint_t&
     maxIdleTime()
     {
         return _maxIdleTime;
@@ -176,14 +176,14 @@ private:
     }
 
     double _cost;
-    utl::uint_t _resolution;
+    uint_t _resolution;
     double _costPerUnitHired;
     double _costPerHour;
     double _costPerDay;
     double _costPerWeek;
     double _costPerMonth;
-    utl::uint_t _minEmploymentTime;
-    utl::uint_t _maxIdleTime;
+    uint_t _minEmploymentTime;
+    uint_t _maxIdleTime;
 };
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////

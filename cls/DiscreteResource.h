@@ -31,9 +31,9 @@ class PtActivity;
 
 class DiscreteResource : public Resource
 {
-    UTL_CLASS_DECL(DiscreteResource);
+    UTL_CLASS_DECL(DiscreteResource, Resource);
     /* public: */
-    /*     typedef std::vector<utl::uint_t> uint_vector_t; */
+    /*     typedef std::vector<uint_t> uint_vector_t; */
 public:
     /** Constructor. */
     DiscreteResource(Schedule* schedule)
@@ -82,40 +82,40 @@ public:
     }
 
     /** Add provided capacity. */
-    void addProvidedCapacity(int startTime, int endTime, utl::uint_t cap);
+    void addProvidedCapacity(int startTime, int endTime, uint_t cap);
 
     /** Allocate capacity. */
-    void allocate(int min, int max, utl::uint_t cap, PtActivity* act, bool updateComposite = true);
+    void allocate(int min, int max, uint_t cap, PtActivity* act, bool updateComposite = true);
 
     /** Deallocate capacity. */
-    void deallocate(int min, int max, utl::uint_t cap, bool updateComposite = true);
+    void deallocate(int min, int max, uint_t cap, bool updateComposite = true);
 
     /** Set resource's capacity to the given cap. */
-    void selectCapacity(utl::uint_t cap, utl::uint_t maxCap);
+    void selectCapacity(uint_t cap, uint_t maxCap);
 
     /** Get min required capacity */
-    utl::uint_t
+    uint_t
     minReqCap() const
     {
         return _minReqCap;
     }
 
     /** Get min required capacity. */
-    utl::uint_t&
+    uint_t&
     minReqCap()
     {
         return _minReqCap;
     }
 
     /** Get max required capacity */
-    utl::uint_t
+    uint_t
     maxReqCap() const
     {
         return _maxReqCap;
     }
 
     /** Get max required capacity. */
-    utl::uint_t&
+    uint_t&
     maxReqCap()
     {
         return _maxReqCap;
@@ -146,7 +146,7 @@ public:
 
     /** Add a composite-resource-id. */
     void
-    addCRid(utl::uint_t crId)
+    addCRid(uint_t crId)
     {
         _crIds.push_back(crId);
     }
@@ -183,14 +183,14 @@ public:
     }
 
     /** Get non-break time in the given time span. */
-    utl::uint_t
+    uint_t
     getNonBreakTime(int begin, int end) const
     {
         return ((end - begin) + 1 - getBreakTime(begin, end));
     }
 
     /** Get break time during the given span. */
-    utl::uint_t
+    uint_t
     getBreakTime(int begin, int end) const
     {
         return _calendar->getBreakTime(begin, end);
@@ -226,14 +226,14 @@ public:
 
     /** Get start-time corresponding to end time. */
     int
-    getStartTimeForEndTime(int endTime, utl::uint_t pt) const
+    getStartTimeForEndTime(int endTime, uint_t pt) const
     {
         return _calendar->getStartTimeForEndTime(endTime, pt);
     }
 
     /** Get end-time corresponding to start time. */
     int
-    getEndTimeForStartTime(int startTime, utl::uint_t pt) const
+    getEndTimeForStartTime(int startTime, uint_t pt) const
     {
         return _calendar->getEndTimeForStartTime(startTime, pt);
     }
@@ -250,14 +250,14 @@ protected:
     bool _unary;
     DiscreteTimetable _timetable;
     act_set_es_t _actsByStartTime;
-    utl::uint_t _minReqCap;
-    utl::uint_t _maxReqCap;
+    uint_t _minReqCap;
+    uint_t _maxReqCap;
     utl::RBtree _timetableBounds;
     ResourceCalendar* _calendar;
     lut::uint_vect_t _crIds;
 
 private:
-    typedef std::set<utl::uint_t> uint_set_t;
+    typedef std::set<uint_t> uint_set_t;
 
 private:
     void init();

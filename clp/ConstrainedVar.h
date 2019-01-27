@@ -20,7 +20,7 @@ CLP_NS_BEGIN;
 
 class ConstrainedVar : public utl::Object
 {
-    UTL_CLASS_DECL_ABC(ConstrainedVar);
+    UTL_CLASS_DECL_ABC(ConstrainedVar, utl::Object);
     UTL_CLASS_NO_COPY;
     UTL_CLASS_DEFID;
 

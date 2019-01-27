@@ -23,13 +23,13 @@ serialize(std::string& str, Stream& stream, uint_t io)
 {
     if (io == utl::io_rd)
     {
-        utl::String utlString;
+        String utlString;
         utlString.serialize(stream, io_rd, ser_default);
         str = utlString.get();
     }
     else
     {
-        utl::String utlString(str.c_str(), false);
+        String utlString(str.c_str(), false);
         utlString.serialize(stream, io_wr, ser_default);
     }
 }
@@ -164,7 +164,7 @@ periodToSeconds(period_t period)
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void*
-realloc(void* ptr, uint_t oldSize, uint_t newSize)
+realloc(void* ptr, size_t oldSize, size_t newSize)
 {
     ASSERT(ptr != nullptr);
     void* newPtr = malloc(newSize);
@@ -217,18 +217,18 @@ time_str(time_t t)
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 bool
-getFlag(utl::uint32_t flags, utl::uint32_t bit)
+getFlag(uint32_t flags, uint32_t bit)
 {
-    utl::uint32_t mask = 1U << bit;
+    uint32_t mask = 1U << bit;
     return (flags & mask);
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
-setFlag(utl::uint32_t& flags, utl::uint32_t bit, bool val)
+setFlag(uint32_t& flags, uint32_t bit, bool val)
 {
-    utl::uint32_t mask = 1U << bit;
+    uint32_t mask = 1U << bit;
     if (val)
     {
         flags |= mask;

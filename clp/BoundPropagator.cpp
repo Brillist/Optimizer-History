@@ -16,7 +16,7 @@ LUT_NS_USE;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-UTL_CLASS_IMPL(clp::BoundPropagator, utl::Object);
+UTL_CLASS_IMPL(clp::BoundPropagator);
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -129,13 +129,11 @@ BoundPropagator::finalize(ConstrainedBound* cb)
 CycleGroup*
 BoundPropagator::newCycleGroup(CycleGroup* cg)
 {
-    //     static uint_t cgId = 0;
     if (cg == nullptr)
     {
         cg = new CycleGroup(_mgr);
     }
     cg->id() = _initCgId++;
-    //     cg->id() = cgId++;
     _mgr->revAllocate(cg);
     _cgs.add(cg);
     return cg;
@@ -149,7 +147,8 @@ BoundPropagator::propagate()
     while (!_propQ.empty())
     {
         // pick up a bound and propagate locally
-        ConstrainedBound* bound = _propQ.deQ();
+        auto bound = _propQ.front();
+        _propQ.pop_front();
         _boundInProcess = bound;
         bound->propagate();
         bound->queued() = false;
@@ -167,11 +166,11 @@ BoundPropagator::clearPropQ()
         _boundInProcess->queued() = false;
         _boundInProcess = nullptr;
     }
-    while (!_propQ.empty())
+    for (auto bound : _propQ)
     {
-        ConstrainedBound* bound = _propQ.deQ();
         bound->queued() = false;
     }
+    _propQ.clear();
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -184,7 +183,7 @@ BoundPropagator::enQ(ConstrainedBound* bound)
     {
         BREAKPOINT;
     }
-    _propQ.enQ(bound);
+    _propQ.push_back(bound);
 }
 #endif
 

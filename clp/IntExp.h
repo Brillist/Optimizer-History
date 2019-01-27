@@ -42,7 +42,7 @@ class Manager;
 
 class IntExp : public ConstrainedVar
 {
-    UTL_CLASS_DECL_ABC(IntExp);
+    UTL_CLASS_DECL_ABC(IntExp, ConstrainedVar);
 
 public:
     typedef IntExpDomainIt* iterator;
@@ -79,7 +79,7 @@ public:
     /// \name Accessors
     //@{
     /** Get a human-readable string representation. */
-    virtual utl::String toString() const;
+    virtual String toString() const;
 
     /** Get the manager. */
     Manager*
@@ -149,7 +149,7 @@ public:
     }
 
     /** Get the size of the domain. */
-    virtual utl::uint_t
+    virtual uint_t
     size() const
     {
         return _domain->size();
@@ -297,10 +297,10 @@ public:
     void intersect(const IntExp* expr);
 
     /** Remove domain values that are not in the given array. */
-    void intersect(const int* array, utl::uint_t size);
+    void intersect(const int* array, uint_t size);
 
     /** Remove domain values that are not in the given array. */
-    void intersect(const utl::uint_t* array, utl::uint_t size);
+    void intersect(const uint_t* array, uint_t size);
 
     /** Remove domain values that are not in the given set. */
     void intersect(const std::set<int>& intSet);
@@ -309,7 +309,7 @@ public:
     bool add(int val);
 
     /** Add domain values in the range [min,max]. */
-    utl::uint_t add(int min, int max);
+    uint_t add(int min, int max);
 
     /** Remove the given value from the domain. */
     bool remove(int val);
@@ -318,7 +318,7 @@ public:
     void deferRemoves(bool b);
 
     /** Remove domain values in the range [min,max]. */
-    utl::uint_t remove(int min, int max);
+    uint_t remove(int min, int max);
 
     /** Remove domain values less than \b min or greater than \b max. */
     void
@@ -396,7 +396,7 @@ private:
     cb_set_t _valueBounds;
 
     // deferred removals
-    utl::uint_t _stateDepth;
+    uint_t _stateDepth;
     bool _deferRemoves;
     int* _deferredRemoves;
     int* _deferredRemovesPtr;

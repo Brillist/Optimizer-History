@@ -1,5 +1,4 @@
 #include "libgop.h"
-#include <libutl/R250.h>
 #include <libutl/MemStream.h>
 #include <libutl/Float.h>
 #include <libutl/Duration.h>
@@ -18,7 +17,7 @@ LUT_NS_USE;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-UTL_CLASS_IMPL_ABC(gop::Optimizer, utl::Object);
+UTL_CLASS_IMPL_ABC(gop::Optimizer);
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -44,9 +43,6 @@ Optimizer::complete() const
 void
 Optimizer::stop()
 {
-    //     _iteration = _maxIterations;
-    // this change is to show correct total iterations
-    // when the optimizer is stopped. JZ, April 11, 2008
     _maxIterations = _iteration;
     _minIterations = utl::min(_minIterations, _maxIterations);
 }
@@ -60,8 +56,7 @@ static time_t startTime;
 void
 Optimizer::initialize(const OptimizerConfiguration* config)
 {
-    //     _timer->start();
-    startTime = time(0); //get current time
+    startTime = time(0);
     _iteration = 0;
     _improvementIteration = 0;
     _minIterations = config->minIterations();
@@ -86,10 +81,6 @@ Optimizer::initialize(const OptimizerConfiguration* config)
     ASSERTD(_ops.size() >= 1);
 
     _indBuilder->initialize(config->dataSet());
-    //     if (_calcStatsEnable)
-    //     {
-    //         initializeStats();
-    //     }
     initializeObjectives();
     initializeOps(config->ind());
 }
@@ -140,7 +131,7 @@ Optimizer::updateRunStatus(bool complete)
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 Score*
-Optimizer::bestScore(utl::uint_t objectiveIdx) const
+Optimizer::bestScore(uint_t objectiveIdx) const
 {
     ASSERTD(objectiveIdx < _objectives.size());
     return _objectives[objectiveIdx]->getBestScore();
@@ -214,8 +205,7 @@ Optimizer::initString(bool feasible) const
 {
     // single objective only function
     utl::MemStream str;
-    str << "Random Seed: " << _rng->getSeed();
-    str << ", Init Score: " << _bestScore->toString();
+    str << "Init Score: " << _bestScore->toString();
     str << '\0';
     return utl::String((char*)str.get());
 }
@@ -225,8 +215,6 @@ Optimizer::initString(bool feasible) const
 utl::String
 Optimizer::finalString(bool feasible) const
 {
-    // single objective only function
-    //     _timer->stop();
     time_t endTime = time(0);
     utl::MemStream str;
     str << getClassName();
@@ -272,33 +260,16 @@ Optimizer::finalString(bool feasible) const
             str << ", "
                 << Float(100.0 * (_initScore->getValue() - _bestScore->getValue()) /
                          _initScore->getValue())
-                       .toString("precision:2")
+                       .toString(2)
                 << "%";
     }
     else
     {
         str << ", NO SOLUTION CAN BE FOUND.";
     }
-    //Joe added 100000.0 because there seems to a bug in OStime class
-    //     str << ", "
-    //         << Float(_timer->getTotalTime() * 10000.0).toString("precision:2")
-    //         << "sec" << '\0';
     str << ", " << Duration(difftime(endTime, startTime)).toString() << '\0';
     return utl::String((char*)str.get());
 }
-
-////////////////////////////////////////////////////////////////////////////////////////////////////
-
-// void
-// Optimizer::initializeStats()
-// {
-//     // statistics
-//     delete [] _opStats; _opStats = nullptr;
-//     if (_ops.size() > 0)
-//     {
-//         _opStats = new OperatorStats[_ops.size()];
-//     }
-// }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -319,37 +290,9 @@ Optimizer::initializeObjectives()
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
-Optimizer::initializeOps(StringInd<utl::uint_t>* ind)
+Optimizer::initializeOps(StringInd<uint_t>* ind)
 {
     uint_t numOps = _ops.size();
-
-    // set operator cumulative percentages
-    //     delete [] _opsCumPct;
-    //     _opsCumPct = nullptr;
-    //     if (numOps > 0)
-    //     {
-    //         uint_t i;
-    //         double totP = 0.0;
-    //         for (i = 0; i < numOps; ++i)
-    //         {
-    //             totP += _ops[i]->getP();
-    //         }
-    //         if (totP == 0.0)
-    //         {
-    //             double p = 1.0 / (double)numOps;
-    //             for (i = 0; i < numOps; ++i)
-    //             {
-    //                 _ops[i]->setP(p);
-    //             }
-    //         }
-    //         _opsCumPct = new double[_ops.size()];
-    //         _opsCumPct[0] = _ops[0]->getP() / totP;
-    //         for (uint_t i = 1; i < _ops.size(); i++)
-    //         {
-    //             _opsCumPct[i] = _opsCumPct[i - 1] + (_ops[i]->getP() / totP);
-    //         }
-    //     }
-
     for (uint_t i = 0; i < numOps; ++i)
     {
         Operator* op = _ops[i];
@@ -381,7 +324,7 @@ Optimizer::chooseSuccessOp() const
             if (opSuccessRate == bestSuccessRate)
             {
                 uint_t totalNumChoices = opNumChoices + numChoices;
-                uint_t randomNum = _rng->evali(totalNumChoices);
+                uint_t randomNum = _rng->uniform((uint_t)0, totalNumChoices - 1);
                 if (randomNum >= opNumChoices)
                     continue;
             }
@@ -414,7 +357,8 @@ Optimizer::chooseRandomOp() const
     {
         totalChoices += _ops[i]->getNumChoices();
     }
-    uint_t randomNum = _rng->evali(totalChoices);
+    ASSERTD(totalChoices != 0);
+    uint_t randomNum = _rng->uniform((uint_t)0, totalChoices - 1);
     uint_t cumNum = 0;
     for (uint_t i = 0; i < numOps; i++)
     {
@@ -445,7 +389,7 @@ Optimizer::chooseRandomStepOp() const
     {
         totalSteps += _ops[i]->numVars();
     }
-    uint_t randomNum = _rng->evali(totalSteps);
+    uint_t randomNum = _rng->uniform((uint_t)0, totalSteps - 1);
     uint_t cumNum = 0;
     for (uint_t i = 0; i < numOps; i++)
     {
@@ -467,48 +411,10 @@ Optimizer::chooseRandomStepOp() const
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-// void
-// Optimizer::calcStats(const Population& pop) const
-// {
-//     if (_iteration == 0)
-//     {
-//         return;
-//     }
-
-//     // update statistics for all operators
-//     uint_t i, popSize = pop.size();
-//     OperatorStats* os;
-//     for (i = 0; i < popSize; i++)
-//     {
-//         const Ind& ind = pop(i);
-//         if (ind.getOpIdx() == uint_t_max)
-//         {
-//             continue;
-//         }
-//         os = &_opStats[ind.getOpIdx()];
-//         for (uint_t j = 0; j < _objectives.size(); ++j)
-//         {
-//             Objective* objective = _objectives[j];
-//             os->add(
-//                 j,
-//                 objective->goal(),
-//                 ind.getScore(j),
-//                 ind.getParentScore(j));
-//         }
-//     }
-// }
-
-////////////////////////////////////////////////////////////////////////////////////////////////////
-
 void
 Optimizer::init()
 {
-#ifdef DEBUG
-    _rng = new R250(1042614900);
-#else
-    _rng = new R250(1042614900);
-    //_rng = new R250();
-#endif
+    _rng = lut::make_rng();
     _iteration = 0;
     _improvementIteration = 0;
     _minIterations = uint_t_max;
@@ -521,11 +427,6 @@ Optimizer::init()
     _ind = nullptr;
     _indBuilder = nullptr;
     _singleStep = false;
-    //     _timer = new OStimer();
-    //     _opsCumPct = nullptr;
-    //     _calcStatsEnable = false;
-    //     _opStats = nullptr;
-
     _fail = false;
     _accept = false;
     _sameScore = false;
@@ -544,11 +445,8 @@ Optimizer::deInit()
     delete _initScore;
     delete _bestScore;
     delete _newScore;
-    //     delete _timer;
     deleteCont(_objectives);
     deleteCont(_ops);
-    //     delete [] _opsCumPct;
-    //     delete [] _opStats;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////

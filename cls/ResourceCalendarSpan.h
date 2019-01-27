@@ -50,12 +50,12 @@ enum rcs_status_t
 
 class ResourceCalendarSpan : public utl::Span<int>
 {
-    UTL_CLASS_DECL(ResourceCalendarSpan);
+    UTL_CLASS_DECL(ResourceCalendarSpan, utl::Span<int>);
 
 public:
     /** Constructor. */
     ResourceCalendarSpan(
-        int begin, int end, rcs_t type, rcs_status_t status, utl::uint_t cap = utl::uint_t_max)
+        int begin, int end, rcs_t type, rcs_status_t status, uint_t cap = uint_t_max)
         : utl::Span<int>(begin, end)
     {
         init(type, status, cap);
@@ -68,13 +68,13 @@ public:
     virtual int compare(const utl::Object& rhs) const;
 
     virtual void
-    serialize(utl::Stream& stream, utl::uint_t io, utl::uint_t mode = utl::ser_default);
+    serialize(utl::Stream& stream, uint_t io, uint_t mode = utl::ser_default);
 
     /** Get a human-readable string representation. */
-    virtual utl::String toString() const;
+    virtual String toString() const;
 
     /** Get a human-readable string representation. */
-    utl::String toString(time_t originTime, utl::uint_t timeStep) const;
+    String toString(time_t originTime, uint_t timeStep) const;
 
     /** Get the type. */
     rcs_t
@@ -91,28 +91,28 @@ public:
     }
 
     /** Get the capacity. */
-    utl::uint_t
+    uint_t
     capacity() const
     {
         return _cap;
     }
 
     /** Get the capacity. */
-    utl::uint_t&
+    uint_t&
     capacity()
     {
         return _cap;
     }
 
     /** Get the cumulative processing-time. */
-    const utl::uint_t&
+    const uint_t&
     cumPt() const
     {
         return _cumPt;
     }
 
     /** Get the cumulative processing-time. */
-    utl::uint_t&
+    uint_t&
     cumPt()
     {
         return _cumPt;
@@ -147,7 +147,7 @@ public:
     }
 
 private:
-    void init(rcs_t type = rcs_undefined, rcs_status_t = rcss_undefined, utl::uint_t cap = 0);
+    void init(rcs_t type = rcs_undefined, rcs_status_t = rcss_undefined, uint_t cap = 0);
 
     void
     deInit()
@@ -157,8 +157,8 @@ private:
 private:
     rcs_t _type;
     rcs_status_t _status;
-    utl::uint_t _cap;
-    utl::uint_t _cumPt;
+    uint_t _cap;
+    uint_t _cumPt;
     ResourceCalendarSpan* _prev;
     ResourceCalendarSpan* _next;
 };
@@ -179,7 +179,7 @@ struct ResourceCalendarSpanEndOrdering
     bool
     operator()(const ResourceCalendarSpan* lhs, const ResourceCalendarSpan* rhs) const
     {
-        return (lhs->getEnd() < rhs->getEnd());
+        return (lhs->end() < rhs->end());
     }
 };
 

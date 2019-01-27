@@ -17,7 +17,7 @@ CLP_NS_BEGIN;
 
 class IntExpDomainIt : public utl::Object
 {
-    UTL_CLASS_DECL_ABC(IntExpDomainIt);
+    UTL_CLASS_DECL_ABC(IntExpDomainIt, utl::Object);
     UTL_CLASS_DEFID;
 
 public:

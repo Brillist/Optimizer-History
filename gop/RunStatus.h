@@ -22,13 +22,13 @@ GOP_NS_BEGIN;
 
 class RunStatus : public utl::Object
 {
-    UTL_CLASS_DECL(RunStatus);
+    UTL_CLASS_DECL(RunStatus, utl::Object);
     UTL_CLASS_NO_COPY;
 
 public:
-    void update(bool complete, utl::uint_t currentIter, utl::uint_t bestIter, Score* bestScore);
+    void update(bool complete, uint_t currentIter, uint_t bestIter, Score* bestScore);
 
-    void get(bool& complete, utl::uint_t& currentIter, utl::uint_t& bestIter, Score*& bestScore);
+    void get(bool& complete, uint_t& currentIter, uint_t& bestIter, Score*& bestScore);
 
 private:
     void init();
@@ -36,10 +36,10 @@ private:
 
 private:
     bool _complete;
-    utl::uint_t _currentIter;
-    utl::uint_t _bestIter;
+    uint_t _currentIter;
+    uint_t _bestIter;
     Score* _bestScore;
-    utl::uint_t _scoreType;
+    uint_t _scoreType;
     utl::Mutex _mutex;
 };
 

@@ -1,5 +1,4 @@
-#ifndef LUT_SKIPLISTDEPTHARRAY_H
-#define LUT_SKIPLISTDEPTHARRAY_H
+#pragma once
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -10,6 +9,19 @@ LUT_NS_BEGIN;
 /**
    Skip-list depth array.
 
+   When adding a new node to a skip list a depth must be chosen for it.  At the highest level
+   of the skip list there should only be a few nodes, roughly twice as many nodes at the next
+   level down, etc.  Given the maximum depth of a skip list, SkipListDepthArray generates a
+   sequence of depths to be assigned to newly added nodes in the skip list.
+
+   For example if our skip-list is (maximally) 3 levels deep, we number the nodes this way:
+
+          1          <- level 2
+      2       3      <- level 1
+    4   5   6   7    <- level 0
+
+   SkipListDepthArray will generate the following list of 7 node levels: [0,1,0,2,0,1,0].
+   
    \author Adam McKee
 */
 
@@ -17,25 +29,25 @@ LUT_NS_BEGIN;
 
 class SkipListDepthArray : public utl::Object
 {
-    UTL_CLASS_DECL(SkipListDepthArray);
+    UTL_CLASS_DECL(SkipListDepthArray, utl::Object);
 
 public:
     /** Constructor. */
-    SkipListDepthArray(utl::uint_t maxDepth);
+    SkipListDepthArray(uint_t depth);
 
     /** Copy another instance. */
     virtual void copy(const utl::Object& rhs);
 
     /** Initialize. */
-    void set(utl::uint_t depth);
+    void set(uint_t depth);
 
     /** Get the next depth. */
-    utl::uint_t
-    getNext(utl::uint_t& pos) const
+    uint_t
+    next(uint_t& pos) const
     {
         ASSERTD(pos < _size);
-        utl::uint_t res = _depth[pos];
-        if (++pos == _size)
+        uint_t res = _depth[pos++];
+        if (pos == _size)
             pos = 0;
         return res;
     }
@@ -55,18 +67,14 @@ private:
         delete[] _depth;
     }
 
-    void dfs(utl::uint_t& idx, utl::uint_t node, utl::uint_t level);
+    void dfs(uint_t& idx, uint_t node, uint_t level);
 
 private:
-    utl::uint_t _size;
-    utl::uint_t _maxDepth;
-    utl::byte_t* _depth;
+    uint_t _size;
+    uint_t _maxDepth;
+    byte_t* _depth;
 };
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 LUT_NS_END;
-
-////////////////////////////////////////////////////////////////////////////////////////////////////
-
-#endif

@@ -16,25 +16,25 @@ CSE_NS_BEGIN;
 
 class CapSelector : public Scheduler
 {
-    UTL_CLASS_DECL(CapSelector);
+    UTL_CLASS_DECL(CapSelector, Scheduler);
 
 public:
     virtual void copy(const utl::Object& rhs);
 
     virtual void setStringBase(gop::Operator* op) const;
 
-    virtual utl::uint_t stringSize(const ClevorDataSet& dataSet) const;
+    virtual uint_t stringSize(const ClevorDataSet& dataSet) const;
 
-    virtual void initialize(const gop::DataSet* dataSet = nullptr, utl::uint_t stringBase = 0);
+    virtual void initialize(const gop::DataSet* dataSet = nullptr, uint_t stringBase = 0);
 
     virtual void initializeInd(gop::Ind* ind,
                                const gop::DataSet* dataSet,
-                               utl::RandNumGen* rng = nullptr,
+                               lut::rng_t* rng = nullptr,
                                void* param = nullptr);
 
     virtual void initializeRandomInd(gop::Ind* ind,
                                      const gop::DataSet* dataSet,
-                                     utl::RandNumGen* rng = nullptr,
+                                     lut::rng_t* rng = nullptr,
                                      void* param = nullptr);
 
     /** Make a schedule. */
@@ -54,7 +54,7 @@ private:
     void setActs(const ClevorDataSet* dataSet);
 
     /** Select processing times. */
-    void setCaps(gop::StringInd<utl::uint_t>* ind, SchedulingContext* context) const;
+    void setCaps(gop::StringInd<uint_t>* ind, SchedulingContext* context) const;
 
 private:
     act_vector_t _acts;

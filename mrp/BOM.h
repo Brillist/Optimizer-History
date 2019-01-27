@@ -25,13 +25,13 @@ class Item;
 
 class BOM : public utl::Object
 {
-    UTL_CLASS_DECL(BOM);
+    UTL_CLASS_DECL(BOM, utl::Object);
 
 public:
     virtual void copy(const utl::Object& rhs);
 
     virtual void
-    serialize(utl::Stream& stream, utl::uint_t io, utl::uint_t mode = utl::ser_default);
+    serialize(utl::Stream& stream, uint_t io, uint_t mode = utl::ser_default);
 
     /// \name Accessors
     //@{
@@ -64,14 +64,14 @@ public:
     }
 
     /** Quantity. */
-    utl::uint_t
+    uint_t
     quantity() const
     {
         return _quantity;
     }
 
     /** Quantity. */
-    utl::uint_t&
+    uint_t&
     quantity()
     {
         return _quantity;
@@ -84,7 +84,7 @@ public:
     /** reset child item.*/
     void setChildItem(Item* childItem, bool owner = false);
 
-    utl::String toString() const;
+    String toString() const;
 
 private:
     void init();
@@ -93,7 +93,7 @@ private:
 private:
     Item* _item;
     Item* _childItem;
-    utl::uint_t _quantity;
+    uint_t _quantity;
 
     bool _itemOwner;
     bool _childItemOwner;

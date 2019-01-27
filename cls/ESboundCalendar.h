@@ -24,7 +24,7 @@ CLS_NS_BEGIN;
 
 class ESboundCalendar : public clp::Bound
 {
-    UTL_CLASS_DECL(ESboundCalendar);
+    UTL_CLASS_DECL(ESboundCalendar, clp::Bound);
 
 public:
     /** Constructor. */

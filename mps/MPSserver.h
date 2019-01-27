@@ -25,13 +25,13 @@ class MPSclient;
 
 class MPSserver : public mrp::MRPserver
 {
-    UTL_CLASS_DECL(MPSserver);
+    UTL_CLASS_DECL(MPSserver, mrp::MRPserver);
     UTL_CLASS_NO_COPY;
     UTL_CLASS_NO_SERIALIZE;
 
 public:
     /** Constructor. */
-    MPSserver(utl::uint_t maxClients, bool recording = false)
+    MPSserver(uint_t maxClients, bool recording = false)
         : mrp::MRPserver(maxClients, recording)
     {
         init();

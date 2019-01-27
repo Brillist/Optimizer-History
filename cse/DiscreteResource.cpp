@@ -7,7 +7,7 @@
 
 #ifdef DEBUG
 //#define DEBUG_UNIT
-//static const utl::uint_t debugResId = 55;
+//static const uint_t debugResId = 55;
 #endif
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -18,8 +18,8 @@ CLS_NS_USE;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-UTL_CLASS_IMPL(cse::ResourceSequenceRuleApplication, utl::Object);
-UTL_CLASS_IMPL(cse::DiscreteResource, cse::Resource);
+UTL_CLASS_IMPL(cse::ResourceSequenceRuleApplication);
+UTL_CLASS_IMPL(cse::DiscreteResource);
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -223,7 +223,7 @@ DiscreteResource::init()
 {
     _sequenceId = uint_t_max;
     _rsl = nullptr;
-    _minCap = _existingCap = _maxCap = _stepCap = _selectedCap = utl::uint_t_max;
+    _minCap = _existingCap = _maxCap = _stepCap = _selectedCap = uint_t_max;
     _cost = nullptr;
     _defaultCalendar = _detailedCalendar = nullptr;
 }
@@ -260,8 +260,8 @@ DiscreteResource::applyDefaultCalendar(const SchedulerConfiguration* config,
             continue;
         }
 
-        time_t rssBegin = rss->getBegin();
-        time_t rssEnd = rss->getEnd();
+        time_t rssBegin = rss->begin();
+        time_t rssEnd = rss->end();
         uint_t rssCap = rss->capacity();
         if (rssCap == uint_t_max)
             rssCap = _maxCap;
@@ -344,8 +344,8 @@ DiscreteResource::overrideCalendar(const SchedulerConfiguration* config,
         }
         else
         {
-            time_t begin = rss->getBegin();
-            time_t end = rss->getEnd();
+            time_t begin = rss->begin();
+            time_t end = rss->end();
             ASSERTD(begin <= end);
             if (end <= originTime || begin >= horizonTime)
                 continue;

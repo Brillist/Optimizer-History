@@ -25,7 +25,7 @@ CSE_NS_BEGIN;
 
 class ScheduleEvaluatorConfiguration : public gop::IndEvaluatorConfiguration
 {
-    UTL_CLASS_DECL_ABC(ScheduleEvaluatorConfiguration);
+    UTL_CLASS_DECL_ABC(ScheduleEvaluatorConfiguration, gop::IndEvaluatorConfiguration);
 
 public:
     /** Copy another instance. */

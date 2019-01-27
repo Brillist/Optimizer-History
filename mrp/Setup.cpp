@@ -13,7 +13,7 @@ LUT_NS_USE;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-UTL_CLASS_IMPL(mrp::Setup, utl::Object);
+UTL_CLASS_IMPL(mrp::Setup);
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -81,7 +81,7 @@ Setup::toString() const
         if (it != _prevSetupIdsMap.begin())
             str << ", ";
         str << "(" << (*it).first << "," << _setupTimes[(*it).second] << ","
-            << Float(_setupCosts[(*it).second]).toString("precision:2");
+            << Float(_setupCosts[(*it).second]).toString(2);
     }
     str << "]" << '\0';
     return String((char*)str.get());

@@ -28,7 +28,7 @@ CSE_NS_BEGIN;
 
 class ReleaseTimeSelector : public Scheduler
 {
-    UTL_CLASS_DECL(ReleaseTimeSelector);
+    UTL_CLASS_DECL(ReleaseTimeSelector, Scheduler);
 
 public:
     virtual void copy(const utl::Object& rhs);
@@ -37,14 +37,14 @@ public:
     virtual void setStringBase(gop::Operator* op) const;
 
     /** Get the size of the whole string. */
-    virtual utl::uint_t stringSize(const ClevorDataSet& dataSet) const;
+    virtual uint_t stringSize(const ClevorDataSet& dataSet) const;
 
     /** Initialize _stringBase and _items. */
-    virtual void initialize(const gop::DataSet* dataSet = nullptr, utl::uint_t stringBase = 0);
+    virtual void initialize(const gop::DataSet* dataSet = nullptr, uint_t stringBase = 0);
 
     virtual void initializeInd(gop::Ind* ind,
                                const gop::DataSet* dataSet,
-                               utl::RandNumGen* rng = nullptr,
+                               lut::rng_t* rng = nullptr,
                                void* param = nullptr);
 
     /** Make a schedule. */
@@ -61,7 +61,7 @@ private:
     void setActs(const ClevorDataSet* dataSet);
 
     /** Select process plans. */
-    void setReleaseTimes(gop::StringInd<utl::uint_t>* ind, SchedulingContext* context) const;
+    void setReleaseTimes(gop::StringInd<uint_t>* ind, SchedulingContext* context) const;
 
 private:
     cls::act_vect_t _acts;

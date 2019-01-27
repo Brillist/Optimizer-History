@@ -3,7 +3,6 @@
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-#include <libutl/RandNumGen.h>
 /* #include <libutl/OStimer.h> */
 #include <gop/Operator.h>
 #include <gop/OptimizerConfiguration.h>
@@ -33,7 +32,7 @@ GOP_NS_BEGIN;
 
 class Optimizer : public utl::Object
 {
-    UTL_CLASS_DECL_ABC(Optimizer);
+    UTL_CLASS_DECL_ABC(Optimizer, utl::Object);
 
 public:
     /// \name Run Control
@@ -63,7 +62,7 @@ public:
     /// \name Accessors
     //@{
     /** Get the random number generator. */
-    utl::RandNumGen*
+    lut::rng_t*
     rng() const
     {
         return _rng;
@@ -77,21 +76,21 @@ public:
     }
 
     /** Get the iteration number. */
-    utl::uint_t
+    uint_t
     iteration() const
     {
         return _iteration;
     }
 
     /** Get the last improvement iteration number. */
-    utl::uint_t
+    uint_t
     improvementIteration() const
     {
         return _improvementIteration;
     }
 
     /** Get the maximum number of iterations. */
-    utl::uint_t
+    uint_t
     maxIterations() const
     {
         return _maxIterations;
@@ -99,7 +98,7 @@ public:
 
     /** Get the optimization goal for the given objective. */
     minmax_goal_t
-    goal(utl::uint_t idx = 0) const
+    goal(uint_t idx = 0) const
     {
         ASSERTD(_objectives.size() > idx);
         return _objectives[idx]->goal();
@@ -113,7 +112,7 @@ public:
     }
 
     /** Get the best score for the given objective. */
-    Score* bestScore(utl::uint_t objectiveIdx = 0) const;
+    Score* bestScore(uint_t objectiveIdx = 0) const;
 
     /** Get the best score for the given objective. */
     Score* bestScore(const std::string& objectiveName) const;
@@ -126,7 +125,7 @@ public:
     const std::string& bestScoreAudit() const;
 
     /** Get the number of operators. */
-    utl::uint_t
+    uint_t
     numOperators() const
     {
         return _ops.size();
@@ -138,18 +137,6 @@ public:
     {
         return _ops;
     }
-
-    //    /** Get the statistics flag. */
-    //    bool calcStats() const
-    //    { return _calcStatsEnable; }
-
-    //    /** Set the statistic flag. */
-    //    void setCalcStats(bool calcStats)
-    //    { _calcStatsEnable = calcStats; }
-
-    //    /** Requires reversible operators? */
-    //    virtual bool requiresRevOp() const
-    //    { return false; }
 
     /** Get _runStatus. */
     RunStatus*
@@ -191,33 +178,29 @@ public:
 protected:
     void initializeStats();
     void initializeObjectives();
-    void initializeOps(StringInd<utl::uint_t>* ind = nullptr);
+    void initializeOps(StringInd<uint_t>* ind = nullptr);
 
-    /** Choose an operator randomly
-        for multiple step move in a direction. */
+    /** Choose an operator randomly for multiple step move in a direction. */
     Operator* chooseRandomOp() const;
 
-    /** Choose the Operator randomly 
-        for single step move in a direction. */
+    /** Choose the Operator randomly for single step move in a direction. */
     Operator* chooseRandomStepOp() const;
 
     /** Choose the Operator with highest success rate. */
     Operator* chooseSuccessOp() const;
-
-    //    virtual void calcStats(const Population& pop) const;
 protected:
     // misc
-    mutable utl::RandNumGen* _rng;
-    utl::uint_t _iteration;
-    utl::uint_t _improvementIteration;
-    utl::uint_t _minIterations;
-    utl::uint_t _maxIterations;
-    utl::uint_t _improvementGap;
-    StringInd<utl::uint_t>* _ind;
+    mutable lut::rng_t* _rng;
+    uint_t _iteration;
+    uint_t _improvementIteration;
+    uint_t _minIterations;
+    uint_t _maxIterations;
+    uint_t _improvementGap;
+    StringInd<uint_t>* _ind;
     IndBuilder* _indBuilder;
     IndBuilderContext* _context;
     RunStatus* _runStatus;
-    bool _singleStep; //singleStep Mutate
+    bool _singleStep;
 
     // iteration status
     Score* _initScore;
@@ -233,14 +216,6 @@ protected:
 
     // operators
     std::vector<Operator*> _ops;
-    //    double* _opsCumPct;
-
-    // timer
-    /*     utl::OStimer* _timer; */
-
-    //    // statistics
-    //    bool _calcStatsEnable;
-    //    OperatorStats* _opStats;
 private:
     void init();
     void deInit();

@@ -16,14 +16,12 @@ class Or;
 /**
    Choice point.
 
-   In a solution search, a choice point corresponds to a logical "Or" of
-   goals.  At a choice point, the search state (including domains of all
-   constrained variables) is preserved, then one of the goals is tried
-   (pushed onto the goal stack).  If the execution of an Or-related goal
-   fails, the search state is recovered from the choice point, and the
-   next Or-related goal (if any) is tried.  If no remaining goals are left,
-   then failure continues down the goal stack until another choice point
-   (Or goal) is encountered.
+   In a solution search, a choice point corresponds to a logical "Or" of goals.  At a choice point,
+   the search state (including domains of all constrained variables) is preserved, then one of the
+   goals is tried (pushed onto the goal stack).  If the execution of an Or-related goal fails, the
+   search state is recovered from the choice point, and the next Or-related goal (if any) is tried.
+   If no remaining goals are left, then failure continues down the goal stack until another choice
+   point (Or goal) is encountered.
 
    \see Manager
    \see Or
@@ -63,9 +61,8 @@ public:
     /** Set attributes. */
     void set(Or* orGoal, const goal_stack_t& goalStack);
 
-#if UTL_HOST_WORDSIZE == 64
     /** Get rev-longs index. */
-    utl::uint_t
+    uint_t
     getRevLongsIdx() const
     {
         return _revLongsIdx;
@@ -73,13 +70,13 @@ public:
 
     /** Set rev-longs index. */
     void
-    setRevLongsIdx(utl::uint_t revLongsIdx)
+    setRevLongsIdx(uint_t revLongsIdx)
     {
         _revLongsIdx = revLongsIdx;
     }
 
     /** Get rev-long-arrays index. */
-    utl::uint_t
+    uint_t
     getRevLongArraysIdx() const
     {
         return _revLongArraysIdx;
@@ -87,13 +84,13 @@ public:
 
     /** Set rev-long-arrays index. */
     void
-    setRevLongArraysIdx(utl::uint_t revLongArraysIdx)
+    setRevLongArraysIdx(uint_t revLongArraysIdx)
     {
         _revLongArraysIdx = revLongArraysIdx;
     }
 
     /** Get rev-longs indirect index. */
-    utl::uint_t
+    uint_t
     getRevLongsIndIdx() const
     {
         return _revLongsIndIdx;
@@ -101,13 +98,13 @@ public:
 
     /** Set rev-longs indirect index. */
     void
-    setRevLongsIndIdx(utl::uint_t revLongsIndIdx)
+    setRevLongsIndIdx(uint_t revLongsIndIdx)
     {
         _revLongsIndIdx = revLongsIndIdx;
     }
 
     /** Get rev-long-arrays indirect index. */
-    utl::uint_t
+    uint_t
     getRevLongArraysIndIdx() const
     {
         return _revLongArraysIndIdx;
@@ -115,14 +112,13 @@ public:
 
     /** Set rev-long-arrays indirect index. */
     void
-    setRevLongArraysIndIdx(utl::uint_t revLongArraysIndIdx)
+    setRevLongArraysIndIdx(uint_t revLongArraysIndIdx)
     {
         _revLongArraysIndIdx = revLongArraysIndIdx;
     }
-#endif
 
     /** Get rev-ints index. */
-    utl::uint_t
+    uint_t
     getRevIntsIdx() const
     {
         return _revIntsIdx;
@@ -130,13 +126,13 @@ public:
 
     /** Set rev-ints index. */
     void
-    setRevIntsIdx(utl::uint_t revIntsIdx)
+    setRevIntsIdx(uint_t revIntsIdx)
     {
         _revIntsIdx = revIntsIdx;
     }
 
     /** Get rev-arrays index. */
-    utl::uint_t
+    uint_t
     getRevIntArraysIdx() const
     {
         return _revIntArraysIdx;
@@ -144,13 +140,13 @@ public:
 
     /** Set rev-arrays index. */
     void
-    setRevIntArraysIdx(utl::uint_t revIntArraysIdx)
+    setRevIntArraysIdx(uint_t revIntArraysIdx)
     {
         _revIntArraysIdx = revIntArraysIdx;
     }
 
     /** Get rev-ints indirect index. */
-    utl::uint_t
+    uint_t
     getRevIntsIndIdx() const
     {
         return _revIntsIndIdx;
@@ -158,13 +154,13 @@ public:
 
     /** Set rev-ints indirect index. */
     void
-    setRevIntsIndIdx(utl::uint_t revIntsIndIdx)
+    setRevIntsIndIdx(uint_t revIntsIndIdx)
     {
         _revIntsIndIdx = revIntsIndIdx;
     }
 
     /** Get rev-arrays indirect index. */
-    utl::uint_t
+    uint_t
     getRevIntArraysIndIdx() const
     {
         return _revIntArraysIndIdx;
@@ -172,13 +168,13 @@ public:
 
     /** Set rev-arrays indirect index. */
     void
-    setRevIntArraysIndIdx(utl::uint_t revIntArraysIndIdx)
+    setRevIntArraysIndIdx(uint_t revIntArraysIndIdx)
     {
         _revIntArraysIndIdx = revIntArraysIndIdx;
     }
 
     /** Get rev-delta-vars index. */
-    utl::uint_t
+    uint_t
     getRevDeltaVarsIdx() const
     {
         return _revDeltaVarsIdx;
@@ -186,13 +182,13 @@ public:
 
     /** Set rev-delta-vars index. */
     void
-    setRevDeltaVarsIdx(utl::uint_t revDeltaVarsIdx)
+    setRevDeltaVarsIdx(uint_t revDeltaVarsIdx)
     {
         _revDeltaVarsIdx = revDeltaVarsIdx;
     }
 
     /** Get rev-cts index. */
-    utl::uint_t
+    uint_t
     getRevCtsIdx() const
     {
         return _revCtsIdx;
@@ -200,13 +196,13 @@ public:
 
     /** Set rev-cts index. */
     void
-    setRevCtsIdx(utl::uint_t revCtsIdx)
+    setRevCtsIdx(uint_t revCtsIdx)
     {
         _revCtsIdx = revCtsIdx;
     }
 
     /** Get rev-toggles index. */
-    utl::uint_t
+    uint_t
     getRevTogglesIdx() const
     {
         return _revTogglesIdx;
@@ -214,13 +210,13 @@ public:
 
     /** Set rev-toggles index. */
     void
-    setRevTogglesIdx(utl::uint_t revTogglesIdx)
+    setRevTogglesIdx(uint_t revTogglesIdx)
     {
         _revTogglesIdx = revTogglesIdx;
     }
 
     /** Get rev-allocations index. */
-    utl::uint_t
+    uint_t
     getRevAllocationsIdx() const
     {
         return _revAllocationsIdx;
@@ -228,13 +224,13 @@ public:
 
     /** Set rev-allocations index. */
     void
-    setRevAllocationsIdx(utl::uint_t revAllocationsIdx)
+    setRevAllocationsIdx(uint_t revAllocationsIdx)
     {
         _revAllocationsIdx = revAllocationsIdx;
     }
 
     /** Get rev-actions index. */
-    utl::uint_t
+    uint_t
     getRevActionsIdx() const
     {
         return _revActionsIdx;
@@ -242,7 +238,7 @@ public:
 
     /** Set rev-actions index. */
     void
-    setRevActionsIdx(utl::uint_t revActionsIdx)
+    setRevActionsIdx(uint_t revActionsIdx)
     {
         _revActionsIdx = revActionsIdx;
     }
@@ -269,7 +265,7 @@ public:
     }
 
     /** Get the or-index. */
-    utl::uint_t
+    uint_t
     orIdx() const
     {
         return _orIdx;
@@ -292,7 +288,7 @@ public:
     bool isLabeled() const;
 
     /** Get the label. */
-    utl::uint_t label() const;
+    uint_t label() const;
 
     /** Backtrack. */
     void backtrack(goal_stack_t& goalStack);
@@ -310,22 +306,20 @@ private:
     Manager* _mgr;
     Or* _or;
     goal_vector_t _goals;
-    utl::uint_t _orIdx;
-#if UTL_HOST_WORDSIZE == 64
-    utl::uint_t _revLongsIdx;
-    utl::uint_t _revLongArraysIdx;
-    utl::uint_t _revLongsIndIdx;
-    utl::uint_t _revLongArraysIndIdx;
-#endif
-    utl::uint_t _revIntsIdx;
-    utl::uint_t _revIntArraysIdx;
-    utl::uint_t _revIntsIndIdx;
-    utl::uint_t _revIntArraysIndIdx;
-    utl::uint_t _revDeltaVarsIdx;
-    utl::uint_t _revCtsIdx;
-    utl::uint_t _revTogglesIdx;
-    utl::uint_t _revAllocationsIdx;
-    utl::uint_t _revActionsIdx;
+    uint_t _orIdx;
+    uint_t _revLongsIdx;
+    uint_t _revLongArraysIdx;
+    uint_t _revLongsIndIdx;
+    uint_t _revLongArraysIndIdx;
+    uint_t _revIntsIdx;
+    uint_t _revIntArraysIdx;
+    uint_t _revIntsIndIdx;
+    uint_t _revIntArraysIndIdx;
+    uint_t _revDeltaVarsIdx;
+    uint_t _revCtsIdx;
+    uint_t _revTogglesIdx;
+    uint_t _revAllocationsIdx;
+    uint_t _revActionsIdx;
 };
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////

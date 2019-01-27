@@ -41,8 +41,8 @@ typedef RevSet<CycleGroup> cg_revset_t;
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
-   A set of ConstrainedBound objects s.t. any CB object in the set
-   is reachable from any other (by following BoundCts).
+   A set of ConstrainedBound objects s.t. any CB object in the set is reachable from any other
+   (by following BoundCts).
 
    \author Adam McKee
 */
@@ -51,7 +51,7 @@ typedef RevSet<CycleGroup> cg_revset_t;
 
 class CycleGroup : public utl::Object
 {
-    UTL_CLASS_DECL(CycleGroup);
+    UTL_CLASS_DECL(CycleGroup, utl::Object);
     UTL_CLASS_NO_COPY;
 
 public:
@@ -117,14 +117,14 @@ public:
     /// \name General Accessors
     //@{
     /** Get the id. */
-    utl::uint_t
+    uint_t
     id() const
     {
         return _id;
     }
 
     /** Get the id. */
-    utl::uint_t&
+    uint_t&
     id()
     {
         return _id;
@@ -134,18 +134,18 @@ public:
     bool
     visited() const
     {
-        return (_visitedIdx != utl::uint_t_max);
+        return (_visitedIdx != uint_t_max);
     }
 
     /** Get visited index. */
-    utl::uint_t
+    uint_t
     visitedIdx() const
     {
         return _visitedIdx;
     }
 
     /** Get visited count. */
-    utl::uint_t&
+    uint_t&
     visitedIdx()
     {
         return _visitedIdx;
@@ -159,7 +159,7 @@ public:
     }
 
     /** Get size. */
-    utl::uint_t
+    uint_t
     size() const
     {
         return _cbs.size();
@@ -208,39 +208,39 @@ public:
     }
 
     /** Get the successor-count. */
-    utl::uint_t
+    uint_t
     successorCount() const
     {
         return _successorCount;
     }
 
     /** Get the successor-depth. */
-    utl::uint_t&
+    uint_t&
     successorCount()
     {
         return _successorCount;
     }
 
     /** Get the successor-depth. */
-    utl::uint_t
+    uint_t
     successorDepth() const
     {
         return _successorDepth;
     }
 
     /** Get the successor-depth. */
-    utl::uint_t&
+    uint_t&
     successorDepth()
     {
         return _successorDepth;
     }
     //@}
 
-    virtual utl::String toString() const;
-    virtual utl::String predCGsString() const;
-    virtual utl::String allPredCGsString() const;
-    virtual utl::String succCGsString() const;
-    virtual utl::String allSuccCGsString() const;
+    virtual String toString() const;
+    virtual String predCGsString() const;
+    virtual String allPredCGsString() const;
+    virtual String succCGsString() const;
+    virtual String allSuccCGsString() const;
 
 private:
     void
@@ -257,7 +257,7 @@ private:
     void
     saveState()
     {
-        utl::uint_t d = _mgr->depth();
+        uint_t d = _mgr->depth();
         if (d <= _stateDepth)
             return;
         _saveState();
@@ -268,10 +268,10 @@ private:
 private:
     Manager* _mgr;
     BoundPropagator* _bp;
-    utl::uint_t _id;
-    utl::uint_t _visitedIdx;
-    utl::uint_t _successorCount;
-    utl::uint_t _successorDepth;
+    uint_t _id;
+    uint_t _visitedIdx;
+    uint_t _successorCount;
+    uint_t _successorDepth;
 
     // reversible /////////////////////////////////////////////
     cb_revset_t _cbs;
@@ -279,9 +279,9 @@ private:
     cg_revset_t _succCGs;
     cg_revset_t _allPredCGs;
     cg_revset_t _allSuccCGs;
-    utl::uint_t _stateDepth;
-    utl::uint_t _numUnfinalizedCBs;
-    utl::uint_t _numUnfinalizedPredCGs;
+    uint_t _stateDepth;
+    uint_t _numUnfinalizedCBs;
+    uint_t _numUnfinalizedPredCGs;
     ///////////////////////////////////////////////////////////
 };
 

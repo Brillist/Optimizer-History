@@ -23,11 +23,11 @@ GOP_NS_BEGIN;
 
 class OperatorVar : public utl::Object
 {
-    UTL_CLASS_DECL(OperatorVar);
+    UTL_CLASS_DECL(OperatorVar, utl::Object);
 
 public:
     /** Constructor. */
-    OperatorVar(utl::uint_t idx, bool* active, utl::uint_t successIter, utl::uint_t totalIter);
+    OperatorVar(uint_t idx, bool* active, uint_t successIter, uint_t totalIter);
 
     /** Copy. */
     void copy(const utl::Object& rhs);
@@ -35,7 +35,7 @@ public:
     /// \name Accessors
     //@{
     /** Get _idx. */
-    const utl::uint_t
+    const uint_t
     idx() const
     {
         return _idx;
@@ -85,10 +85,10 @@ private:
     }
 
 private:
-    utl::uint_t _idx;
+    uint_t _idx;
     bool* _active;
-    utl::uint_t _successIter;
-    utl::uint_t _totalIter;
+    uint_t _successIter;
+    uint_t _totalIter;
     double _p;
 };
 

@@ -22,7 +22,7 @@ CLS_NS_USE;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-UTL_CLASS_IMPL(cse::JobOpSeqMutate, gop::RevOperator);
+UTL_CLASS_IMPL(cse::JobOpSeqMutate);
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -141,7 +141,7 @@ JobOpSeqMutate::execute(gop::Ind* ind, gop::IndBuilderContext* p_context, bool s
     //select a swap op - (swapOpidx)
     jobop_vector_t* swapOps = _swapOps[opIdx];
     ASSERTD(swapOps->size() > 0);
-    uint_t swapOpIdx = _rng->evali(swapOps->size());
+    uint_t swapOpIdx = _rng->uniform((size_t)0, swapOps->size() - 1);
 
     //swap two ops
     JobOp* op = _ops[opIdx]; //
@@ -219,7 +219,7 @@ JobOpSeqMutate::execute(gop::Ind* ind, gop::IndBuilderContext* p_context, bool s
     std::set_intersection(opResIds.begin(), opResIds.end(), swapOpResIds.begin(),
                           swapOpResIds.end(), std::inserter(commonResIds, commonResIds.begin()));
     ASSERT(commonResIds.size() > 0);
-    uint_t resIdx = _rng->evali(commonResIds.size());
+    uint_t resIdx = _rng->uniform((size_t)0, commonResIds.size() - 1);
 
     uint_set_t::iterator resIt = commonResIds.begin();
     for (uint_t i = 0; i != resIdx; i++)
@@ -299,7 +299,7 @@ JobOpSeqMutate::setJobOps(const ClevorDataSet* dataSet)
             JobOp* op = *opIt;
             _ops.push_back(op); //_ops
         }
-        _jobStrPositions.push_back(strPosition); //jobStrPosition
+        _jobStrPositions.push_back(strPosition);
         strPosition += numOps;
     }
 
@@ -324,8 +324,6 @@ JobOpSeqMutate::setJobOps(const ClevorDataSet* dataSet)
             JobOp* op = *opIt;
             jobop_vector_t* opVect = new jobop_vector_t();
 
-            //skip if (op.frozen()) or (act != ptAct  and act != intAct)
-            //or (op.pt == 0)
             if (op->frozen() || (!op->breakable() && !op->interruptible()))
             {
                 _swapOps.push_back(opVect);
@@ -481,10 +479,10 @@ JobOpSeqMutate::setJobOps(const ClevorDataSet* dataSet)
                 }
             }
             std::sort(opVect->begin(), opVect->end(), JobOpIdOrdering());
-            _swapOps.push_back(opVect); // _swapOps
+            _swapOps.push_back(opVect);
             jobNumChoices += opVect->size();
         }
-        _jobNumChoices.push_back(jobNumChoices); //_jobNumChoices
+        _jobNumChoices.push_back(jobNumChoices);
     }
 }
 

@@ -25,11 +25,11 @@ CLS_NS_BEGIN;
 
 class CompositeTimetableDomain : public utl::Object, public clp::RevIntSpanCol
 {
-    UTL_CLASS_DECL(CompositeTimetableDomain);
+    UTL_CLASS_DECL(CompositeTimetableDomain, utl::Object);
     UTL_CLASS_NO_COPY;
 
 public:
-    typedef std::set<utl::uint_t> uint_set_t;
+    typedef std::set<uint_t> uint_set_t;
 
 public:
     /** Constructor. */
@@ -43,22 +43,22 @@ public:
     void initialize(Schedule* schedule, const uint_set_t& resIds);
 
     /** Add capacity-expression. */
-    clp::IntExp* addCapExp(utl::uint_t cap);
+    clp::IntExp* addCapExp(uint_t cap);
 
     /** Remove capacity-expression. */
-    void remCapExp(utl::uint_t cap);
+    void remCapExp(uint_t cap);
 
     /** Add provided capacity over a given interval. */
-    void add(int min, int max, utl::uint_t resId);
+    void add(int min, int max, uint_t resId);
 
     /** Allocate capacity. */
     void allocate(int min,
                   int max,
-                  utl::uint_t cap,
+                  uint_t cap,
                   Activity* act,
                   const PreferredResources* pr,
                   const clp::IntExp* breakList = nullptr,
-                  utl::uint_t resId = utl::uint_t_max,
+                  uint_t resId = uint_t_max,
                   bool updateDiscrete = true);
 
     /// \name Events
@@ -102,37 +102,37 @@ protected:
     CompositeSpan* newCS(int min,
                          int max,
                          clp::IntExpDomainAR* resIds = nullptr,
-                         utl::uint_t level = utl::uint_t_max);
+                         uint_t level = uint_t_max);
 
     virtual clp::IntSpan* newIntSpan(
-        int min, int max, utl::uint_t v0, utl::uint_t v1, utl::uint_t level = utl::uint_t_max);
+        int min, int max, uint_t v0, uint_t v1, uint_t level = uint_t_max);
 
 private:
     void init();
     void deInit();
 
     bool allocate(clp::IntExpDomainAR* resIds,
-                  utl::uint_t cap,
+                  uint_t cap,
                   IntActivity* act,
                   const PreferredResources* pr,
                   int min = utl::int_t_max,
                   int max = utl::int_t_max,
-                  utl::uint_t resId = utl::uint_t_max,
+                  uint_t resId = uint_t_max,
                   bool updateDiscrete = true);
 
 private:
-    typedef std::vector<utl::uint_t> uint_vector_t;
+    typedef std::vector<uint_t> uint_vector_t;
 
 private:
     clp::IntSpan* _dummyIntSpan;
     Schedule* _schedule;
     int* _values;
-    utl::uint_t _numValues;
+    uint_t _numValues;
     clp::IntExp** _capExps;
-    utl::uint_t* _capExpCounts;
+    uint_t* _capExpCounts;
     size_t _capExpsSize;
     size_t _capExpCountsSize;
-    utl::uint_t _events;
+    uint_t _events;
 };
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////

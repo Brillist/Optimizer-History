@@ -26,7 +26,7 @@ class IntSpan;
 
 class IntExpDomainRISCit : public IntExpDomainIt
 {
-    UTL_CLASS_DECL(IntExpDomainRISCit);
+    UTL_CLASS_DECL(IntExpDomainRISCit, IntExpDomainIt);
     UTL_CLASS_DEFID;
 
 public:

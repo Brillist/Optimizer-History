@@ -19,7 +19,7 @@ LUT_NS_USE;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-UTL_CLASS_IMPL_ABC(gop::Operator, utl::Object);
+UTL_CLASS_IMPL_ABC(gop::Operator);
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -67,7 +67,7 @@ Operator::toString() const
 {
     utl::MemStream str;
     str << name().c_str() << ": numChoices:" << getNumChoices() << ", numValidVars:" << numVars()
-        << ", sucRate:" << Float(p()).toString("precision:2") << ", successIter:" << _successIter
+        << ", sucRate:" << Float(p()).toString(2) << ", successIter:" << _successIter
         << ", totalIter:" << _totalIter << '\0';
     return utl::String((char*)str.get());
 }
@@ -124,9 +124,9 @@ Operator::getSelectedVarIdx() const
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
-Operator::addOperatorVar(utl::uint_t idx,
-                         utl::uint_t initSuccessIter,
-                         utl::uint_t initTotalIter,
+Operator::addOperatorVar(uint_t idx,
+                         uint_t initSuccessIter,
+                         uint_t initTotalIter,
                          bool* active)
 {
     //Note: this method is used for initialization.
@@ -179,7 +179,7 @@ Operator::selectOperatorVarIdx()
     {
         OperatorVar* var = *it;
         utl::cout << " (" << var->idx() << ", active:" << (Bool)var->active()
-                  << ", p:" << Float(var->p()).toString("precision:2") << ")";
+                  << ", p:" << Float(var->p()).toString(2) << ")";
     }
     utl::cout << utl::endlf;
 #endif
@@ -196,7 +196,7 @@ Operator::selectOperatorVarIdx()
         vars.push_back(var);
     }
     ASSERTD(vars.size() > 0);
-    uint_t idx = _rng->evali(vars.size());
+    uint_t idx = _rng->uniform((size_t)0, vars.size() - 1);
     _selectedVar = vars[idx];
 
     return _selectedVar->idx();

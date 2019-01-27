@@ -18,7 +18,7 @@ LUT_NS_USE;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-UTL_CLASS_IMPL(gop::MultistartHC, gop::HillClimber);
+UTL_CLASS_IMPL(gop::MultistartHC);
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -44,7 +44,7 @@ MultistartHC::initialize(const OptimizerConfiguration* config)
 
     //     _ind->setScore(0, _bestScore); //?????
     _beamWidth = 10;
-    String<utl::uint_t>* str = _ind->getString();
+    String<uint_t>* str = _ind->getString();
     for (uint_t i = 0; i < _beamWidth; i++)
     {
         StringScore* strScore = new StringScore(i, str->clone(), _bestScore->clone());
@@ -137,7 +137,7 @@ MultistartHC::run()
 #ifdef DEBUG_UNIT
             utl::cout << "startId:" << _strScores[i]->getId() << "(" << i << "/" << _beamWidth
                       << ", "
-                      << Float(_strScores[i]->getScore()->getValue()).toString("precision:0")
+                      << Float(_strScores[i]->getScore()->getValue()).toString(0)
                       << "), " << iterationString() << utl::endl;
 #endif
 

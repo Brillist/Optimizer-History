@@ -21,7 +21,7 @@ CLS_NS_USE;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-UTL_CLASS_IMPL(cse::CapMutate, gop::RevOperator);
+UTL_CLASS_IMPL(cse::CapMutate);
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -102,7 +102,7 @@ CapMutate::execute(gop::Ind* ind, gop::IndBuilderContext* p_context, bool single
         }
         else
         {
-            uint_t randomNum = _rng->evali(2);
+            uint_t randomNum = _rng->uniform(0, 1);
             if (randomNum == 0)
             {
                 cap = oldCap - 1;
@@ -116,7 +116,7 @@ CapMutate::execute(gop::Ind* ind, gop::IndBuilderContext* p_context, bool single
     }
     else
     {
-        cap = _rng->evali(_minCapMultiples[actIdx], _maxCapMultiples[actIdx]);
+        cap = _rng->uniform(_minCapMultiples[actIdx], _maxCapMultiples[actIdx]);
         if (cap >= oldCap)
             cap++;
     }

@@ -26,7 +26,7 @@ class LFbound;
 
 class LFboundTimetable : public TimetableBound
 {
-    UTL_CLASS_DECL(LFboundTimetable);
+    UTL_CLASS_DECL(LFboundTimetable, TimetableBound);
 
 public:
     /** Constructor. */

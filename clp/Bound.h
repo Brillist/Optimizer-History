@@ -31,7 +31,7 @@ enum bound_t
 
 class Bound : public utl::Object
 {
-    UTL_CLASS_DECL(Bound);
+    UTL_CLASS_DECL(Bound, utl::Object);
     UTL_CLASS_NO_COPY;
 
 public:
@@ -48,14 +48,14 @@ public:
     }
 
     /** Get the name. */
-    const utl::String&
+    const String&
     name() const
     {
         return _name;
     }
 
     /** Get the name. */
-    utl::String&
+    String&
     name()
     {
         return _name;
@@ -196,7 +196,7 @@ protected:
     void
     saveState()
     {
-        utl::uint_t d = _mgr->depth();
+        uint_t d = _mgr->depth();
         if (d <= _stateDepth)
             return;
         _saveState();
@@ -206,12 +206,12 @@ protected:
 
 protected:
     Manager* _mgr;
-    utl::String _name;
+    String _name;
     bool _debugFlag;
     bound_t _type;
 
     // reversible ///////////////////////////////////////
-    utl::uint_t _stateDepth;
+    uint_t _stateDepth;
     int _bound;
     int _findPoint;
     // reversible ///////////////////////////////////////

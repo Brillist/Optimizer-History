@@ -23,7 +23,7 @@ GOP_NS_USE;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-UTL_CLASS_IMPL(cse::PtSelector, cse::Scheduler);
+UTL_CLASS_IMPL(cse::PtSelector);
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -85,7 +85,7 @@ PtSelector::initialize(const gop::DataSet* p_dataSet, uint_t stringBase)
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
-PtSelector::initializeInd(Ind* p_ind, const gop::DataSet* p_dataSet, RandNumGen* rng, void*)
+PtSelector::initializeInd(Ind* p_ind, const gop::DataSet* p_dataSet, rng_t* rng, void*)
 {
     ASSERTD(dynamic_cast<StringInd<uint_t>*>(p_ind) != nullptr);
     StringInd<uint_t>* ind = (StringInd<uint_t>*)p_ind;
@@ -108,17 +108,13 @@ PtSelector::initializeInd(Ind* p_ind, const gop::DataSet* p_dataSet, RandNumGen*
         string[_stringBase + i] = minCostAltResPt->pt();
     }
 
-    //     for (uint_t i = 0; i < numActs; ++i)
-    //     {
-    //         string[_stringBase + i] = 0;
-    //     }
     _nestedScheduler->initializeInd(ind, dataSet, rng, (void*)size_t_max);
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
-PtSelector::initializeRandomInd(Ind* p_ind, const gop::DataSet* p_dataSet, RandNumGen* rng, void*)
+PtSelector::initializeRandomInd(Ind* p_ind, const gop::DataSet* p_dataSet, rng_t* rng, void*)
 {
     ASSERTD(dynamic_cast<StringInd<uint_t>*>(p_ind) != nullptr);
     StringInd<uint_t>* ind = (StringInd<uint_t>*)p_ind;
@@ -136,7 +132,7 @@ PtSelector::initializeRandomInd(Ind* p_ind, const gop::DataSet* p_dataSet, RandN
     {
         const IntExp& ptExp = _acts[i]->possiblePts();
         uint_t minPt = ptExp.min();
-        uint_t tt = rng->evali(2);
+        uint_t tt = rng->uniform(0, 1);
         if (tt == 0)
         {
             string[_stringBase + i] = minPt;

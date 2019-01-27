@@ -24,7 +24,7 @@ GOP_NS_USE;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-UTL_CLASS_IMPL(cse::ReleaseTimeSelector, cse::Scheduler);
+UTL_CLASS_IMPL(cse::ReleaseTimeSelector);
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -89,7 +89,7 @@ ReleaseTimeSelector::initialize(const gop::DataSet* p_dataSet, uint_t stringBase
 void
 ReleaseTimeSelector::initializeInd(Ind* p_ind,
                                    const gop::DataSet* p_dataSet,
-                                   RandNumGen* rng,
+                                   rng_t* rng,
                                    void*)
 {
     ASSERTD(dynamic_cast<StringInd<uint_t>*>(p_ind) != nullptr);

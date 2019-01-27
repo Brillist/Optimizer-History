@@ -44,7 +44,7 @@ enum requester_type_t
 
 class PurchaseOrder : public utl::Object
 {
-    UTL_CLASS_DECL(PurchaseOrder);
+    UTL_CLASS_DECL(PurchaseOrder, utl::Object);
 
 public:
     virtual void copy(const utl::Object& rhs);
@@ -52,19 +52,19 @@ public:
     virtual int compare(const utl::Object& rhs) const;
 
     virtual void
-    serialize(utl::Stream& stream, utl::uint_t io, utl::uint_t mode = utl::ser_default);
+    serialize(utl::Stream& stream, uint_t io, uint_t mode = utl::ser_default);
 
     /// \name Accessors
     //@{
     /** Id. */
-    utl::uint_t
+    uint_t
     id() const
     {
         return _id;
     }
 
     /** Id. */
-    utl::uint_t&
+    uint_t&
     id()
     {
         return _id;
@@ -99,14 +99,14 @@ public:
     }
 
     /** Quantity. */
-    utl::uint_t
+    uint_t
     quantity() const
     {
         return _quantity;
     }
 
     /** Quantity. */
-    utl::uint_t&
+    uint_t&
     quantity()
     {
         return _quantity;
@@ -155,14 +155,14 @@ public:
     }
 
     /** Get the requester id. */
-    utl::uint_t
+    uint_t
     requesterId() const
     {
         return _requesterId;
     }
 
     /** Get the requester id. */
-    utl::uint_t&
+    uint_t&
     requesterId()
     {
         return _requesterId;
@@ -186,22 +186,22 @@ public:
     /** reset item. */
     void setItem(PurchaseItem* item, bool owner = false);
 
-    utl::String toString() const;
+    String toString() const;
 
 private:
     void init();
     void deInit();
 
 private:
-    utl::uint_t _id;
+    uint_t _id;
     std::string _name;
     PurchaseItem* _item;
     bool _itemOwner;
     purchaseorder_status_t _status;
-    utl::uint_t _quantity;
+    uint_t _quantity;
     time_t _orderDate;
     time_t _receiveDate;
-    utl::uint_t _requesterId;
+    uint_t _requesterId;
     requester_type_t _requesterType;
 };
 

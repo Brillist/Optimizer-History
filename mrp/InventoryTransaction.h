@@ -46,14 +46,14 @@ enum inv_transaction_op_type_t
 
 class InventoryTransaction : public utl::Object
 {
-    UTL_CLASS_DECL(InventoryTransaction);
+    UTL_CLASS_DECL(InventoryTransaction, utl::Object);
 
 public:
     InventoryTransaction(time_t transTime,
                          inv_transaction_status_t status,
                          utl::int_t quantity,
                          inv_transaction_op_type_t opType,
-                         utl::uint_t opId)
+                         uint_t opId)
     {
         _transTime = transTime;
         _status = status;
@@ -67,7 +67,7 @@ public:
     virtual int compare(const utl::Object& rhs) const;
 
     virtual void
-    serialize(utl::Stream& stream, utl::uint_t io, utl::uint_t mode = utl::ser_default);
+    serialize(utl::Stream& stream, uint_t io, uint_t mode = utl::ser_default);
 
     /// \name Accessors
     //@{
@@ -128,21 +128,21 @@ public:
     }
 
     /** Operation Id. */
-    utl::uint_t
+    uint_t
     opId() const
     {
         return _opId;
     }
 
     /** Operation Id. */
-    utl::uint_t&
+    uint_t&
     opId()
     {
         return _opId;
     }
     //@}
 
-    utl::String toString() const;
+    String toString() const;
 
 private:
     void init();
@@ -153,7 +153,7 @@ private:
     inv_transaction_status_t _status;
     utl::int_t _quantity;
     inv_transaction_op_type_t _opType;
-    utl::uint_t _opId;
+    uint_t _opId;
 };
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////

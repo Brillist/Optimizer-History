@@ -27,53 +27,53 @@ MRP_NS_BEGIN;
 
 class StepResourceRequirement : public utl::Object
 {
-    UTL_CLASS_DECL(StepResourceRequirement);
+    UTL_CLASS_DECL(StepResourceRequirement, utl::Object);
 
 public:
     virtual void copy(const utl::Object& rhs);
 
     virtual void
-    serialize(utl::Stream& stream, utl::uint_t io, utl::uint_t mode = utl::ser_default);
+    serialize(utl::Stream& stream, uint_t io, uint_t mode = utl::ser_default);
 
     /// \name Accessors
     //@{
     /** Resource id. */
-    utl::uint_t
+    uint_t
     resourceId() const
     {
         return _resourceId;
     }
 
     /** Resource Id. */
-    utl::uint_t
+    uint_t
     resourceId()
     {
         return _resourceId;
     }
 
     /** Capacity. */
-    utl::uint_t
+    uint_t
     capacity() const
     {
         return _capacity;
     }
 
     /** Capacity. */
-    utl::uint_t&
+    uint_t&
     capacity()
     {
         return _capacity;
     }
 
     /** SetupId. */
-    utl::uint_t
+    uint_t
     setupId() const
     {
         return _setupId;
     }
 
     /** SetupId. */
-    utl::uint_t&
+    uint_t&
     setupId()
     {
         return _setupId;
@@ -84,18 +84,18 @@ public:
     cse::ResourceRequirement* createResourceRequirement() const;
 
     /** Create a cse::ResourceGroupRequirement object. */
-    cse::ResourceGroupRequirement* createResourceGroupRequirement(utl::uint_t groupId) const;
+    cse::ResourceGroupRequirement* createResourceGroupRequirement(uint_t groupId) const;
 
-    utl::String toString() const;
+    String toString() const;
 
 private:
     void init();
     void deInit();
 
 private:
-    utl::uint_t _resourceId;
-    utl::uint_t _capacity;
-    utl::uint_t _setupId;
+    uint_t _resourceId;
+    uint_t _capacity;
+    uint_t _setupId;
 };
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////

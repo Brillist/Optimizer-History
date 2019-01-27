@@ -25,7 +25,7 @@ CSE_NS_BEGIN;
 
 class RuleBasedScheduler : public Scheduler
 {
-    UTL_CLASS_DECL_ABC(RuleBasedScheduler);
+    UTL_CLASS_DECL_ABC(RuleBasedScheduler, Scheduler);
 
 public:
     virtual void copy(const utl::Object& rhs);
@@ -53,8 +53,8 @@ protected:
     void setOpOrdering(OpOrdering* opOrdering);
 
 protected:
-    mutable utl::uint_t _jobSid;
-    mutable utl::uint_t _opSid;
+    mutable uint_t _jobSid;
+    mutable uint_t _opSid;
 
     OpOrdering* _opOrdering;
     bool _setSid;
@@ -70,7 +70,7 @@ private:
 
 class JobLevelScheduler : public RuleBasedScheduler
 {
-    UTL_CLASS_DECL(JobLevelScheduler);
+    UTL_CLASS_DECL(JobLevelScheduler, RuleBasedScheduler);
 
 public:
     /** Copy another instance. */
@@ -119,7 +119,7 @@ private:
 
 class FrozenOpScheduler : public JobLevelScheduler
 {
-    UTL_CLASS_DECL(FrozenOpScheduler);
+    UTL_CLASS_DECL(FrozenOpScheduler, JobLevelScheduler);
 
 private:
     void init();
@@ -135,7 +135,7 @@ private:
 
 class JobSequenceScheduler : public JobLevelScheduler
 {
-    UTL_CLASS_DECL(JobSequenceScheduler);
+    UTL_CLASS_DECL(JobSequenceScheduler, JobLevelScheduler);
 
 private:
     void init();
@@ -151,7 +151,7 @@ private:
 
 class OpSequenceScheduler : public RuleBasedScheduler
 {
-    UTL_CLASS_DECL(OpSequenceScheduler);
+    UTL_CLASS_DECL(OpSequenceScheduler, RuleBasedScheduler);
 
 public:
     virtual void initRun(SchedulingContext* context) const;
@@ -166,7 +166,7 @@ private:
     }
 
 private:
-    mutable utl::uint_t _idx;
+    mutable uint_t _idx;
     mutable utl::Array _ops;
 };
 
@@ -176,7 +176,7 @@ private:
 
 class FwdScheduler : public JobLevelScheduler
 {
-    UTL_CLASS_DECL(FwdScheduler);
+    UTL_CLASS_DECL(FwdScheduler, JobLevelScheduler);
 
 protected:
     virtual void initRun(SchedulingContext* context) const;

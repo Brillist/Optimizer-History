@@ -387,6 +387,204 @@
     <ClCompile Include="cse\AltJobMutate.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="lut\Functor.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="lut\lut_util.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="lut\RBtree.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="lut\RBtreeNode.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="lut\RCobject.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="lut\SkipListDepthArray.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="mps\MPSclient.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="mps\MPSdataSet.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="mps\MPSitem.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="mps\MPSitemPeriod.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="mps\MPSrun.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="mps\MPSserver.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="mps\ServerApp.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="mrp\AlternateResources.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="mrp\BOM.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="mrp\CompositeResource.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="mrp\DiscreteResource.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="mrp\InventoryInterval.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="mrp\InventoryRecord.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="mrp\InventoryTransaction.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="mrp\Item.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="mrp\ItemPlanRelation.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="mrp\ManufactureItem.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="mrp\MRPclient.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="mrp\MRPdataSet.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="mrp\MRPrun.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="mrp\MRPserver.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="mrp\PlanStepRelation.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="mrp\ProcessPlan.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="mrp\ProcessStep.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="mrp\PurchaseItem.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="mrp\PurchaseOrder.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="mrp\Resource.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="mrp\ResourceGroup.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="mrp\Setup.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="mrp\SetupGroup.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="mrp\StepAltResCapPts.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="mrp\StepItemRequirement.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="mrp\StepResourceRequirement.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="mrp\WorkOrder.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="gop\AR_SAoptimizer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="gop\ConfigEx.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="gop\DataSet.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="gop\HillClimber.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="gop\ID_SAoptimizer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="gop\Ind.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="gop\IndBuilder.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="gop\IndBuilderContext.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="gop\IndEvaluator.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="gop\IndEvaluatorConfiguration.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="gop\MultistartHC.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="gop\MultistartSA.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="gop\Objective.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="gop\Operator.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="gop\OperatorVar.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="gop\Optimizer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="gop\OptimizerConfiguration.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="gop\Population.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="gop\RandomWalk.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="gop\RevOperator.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="gop\RunStatus.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="gop\SAoptimizer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="gop\Score.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="gop\StringScore.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="gop\WeightedEvaluator.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="main\clevor_se.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="clp\And.h">
@@ -774,6 +972,231 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="cse\UnaryCt.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="lut\Factory.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="lut\Functor.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="lut\liblut.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="lut\lut_util.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="lut\Queue.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="lut\RBtree.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="lut\RBtreeNode.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="lut\RCobject.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="lut\SkipListDepthArray.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="lut\types.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="mps\libmps.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="mps\MPSclient.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="mps\MPSdataSet.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="mps\MPSitem.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="mps\MPSitemPeriod.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="mps\MPSrun.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="mps\MPSserver.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="mps\ServerApp.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="mrp\AlternateResources.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="mrp\BOM.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="mrp\CompositeResource.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="mrp\DiscreteResource.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="mrp\InventoryInterval.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="mrp\InventoryRecord.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="mrp\InventoryTransaction.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="mrp\Item.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="mrp\ItemPlanRelation.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="mrp\libmrp.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="mrp\ManufactureItem.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="mrp\MRPclient.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="mrp\MRPdataSet.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="mrp\MRPrun.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="mrp\MRPserver.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="mrp\PlanStepRelation.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="mrp\ProcessPlan.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="mrp\ProcessStep.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="mrp\PurchaseItem.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="mrp\PurchaseOrder.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="mrp\Resource.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="mrp\ResourceGroup.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="mrp\Setup.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="mrp\SetupGroup.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="mrp\StepAltResCapPts.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="mrp\StepItemRequirement.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="mrp\StepResourceRequirement.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="mrp\WorkOrder.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="main\main.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="gop\AR_SAoptimizer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="gop\ConfigEx.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="gop\DataSet.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="gop\HillClimber.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="gop\ID_SAoptimizer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="gop\Ind.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="gop\IndBuilder.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="gop\IndBuilderContext.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="gop\IndEvaluator.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="gop\IndEvaluatorConfiguration.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="gop\libgop.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="gop\MultistartHC.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="gop\MultistartSA.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="gop\Objective.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="gop\Operator.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="gop\OperatorVar.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="gop\Optimizer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="gop\OptimizerConfiguration.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="gop\Population.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="gop\RandomWalk.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="gop\RevOperator.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="gop\RunStatus.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="gop\SAoptimizer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="gop\Score.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="gop\String.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="gop\StringInd.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="gop\StringScore.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="gop\WeightedEvaluator.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

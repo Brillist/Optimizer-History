@@ -20,7 +20,7 @@ CLS_NS_USE;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-UTL_CLASS_IMPL(cse::AltResMutate, gop::RevOperator);
+UTL_CLASS_IMPL(cse::AltResMutate);
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -105,7 +105,7 @@ AltResMutate::execute(gop::Ind* ind, gop::IndBuilderContext* p_context, bool sin
         }
         else
         {
-            uint_t randomNum = _rng->evali(2);
+            uint_t randomNum = _rng->uniform(0, 1);
             if (randomNum == 0)
             {
                 resIdx = _moveResIdx - 1;
@@ -119,16 +119,15 @@ AltResMutate::execute(gop::Ind* ind, gop::IndBuilderContext* p_context, bool sin
     }
     else
     {
-        resIdx = _rng->evali(numResources - 1);
+        resIdx = _rng->uniform((uint_t)0, numResources - 2);
         if (resIdx >= _moveResIdx)
             ++resIdx;
     }
     string[_moveResGroupReqIdx] = resIdx;
     uint_t resId = resGroupReq->resIdxCapPts(resIdx)->resourceId();
 
-    //selectResource(resId)
 #ifdef DEBUG_UNIT
-    BrkActivity* act = resGroupReq->activity();
+    auto act = resGroupReq->activity();
     utl::cout << "                                                   "
               << "task:" << act->id()
               << ", oldAltRes:" << resGroupReq->resIdxCapPts(_moveResIdx)->resource()->id()
@@ -198,7 +197,6 @@ AltResMutate::setResGroupReqs(const ClevorDataSet* dataSet)
     for (it = ops.begin(); it != ops.end(); ++it)
     {
         JobOp* op = *it;
-        //skip if (!op.breakable()) || op.frozen()
         if (!op->breakable() || op->frozen())
             continue;
         uint_t numResGroupReqs = op->numResGroupReqs();

@@ -11,7 +11,7 @@ CLP_NS_USE;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-UTL_CLASS_IMPL(cls::Activity, utl::Object);
+UTL_CLASS_IMPL(cls::Activity);
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -27,7 +27,7 @@ Activity::Activity(Schedule* schedule)
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-utl::String
+String
 Activity::toString() const
 {
     std::ostringstream ss;
@@ -36,8 +36,7 @@ Activity::toString() const
     {
         ss << "name: '" << name() << "', ";
     }
-    ss << "start: " << start().toString().get() << ", "
-       << "end: " << end().toString().get();
+    ss << "start: " << start().toString().get() << ", " << "end: " << end().toString().get();
     return ss.str().c_str();
 }
 

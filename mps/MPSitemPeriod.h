@@ -36,26 +36,26 @@ class MPSitem;
 
 class MPSitemPeriod : public utl::Object
 {
-    UTL_CLASS_DECL(MPSitemPeriod);
+    UTL_CLASS_DECL(MPSitemPeriod, utl::Object);
 
 public:
     /** Constructor. */
     MPSitemPeriod(MPSitem* item,
-                  utl::uint_t id,
+                  uint_t id,
                   time_t startTime,
                   time_t endTime,
-                  utl::uint_t forecast,
-                  utl::uint_t customerOrder,
+                  uint_t forecast,
+                  uint_t customerOrder,
                   utl::int_t pab,
-                  utl::uint_t mpsQuantity,
-                  utl::uint_t atp,
+                  uint_t mpsQuantity,
+                  uint_t atp,
                   mpsitemperiod_status_t status,
-                  utl::uint_t onHand = utl::uint_t_max);
+                  uint_t onHand = uint_t_max);
 
     virtual void copy(const utl::Object& rhs);
 
     virtual void
-    serialize(utl::Stream& stream, utl::uint_t io, utl::uint_t mode = utl::ser_default);
+    serialize(utl::Stream& stream, uint_t io, uint_t mode = utl::ser_default);
 
     /// \name Accessors
     //@{
@@ -67,14 +67,14 @@ public:
     }
 
     /** ID. */
-    utl::uint_t
+    uint_t
     id() const
     {
         return _id;
     }
 
     /** ID. */
-    utl::uint_t&
+    uint_t&
     id()
     {
         return _id;
@@ -109,28 +109,28 @@ public:
     }
 
     /** Forecast quantity. */
-    utl::uint_t
+    uint_t
     forecast() const
     {
         return _forecast;
     }
 
     /** Forecast quantity. */
-    utl::uint_t&
+    uint_t&
     forecast()
     {
         return _forecast;
     }
 
     /** Customer order quantity. */
-    utl::uint_t
+    uint_t
     customerOrder() const
     {
         return _customerOrder;
     }
 
     /** Customer order quantity. */
-    utl::uint_t&
+    uint_t&
     customerOrder()
     {
         return _customerOrder;
@@ -151,42 +151,42 @@ public:
     }
 
     /** MPS quantity. */
-    utl::uint_t
+    uint_t
     mpsQuantity() const
     {
         return _mpsQuantity;
     }
 
     /** MPS quantity. */
-    utl::uint_t&
+    uint_t&
     mpsQuantity()
     {
         return _mpsQuantity;
     }
 
     /** Available to promise. */
-    utl::uint_t
+    uint_t
     atp() const
     {
         return _atp;
     }
 
     /** Available to promise. */
-    utl::uint_t&
+    uint_t&
     atp()
     {
         return _atp;
     }
 
     /** Quantity on hand. */
-    utl::uint_t
+    uint_t
     onHand() const
     {
         return _onHand;
     }
 
     /** Quantity on hand. */
-    utl::uint_t&
+    uint_t&
     onHand()
     {
         return _onHand;
@@ -275,7 +275,7 @@ public:
     // Calculate _atp
     void calculate2();
 
-    utl::String toString() const;
+    String toString() const;
 
 private:
     void init();
@@ -283,15 +283,15 @@ private:
 
 private:
     MPSitem* _item;
-    utl::uint_t _id;
+    uint_t _id;
     time_t _startTime;
     time_t _endTime;
-    utl::uint_t _forecast;
-    utl::uint_t _customerOrder;
+    uint_t _forecast;
+    uint_t _customerOrder;
     utl::int_t _pab; // Projected available balance
-    utl::uint_t _mpsQuantity;
-    utl::uint_t _atp; // Available to promise
-    utl::uint_t _onHand;
+    uint_t _mpsQuantity;
+    uint_t _atp; // Available to promise
+    uint_t _onHand;
     mpsitemperiod_status_t _status;
 
     bool _itemOwner; // only used for removing init dummy _item object

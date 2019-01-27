@@ -36,7 +36,7 @@ enum minmax_goal_t
 
 class Objective : public utl::Object
 {
-    UTL_CLASS_DECL(Objective);
+    UTL_CLASS_DECL(Objective, utl::Object);
 
 public:
     /** Constructor. */
@@ -46,7 +46,7 @@ public:
     virtual void copy(const utl::Object& rhs);
 
     virtual void
-    serialize(utl::Stream& stream, utl::uint_t io, utl::uint_t mode = utl::ser_default);
+    serialize(utl::Stream& stream, uint_t io, uint_t mode = utl::ser_default);
 
     /** Get the name. */
     virtual std::string

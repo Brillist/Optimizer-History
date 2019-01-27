@@ -46,18 +46,18 @@ class Schedule;
 
 class Activity : public utl::Object
 {
-    UTL_CLASS_DECL(Activity);
+    UTL_CLASS_DECL(Activity, utl::Object);
     UTL_CLASS_NO_COPY;
 
 public:
-    typedef std::set<utl::uint_t> uint_set_t;
+    typedef std::set<uint_t> uint_set_t;
 
 public:
     /** Constructor. */
     Activity(Schedule* schedule);
 
     /** Get a human-readable string representation. */
-    virtual utl::String toString() const;
+    virtual String toString() const;
 
     /** Get the manager associated with the invoking activity's schedule. */
     clp::Manager* manager();
@@ -84,28 +84,28 @@ public:
     }
 
     /** Get the id. */
-    utl::uint_t
+    uint_t
     id() const
     {
         return _id;
     }
 
     /** Get the id. */
-    utl::uint_t&
+    uint_t&
     id()
     {
         return _id;
     }
 
     /** Get the serial-id. */
-    utl::uint_t
+    uint_t
     serialId() const
     {
         return _serialId;
     }
 
     /** Get the serial-id. */
-    utl::uint_t&
+    uint_t&
     serialId()
     {
         return _serialId;
@@ -286,7 +286,7 @@ public:
 
     /** Select a resource. */
     virtual bool
-    selectResource(utl::uint_t resId)
+    selectResource(uint_t resId)
     {
         return false;
     }
@@ -296,8 +296,8 @@ private:
     void deInit();
 
 private:
-    utl::uint_t _id;
-    utl::uint_t _serialId;
+    uint_t _id;
+    uint_t _serialId;
     Schedule* _schedule;
     clp::RangeVar _start;
     clp::RangeVar _end;

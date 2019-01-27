@@ -13,7 +13,7 @@ MPS_NS_BEGIN;
 
 class ServerApp : public utl::Application
 {
-    UTL_CLASS_DECL(ServerApp);
+    UTL_CLASS_DECL(ServerApp, utl::Application);
     UTL_CLASS_DEFID;
 
 public:

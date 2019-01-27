@@ -16,7 +16,7 @@ LUT_NS_USE;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-UTL_CLASS_IMPL(clp::IntExpDomainCAR, clp::IntExpDomain);
+UTL_CLASS_IMPL(clp::IntExpDomainCAR);
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -73,10 +73,10 @@ IntExpDomainCAR::decrement(int val, uint_t num)
     uint_t wordIdx = idx >> _countsPerWordLog2;
     uint_t countIdx = idx & _countsPerWordMask;
     uint_t maskShift = (countIdx << _bitsLog2);
-    utl::uint32_t mask = _mask << maskShift;
+    uint32_t mask = _mask << maskShift;
 
     // get old count
-    utl::uint32_t& word = _counts[wordIdx];
+    uint32_t& word = _counts[wordIdx];
     uint_t count = (word & mask) >> maskShift;
     ASSERTD(count >= num);
 
@@ -344,13 +344,13 @@ IntExpDomainCAR::deInit()
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 uint_t
-IntExpDomainCAR::getCount(utl::uint_t idx) const
+IntExpDomainCAR::getCount(uint_t idx) const
 {
     uint_t wordIdx = idx >> _countsPerWordLog2;
     uint_t countIdx = idx & _countsPerWordMask;
     uint_t maskShift = (countIdx << _bitsLog2);
-    utl::uint32_t mask = _mask << maskShift;
-    utl::uint32_t& word = _counts[wordIdx];
+    uint32_t mask = _mask << maskShift;
+    uint32_t& word = _counts[wordIdx];
     uint_t count = (word & mask) >> maskShift;
     return count;
 }
@@ -364,8 +364,8 @@ IntExpDomainCAR::setCount(uint_t idx, uint_t count)
     uint_t wordIdx = idx >> _countsPerWordLog2;
     uint_t countIdx = idx & _countsPerWordMask;
     uint_t maskShift = (countIdx << _bitsLog2);
-    utl::uint32_t mask = _mask << maskShift;
-    utl::uint32_t& word = _counts[wordIdx];
+    uint32_t mask = _mask << maskShift;
+    uint32_t& word = _counts[wordIdx];
 
     // clear old count
     uint_t oldCount = (word & mask) >> maskShift;

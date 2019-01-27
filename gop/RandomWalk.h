@@ -31,7 +31,7 @@ GOP_NS_BEGIN;
 
 class RandomWalk : public Optimizer
 {
-    UTL_CLASS_DECL(RandomWalk);
+    UTL_CLASS_DECL(RandomWalk, Optimizer);
 
 public:
     virtual bool

@@ -17,7 +17,7 @@ LUT_NS_USE;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-UTL_CLASS_IMPL(gop::HillClimber, gop::Optimizer);
+UTL_CLASS_IMPL(gop::HillClimber);
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -95,9 +95,9 @@ HillClimber::HCiterationRun()
         complete = this->complete();
         return complete;
     }
-    ASSERTD(dynamic_cast<RevOperator*>(op) != nullptr);
-    RevOperator* rop = (RevOperator*)op;
+    auto rop = utl::cast<RevOperator>(op);
     rop->addTotalIter();
+
 #ifdef DEBUG_UNIT
     utl::cout << "                                      " << op->toString() << utl::endl;
 #endif
@@ -123,68 +123,16 @@ HillClimber::run()
     ASSERTD(!complete());
     ASSERTD(_ind != nullptr);
 
-    //     Objective* objective = _objectives[0];
     bool complete = this->complete();
-    //     int cmpResult;
-
     while (!complete)
         complete = HCiterationRun();
-    //     {
-    //         _iteration++;
-
-    //         // choose an operator
-    //         Operator* op = chooseSuccessOp();
-    //         if (op == nullptr)
-    //         {
-    //             _iteration = _maxIterations;
-    //             complete = this->complete();
-    //             break;
-    //         }
-    //         ASSERTD(dynamic_cast<RevOperator*>(op) != nullptr);
-    //         RevOperator* rop = (RevOperator*)op;
-    //         rop->addTotalIter();
-    // #ifdef DEBUG_UNIT
-    //         utl::cout
-    //             << "                                      "
-    //             << "operator: " << op->toString() << utl::endl;
-    // #endif
-
-    //         // generate a schedule
-    //         iterationRun(rop);
-    //         cmpResult = objective->compare(_newScore, _bestScore);
-    //         _accept = (cmpResult >= 0);//_accept
-    //         _sameScore = (cmpResult == 0);//_sameScore
-    //         _newBest = (cmpResult > 0);//_newScore
-    //         if (_accept)
-    //         {
-    //             rop->accept();
-    //             if (_newBest)
-    //             {
-    //                 _improvementIteration = _iteration;
-    //                 rop->addSuccessIter();
-    //                 setBestScore(_newScore->clone());
-    //                 objective->setBestScore(_bestScore->clone());
-    //             }
-    //         }
-    //         else
-    //         {
-    //             rop->undo();
-    //         }
-    // #ifdef DEBUG_UNIT
-    //         utl::cout << iterationString() << utl::endl;
-    // #endif
-    //         // update run status
-    //         complete = this->complete();
-    //         if (!complete)
-    //             updateRunStatus(complete);
-    //     }
-
     ASSERT(this->complete());
+
     //re-generate the best schedule and get audit text
     bool scheduleFeasible = iterationRun(nullptr, true);
 #ifdef DEBUG
     if (scheduleFeasible)
-        ASSERTD(*_bestScore == *_newScore);
+        ASSERT(*_bestScore == *_newScore);
 #endif
     utl::cout << finalString(scheduleFeasible) << utl::endlf;
     updateRunStatus(true);

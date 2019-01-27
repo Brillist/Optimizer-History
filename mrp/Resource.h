@@ -19,7 +19,7 @@ MRP_NS_BEGIN;
 
 class Resource : public utl::Object
 {
-    UTL_CLASS_DECL(Resource);
+    UTL_CLASS_DECL(Resource, utl::Object);
 
 public:
     virtual void copy(const utl::Object& rhs);
@@ -27,19 +27,19 @@ public:
     virtual int compare(const utl::Object& rhs) const;
 
     virtual void
-    serialize(utl::Stream& stream, utl::uint_t io, utl::uint_t mode = utl::ser_default);
+    serialize(utl::Stream& stream, uint_t io, uint_t mode = utl::ser_default);
 
     /// \name Accessors
     //@{
     /** Id. */
-    utl::uint_t
+    uint_t
     id() const
     {
         return _id;
     }
 
     /** Id. */
-    utl::uint_t&
+    uint_t&
     id()
     {
         return _id;
@@ -60,10 +60,10 @@ public:
     }
     //@}
 
-    utl::String toString() const;
+    String toString() const;
 
 protected:
-    utl::uint_t _id;
+    uint_t _id;
     std::string _name;
 
 private:

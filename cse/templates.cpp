@@ -1,7 +1,6 @@
 #include "libcse.h"
 #include <libutl/RBtree.h>
 #include <lut/Factory.h>
-#include <lut/Queue.h>
 #include <gop/IndEvaluator.h>
 #include <gop/Operator.h>
 #include <gop/Optimizer.h>
@@ -59,7 +58,6 @@ UTL_INSTANTIATE_TPL(lut::Factory, gop::IndEvaluator);
 UTL_INSTANTIATE_TPL(lut::Factory, gop::Operator);
 UTL_INSTANTIATE_TPL(lut::Factory, gop::Optimizer);
 UTL_INSTANTIATE_TPL(lut::Factory, cse::Scheduler);
-UTL_INSTANTIATE_TPL(lut::Queue, clp::ConstrainedBound*);
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 

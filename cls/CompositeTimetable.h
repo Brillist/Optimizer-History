@@ -30,11 +30,11 @@ class CompositeResource;
 
 class CompositeTimetable : public utl::Object
 {
-    UTL_CLASS_DECL(CompositeTimetable);
+    UTL_CLASS_DECL(CompositeTimetable, utl::Object);
     UTL_CLASS_NO_COPY;
 
 public:
-    typedef std::set<utl::uint_t> uint_set_t;
+    typedef std::set<uint_t> uint_set_t;
 
 public:
     /** Constructor. */
@@ -82,14 +82,14 @@ public:
 
     /** Add capacity-expression. */
     clp::IntExp*
-    addCapExp(utl::uint_t cap)
+    addCapExp(uint_t cap)
     {
         return _domain.addCapExp(cap);
     }
 
     /** Remove capacity-expression. */
     void
-    remCapExp(utl::uint_t cap)
+    remCapExp(uint_t cap)
     {
         _domain.remCapExp(cap);
     }
@@ -107,16 +107,16 @@ public:
     /// \name Domain Modification
     //@{
     /** Add provided capacity. */
-    void add(int min, int max, utl::uint_t resId);
+    void add(int min, int max, uint_t resId);
 
     /** Allocate capacity. */
     void allocate(int min,
                   int max,
-                  utl::uint_t cap,
+                  uint_t cap,
                   Activity* act,
                   const PreferredResources* pr,
                   const clp::IntExp* breakList = nullptr,
-                  utl::uint_t resId = utl::uint_t_max,
+                  uint_t resId = uint_t_max,
                   bool updateDiscrete = true);
     //@}
 

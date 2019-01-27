@@ -25,7 +25,7 @@ CLS_NS_BEGIN;
 class ESbound : public SchedulableBound
 {
     friend class EFbound;
-    UTL_CLASS_DECL(ESbound);
+    UTL_CLASS_DECL(ESbound, SchedulableBound);
 
 public:
     typedef clp::RevArray<clp::Bound*> bound_array_t;

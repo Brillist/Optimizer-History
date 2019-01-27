@@ -26,13 +26,13 @@ CSE_NS_BEGIN;
 
 class JobGroup : public utl::Object
 {
-    UTL_CLASS_DECL(JobGroup);
+    UTL_CLASS_DECL(JobGroup, utl::Object);
 
 public:
     virtual void copy(const utl::Object& rhs);
 
     virtual void
-    serialize(utl::Stream& stream, utl::uint_t io, utl::uint_t mode = utl::ser_default);
+    serialize(utl::Stream& stream, uint_t io, uint_t mode = utl::ser_default);
 
     /// \name Accessors
     //@{
@@ -45,14 +45,14 @@ public:
     /*     { return _item; } */
 
     /** Id. */
-    utl::uint_t
+    uint_t
     id() const
     {
         return _id;
     }
 
     /** Id. */
-    utl::uint_t&
+    uint_t&
     id()
     {
         return _id;
@@ -108,16 +108,16 @@ public:
     void setActiveJob(cse::Job* job);
 
     /** set activeJob. */
-    void setActiveJob(utl::uint_t jobIdx);
+    void setActiveJob(uint_t jobIdx);
 
-    /*     utl::String toString() const; */
+    /*     String toString() const; */
 private:
     void init();
     void deInit();
 
 private:
     /*     ManufactureItem* _item; */
-    utl::uint_t _id;
+    uint_t _id;
     std::string _name;
     cse::job_set_pref_t _jobs;
     cse::Job* _activeJob;

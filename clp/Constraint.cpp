@@ -9,7 +9,7 @@ LUT_NS_USE;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-UTL_CLASS_IMPL_ABC(clp::Constraint, clp::Goal);
+UTL_CLASS_IMPL_ABC(clp::Constraint);
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -20,8 +20,7 @@ CLP_NS_BEGIN;
 void
 Constraint::copy(const Object& rhs)
 {
-    ASSERTD(rhs.isA(Constraint));
-    const Constraint& ct = (const Constraint&)rhs;
+    auto& ct = utl::cast<Constraint>(rhs);
     Goal::copy(ct);
     _posted = false;
 }

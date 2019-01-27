@@ -17,11 +17,11 @@ CSE_NS_BEGIN;
 
 class ResourceGroup : public utl::Object
 {
-    UTL_CLASS_DECL(ResourceGroup);
+    UTL_CLASS_DECL(ResourceGroup, utl::Object);
 
 public:
     /** Constructor. */
-    ResourceGroup(utl::uint_t id)
+    ResourceGroup(uint_t id)
     {
         init();
         _id = id;
@@ -31,34 +31,34 @@ public:
     virtual void copy(const utl::Object& rhs);
 
     virtual void
-    serialize(utl::Stream& stream, utl::uint_t io, utl::uint_t mode = utl::ser_default);
+    serialize(utl::Stream& stream, uint_t io, uint_t mode = utl::ser_default);
 
     /** Get a human-readable string representation. */
-    virtual utl::String toString() const;
+    virtual String toString() const;
 
     /** Add a resource id. */
     void
-    add(utl::uint_t resId)
+    add(uint_t resId)
     {
         _resIds.insert(resId);
     }
 
     /** Remove a resource id. */
     void
-    remove(utl::uint_t resId)
+    remove(uint_t resId)
     {
         _resIds.erase(resId);
     }
 
     /** Get the id. */
-    utl::uint_t
+    uint_t
     id() const
     {
         return _id;
     }
 
     /** Get the id. */
-    utl::uint_t&
+    uint_t&
     id()
     {
         return _id;
@@ -99,7 +99,7 @@ private:
     {
     }
 
-    utl::uint_t _id;
+    uint_t _id;
     std::string _name;
     lut::uint_set_t _resIds;
 };

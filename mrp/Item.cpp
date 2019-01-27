@@ -11,7 +11,7 @@ LUT_NS_USE;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-UTL_CLASS_IMPL_ABC(mrp::Item, utl::Object);
+UTL_CLASS_IMPL_ABC(mrp::Item);
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -163,7 +163,7 @@ Item::toString() const
 void
 Item::init()
 {
-    _id = utl::uint_t_max;
+    _id = uint_t_max;
     _MPSitem = false;
     _inventoryRecord = nullptr;
     // tempory code

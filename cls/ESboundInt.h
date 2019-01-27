@@ -26,7 +26,7 @@ CLS_NS_BEGIN;
 class ESboundInt : public SchedulableBound
 {
     friend class EFboundInt;
-    UTL_CLASS_DECL(ESboundInt);
+    UTL_CLASS_DECL(ESboundInt, SchedulableBound);
 
 public:
     /** Constructor. */
@@ -45,21 +45,21 @@ public:
     virtual void deallocateCapacity();
 
     /** Get minimum capacity multiple. */
-    utl::uint_t
+    uint_t
     minMultiple() const
     {
         return _minMultiple;
     }
 
     /** Get maximum capacity multiple. */
-    utl::uint_t
+    uint_t
     maxMultiple() const
     {
         return _maxMultiple;
     }
 
     /** Set maximum capacity multiple. */
-    void setMaxMultiple(utl::uint_t maxMultiple);
+    void setMaxMultiple(uint_t maxMultiple);
 
     /** Get activity. */
     IntActivity*
@@ -102,17 +102,17 @@ private:
 
 private:
     IntActivity* _act;
-    utl::uint_t _numResources;
-    utl::uint_t* _caps;
+    uint_t _numResources;
+    uint_t* _caps;
     CompositeResource** _resources;
     const PreferredResources** _prs;
     CompositeSpan** _cspans;
     DiscreteResource** _visited;
-    utl::uint_t _numVisited;
+    uint_t _numVisited;
     EFboundInt* _efBound;
     double _baseWorkPerTS;
-    utl::uint_t _minMultiple;
-    utl::uint_t _maxMultiple;
+    uint_t _minMultiple;
+    uint_t _maxMultiple;
 };
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////

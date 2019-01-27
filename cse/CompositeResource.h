@@ -22,11 +22,11 @@ CSE_NS_BEGIN;
 
 class CompositeResource : public Resource
 {
-    UTL_CLASS_DECL(CompositeResource);
+    UTL_CLASS_DECL(CompositeResource, Resource);
 
 public:
     /** Constructor. */
-    CompositeResource(utl::uint_t id, const std::string& name)
+    CompositeResource(uint_t id, const std::string& name)
         : Resource(id, name)
     {
         init();
@@ -36,17 +36,17 @@ public:
     virtual void copy(const utl::Object& rhs);
 
     virtual void
-    serialize(utl::Stream& stream, utl::uint_t io, utl::uint_t mode = utl::ser_default);
+    serialize(utl::Stream& stream, uint_t io, uint_t mode = utl::ser_default);
 
     /** Get the resource-group id. */
-    utl::uint_t
+    uint_t
     resourceGroupId() const
     {
         return _resGroupId;
     }
 
     /** Get the resource-group id. */
-    utl::uint_t&
+    uint_t&
     resourceGroupId()
     {
         return _resGroupId;
@@ -72,7 +72,7 @@ private:
     void deInit();
 
 private:
-    utl::uint_t _resGroupId;
+    uint_t _resGroupId;
 };
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////

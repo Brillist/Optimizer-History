@@ -69,54 +69,54 @@ enum operation_status_t
 
 class JobOp : public utl::Object
 {
-    UTL_CLASS_DECL(JobOp);
+    UTL_CLASS_DECL(JobOp, utl::Object);
 
 public:
     /** Copy another instance. */
     virtual void copy(const utl::Object& rhs);
 
     virtual void
-    serialize(utl::Stream& stream, utl::uint_t io, utl::uint_t mode = utl::ser_default);
+    serialize(utl::Stream& stream, uint_t io, uint_t mode = utl::ser_default);
 
     /// \name Accessors
     //@{
     /** Get the id. */
-    utl::uint_t
+    uint_t
     id() const
     {
         return _id;
     }
 
     /** Get the id. */
-    utl::uint_t&
+    uint_t&
     id()
     {
         return _id;
     }
 
     /** Get the serial id. */
-    utl::uint_t
+    uint_t
     serialId() const
     {
         return _serialId;
     }
 
     /** Get the serial id. */
-    utl::uint_t&
+    uint_t&
     serialId()
     {
         return _serialId;
     }
 
     /** Get the sequence id. */
-    utl::uint_t
+    uint_t
     sequenceId() const
     {
         return _sequenceId;
     }
 
     /** Get the serial id. */
-    utl::uint_t&
+    uint_t&
     sequenceId()
     {
         return _sequenceId;
@@ -165,14 +165,14 @@ public:
     }
 
     /** Get the processing-time. */
-    utl::uint_t
+    uint_t
     processingTime() const
     {
         return _processingTime;
     }
 
     /** Get the processing-time. */
-    utl::uint_t&
+    uint_t&
     processingTime()
     {
         return _processingTime;
@@ -266,28 +266,28 @@ public:
     }
 
     /** Get scheduled processing-time. */
-    utl::uint_t
+    uint_t
     scheduledProcessingTime() const
     {
         return _scheduledProcessingTime;
     }
 
     /** Get scheduled processing-time. */
-    utl::uint_t&
+    uint_t&
     scheduledProcessingTime()
     {
         return _scheduledProcessingTime;
     }
 
     /** Get scheduled remaining processing-time. */
-    utl::uint_t
+    uint_t
     scheduledRemainingPt() const
     {
         return _scheduledRemainingPt;
     }
 
     /** Get scheduled remaining processing-time. */
-    utl::uint_t&
+    uint_t&
     scheduledRemainingPt()
     {
         return _scheduledRemainingPt;
@@ -403,7 +403,7 @@ public:
     void clearResReqs();
 
     /** Get the number of resource requirements. */
-    utl::uint_t
+    uint_t
     numResReqs() const
     {
         return _resReqs.size();
@@ -411,14 +411,14 @@ public:
 
     /** Get a resource requirement by index. */
     const cse::ResourceRequirement*
-    getResReq(utl::uint_t idx) const
+    getResReq(uint_t idx) const
     {
         return _resReqs[idx];
     }
 
     /** Get a resource requirement by index. */
     cse::ResourceRequirement*
-    getResReq(utl::uint_t idx)
+    getResReq(uint_t idx)
     {
         return _resReqs[idx];
     }
@@ -431,7 +431,7 @@ public:
     }
 
     /** Get the number of resource group requirements. */
-    utl::uint_t
+    uint_t
     numResGroupReqs() const
     {
         return _frozen ? 0 : _resGroupReqs.size();
@@ -439,14 +439,14 @@ public:
 
     /** Get a resource group requirement by index. */
     const cse::ResourceGroupRequirement*
-    getResGroupReq(utl::uint_t idx) const
+    getResGroupReq(uint_t idx) const
     {
         return _resGroupReqs[idx];
     }
 
     /** Get a resource group requirement by index. */
     cse::ResourceGroupRequirement*
-    getResGroupReq(utl::uint_t idx)
+    getResGroupReq(uint_t idx)
     {
         return _resGroupReqs[idx];
     }
@@ -487,19 +487,19 @@ public:
     }
 
     /** Get resource-cap-pts for a given resource. */
-    const cls::ResourceCapPts* resCapPts(utl::uint_t resId) const;
+    const cls::ResourceCapPts* resCapPts(uint_t resId) const;
 
     /** Get adjusted resource-cap-pts for a given resource. */
-    cls::ResourceCapPts* resCapPtsAdj(utl::uint_t resId) const;
+    cls::ResourceCapPts* resCapPtsAdj(uint_t resId) const;
 
     /** Make adjusted resource-cap-pts. */
-    void setResCapPtsAdj(utl::uint_t timeStep);
+    void setResCapPtsAdj(uint_t timeStep);
 
     /** Remove adjusted resource-cap-pts for a given resource. */
-    void removeResCapPtsAdj(utl::uint_t resId);
+    void removeResCapPtsAdj(uint_t resId);
 
     /** Get resource-ids for all (possibly) required resources. */
-    void getAllResIds(std::set<utl::uint_t>& resIds) const;
+    void getAllResIds(std::set<uint_t>& resIds) const;
     //@}
 
     /// \name Item requirement
@@ -554,7 +554,7 @@ public:
     }
 
     /** Get schedulable-ops index. */
-    utl::uint_t&
+    uint_t&
     schedulableOpsIdx()
     {
         return _schedulableOpsIdx;
@@ -644,24 +644,24 @@ public:
     bool isFixed() const;
 
     /** Get the successor depth for forward scheduling. */
-    utl::uint_t
+    uint_t
     FDsuccessorDepth() const
     {
         return esCG()->successorDepth();
     }
 
     /** Get the successor depth for backward scheduling. */
-    utl::uint_t
+    uint_t
     BDsuccessorDepth() const
     {
         return lfCG()->successorDepth();
     }
 
-    utl::String toString() const;
+    String toString() const;
 
 private:
     /*     typedef std::vector<UnaryCt*> unaryct_vector_t; */
-    typedef std::set<utl::uint_t> uint_set_t;
+    typedef std::set<uint_t> uint_set_t;
 
 private:
     void init();
@@ -678,13 +678,13 @@ private:
     void getResGroupResIds(uint_set_t& resIds) const;
 
 private:
-    utl::uint_t _id;
-    utl::uint_t _serialId;
-    utl::uint_t _sequenceId;
+    uint_t _id;
+    uint_t _serialId;
+    uint_t _sequenceId;
     std::string _name;
     Job* _job;
     double _cost;
-    utl::uint_t _processingTime;
+    uint_t _processingTime;
 
     operation_t _type;
     operation_status_t _status;
@@ -695,8 +695,8 @@ private:
 
     // previous scheduling result
     scheduling_agent_t _scheduledBy;
-    utl::uint_t _scheduledProcessingTime;
-    utl::uint_t _scheduledRemainingPt;
+    uint_t _scheduledProcessingTime;
+    uint_t _scheduledRemainingPt;
     time_t _scheduledStartTime;
     time_t _scheduledEndTime;
     time_t _scheduledResumeTime;
@@ -720,7 +720,7 @@ private:
     itemreq_vector_t _itemReqs;
 
     // schedulable-ops list index
-    utl::uint_t _schedulableOpsIdx;
+    uint_t _schedulableOpsIdx;
 
     // activity, start & end times
     cls::Activity* _act;

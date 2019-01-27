@@ -1,5 +1,4 @@
 #include "libclp.h"
-#include <libutl/R250.h>
 #include "Manager.h"
 #include "RevIntSpanCol.h"
 
@@ -131,10 +130,10 @@ RevIntSpanCol::clear()
     }
     _tail->setPrev(_head);
 
-    // link head to itself
+    // head->prev = head
     _head->setPrev(_head);
 
-    // link tail to itself
+    // tail->next = tail (all levels)
     for (uint_t lvl = 0; lvl < CLP_INTSPAN_MAXDEPTH; ++lvl)
     {
         _tail->setNext(lvl, _tail);
@@ -158,7 +157,7 @@ RevIntSpanCol::_saveState()
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 IntSpan*
-RevIntSpanCol::newIntSpan(int min, int max, utl::uint_t v0, utl::uint_t v1, utl::uint_t level)
+RevIntSpanCol::newIntSpan(int min, int max, uint_t v0, uint_t v1, uint_t level)
 {
     return new IntSpan(min, max, v0, v1, level);
 }
@@ -180,7 +179,7 @@ RevIntSpanCol::set(IntSpan* span)
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
-RevIntSpanCol::set(int min, int max, utl::uint_t v0, utl::uint_t v1)
+RevIntSpanCol::set(int min, int max, uint_t v0, uint_t v1)
 {
     saveState();
     IntSpan* span = newIntSpan(min, max, v0, v1);
@@ -338,7 +337,7 @@ uint_t
 RevIntSpanCol::insertAfter(IntSpan* span, IntSpan** prevSpans)
 {
     span->setStateDepth(_stateDepth);
-    uint_t level = _slda->getNext(_sldaIdx);
+    uint_t level = _slda->next(_sldaIdx);
     span->setLevel(level);
     _level = utl::max(_level, level);
 
@@ -399,15 +398,15 @@ RevIntSpanCol::prevToNext(const IntSpan* span, IntSpan** prev, IntSpan** next)
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-utl::uint_t
+uint_t
 RevIntSpanCol::validate(bool initialized) const
 {
     ASSERT(_head->min() == int_t_min);
     ASSERT(_tail->max() == int_t_max);
     ASSERT(_head->min() == _head->max());
     ASSERT(_tail->min() == _tail->max());
-    std_hash_set<size_t>* lastSet = nullptr;
-    std_hash_set<size_t>* curSet = new std_hash_set<size_t>;
+    std::unordered_set<size_t>* lastSet = nullptr;
+    std::unordered_set<size_t>* curSet = new std::unordered_set<size_t>;
     uint_t lvl;
     uint_t totsize = 0;
     for (lvl = 0; lvl <= _level; ++lvl)
@@ -445,7 +444,7 @@ RevIntSpanCol::validate(bool initialized) const
         }
         delete lastSet;
         lastSet = curSet;
-        curSet = new std_hash_set<size_t>;
+        curSet = new std::unordered_set<size_t>;
     }
     for (; lvl < CLP_INTSPAN_MAXDEPTH; ++lvl)
     {

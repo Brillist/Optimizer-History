@@ -21,7 +21,7 @@ CSE_NS_BEGIN;
 
 class SummaryOp : public JobOp
 {
-    UTL_CLASS_DECL(SummaryOp);
+    UTL_CLASS_DECL(SummaryOp, JobOp);
     UTL_CLASS_DEFID;
 
 public:
@@ -51,7 +51,7 @@ public:
         return act->efBound().cycleGroup();
     }
 
-    utl::String toString() const;
+    String toString() const;
 
 private:
     jobop_set_id_t _childOps;

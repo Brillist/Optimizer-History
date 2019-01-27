@@ -27,7 +27,7 @@ CSE_NS_BEGIN;
 
 class JobOrdering : public utl::Ordering
 {
-    UTL_CLASS_DECL_ABC(JobOrdering);
+    UTL_CLASS_DECL_ABC(JobOrdering, utl::Ordering);
 
 public:
     virtual void copy(const utl::Object& rhs);
@@ -69,7 +69,7 @@ private:
 
 class JobOrderingDecSuccessorDepth : public JobOrdering
 {
-    UTL_CLASS_DECL(JobOrderingDecSuccessorDepth);
+    UTL_CLASS_DECL(JobOrderingDecSuccessorDepth, JobOrdering);
     UTL_CLASS_DEFID;
 
 public:
@@ -82,7 +82,7 @@ public:
 
 class JobOrderingDecLatenessCost : public JobOrdering
 {
-    UTL_CLASS_DECL(JobOrderingDecLatenessCost);
+    UTL_CLASS_DECL(JobOrderingDecLatenessCost, JobOrdering);
     UTL_CLASS_DEFID;
 
 public:
@@ -95,7 +95,7 @@ public:
 
 class JobOrderingIncDueTime : public JobOrdering
 {
-    UTL_CLASS_DECL(JobOrderingIncDueTime);
+    UTL_CLASS_DECL(JobOrderingIncDueTime, JobOrdering);
     UTL_CLASS_DEFID;
 
 public:
@@ -108,7 +108,7 @@ public:
 
 class JobOrderingIncSID : public JobOrdering
 {
-    UTL_CLASS_DECL(JobOrderingIncSID);
+    UTL_CLASS_DECL(JobOrderingIncSID, JobOrdering);
     UTL_CLASS_DEFID;
 
 public:
@@ -121,7 +121,7 @@ public:
 
 class OpOrdering : public utl::Ordering
 {
-    UTL_CLASS_DECL_ABC(OpOrdering);
+    UTL_CLASS_DECL_ABC(OpOrdering, utl::Ordering);
     UTL_CLASS_DEFID;
 
 public:
@@ -135,7 +135,7 @@ public:
 
 class OpOrderingFrozenFirst : public OpOrdering
 {
-    UTL_CLASS_DECL(OpOrderingFrozenFirst);
+    UTL_CLASS_DECL(OpOrderingFrozenFirst, OpOrdering);
     UTL_CLASS_DEFID;
 
 public:
@@ -150,7 +150,7 @@ public:
 
 class OpOrderingIncES : public OpOrdering
 {
-    UTL_CLASS_DECL(OpOrderingIncES);
+    UTL_CLASS_DECL(OpOrderingIncES, OpOrdering);
     UTL_CLASS_DEFID;
 
 public:
@@ -163,7 +163,7 @@ public:
 
 class OpOrderingIncSID : public OpOrdering
 {
-    UTL_CLASS_DECL(OpOrderingIncSID);
+    UTL_CLASS_DECL(OpOrderingIncSID, OpOrdering);
     UTL_CLASS_DEFID;
 
 public:
@@ -176,7 +176,7 @@ public:
 
 class JobOpOrderingIncSID : public OpOrdering
 {
-    UTL_CLASS_DECL(JobOpOrderingIncSID);
+    UTL_CLASS_DECL(JobOpOrderingIncSID, OpOrdering);
     UTL_CLASS_DEFID;
 
 public:

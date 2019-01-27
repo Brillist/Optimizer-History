@@ -21,7 +21,7 @@ CLP_NS_BEGIN;
 
 class IntExpArray : public utl::Object
 {
-    UTL_CLASS_DECL(IntExpArray);
+    UTL_CLASS_DECL(IntExpArray, utl::Object);
 
 public:
     typedef std::vector<IntExp*> intexp_vector_t;
@@ -59,7 +59,7 @@ public:
     }
 
     /** Get number of variables. */
-    utl::uint_t
+    uint_t
     size() const
     {
         return _exps.size();
@@ -90,7 +90,7 @@ public:
 
     /** Get the variable at the given index. */
     const IntExp*
-    get(utl::uint_t idx) const
+    get(uint_t idx) const
     {
         ASSERTD(idx < size());
         return _exps[idx];
@@ -98,7 +98,7 @@ public:
 
     /** Get the variable at the given index. */
     IntExp*
-    get(utl::uint_t idx)
+    get(uint_t idx)
     {
         ASSERTD(idx < size());
         return _exps[idx];
@@ -106,26 +106,26 @@ public:
 
     /** Get the variable at the given index. */
     const IntExp&
-    operator()(utl::uint_t idx) const
+    operator()(uint_t idx) const
     {
         return *get(idx);
     }
 
     /** Get the variable at the given index. */
     IntExp&
-    operator()(utl::uint_t idx)
+    operator()(uint_t idx)
     {
         return *get(idx);
     }
 
     /** Get the variable at the given index. */
-    const IntExp* operator[](utl::uint_t idx) const
+    const IntExp* operator[](uint_t idx) const
     {
         return get(idx);
     }
 
     /** Get the variable at the given index. */
-    IntExp* operator[](utl::uint_t idx)
+    IntExp* operator[](uint_t idx)
     {
         return get(idx);
     }

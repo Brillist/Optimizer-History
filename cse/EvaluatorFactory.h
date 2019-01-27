@@ -26,7 +26,7 @@ CSE_NS_BEGIN;
 
 class EvaluatorFactory : public lut::Factory<gop::IndEvaluator>
 {
-    UTL_CLASS_DECL(EvaluatorFactory);
+    UTL_CLASS_DECL(EvaluatorFactory, lut::Factory<gop::IndEvaluator>);
     UTL_CLASS_DEFID;
 
 public:

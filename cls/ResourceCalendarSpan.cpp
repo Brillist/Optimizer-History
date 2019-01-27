@@ -9,7 +9,7 @@ CLP_NS_USE;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-UTL_CLASS_IMPL(cls::ResourceCalendarSpan, utl::Span<int>);
+UTL_CLASS_IMPL(cls::ResourceCalendarSpan);
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -52,7 +52,7 @@ ResourceCalendarSpan::compare(const Object& rhs) const
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
-ResourceCalendarSpan::serialize(utl::Stream& stream, utl::uint_t io, utl::uint_t)
+ResourceCalendarSpan::serialize(utl::Stream& stream, uint_t io, uint_t)
 {
     Span<int>::serialize(stream, io);
     utl::serialize((uint_t&)_type, stream, io);
@@ -62,7 +62,7 @@ ResourceCalendarSpan::serialize(utl::Stream& stream, utl::uint_t io, utl::uint_t
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-utl::String
+String
 ResourceCalendarSpan::toString() const
 {
     return toString(-1, 0);
@@ -70,7 +70,7 @@ ResourceCalendarSpan::toString() const
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-utl::String
+String
 ResourceCalendarSpan::toString(time_t originTime, uint_t timeStep) const
 {
     std::ostringstream ss;
@@ -100,7 +100,7 @@ ResourceCalendarSpan::toString(time_t originTime, uint_t timeStep) const
     {
         ss << ":  capacity: " << _cap;
     }
-    return utl::String(ss.str().c_str());
+    return String(ss.str().c_str());
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////

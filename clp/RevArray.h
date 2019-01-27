@@ -26,8 +26,8 @@ enum ra_btmode_t
 /**
    Reversible array.
 
-   RevArray is an array that tracks changes to itself, so they can
-   be reversed in the event of backtracking.
+   RevArray is an array that tracks changes to itself, so they can be reversed in the event of
+   backtracking.
 
    \author Adam McKee
 */
@@ -36,7 +36,7 @@ enum ra_btmode_t
 
 template <class T> class RevArray : public utl::Object
 {
-    UTL_CLASS_DECL_TPL(RevArray, T);
+    UTL_CLASS_DECL_TPL(RevArray, T, utl::Object);
     UTL_CLASS_NO_COPY;
 
 public:
@@ -72,7 +72,7 @@ public:
     void clear();
 
     /** Get the size. */
-    utl::uint_t
+    uint_t
     size() const
     {
         return _size;
@@ -90,17 +90,17 @@ public:
 
     /** Index into the array. */
     const T&
-    get(utl::uint_t idx) const
+    get(uint_t idx) const
     {
         ASSERTD(idx < _size);
         return _array[idx];
     }
 
     /** Set the value of an array element. */
-    void set(utl::uint_t idx, const T& val);
+    void set(uint_t idx, const T& val);
 
     /** Remove an array element. */
-    void remove(utl::uint_t idx);
+    void remove(uint_t idx);
 
     /** Get a begin iterator. */
     const_iterator
@@ -131,7 +131,7 @@ public:
     }
 
     /** Index into the array. */
-    const T& operator[](utl::uint_t idx) const
+    const T& operator[](uint_t idx) const
     {
         ASSERTD(idx < _size);
         return _array[idx];
@@ -167,12 +167,12 @@ private:
 private:
     Manager* _mgr;
     ra_btmode_t _btMode;
-    utl::uint_t _btFullDepth;
+    uint_t _btFullDepth;
 
     /// reversible //////////////////////////////////////////
-    utl::uint_t _stateDepth;
-    utl::uint_t _maxSize;
-    utl::uint_t _size;
+    uint_t _stateDepth;
+    uint_t _maxSize;
+    uint_t _size;
     /// reversible //////////////////////////////////////////
 
     T* _array;
@@ -230,7 +230,7 @@ RevArray<T>::add(const T& val)
 
 template <class T>
 void
-RevArray<T>::set(utl::uint_t idx, const T& val)
+RevArray<T>::set(uint_t idx, const T& val)
 {
     ASSERTD(idx < _size);
     if (_size < _maxSize)
@@ -256,7 +256,7 @@ RevArray<T>::set(utl::uint_t idx, const T& val)
 
 template <class T>
 void
-RevArray<T>::remove(utl::uint_t idx)
+RevArray<T>::remove(uint_t idx)
 {
     ASSERTD(idx < _size);
 
@@ -311,7 +311,7 @@ CLP_NS_END;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-UTL_CLASS_IMPL_TPL(clp::RevArray, T, utl::Object);
+UTL_CLASS_IMPL_TPL(clp::RevArray, T);
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 

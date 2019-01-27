@@ -21,7 +21,7 @@ LUT_NS_USE;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-UTL_CLASS_IMPL(gop::SAoptimizer, gop::Optimizer);
+UTL_CLASS_IMPL(gop::SAoptimizer);
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -114,12 +114,12 @@ SAoptimizer::acceptanceEval(RevOperator* op)
     storeScoreDiff(diff);
     if (_scoreDiff >= 0)
     {
-        _accept = true; //_accept
+        _accept = true;
     }
     else
     {
         double acceptProb = exp(_scoreDiff / _currentTemp);
-        _accept = (_rng->evalf() < acceptProb); //_accept
+        _accept = (_rng->uniform(0.0, 1.0) < acceptProb);
     }
 #ifdef DEBUG_UNIT
     utl::cout << temperatureString() << utl::endl;
@@ -129,8 +129,8 @@ SAoptimizer::acceptanceEval(RevOperator* op)
         op->accept();
         setAcceptedScore(utl::clone(_newScore));
         cmpResult = objective->compare(_newScore, _bestScore);
-        _newBest = (cmpResult > 0);    //_newBest
-        _sameScore = (cmpResult == 0); //_sameScore
+        _newBest = (cmpResult > 0);
+        _sameScore = (cmpResult == 0);
         if (_newBest)
         {
             op->addSuccessIter();
@@ -265,9 +265,9 @@ SAoptimizer::temperatureString() const
 {
     utl::MemStream str;
     str << "                     "; //temporary code
-    str << "temp:" << Float(_currentTemp).toString("precision:3") << "/"
-        << Float(_initTemp).toString("precision:0")
-        << ", rate:" << Float(_tempDcrRate).toString("precision:2")
+    str << "temp:" << Float(_currentTemp).toString(3) << "/"
+        << Float(_initTemp).toString(0)
+        << ", rate:" << Float(_tempDcrRate).toString(2)
         << ", new:" << _newScore->toString() << ", accepted:" << _acceptedScore->toString()
         << ", diff:";
     if (_scoreDiff == utl::double_t_max)
@@ -280,7 +280,7 @@ SAoptimizer::temperatureString() const
     }
     else
     {
-        str << Float(_scoreDiff).toString("precision:2");
+        str << Float(_scoreDiff).toString(2);
     }
     double prob = exp(_scoreDiff / _currentTemp);
     str << ", prob:";
@@ -290,7 +290,7 @@ SAoptimizer::temperatureString() const
     }
     else
     {
-        str << Float(100.0 * prob).toString("precision:2");
+        str << Float(100.0 * prob).toString(2);
     }
     str << "%";
     if (_accept)

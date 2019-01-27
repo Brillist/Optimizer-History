@@ -23,7 +23,7 @@ MPS_NS_BEGIN;
 
 class MPSdataSet : public mrp::MRPdataSet
 {
-    UTL_CLASS_DECL(MPSdataSet);
+    UTL_CLASS_DECL(MPSdataSet, mrp::MRPdataSet);
 
 public:
     virtual void copy(const utl::Object& rhs);

@@ -25,7 +25,7 @@ CLP_NS_BEGIN;
 
 class And : public Goal
 {
-    UTL_CLASS_DECL(And);
+    UTL_CLASS_DECL(And, Goal);
 
 public:
     /** Constructor. */

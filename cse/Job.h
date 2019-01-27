@@ -43,7 +43,7 @@ enum job_status_t
 
 class Job : public utl::Object
 {
-    UTL_CLASS_DECL(Job);
+    UTL_CLASS_DECL(Job, utl::Object);
 
 public:
     // typedefs
@@ -56,7 +56,7 @@ public:
     virtual int compare(const utl::Object& rhs) const;
 
     virtual void
-    serialize(utl::Stream& stream, utl::uint_t io, utl::uint_t mode = utl::ser_default);
+    serialize(utl::Stream& stream, uint_t io, uint_t mode = utl::ser_default);
 
     /** Remove all operations. */
     void clear();
@@ -76,14 +76,14 @@ public:
     }
 
     /** Get the id. */
-    utl::uint_t
+    uint_t
     id() const
     {
         return _id;
     }
 
     /** Get the id. */
-    utl::uint_t&
+    uint_t&
     id()
     {
         return _id;
@@ -104,28 +104,28 @@ public:
     }
 
     /** Get the serial-id. */
-    utl::uint_t
+    uint_t
     serialId() const
     {
         return _serialId;
     }
 
     /** Get the serial-id. */
-    utl::uint_t&
+    uint_t&
     serialId()
     {
         return _serialId;
     }
 
     /** Get the preference. */
-    utl::uint_t
+    uint_t
     preference() const
     {
         return _preference;
     }
 
     /** Get the preference. */
-    utl::uint_t&
+    uint_t&
     preference()
     {
         return _preference;
@@ -153,14 +153,14 @@ public:
     }
 
     /** Get job group id. */
-    utl::uint_t
+    uint_t
     groupId() const
     {
         return _groupId;
     }
 
     /** Get job group id. */
-    utl::uint_t&
+    uint_t&
     groupId()
     {
         return _groupId;
@@ -248,28 +248,28 @@ public:
     //@}
 
     /** Get item id. */
-    utl::uint_t
+    uint_t
     itemId() const
     {
         return _itemId;
     }
 
     /** Get item id. */
-    utl::uint_t&
+    uint_t&
     itemId()
     {
         return _itemId;
     }
 
     /** Get item quantity. */
-    utl::uint_t
+    uint_t
     itemQuantity() const
     {
         return _itemQuantity;
     }
 
     /** Get item quantity. */
-    utl::uint_t&
+    uint_t&
     itemQuantity()
     {
         return _itemQuantity;
@@ -290,7 +290,7 @@ public:
     }
 
     /** Get the tardiness. */
-    utl::uint_t tardiness() const;
+    uint_t tardiness() const;
 
     /** Get the release time. */
     int
@@ -544,14 +544,14 @@ public:
     }
 
     /** Get the successor depth. */
-    utl::uint_t
+    uint_t
     successorDepth() const
     {
         return cycleGroup()->successorDepth();
     }
 
     /** Get schedulable-jobs index. */
-    utl::uint_t&
+    uint_t&
     schedulableJobsIdx()
     {
         return _schedulableJobsIdx;
@@ -561,16 +561,16 @@ public:
     /** finalize all schedulable constrained bounds of the job. */
     void finalize(clp::Manager* mgr);
 
-    utl::String toString() const;
+    String toString() const;
 
 protected:
     ClevorDataSet* _dataSet;
-    utl::uint_t _id;
-    utl::uint_t _serialId;
-    utl::uint_t _preference; //for alt jobs
+    uint_t _id;
+    uint_t _serialId;
+    uint_t _preference; //for alt jobs
     bool _active;            //indicate the selected job from alt jobs
     std::string _name;
-    utl::uint_t _groupId;
+    uint_t _groupId;
     lut::uint_set_t _workOrderIds; //ids of mrp::workorders
     jobop_set_id_t _ops;
     jobop_set_id_t _allSops;   // a static list of schedulable ops
@@ -582,8 +582,8 @@ protected:
     // controlled by cse::Propagator::unsuspend()
     clp::RevArray<JobOp*> _sops;
 
-    utl::uint_t _itemId;       // for MRP GUI
-    utl::uint_t _itemQuantity; // for MRP GUI
+    uint_t _itemId;       // for MRP GUI
+    uint_t _itemQuantity; // for MRP GUI
     int _makespan;
     int _frozenMakespan;
     int _releaseTime; // for MRP GUI and more
@@ -604,7 +604,7 @@ protected:
     lut::period_t _overheadCostPeriod;
 
     // predecessors, successors
-    utl::uint_t _schedulableJobsIdx;
+    uint_t _schedulableJobsIdx;
 
 private:
     void init();

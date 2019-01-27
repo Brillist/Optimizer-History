@@ -11,17 +11,17 @@ CSE_NS_BEGIN;
 
 class InterestPeriodInfo : public utl::Object
 {
-    UTL_CLASS_DECL(InterestPeriodInfo);
+    UTL_CLASS_DECL(InterestPeriodInfo, utl::Object);
     UTL_CLASS_DEFID;
 
 public:
     virtual void copy(const utl::Object& rhs);
 
     virtual void
-    serialize(utl::Stream& stream, utl::uint_t io, utl::uint_t mode = utl::ser_default);
+    serialize(utl::Stream& stream, uint_t io, uint_t mode = utl::ser_default);
 
 public:
-    utl::uint_t idx;
+    uint_t idx;
     time_t begin;
     time_t end;
 };
@@ -36,21 +36,21 @@ typedef std::vector<InterestPeriodInfo*> ipInfos_t;
 
 struct ResourceInfo : public utl::Object
 {
-    UTL_CLASS_DECL(ResourceInfo);
+    UTL_CLASS_DECL(ResourceInfo, utl::Object);
     UTL_CLASS_DEFID;
 
 public:
     virtual void copy(const utl::Object& rhs);
 
     virtual void
-    serialize(utl::Stream& stream, utl::uint_t io, utl::uint_t mode = utl::ser_default);
+    serialize(utl::Stream& stream, uint_t io, uint_t mode = utl::ser_default);
 
 public:
-    utl::uint_t id;
+    uint_t id;
     std::string name;
-    utl::uint_t rts;
-    utl::uint_t mits;
-    utl::uint_t mets;
+    uint_t rts;
+    uint_t mits;
+    uint_t mets;
     double costPerUnitHired;
     double costPerHour;
     double costPerDay;
@@ -60,7 +60,7 @@ public:
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-typedef std::map<utl::uint_t, ResourceInfo*> resInfos_t;
+typedef std::map<uint_t, ResourceInfo*> resInfos_t;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 // FixedCostInfo ///////////////////////////////////////////////////////////////////////////////////
@@ -68,24 +68,24 @@ typedef std::map<utl::uint_t, ResourceInfo*> resInfos_t;
 
 struct FixedCostInfo : public utl::Object
 {
-    UTL_CLASS_DECL(FixedCostInfo);
+    UTL_CLASS_DECL(FixedCostInfo, utl::Object);
     UTL_CLASS_DEFID;
 
 public:
     virtual void copy(const utl::Object& rhs);
 
     virtual void
-    serialize(utl::Stream& stream, utl::uint_t io, utl::uint_t mode = utl::ser_default);
+    serialize(utl::Stream& stream, uint_t io, uint_t mode = utl::ser_default);
 
 public:
-    utl::uint_t opId;
-    utl::uint_t interestPeriod;
+    uint_t opId;
+    uint_t interestPeriod;
     double cost;
 };
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-typedef std::map<utl::uint_t, FixedCostInfo*> fixedInfos_t;
+typedef std::map<uint_t, FixedCostInfo*> fixedInfos_t;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 // OverheadCostInfo ////////////////////////////////////////////////////////////////////////////////
@@ -93,17 +93,17 @@ typedef std::map<utl::uint_t, FixedCostInfo*> fixedInfos_t;
 
 struct OverheadCostInfo : public utl::Object
 {
-    UTL_CLASS_DECL(OverheadCostInfo);
+    UTL_CLASS_DECL(OverheadCostInfo, utl::Object);
     UTL_CLASS_DEFID;
 
 public:
     virtual void copy(const utl::Object& rhs);
 
     virtual void
-    serialize(utl::Stream& stream, utl::uint_t io, utl::uint_t mode = utl::ser_default);
+    serialize(utl::Stream& stream, uint_t io, uint_t mode = utl::ser_default);
 
 public:
-    utl::uint_t interestPeriod;
+    uint_t interestPeriod;
     double cost;
 };
 
@@ -119,17 +119,17 @@ typedef std::vector<OverheadCostInfo*> overheadInfos_t;
 
 struct InterestCostInfo : public utl::Object
 {
-    UTL_CLASS_DECL(InterestCostInfo);
+    UTL_CLASS_DECL(InterestCostInfo, utl::Object);
     UTL_CLASS_DEFID;
 
 public:
     virtual void copy(const utl::Object& rhs);
 
     virtual void
-    serialize(utl::Stream& stream, utl::uint_t io, utl::uint_t mode = utl::ser_default);
+    serialize(utl::Stream& stream, uint_t io, uint_t mode = utl::ser_default);
 
 public:
-    utl::uint_t interestPeriod;
+    uint_t interestPeriod;
     double cost;
 };
 
@@ -143,18 +143,18 @@ typedef std::vector<InterestCostInfo*> interestInfos_t;
 
 struct ResourceUsageInfo : public utl::Object
 {
-    UTL_CLASS_DECL(ResourceUsageInfo);
+    UTL_CLASS_DECL(ResourceUsageInfo, utl::Object);
     UTL_CLASS_DEFID;
 
 public:
     virtual void copy(const utl::Object& rhs);
 
     virtual void
-    serialize(utl::Stream& stream, utl::uint_t io, utl::uint_t mode = utl::ser_default);
+    serialize(utl::Stream& stream, uint_t io, uint_t mode = utl::ser_default);
 
 public:
-    utl::uint_t id;
-    utl::uint_t cap;
+    uint_t id;
+    uint_t cap;
     time_t begin;
     time_t end;
 };
@@ -171,14 +171,14 @@ typedef std::vector<ResourceUsageInfo*> usageInfos_t;
 // appropriate containers.
 struct ComponentScoreInfo : public utl::Object
 {
-    UTL_CLASS_DECL(ComponentScoreInfo);
+    UTL_CLASS_DECL(ComponentScoreInfo, utl::Object);
     UTL_CLASS_DEFID;
 
 public:
     virtual void copy(const utl::Object& rhs);
 
     virtual void
-    serialize(utl::Stream& stream, utl::uint_t io, utl::uint_t mode = utl::ser_default);
+    serialize(utl::Stream& stream, uint_t io, uint_t mode = utl::ser_default);
 
 public:
     std::string name;
@@ -195,21 +195,21 @@ typedef std::vector<ComponentScoreInfo*> componentInfos_t;
 
 struct ResourceSequenceCostInfo : public utl::Object
 {
-    UTL_CLASS_DECL(ResourceSequenceCostInfo);
+    UTL_CLASS_DECL(ResourceSequenceCostInfo, utl::Object);
     UTL_CLASS_DEFID;
 
 public:
     virtual void copy(const utl::Object& rhs);
 
     virtual void
-    serialize(utl::Stream& stream, utl::uint_t io, utl::uint_t mode = utl::ser_default);
+    serialize(utl::Stream& stream, uint_t io, uint_t mode = utl::ser_default);
 
 public:
-    utl::uint_t id;
-    utl::uint_t lhsId;
-    utl::uint_t rhsId;
+    uint_t id;
+    uint_t lhsId;
+    uint_t rhsId;
     double cost;
-    utl::uint_t ip;
+    uint_t ip;
 };
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -222,23 +222,23 @@ typedef std::vector<ResourceSequenceCostInfo*> resourceSequenceCostInfos_t;
 
 struct OperationInfo : public utl::Object
 {
-    UTL_CLASS_DECL(OperationInfo);
+    UTL_CLASS_DECL(OperationInfo, utl::Object);
     UTL_CLASS_DEFID;
 
 public:
     virtual void copy(const utl::Object& rhs);
 
     virtual void
-    serialize(utl::Stream& stream, utl::uint_t io, utl::uint_t mode = utl::ser_default);
+    serialize(utl::Stream& stream, uint_t io, uint_t mode = utl::ser_default);
 
 public:
-    utl::uint_t id;
+    uint_t id;
     std::string name;
 };
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-typedef std::map<utl::uint_t, OperationInfo*> opInfos_t;
+typedef std::map<uint_t, OperationInfo*> opInfos_t;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 // ResourceCostInfo ////////////////////////////////////////////////////////////////////////////////
@@ -246,19 +246,19 @@ typedef std::map<utl::uint_t, OperationInfo*> opInfos_t;
 
 struct ResourceCostInfo : public utl::Object
 {
-    UTL_CLASS_DECL(ResourceCostInfo);
+    UTL_CLASS_DECL(ResourceCostInfo, utl::Object);
     UTL_CLASS_DEFID;
 
 public:
     virtual void copy(const utl::Object& rhs);
 
     virtual void
-    serialize(utl::Stream& stream, utl::uint_t io, utl::uint_t mode = utl::ser_default);
+    serialize(utl::Stream& stream, uint_t io, uint_t mode = utl::ser_default);
 
 public:
-    utl::uint_t cap;
+    uint_t cap;
     time_t date;
-    utl::uint_t hiredCap;
+    uint_t hiredCap;
     double hireCost;
     lut::period_t bestRate;
     double workCost;
@@ -274,19 +274,19 @@ typedef std::vector<ResourceCostInfo*> rcInfos_t;
 
 struct ResourceWorkHoursInfo : public utl::Object
 {
-    UTL_CLASS_DECL(ResourceWorkHoursInfo);
+    UTL_CLASS_DECL(ResourceWorkHoursInfo, utl::Object);
     UTL_CLASS_DEFID;
 
 public:
     virtual void copy(const utl::Object& rhs);
 
     virtual void
-    serialize(utl::Stream& stream, utl::uint_t io, utl::uint_t mode = utl::ser_default);
+    serialize(utl::Stream& stream, uint_t io, uint_t mode = utl::ser_default);
 
 public:
-    utl::uint_t cap;
+    uint_t cap;
     time_t date;
-    utl::uint_t minutes;
+    uint_t minutes;
 };
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -299,17 +299,17 @@ typedef std::vector<ResourceWorkHoursInfo*> wkhrsInfos_t;
 
 struct LatenessCostInfo : public utl::Object
 {
-    UTL_CLASS_DECL(LatenessCostInfo);
+    UTL_CLASS_DECL(LatenessCostInfo, utl::Object);
     UTL_CLASS_DEFID;
 
 public:
     virtual void copy(const utl::Object& rhs);
 
     virtual void
-    serialize(utl::Stream& stream, utl::uint_t io, utl::uint_t mode = utl::ser_default);
+    serialize(utl::Stream& stream, uint_t io, uint_t mode = utl::ser_default);
 
 public:
-    utl::uint_t interestPeriod;
+    uint_t interestPeriod;
     double opportunityCost;
     double latenessCost;
     double inventoryCost;
@@ -326,16 +326,16 @@ typedef std::vector<LatenessCostInfo*> lcInfos_t;
 
 struct JobOverheadCostInfo : public utl::Object
 {
-    UTL_CLASS_DECL(JobOverheadCostInfo);
+    UTL_CLASS_DECL(JobOverheadCostInfo, utl::Object);
     UTL_CLASS_DEFID;
 
 public:
     virtual void copy(const utl::Object& rhs);
 
-    virtual void serialize(utl::Stream& steam, utl::uint_t io, utl::uint_t mode = utl::ser_default);
+    virtual void serialize(utl::Stream& steam, uint_t io, uint_t mode = utl::ser_default);
 
 public:
-    utl::uint_t interestPeriod;
+    uint_t interestPeriod;
     double cost;
 };
 
@@ -349,22 +349,22 @@ typedef std::vector<JobOverheadCostInfo*> joboverheadInfos_t;
 
 class ResourceCostReport : public utl::Object
 {
-    UTL_CLASS_DECL(ResourceCostReport);
+    UTL_CLASS_DECL(ResourceCostReport, utl::Object);
 
 public:
     virtual void copy(const utl::Object& rhs);
 
     virtual void
-    serialize(utl::Stream& stream, utl::uint_t io, utl::uint_t mode = utl::ser_default);
+    serialize(utl::Stream& stream, uint_t io, uint_t mode = utl::ser_default);
 
 public:
-    utl::uint_t
+    uint_t
     getId() const
     {
         return _id;
     }
 
-    void setId(utl::uint_t id);
+    void setId(uint_t id);
 
     rcInfos_t*
     costs()
@@ -395,14 +395,14 @@ private:
     void deInit();
 
 private:
-    utl::uint_t _id;         // resource id
+    uint_t _id;         // resource id
     rcInfos_t _costs;        // cost info for this resource
     wkhrsInfos_t _workHours; // work hours for this reosurce
 };
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-typedef std::map<utl::uint_t, ResourceCostReport*> resourceReports_t;
+typedef std::map<uint_t, ResourceCostReport*> resourceReports_t;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 // LatenessCostReport //////////////////////////////////////////////////////////////////////////////
@@ -410,23 +410,23 @@ typedef std::map<utl::uint_t, ResourceCostReport*> resourceReports_t;
 
 class LatenessCostReport : public utl::Object
 {
-    UTL_CLASS_DECL(LatenessCostReport);
+    UTL_CLASS_DECL(LatenessCostReport, utl::Object);
 
 public:
     virtual void copy(const utl::Object& rhs);
 
     virtual void
-    serialize(utl::Stream& stream, utl::uint_t io, utl::uint_t mode = utl::ser_default);
+    serialize(utl::Stream& stream, uint_t io, uint_t mode = utl::ser_default);
 
 public:
-    utl::uint_t
+    uint_t
     getId() const
     {
         return _id;
     }
 
     void
-    setId(utl::uint_t id)
+    setId(uint_t id)
     {
         _id = id;
     }
@@ -461,7 +461,7 @@ private:
 
 private:
     // work order id;
-    utl::uint_t _id;
+    uint_t _id;
     // work order name;
     std::string _name;
     // lateness cost for each ip
@@ -470,7 +470,7 @@ private:
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-typedef std::map<utl::uint_t, LatenessCostReport*> latenessReports_t;
+typedef std::map<uint_t, LatenessCostReport*> latenessReports_t;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 // JobOverheadCostReport ///////////////////////////////////////////////////////////////////////////
@@ -479,23 +479,23 @@ typedef std::map<utl::uint_t, LatenessCostReport*> latenessReports_t;
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 class JobOverheadCostReport : public utl::Object
 {
-    UTL_CLASS_DECL(JobOverheadCostReport);
+    UTL_CLASS_DECL(JobOverheadCostReport, utl::Object);
 
 public:
     virtual void copy(const utl::Object& rhs);
 
     virtual void
-    serialize(utl::Stream& stream, utl::uint_t io, utl::uint_t mode = utl::ser_default);
+    serialize(utl::Stream& stream, uint_t io, uint_t mode = utl::ser_default);
 
 public:
-    utl::uint_t
+    uint_t
     getId() const
     {
         return _id;
     }
 
     void
-    setId(utl::uint_t id)
+    setId(uint_t id)
     {
         _id = id;
     }
@@ -530,7 +530,7 @@ private:
 
 private:
     // work order id;
-    utl::uint_t _id;
+    uint_t _id;
     // work order name;
     std::string _name;
     // job overhead cost for each ip
@@ -539,7 +539,7 @@ private:
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-typedef std::map<utl::uint_t, JobOverheadCostReport*> joboverheadReports_t;
+typedef std::map<uint_t, JobOverheadCostReport*> joboverheadReports_t;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -549,13 +549,13 @@ typedef std::map<utl::uint_t, JobOverheadCostReport*> joboverheadReports_t;
 
 class AuditReport : public utl::Object
 {
-    UTL_CLASS_DECL(AuditReport);
+    UTL_CLASS_DECL(AuditReport, utl::Object);
 
 public:
     virtual void copy(const utl::Object& rhs);
 
     virtual void
-    serialize(utl::Stream& stream, utl::uint_t io, utl::uint_t mode = utl::ser_default);
+    serialize(utl::Stream& stream, uint_t io, uint_t mode = utl::ser_default);
 
     std::string
     getName() const
@@ -589,13 +589,13 @@ public:
 
     void setHorizonTime(time_t t);
 
-    utl::uint_t
+    uint_t
     getTimeStep() const
     {
         return _timeStep;
     }
 
-    void setTimeStep(utl::uint_t step);
+    void setTimeStep(uint_t step);
 
     ipInfos_t*
     interestPeriods()
@@ -633,7 +633,7 @@ public:
         return &_resourceCosts;
     }
 
-    ResourceCostReport& resourceCost(utl::uint_t);
+    ResourceCostReport& resourceCost(uint_t);
 
     latenessReports_t*
     latenessCosts()
@@ -647,7 +647,7 @@ public:
         return &_latenessCosts;
     }
 
-    LatenessCostReport& latenessCost(utl::uint_t);
+    LatenessCostReport& latenessCost(uint_t);
 
     /* January 6, 2014 (Elisa) */
     /* added job overhead costs */
@@ -663,7 +663,7 @@ public:
         return &_joboverheadCosts;
     }
 
-    JobOverheadCostReport& joboverheadCost(utl::uint_t);
+    JobOverheadCostReport& joboverheadCost(uint_t);
 
     fixedInfos_t*
     fixedCosts()
@@ -767,7 +767,7 @@ private:
     // scheduler config
     time_t _originTime;
     time_t _horizonTime;
-    utl::uint_t _timeStep;
+    uint_t _timeStep;
 
     double _score;
 

@@ -22,25 +22,25 @@ MPS_NS_BEGIN;
 
 class MPSitem : public mrp::Item
 {
-    UTL_CLASS_DECL(MPSitem);
+    UTL_CLASS_DECL(MPSitem, mrp::Item);
 
 public:
     virtual void copy(const utl::Object& rhs);
 
     virtual void
-    serialize(utl::Stream& stream, utl::uint_t io, utl::uint_t mode = utl::ser_default);
+    serialize(utl::Stream& stream, uint_t io, uint_t mode = utl::ser_default);
 
     /// \name Accessors
     //@{
     /** Economic order quantity. */
-    utl::uint_t
+    uint_t
     eoq() const
     {
         return _eoq;
     }
 
     /** Economic order quantity. */
-    utl::uint_t&
+    uint_t&
     eoq()
     {
         return _eoq;
@@ -141,14 +141,14 @@ public:
 
     void linkPeriods();
 
-    utl::String toString() const;
+    String toString() const;
 
 private:
     void init();
     void deInit();
 
 private:
-    utl::uint_t _eoq; // Economic order quantity
+    uint_t _eoq; // Economic order quantity
     time_t _dtf;      // Demand time fence
     time_t _ptf;      // Planning time fence
                       /*     time_t _planningHorizon; */

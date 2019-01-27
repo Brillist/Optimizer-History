@@ -22,7 +22,7 @@ GOP_NS_USE;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-UTL_CLASS_IMPL(cse::ResCapSelector, cse::Scheduler);
+UTL_CLASS_IMPL(cse::ResCapSelector);
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -84,7 +84,7 @@ ResCapSelector::initialize(const gop::DataSet* p_dataSet, uint_t stringBase)
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
-ResCapSelector::initializeInd(Ind* p_ind, const gop::DataSet* p_dataSet, RandNumGen* rng, void*)
+ResCapSelector::initializeInd(Ind* p_ind, const gop::DataSet* p_dataSet, rng_t* rng, void*)
 {
     ASSERTD(dynamic_cast<StringInd<uint_t>*>(p_ind) != nullptr);
     StringInd<uint_t>* ind = (StringInd<uint_t>*)p_ind;
@@ -114,11 +114,10 @@ ResCapSelector::initializeInd(Ind* p_ind, const gop::DataSet* p_dataSet, RandNum
 void
 ResCapSelector::initializeRandomInd(Ind* p_ind,
                                     const gop::DataSet* p_dataSet,
-                                    RandNumGen* rng,
+                                    rng_t* rng,
                                     void*)
 {
-    ASSERTD(dynamic_cast<StringInd<uint_t>*>(p_ind) != nullptr);
-    StringInd<uint_t>* ind = (StringInd<uint_t>*)p_ind;
+    auto ind = utl::cast<StringInd<uint_t>>(p_ind);
     gop::String<uint_t>& string = ind->string();
 
     ASSERTD(dynamic_cast<const ClevorDataSet*>(p_dataSet) != nullptr);
@@ -132,9 +131,9 @@ ResCapSelector::initializeRandomInd(Ind* p_ind,
     for (uint_t i = 0; i < numResources; ++i)
     {
         uint_t range = (_resources[i]->maxCap() - _resources[i]->minCap()) / 100;
-        uint_t cap = _resources[i]->minCap() + (rng->evali(range)) * 100;
+        ASSERTD(range != 0);
+        uint_t cap = _resources[i]->minCap() + (rng->uniform((uint_t)0, range - 1)) * 100;
         string[_stringBase + i] = cap;
-        //_rng((_resources[i]->maxCap();
     }
     _nestedScheduler->initializeRandomInd(ind, dataSet, rng, (void*)size_t_max);
 }
@@ -172,10 +171,9 @@ ResCapSelector::setResources(const ClevorDataSet* dataSet)
     res_set_id_t::const_iterator it;
     for (it = dataSet->resources().begin(); it != dataSet->resources().end(); ++it)
     {
-        cse::DiscreteResource* res = dynamic_cast<DiscreteResource*>(*it);
-        if (res == nullptr)
-            continue;
-        cls::DiscreteResource* clsRes = (cls::DiscreteResource*)(res->clsResource());
+        if (!(*it)->isA(DiscreteResource)) continue;
+        auto res = utl::cast<DiscreteResource>(*it);
+        auto clsRes = utl::cast<cls::DiscreteResource>(res->clsResource());
         uint_t minReqCap = roundUp(clsRes->minReqCap(), (uint_t)100);
         uint_t maxReqCap = roundUp(clsRes->maxReqCap(), (uint_t)100);
         ASSERTD(res->maxCap() >= res->minCap());

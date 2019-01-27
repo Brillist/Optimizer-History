@@ -25,7 +25,7 @@ class ESboundInt;
 
 class EFboundInt : public clp::ConstrainedBound
 {
-    UTL_CLASS_DECL(EFboundInt);
+    UTL_CLASS_DECL(EFboundInt, clp::ConstrainedBound);
     UTL_CLASS_DEFID;
 
 public:

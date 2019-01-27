@@ -23,7 +23,7 @@ GOP_NS_USE;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-UTL_CLASS_IMPL(cse::AltResSelector, cse::Scheduler);
+UTL_CLASS_IMPL(cse::AltResSelector);
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -85,7 +85,7 @@ AltResSelector::initialize(const gop::DataSet* p_dataSet, uint_t stringBase)
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
-AltResSelector::initializeInd(Ind* p_ind, const gop::DataSet* p_dataSet, RandNumGen* rng, void*)
+AltResSelector::initializeInd(Ind* p_ind, const gop::DataSet* p_dataSet, rng_t* rng, void*)
 {
     ASSERTD(dynamic_cast<StringInd<uint_t>*>(p_ind) != nullptr);
     StringInd<uint_t>* ind = (StringInd<uint_t>*)p_ind;
@@ -113,8 +113,6 @@ AltResSelector::initializeInd(Ind* p_ind, const gop::DataSet* p_dataSet, RandNum
             uint_t resIdx = altResIdxs[j];
             string[_stringBase + i] = resIdx;
         }
-        //         string[_stringBase + i] = rng->evali(
-        //             _resGroupReqs[i]->possibleResources().size());
     }
     _nestedScheduler->initializeInd(ind, dataSet, rng, (void*)size_t_max);
 }
@@ -124,7 +122,7 @@ AltResSelector::initializeInd(Ind* p_ind, const gop::DataSet* p_dataSet, RandNum
 void
 AltResSelector::initializeRandomInd(Ind* p_ind,
                                     const gop::DataSet* p_dataSet,
-                                    RandNumGen* rng,
+                                    rng_t* rng,
                                     void*)
 {
     ASSERTD(dynamic_cast<StringInd<uint_t>*>(p_ind) != nullptr);
@@ -181,7 +179,6 @@ AltResSelector::setResGroupReqs(const ClevorDataSet* dataSet)
     for (it = ops.begin(); it != ops.end(); ++it)
     {
         JobOp* op = *it;
-        //skip if (!op.breakable()) || op.frozen()
         if (!op->breakable() || op->frozen())
             continue;
         uint_t numResGroupReqs = op->numResGroupReqs();

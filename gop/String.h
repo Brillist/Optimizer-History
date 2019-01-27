@@ -10,10 +10,9 @@ GOP_NS_BEGIN;
 /**
    Chromosome string.
 
-   A chromosome string is a sequence of bytes that represent a construction
-   plan for an individual.  The format of the instructions must be known
-   by the operators that change them, and by the individual-builder that
-   follows them in order to construct individuals.
+   A chromosome string is a sequence of bytes that represent a construction plan for an individual.
+   The format of the instructions must be known by the operators that change them, and by the
+   individual-builder that follows them in order to construct individuals.
 
    \see gop::IndBuilder
    \see gop::Operator
@@ -24,11 +23,11 @@ GOP_NS_BEGIN;
 
 template <class T> class String : public utl::Object
 {
-    UTL_CLASS_DECL_TPL(String, T);
+    UTL_CLASS_DECL_TPL(String, T, utl::Object);
 
 public:
     /** Constructor. */
-    String(utl::uint_t size)
+    String(uint_t size)
     {
         init(size);
     }
@@ -40,7 +39,7 @@ public:
     virtual utl::String toString() const;
 
     /** Get the size. */
-    utl::uint_t
+    uint_t
     size() const
     {
         return _size;
@@ -54,7 +53,7 @@ public:
     }
 
     /** Set the size. */
-    void setSize(utl::uint_t size);
+    void setSize(uint_t size);
 
     /** Get the array. */
     const T*
@@ -72,9 +71,9 @@ public:
 
     /** Randomly shuffle. */
     void
-    shuffle(utl::RandNumGen& rng)
+    shuffle(lut::rng_t& rng)
     {
-        lut::shuffle(_vect, _size, rng);
+        rng.shuffle(_vect, _vect + _size);
     }
 
     /**
@@ -84,41 +83,41 @@ public:
        \param rhs rhs String (lhs is self)
        \param pos crossover position
     */
-    void crossover(String<T>* off1, String<T>* off2, const String<T>& rhs, utl::uint_t pos);
+    void crossover(String<T>* off1, String<T>* off2, const String<T>& rhs, uint_t pos);
 
     /** Get the chromosome at the given index (const). */
     const T& operator[](int idx) const
     {
-        ASSERTD((idx >= 0) && ((utl::uint_t)idx < _size));
+        ASSERTD((idx >= 0) && ((uint_t)idx < _size));
         return _vect[idx];
     }
 
     /** Get the chromosome at the given index. */
     T& operator[](int idx)
     {
-        ASSERTD((idx >= 0) && ((utl::uint_t)idx < _size));
+        ASSERTD((idx >= 0) && ((uint_t)idx < _size));
         return _vect[idx];
     }
 
     /** Get the chromosome at the given index (const). */
-    const T& operator[](utl::uint_t idx) const
+    const T& operator[](uint_t idx) const
     {
         ASSERTD(idx < size());
         return _vect[idx];
     }
 
     /** Get the chromosome at the given index. */
-    T& operator[](utl::uint_t idx)
+    T& operator[](uint_t idx)
     {
         ASSERTD(idx < size());
         return _vect[idx];
     }
 
 private:
-    void init(utl::uint_t size = 0);
+    void init(uint_t size = 0);
     void deInit();
 
-    utl::uint_t _size;
+    uint_t _size;
     T* _vect;
 };
 
@@ -131,7 +130,7 @@ String<T>::copy(const utl::Object& rhs)
     ASSERTD(rhs.isA(String<T>));
     const String<T>& s = (const String<T>&)rhs;
     setSize(s.size());
-    for (utl::uint_t i = 0; i < _size; i++)
+    for (uint_t i = 0; i < _size; i++)
     {
         _vect[i] = s._vect[i];
     }
@@ -145,7 +144,7 @@ String<T>::toString() const
 {
     std::ostringstream ss;
     ss << "(" << _vect[0];
-    for (utl::uint_t i = 1; i < _size; i++)
+    for (uint_t i = 1; i < _size; i++)
     {
         ss << "," << _vect[i];
     };
@@ -157,7 +156,7 @@ String<T>::toString() const
 
 template <class T>
 void
-String<T>::setSize(utl::uint_t size)
+String<T>::setSize(uint_t size)
 {
     _size = size;
     delete[] _vect;
@@ -175,7 +174,7 @@ String<T>::setSize(utl::uint_t size)
 
 template <class T>
 void
-String<T>::crossover(String<T>* off1, String<T>* off2, const String<T>& rhs, utl::uint_t pos)
+String<T>::crossover(String<T>* off1, String<T>* off2, const String<T>& rhs, uint_t pos)
 {
     ASSERTD(size() == rhs.size());
 
@@ -183,7 +182,7 @@ String<T>::crossover(String<T>* off1, String<T>* off2, const String<T>& rhs, utl
     if (off1 != nullptr)
     {
         off1->setSize(size());
-        utl::uint_t i;
+        uint_t i;
         // same as lhs up to pos
         for (i = 0; i < pos; i++)
         {
@@ -200,7 +199,7 @@ String<T>::crossover(String<T>* off1, String<T>* off2, const String<T>& rhs, utl
     if (off2 != nullptr)
     {
         off2->setSize(size());
-        utl::uint_t i;
+        uint_t i;
         // same as rhs up to pos
         for (i = 0; i < pos; i++)
         {
@@ -218,7 +217,7 @@ String<T>::crossover(String<T>* off1, String<T>* off2, const String<T>& rhs, utl
 
 template <class T>
 void
-String<T>::init(utl::uint_t size)
+String<T>::init(uint_t size)
 {
     _size = size;
     _vect = new T[size];
@@ -239,7 +238,7 @@ GOP_NS_END;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-UTL_CLASS_IMPL_TPL(gop::String, T, utl::Object);
+UTL_CLASS_IMPL_TPL(gop::String, T);
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 

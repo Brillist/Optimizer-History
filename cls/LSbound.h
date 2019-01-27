@@ -25,7 +25,7 @@ class LFbound;
 
 class LSbound : public clp::ConstrainedBound
 {
-    UTL_CLASS_DECL(LSbound);
+    UTL_CLASS_DECL(LSbound, ConstrainedBound);
     UTL_CLASS_DEFID;
 
 public:

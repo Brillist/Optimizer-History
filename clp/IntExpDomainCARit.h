@@ -25,12 +25,12 @@ class IntExpDomainCAR;
 
 class IntExpDomainCARit : public IntExpDomainIt
 {
-    UTL_CLASS_DECL(IntExpDomainCARit);
+    UTL_CLASS_DECL(IntExpDomainCARit, IntExpDomainIt);
     UTL_CLASS_DEFID;
 
 public:
     /** Constructor. */
-    IntExpDomainCARit(const IntExpDomainCAR* domain, utl::uint_t idx, utl::uint_t val)
+    IntExpDomainCARit(const IntExpDomainCAR* domain, uint_t idx, uint_t val)
     {
         _domain = domain;
         _idx = idx;
@@ -48,7 +48,7 @@ public:
 
 private:
     const IntExpDomainCAR* _domain;
-    utl::uint_t _idx;
+    uint_t _idx;
 };
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////

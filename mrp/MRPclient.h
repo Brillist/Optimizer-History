@@ -18,7 +18,7 @@ class MRPserver;
 
 class MRPclient : public cse::SEclient
 {
-    UTL_CLASS_DECL(MRPclient);
+    UTL_CLASS_DECL(MRPclient, cse::SEclient);
 
 public:
     MRPclient(MRPserver* server,

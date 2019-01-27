@@ -13,7 +13,7 @@ CSE_NS_BEGIN;
 
 class RunningThread : public utl::Thread
 {
-    UTL_CLASS_DECL(RunningThread);
+    UTL_CLASS_DECL(RunningThread, utl::Thread);
 
 public:
     virtual void* run(void* arg = nullptr);

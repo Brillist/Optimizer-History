@@ -30,7 +30,7 @@ class Manager;
 
 template <class T> class RevStack : public utl::Object
 {
-    UTL_CLASS_DECL_TPL(RevStack, T);
+    UTL_CLASS_DECL_TPL(RevStack, T, utl::Object);
     UTL_CLASS_NO_COPY;
     UTL_CLASS_DEFID;
 
@@ -60,7 +60,7 @@ public:
     }
 
     /** Get the size. */
-    utl::uint_t
+    uint_t
     size() const
     {
         return _array.size();
@@ -88,7 +88,7 @@ public:
     }
 
     /** Index into the stack. */
-    const T& operator[](utl::uint_t idx) const
+    const T& operator[](uint_t idx) const
     {
         return _array[idx];
     }
@@ -103,7 +103,7 @@ CLP_NS_END;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-UTL_CLASS_IMPL_TPL(clp::RevStack, T, utl::Object);
+UTL_CLASS_IMPL_TPL(clp::RevStack, T);
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 

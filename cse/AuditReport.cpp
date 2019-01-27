@@ -8,27 +8,27 @@ LUT_NS_USE;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-UTL_CLASS_IMPL(cse::InterestPeriodInfo, utl::Object);
-UTL_CLASS_IMPL(cse::ResourceInfo, utl::Object);
-UTL_CLASS_IMPL(cse::FixedCostInfo, utl::Object);
-UTL_CLASS_IMPL(cse::OverheadCostInfo, utl::Object);
-UTL_CLASS_IMPL(cse::ResourceUsageInfo, utl::Object);
-UTL_CLASS_IMPL(cse::InterestCostInfo, utl::Object);
-UTL_CLASS_IMPL(cse::ResourceSequenceCostInfo, utl::Object);
-UTL_CLASS_IMPL(cse::ComponentScoreInfo, utl::Object);
-UTL_CLASS_IMPL(cse::OperationInfo, utl::Object);
-UTL_CLASS_IMPL(cse::ResourceCostInfo, utl::Object);
-UTL_CLASS_IMPL(cse::ResourceWorkHoursInfo, utl::Object);
-UTL_CLASS_IMPL(cse::LatenessCostInfo, utl::Object);
+UTL_CLASS_IMPL(cse::InterestPeriodInfo);
+UTL_CLASS_IMPL(cse::ResourceInfo);
+UTL_CLASS_IMPL(cse::FixedCostInfo);
+UTL_CLASS_IMPL(cse::OverheadCostInfo);
+UTL_CLASS_IMPL(cse::ResourceUsageInfo);
+UTL_CLASS_IMPL(cse::InterestCostInfo);
+UTL_CLASS_IMPL(cse::ResourceSequenceCostInfo);
+UTL_CLASS_IMPL(cse::ComponentScoreInfo);
+UTL_CLASS_IMPL(cse::OperationInfo);
+UTL_CLASS_IMPL(cse::ResourceCostInfo);
+UTL_CLASS_IMPL(cse::ResourceWorkHoursInfo);
+UTL_CLASS_IMPL(cse::LatenessCostInfo);
 /* January 3, 2014 (Elisa) */
 /* added information for job overhead cost */
-UTL_CLASS_IMPL(cse::JobOverheadCostInfo, utl::Object);
-UTL_CLASS_IMPL(cse::ResourceCostReport, utl::Object);
-UTL_CLASS_IMPL(cse::LatenessCostReport, utl::Object);
+UTL_CLASS_IMPL(cse::JobOverheadCostInfo);
+UTL_CLASS_IMPL(cse::ResourceCostReport);
+UTL_CLASS_IMPL(cse::LatenessCostReport);
 /* January 6, 2014 (Elisa) */
 /* added job overhead costs */
-UTL_CLASS_IMPL(cse::JobOverheadCostReport, utl::Object);
-UTL_CLASS_IMPL(cse::AuditReport, utl::Object);
+UTL_CLASS_IMPL(cse::JobOverheadCostReport);
+UTL_CLASS_IMPL(cse::AuditReport);
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -396,7 +396,7 @@ ResourceCostReport::serialize(Stream& stream, uint_t io, uint_t)
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
-ResourceCostReport::setId(utl::uint_t id)
+ResourceCostReport::setId(uint_t id)
 {
     _id = id;
 }
@@ -604,7 +604,7 @@ AuditReport::setHorizonTime(time_t t)
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
-AuditReport::setTimeStep(utl::uint_t step)
+AuditReport::setTimeStep(uint_t step)
 {
     _timeStep = step;
 }
@@ -612,7 +612,7 @@ AuditReport::setTimeStep(utl::uint_t step)
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 ResourceCostReport&
-AuditReport::resourceCost(utl::uint_t id)
+AuditReport::resourceCost(uint_t id)
 {
     ResourceCostReport* report;
     resourceReports_t::iterator i = _resourceCosts.find(id);
@@ -632,7 +632,7 @@ AuditReport::resourceCost(utl::uint_t id)
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 LatenessCostReport&
-AuditReport::latenessCost(utl::uint_t id)
+AuditReport::latenessCost(uint_t id)
 {
     LatenessCostReport* report;
     latenessReports_t::iterator i = _latenessCosts.find(id);
@@ -654,7 +654,7 @@ AuditReport::latenessCost(utl::uint_t id)
 // added job overhead cost
 
 JobOverheadCostReport&
-AuditReport::joboverheadCost(utl::uint_t id)
+AuditReport::joboverheadCost(uint_t id)
 {
     JobOverheadCostReport* report;
     joboverheadReports_t::iterator i = _joboverheadCosts.find(id);

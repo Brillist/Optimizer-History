@@ -35,7 +35,7 @@ enum rsd_t
 
 class RevSetDelta : public utl::Object
 {
-    UTL_CLASS_DECL(RevSetDelta);
+    UTL_CLASS_DECL(RevSetDelta, utl::Object);
     UTL_CLASS_NO_COPY;
 
 public:
@@ -43,10 +43,10 @@ public:
        Constructor.
        \param depth search-tree depth.
     */
-    RevSetDelta(rsd_t type, utl::uint_t depth);
+    RevSetDelta(rsd_t type, uint_t depth);
 
     /** Get the state-depth. */
-    utl::uint_t
+    uint_t
     depth() const
     {
         return _depth;
@@ -83,7 +83,7 @@ private:
     void deInit();
 
 private:
-    utl::uint_t _depth;
+    uint_t _depth;
     rsd_t _type;
     utl::Hashtable* _addedItems;
     utl::Hashtable* _removedItems;

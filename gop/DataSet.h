@@ -19,7 +19,7 @@ GOP_NS_BEGIN;
 
 class DataSet : public utl::Object
 {
-    UTL_CLASS_DECL_ABC(DataSet);
+    UTL_CLASS_DECL_ABC(DataSet, utl::Object);
     UTL_CLASS_DEFID;
 
 public:

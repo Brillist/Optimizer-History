@@ -1,5 +1,4 @@
-#ifndef LUT_RBTREENODE_H
-#define LUT_RBTREENODE_H
+#pragma once
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -25,7 +24,7 @@ enum nodecolor_t
 
 class RBtreeNode : public utl::Object
 {
-    UTL_CLASS_DECL_ABC(RBtreeNode);
+    UTL_CLASS_DECL_ABC(RBtreeNode, utl::Object);
 
 public:
     /// \name Accessors
@@ -100,7 +99,7 @@ public:
     //@}
 
     virtual void
-    dump(utl::Stream& os, utl::uint_t level) const
+    dump(utl::Stream& os, uint_t level) const
     {
     }
 
@@ -119,7 +118,3 @@ private:
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 LUT_NS_END;
-
-////////////////////////////////////////////////////////////////////////////////////////////////////
-
-#endif

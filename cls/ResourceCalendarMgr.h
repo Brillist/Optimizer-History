@@ -25,7 +25,7 @@ class Schedule;
 
 class ResourceCalendarMgr : public utl::Object
 {
-    UTL_CLASS_DECL(ResourceCalendarMgr);
+    UTL_CLASS_DECL(ResourceCalendarMgr, utl::Object);
     UTL_CLASS_NO_COPY;
 
 public:
@@ -36,14 +36,14 @@ public:
     }
 
     /** Get horizon time-slot. */
-    utl::uint_t&
+    uint_t&
     horizonTS()
     {
         return _horizonTS;
     }
 
     /** Find a calendar by unique id. */
-    const ResourceCalendar* find(utl::uint_t id) const;
+    const ResourceCalendar* find(uint_t id) const;
 
     /** Add the given simple calendar. */
     ResourceCalendar* add(ResourceCalendar* cal);
@@ -62,7 +62,7 @@ private:
 
 private:
     Schedule* _schedule;
-    utl::uint_t _horizonTS;
+    uint_t _horizonTS;
     rescal_set_t _calendars;
     rescal_map_t _specCalendars;
 };

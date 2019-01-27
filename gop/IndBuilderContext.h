@@ -21,7 +21,7 @@ class DataSet;
 
 class IndBuilderContext : public utl::Object
 {
-    UTL_CLASS_DECL_ABC(IndBuilderContext);
+    UTL_CLASS_DECL_ABC(IndBuilderContext, utl::Object);
 
 public:
     /** Copy another instance. */

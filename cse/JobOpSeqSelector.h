@@ -27,26 +27,26 @@ CSE_NS_BEGIN;
 
 class JobOpSeqSelector : public Scheduler
 {
-    UTL_CLASS_DECL(JobOpSeqSelector);
+    UTL_CLASS_DECL(JobOpSeqSelector, Scheduler);
 
 public:
     virtual void copy(const Object& rhs);
 
     virtual void setStringBase(gop::Operator* op) const;
 
-    virtual utl::uint_t stringSize(const ClevorDataSet& dataSet) const;
+    virtual uint_t stringSize(const ClevorDataSet& dataSet) const;
 
-    virtual void initialize(const gop::DataSet* dataSet = nullptr, utl::uint_t stringBase = 0);
+    virtual void initialize(const gop::DataSet* dataSet = nullptr, uint_t stringBase = 0);
 
     virtual void initializeInd(gop::Ind* ind,
                                const gop::DataSet* dataSet,
-                               utl::RandNumGen* rng = nullptr,
+                               lut::rng_t* rng = nullptr,
                                void* param = nullptr);
 
     //joe's debug code
     virtual void initializeRandomInd(gop::Ind* ind,
                                      const gop::DataSet* dataSet,
-                                     utl::RandNumGen* rng = nullptr,
+                                     lut::rng_t* rng = nullptr,
                                      void* param = nullptr);
 
     /** Make a schedule. */
@@ -66,7 +66,7 @@ private:
     //void setResources(const DataSet* dataSet);
 
     /** Select JobOp Sequence. */
-    void setSelectedJobOpSeq(gop::StringInd<utl::uint_t>* ind, SchedulingContext* context) const;
+    void setSelectedJobOpSeq(gop::StringInd<uint_t>* ind, SchedulingContext* context) const;
 };
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////

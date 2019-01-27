@@ -34,10 +34,6 @@ GOP_NS_BEGIN;
    }
    \endcode
 
-   This algorithm has the appeal of being very simple.  However, the danger
-   of this search strategy is that it may happily climb a very small hill,
-   and be unable to jump to a taller hill.
-
    \author Adam McKee
 */
 
@@ -45,7 +41,7 @@ GOP_NS_BEGIN;
 
 class HillClimber : public Optimizer
 {
-    UTL_CLASS_DECL(HillClimber);
+    UTL_CLASS_DECL(HillClimber, Optimizer);
 
 public:
     //     virtual bool requiresRevOp() const

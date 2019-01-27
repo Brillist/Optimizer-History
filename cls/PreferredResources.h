@@ -17,18 +17,18 @@ CLS_NS_BEGIN;
 
 class PreferredResources : public utl::Object
 {
-    UTL_CLASS_DECL(PreferredResources);
+    UTL_CLASS_DECL(PreferredResources, utl::Object);
     UTL_CLASS_DEFID;
 
 public:
-    typedef std::vector<utl::uint_t> uint_vector_t;
+    typedef std::vector<uint_t> uint_vector_t;
 
 public:
     /** Copy another instance. */
     virtual void copy(const utl::Object& rhs);
 
     virtual void
-    serialize(utl::Stream& stream, utl::uint_t io, utl::uint_t mode = utl::ser_default);
+    serialize(utl::Stream& stream, uint_t io, uint_t mode = utl::ser_default);
 
     /** Get the list of resource ids. */
     const uint_vector_t&

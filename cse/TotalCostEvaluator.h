@@ -77,7 +77,7 @@ class CapSpan;
 
 class TotalCostEvaluator : public ScheduleEvaluator
 {
-    UTL_CLASS_DECL(TotalCostEvaluator);
+    UTL_CLASS_DECL(TotalCostEvaluator, ScheduleEvaluator);
 
 public:
     virtual void copy(const utl::Object& rhs);
@@ -143,30 +143,30 @@ private:
     mutable std::ostringstream* _os;
     int _originTS;
     int _horizonTS;
-    utl::uint_t _timeStep;
+    uint_t _timeStep;
     bool _forward;
     double _overheadCostPerTS;
     double _interestRate;
-    utl::uint_t _numIPs;
+    uint_t _numIPs;
     mutable double _totalCost;
     mutable double* _ipCost;
-    mutable utl::byte_t* _dayIsBreak;
+    mutable byte_t* _dayIsBreak;
     mutable size_t _dayIsBreakSize;
-    mutable utl::uint_t* _caps;
+    mutable uint_t* _caps;
     mutable size_t _capsSize;
-    mutable utl::uint_t* _capDayTimes;
+    mutable uint_t* _capDayTimes;
     mutable size_t _capDayTimesSize;
-    mutable utl::uint_t* _capDayHires;
+    mutable uint_t* _capDayHires;
     mutable size_t _capDayHiresSize;
-    mutable utl::byte_t* _capDayFireBeforeHire;
+    mutable byte_t* _capDayFireBeforeHire;
     mutable size_t _capDayFireBeforeHireSize;
     mutable double* _dayCosts;
     mutable size_t _dayCostsSize;
-    mutable utl::uint_t* _dayCostPeriods;
+    mutable uint_t* _dayCostPeriods;
     mutable size_t _dayCostPeriodsSize;
     spanip_col_t _spanIPs;
     mutable AuditReport* _auditReport;
-    mutable std::map<utl::uint_t, double> _auditIpCosts;
+    mutable std::map<uint_t, double> _auditIpCosts;
 };
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////

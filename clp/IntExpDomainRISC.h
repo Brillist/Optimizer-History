@@ -22,7 +22,7 @@ CLP_NS_BEGIN;
 
 class IntExpDomainRISC : public IntExpDomain, public RevIntSpanCol
 {
-    UTL_CLASS_DECL(IntExpDomainRISC);
+    UTL_CLASS_DECL(IntExpDomainRISC, IntExpDomain);
 
 public:
     /** Constructor. */
@@ -36,7 +36,7 @@ public:
     virtual void copy(const utl::Object& rhs);
 
     /** Get a human-readable string representation. */
-    virtual utl::String toString() const;
+    virtual String toString() const;
 
     /** Intersect with the given domain. */
     virtual void intersect(const IntExpDomain* rhs);
@@ -72,12 +72,12 @@ protected:
     virtual void set(IntSpan* span);
 
     void
-    set(int min, int max, utl::uint_t v0, utl::uint_t v1)
+    set(int min, int max, uint_t v0, uint_t v1)
     {
         RevIntSpanCol::set(min, max, v0, v1);
     }
 
-    virtual utl::uint_t validate(bool initialized = true) const;
+    virtual uint_t validate(bool initialized = true) const;
 
 private:
     void init();

@@ -13,7 +13,7 @@ CLP_NS_USE;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-UTL_CLASS_IMPL(cls::DiscreteTimetable, utl::Object);
+UTL_CLASS_IMPL(cls::DiscreteTimetable);
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -22,7 +22,7 @@ CLS_NS_BEGIN;
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
-DiscreteTimetable::energy(utl::uint_t& required, utl::uint_t& provided) const
+DiscreteTimetable::energy(uint_t& required, uint_t& provided) const
 {
     uint_t totRequired = 0;
     uint_t totProvided = 0;
@@ -48,7 +48,7 @@ DiscreteTimetable::energy(const Span<int>& span, uint_t& required, uint_t& provi
 
     uint_t totRequired = 0;
     uint_t totProvided = 0;
-    const IntSpan* ts = _domain.find(span.getBegin());
+    const IntSpan* ts = _domain.find(span.begin());
     while (ts != tail())
     {
         Span<int> tsSpan = ts->span();

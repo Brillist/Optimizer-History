@@ -21,7 +21,7 @@ CLP_NS_BEGIN;
 
 class IntSpanArray : public utl::Object
 {
-    UTL_CLASS_DECL(IntSpanArray);
+    UTL_CLASS_DECL(IntSpanArray, utl::Object);
     UTL_CLASS_NO_COPY;
 
 public:
@@ -33,13 +33,13 @@ public:
     }
 
     /** Get the size. */
-    const utl::uint_t&
+    const uint_t&
     size() const
     {
         return _size;
     }
 
-    utl::uint_t&
+    uint_t&
     size()
     {
         return _size;
@@ -47,7 +47,7 @@ public:
 
     /** Set the size. */
     void
-    setSize(utl::uint_t size)
+    setSize(uint_t size)
     {
         ASSERTD(size <= _size);
         _size = size;
@@ -57,14 +57,14 @@ public:
     void add(int min, int max);
 
     /** Get the start pointer. */
-    const utl::uint_t*
+    const uint_t*
     head()
     {
         return _array;
     }
 
     /** Get the tail pointer. */
-    const utl::uint_t*
+    const uint_t*
     tail()
     {
         return (_array + (_size << 1));
@@ -72,17 +72,17 @@ public:
 
     /** Get the range at the given index. */
     void
-    get(utl::uint_t pos, int& min, int& max) const
+    get(uint_t pos, int& min, int& max) const
     {
         ASSERTD(pos < _size);
-        utl::uint_t idx = pos * 2;
+        uint_t idx = pos * 2;
         min = _array[idx];
         max = _array[idx + 1];
     }
 
     /** Get the range at the given index. */
     void
-    get(utl::uint_t* ptr, int& min, int& max) const
+    get(uint_t* ptr, int& min, int& max) const
     {
         ASSERTD(ptr < (_array + (_size << 1)));
         min = *(ptr++);
@@ -91,16 +91,16 @@ public:
 
     /** Get the span at the given index. */
     utl::Span<int>
-    get(utl::uint_t pos) const
+    get(uint_t pos) const
     {
         ASSERTD(pos < _size);
-        utl::uint_t idx = pos * 2;
+        uint_t idx = pos * 2;
         return utl::Span<int>(_array[idx], _array[idx + 1] + 1);
     }
 
     /** Get the range at a given index. */
     void
-    getNext(utl::uint_t*& ptr, int& min, int& max) const
+    getNext(uint_t*& ptr, int& min, int& max) const
     {
         ASSERTD(ptr < (_array + (_size << 1)));
         min = *(ptr++);
@@ -120,9 +120,9 @@ private:
     void grow();
 
 private:
-    utl::uint_t* _array;
-    utl::uint_t _size;
-    utl::uint_t _reservedSize;
+    uint_t* _array;
+    uint_t _size;
+    uint_t _reservedSize;
 };
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////

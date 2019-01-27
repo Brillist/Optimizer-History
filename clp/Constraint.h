@@ -14,13 +14,11 @@ CLP_NS_BEGIN;
 /**
    Constraint (abstract).
 
-   A constraint is basically a rule that specifies some relationship between
-   constrained variables.  When a constraint is posted (post()), it requests
-   to be notified when domain reduction occurs in the variables it is
-   concerned with.  When the constraint executes, it looks at the domain
-   reductions that have occurred since it last ran, and possibly does
-   additional domain reduction to ensure satisfaction of the rule it is
-   charged with enforcing.
+   A constraint enforces a relationship between constrained variables.  When a constraint is posted
+   (post()), it requests to be notified when domain reduction occurs in the variables it is
+   concerned with.  When the constraint executes, it looks at the domain reductions that have
+   occurred since it last ran, and may do additional domain reduction to ensure satisfaction
+   of the rule it enforces.
 
    \see ConstrainedVar
    \author Adam McKee
@@ -30,7 +28,7 @@ CLP_NS_BEGIN;
 
 class Constraint : public Goal
 {
-    UTL_CLASS_DECL_ABC(Constraint);
+    UTL_CLASS_DECL_ABC(Constraint, Goal);
 
 public:
     /** Constructor. */
@@ -64,7 +62,7 @@ public:
     virtual void unpost() = 0;
 
     /** Get the depth of posting. */
-    utl::uint_t
+    uint_t
     getPostDepth() const
     {
         return _postDepth;
@@ -105,7 +103,7 @@ private:
 private:
     bool _posted;
     bool _managed;
-    utl::uint_t _postDepth;
+    uint_t _postDepth;
 };
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////

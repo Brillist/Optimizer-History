@@ -35,7 +35,7 @@ class Population;
 
 class Ind : public utl::Object
 {
-    UTL_CLASS_DECL_ABC(Ind);
+    UTL_CLASS_DECL_ABC(Ind, utl::Object);
 
 public:
     /** Copy another instance. */
@@ -67,7 +67,7 @@ public:
     }
 
     /** Get the number of scores. */
-    utl::uint_t
+    uint_t
     numScores() const
     {
         return _scores.size();
@@ -75,7 +75,7 @@ public:
 
     /** Get the score for the given objective. */
     double
-    getScore(utl::uint_t idx = 0) const
+    getScore(uint_t idx = 0) const
     {
         ASSERTD(idx < _scores.size());
         return _scores[idx];
@@ -89,7 +89,7 @@ public:
     }
 
     /** Set the score for the given objective. */
-    void setScore(utl::uint_t idx, double score);
+    void setScore(uint_t idx, double score);
 
     /** Get the fitness. */
     double
@@ -110,7 +110,7 @@ public:
 
     /** Get the parent score for the given objective. */
     double
-    getParentScore(utl::uint_t idx = 0) const
+    getParentScore(uint_t idx = 0) const
     {
         ASSERTD(idx < _parentScores.size());
         return _parentScores[idx];
@@ -118,7 +118,7 @@ public:
 
     /** Set the parent score for the given objective. */
     void
-    setParentScore(utl::uint_t idx, double parentScore)
+    setParentScore(uint_t idx, double parentScore)
     {
         if (idx >= _parentScores.size())
             _parentScores.resize(idx + 1);
@@ -126,7 +126,7 @@ public:
     }
 
     /** Get operator index. */
-    utl::uint_t
+    uint_t
     getOpIdx() const
     {
         return _opIdx;
@@ -134,7 +134,7 @@ public:
 
     /** Set operator index. */
     void
-    setOpIdx(utl::uint_t opIdx)
+    setOpIdx(uint_t opIdx)
     {
         _opIdx = opIdx;
     }
@@ -167,7 +167,7 @@ private:
     std::vector<double> _scores;
     std::vector<double> _parentScores;
     double _fitness;
-    utl::uint_t _opIdx;
+    uint_t _opIdx;
 
     // optimizer-specific related data
     OSID* _osid;
@@ -191,7 +191,7 @@ private:
 
 class OSID : public utl::Object
 {
-    UTL_CLASS_DECL_ABC(OSID);
+    UTL_CLASS_DECL_ABC(OSID, utl::Object);
     UTL_CLASS_DEFID;
 
 public:
@@ -225,7 +225,7 @@ public:
 
 class IndOrdering : public utl::Object
 {
-    UTL_CLASS_DECL_ABC(IndOrdering);
+    UTL_CLASS_DECL_ABC(IndOrdering, utl::Object);
     UTL_CLASS_NO_COPY;
 
 public:
@@ -329,7 +329,7 @@ private:
 
 class IndScoreOrdering : public IndOrdering
 {
-    UTL_CLASS_DECL(IndScoreOrdering);
+    UTL_CLASS_DECL(IndScoreOrdering, IndOrdering);
 
 public:
     /**
@@ -346,7 +346,7 @@ public:
        \param objectiveIdx objective to get score for
        \param inverted inverted ordering?
     */
-    IndScoreOrdering(utl::uint_t objectiveIdx, bool inverted = false)
+    IndScoreOrdering(uint_t objectiveIdx, bool inverted = false)
         : IndOrdering(inverted)
     {
         init(objectiveIdx);
@@ -356,7 +356,7 @@ public:
 
 private:
     void
-    init(utl::uint_t objectiveIdx = 0)
+    init(uint_t objectiveIdx = 0)
     {
         _objectiveIdx = objectiveIdx;
     }
@@ -367,7 +367,7 @@ private:
     }
 
 private:
-    utl::uint_t _objectiveIdx;
+    uint_t _objectiveIdx;
 };
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -385,7 +385,7 @@ private:
 
 class IndFitnessOrdering : public IndOrdering
 {
-    UTL_CLASS_DECL(IndFitnessOrdering);
+    UTL_CLASS_DECL(IndFitnessOrdering, IndOrdering);
     UTL_CLASS_DEFID;
 
 public:

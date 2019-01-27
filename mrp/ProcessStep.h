@@ -38,25 +38,25 @@ enum ps_fc_per_t
 
 class ProcessStep : public utl::Object
 {
-    UTL_CLASS_DECL(ProcessStep);
+    UTL_CLASS_DECL(ProcessStep, utl::Object);
 
 public:
     virtual void copy(const utl::Object& rhs);
 
     virtual void
-    serialize(utl::Stream& stream, utl::uint_t io, utl::uint_t mode = utl::ser_default);
+    serialize(utl::Stream& stream, uint_t io, uint_t mode = utl::ser_default);
 
     /// \name Accessors
     //@{
     /** Id. */
-    utl::uint_t
+    uint_t
     id() const
     {
         return _id;
     }
 
     /** Id. */
-    utl::uint_t&
+    uint_t&
     id()
     {
         return _id;
@@ -77,14 +77,14 @@ public:
     }
 
     /** Processing time. */
-    utl::uint_t
+    uint_t
     processingTime() const
     {
         return _processingTime;
     }
 
     /** Processing time. */
-    utl::uint_t&
+    uint_t&
     processingTime()
     {
         return _processingTime;
@@ -98,7 +98,7 @@ public:
     }
 
     /** PtBatchSize. */
-    utl::uint_t
+    uint_t
     ptBatchSize() const
     {
         return _ptBatchSize;
@@ -119,7 +119,7 @@ public:
     }
 
     /** FixedCostBatchSize. */
-    utl::uint_t
+    uint_t
     fcBatchSize() const
     {
         return _fcBatchSize;
@@ -169,15 +169,15 @@ public:
     //@}
 
     /** create a JobOp object. */
-    cse::JobOp* createJobOp(utl::uint_t id, utl::uint_t quantity);
+    cse::JobOp* createJobOp(uint_t id, uint_t quantity);
 
-    utl::String toString() const;
+    String toString() const;
 
 private:
     void
     init()
     {
-        _id = _processingTime = utl::uint_t_max;
+        _id = _processingTime = uint_t_max;
     }
     void
     deInit()
@@ -185,14 +185,14 @@ private:
     }
 
 private:
-    utl::uint_t _id;
+    uint_t _id;
     std::string _name;
-    utl::uint_t _processingTime;
+    uint_t _processingTime;
     ps_pt_per_t _ptPer;
-    utl::uint_t _ptBatchSize;
+    uint_t _ptBatchSize;
     double _fixedCost;
     ps_fc_per_t _fcPer;
-    utl::uint_t _fcBatchSize;
+    uint_t _fcBatchSize;
 
     utl::Array _itemReqs;
     utl::Array _resReqs;

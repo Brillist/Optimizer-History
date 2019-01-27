@@ -148,8 +148,8 @@ public:
     CapSpan(uint_t cap, const Span<int>& span)
     {
         _cap = cap;
-        _begin = span.getBegin();
-        _end = span.getEnd();
+        _begin = span.begin();
+        _end = span.end();
     }
 
     CapSpan(uint_t cap, int begin, int end)
@@ -209,7 +209,7 @@ private:
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-typedef std_hash_map<uint_t, CapCostRec*> ccr_map_t;
+typedef std::unordered_map<uint_t, CapCostRec*> ccr_map_t;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 /// SpanInterestPeriod /////////////////////////////////////////////////////////////////////////////
@@ -217,14 +217,14 @@ typedef std_hash_map<uint_t, CapCostRec*> ccr_map_t;
 
 class SpanInterestPeriod : public utl::Span<int>
 {
-    UTL_CLASS_DECL(SpanInterestPeriod);
+    UTL_CLASS_DECL(SpanInterestPeriod, utl::Span<int>);
 
 public:
-    SpanInterestPeriod(int begin, int end, utl::uint_t period);
+    SpanInterestPeriod(int begin, int end, uint_t period);
 
     virtual void copy(const utl::Object& rhs);
 
-    utl::uint_t
+    uint_t
     period() const
     {
         return _period;
@@ -238,12 +238,12 @@ private:
     }
 
 private:
-    utl::uint_t _period;
+    uint_t _period;
 };
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-SpanInterestPeriod::SpanInterestPeriod(int begin, int end, utl::uint_t period)
+SpanInterestPeriod::SpanInterestPeriod(int begin, int end, uint_t period)
     : Span<int>(begin, end)
 {
     setRelaxed(true);
@@ -449,8 +449,8 @@ TotalCostEvaluator::calcScore(const IndBuilderContext* p_context) const
         for (it = _spanIPs.begin(); it != _spanIPs.end(); ++it, ++ipIdx)
         {
             SpanInterestPeriod* sip = (SpanInterestPeriod*)*it;
-            time_t begin = origTime + (sip->getBegin() * timeStep);
-            time_t end = origTime + (sip->getEnd() * timeStep);
+            time_t begin = origTime + (sip->begin() * timeStep);
+            time_t end = origTime + (sip->end() * timeStep);
             *_os << "i.p. " << ipIdx << ": "
                  << "[" << getTimeString(begin) << "," << getTimeString(end) << ")" << std::endl;
             InterestPeriodInfo* info = new InterestPeriodInfo();
@@ -1131,14 +1131,14 @@ TotalCostEvaluator::cslistCost(const SchedulingContext& context,
     uint_t timeStep = _schedulerConfig->timeStep();
     int tsPerDay = daySec / timeStep;
     ASSERTD((tsPerDay * timeStep) == daySec);
-    makespan.setEnd(roundUp(makespan.getEnd(), tsPerDay));
+    makespan.setEnd(roundUp(makespan.end(), tsPerDay));
 
     // might need to extend the makespan because of
     // min employment
     if (!cslist.empty())
     {
         CapSpan* lastSpan = cslist.back();
-        if (lastSpan->end() > makespan.getEnd())
+        if (lastSpan->end() > makespan.end())
         {
 #ifdef DEBUG_UNIT
             std::cout << myName << "lastSpan->end() > makespan.end() | " << lastSpan->end() << " > "
@@ -1868,7 +1868,7 @@ TotalCostEvaluator::calcLatenessCost(const SchedulingContext& context) const
                 {
                     report->setName(job->name());
                 }
-                std::map<utl::uint_t, double>::const_iterator i;
+                std::map<uint_t, double>::const_iterator i;
                 for (i = _auditIpCosts.begin(); i != _auditIpCosts.end(); i++)
                 {
                     LatenessCostInfo* info = new LatenessCostInfo();
@@ -1894,7 +1894,7 @@ TotalCostEvaluator::calcLatenessCost(const SchedulingContext& context) const
                 {
                     report->setName(job->name());
                 }
-                std::map<utl::uint_t, double>::const_iterator i;
+                std::map<uint_t, double>::const_iterator i;
                 for (i = _auditIpCosts.begin(); i != _auditIpCosts.end(); i++)
                 {
                     LatenessCostInfo* info = new LatenessCostInfo();
@@ -1926,7 +1926,7 @@ TotalCostEvaluator::calcLatenessCost(const SchedulingContext& context) const
                 {
                     report->setName(job->name());
                 }
-                std::map<utl::uint_t, double>::const_iterator i;
+                std::map<uint_t, double>::const_iterator i;
                 for (i = _auditIpCosts.begin(); i != _auditIpCosts.end(); i++)
                 {
                     LatenessCostInfo* info = new LatenessCostInfo();
@@ -2132,7 +2132,7 @@ TotalCostEvaluator::calcOverheadCost(const SchedulingContext& context) const
     // But if it finishes at 9am, Nov. 12, we will calculate it as 1 day.
     // Joe, Nov 11, 2007.
     int tsPerDay = daySec / (uint_t)_schedulerConfig->timeStep();
-    makespan.setEnd(roundUp(makespan.getEnd(), tsPerDay));
+    makespan.setEnd(roundUp(makespan.end(), tsPerDay));
 
     if (_audit)
     {
@@ -2143,7 +2143,7 @@ TotalCostEvaluator::calcOverheadCost(const SchedulingContext& context) const
     setComponentScore("OverheadCost", (int)totalOverheadCost);
     if (_audit)
     {
-        std::map<utl::uint_t, double>::const_iterator i;
+        std::map<uint_t, double>::const_iterator i;
         for (i = _auditIpCosts.begin(); i != _auditIpCosts.end(); i++)
         {
             OverheadCostInfo* info = new OverheadCostInfo();
@@ -2177,7 +2177,7 @@ TotalCostEvaluator::calcInterestCost(const SchedulingContext& context) const
         SpanInterestPeriod* sip = (SpanInterestPeriod*)*it;
         ip = sip->period();
         interestCost = 0.0;
-        if (sip->getBegin() <= makeSpanEnd)
+        if (sip->begin() <= makeSpanEnd)
         {
             interestCost = totalCost * _interestRate;
         }
@@ -2229,8 +2229,8 @@ TotalCostEvaluator::calcPeriodCost(const utl::Span<int>& p_span, double costPerT
     {
         uint_t timeStep = _schedulerConfig->timeStep();
         time_t originTime = _schedulerConfig->originTime();
-        time_t beginTime = originTime + (span.getBegin() * timeStep);
-        time_t endTime = originTime + (span.getEnd() * timeStep);
+        time_t beginTime = originTime + (span.begin() * timeStep);
+        time_t endTime = originTime + (span.end() * timeStep);
         *_os << " => calcPeriodCost(" << getTimeString(beginTime) << ", " << getTimeString(endTime)
              << ", "
              << "$" << costPerTS << ")" << std::endl;
@@ -2241,7 +2241,7 @@ TotalCostEvaluator::calcPeriodCost(const utl::Span<int>& p_span, double costPerT
     {
         const SpanInterestPeriod& sip = (const SpanInterestPeriod&)**it;
         Span<int> overlap = sip.overlap(span);
-        span.setBegin(overlap.getEnd());
+        span.setBegin(overlap.end());
         uint_t ip = sip.period();
         double cost = (costPerTS * (double)overlap.size());
         if (_audit)
@@ -2288,8 +2288,8 @@ TotalCostEvaluator::calcPeriodCost(const utl::Span<int>& p_span,
     {
         uint_t timeStep = _schedulerConfig->timeStep();
         time_t originTime = _schedulerConfig->originTime();
-        time_t beginTime = originTime + (span.getBegin() * timeStep);
-        time_t endTime = originTime + (span.getEnd() * timeStep);
+        time_t beginTime = originTime + (span.begin() * timeStep);
+        time_t endTime = originTime + (span.end() * timeStep);
         *_os << " => calcPeriodCost(" << getTimeString(beginTime) << ", " << getTimeString(endTime)
              << ", "
              << "$" << costPerTS << ", "
@@ -2301,7 +2301,7 @@ TotalCostEvaluator::calcPeriodCost(const utl::Span<int>& p_span,
     {
         const SpanInterestPeriod& sip = (const SpanInterestPeriod&)**it;
         Span<int> overlap = sip.overlap(span);
-        span.setBegin(overlap.getEnd());
+        span.setBegin(overlap.end());
         uint_t ip = sip.period();
         double cost = (costPerTS * (double)overlap.size());
         double firstcost = (costPerTS * (double)overlap.size());
@@ -2402,7 +2402,7 @@ TotalCostEvaluator::cslistBuild(const SchedulingContext& context,
     //extend scheduleSpan if mets > 0
     if (mets > 0)
     {
-        int et = res.getEndTimeForStartTime(scheduleSpan.getEnd(), mets) + 1;
+        int et = res.getEndTimeForStartTime(scheduleSpan.end(), mets) + 1;
         scheduleSpan.setEnd(et);
     }
     if (_audit)
@@ -2449,37 +2449,28 @@ TotalCostEvaluator::cslistBuild(const SchedulingContext& context,
     }
 
     // t: time-point for checking
-    int t = scheduleSpan.getBegin();
+    int t = scheduleSpan.begin();
     const ClevorDataSet* dataSet = context.clevorDataSet();
     const DiscreteResource* dres = dynamic_cast<DiscreteResource*>(dataSet->findResource(res.id()));
     uint_t maxCap = roundUp(dres->clsResource()->maxReqCap(), (uint_t)100);
     maxCap = maxCap / 100;
     //     bool employed[maxCap];
-    bool canFired[maxCap], alreadyIdle[maxCap];
-    int employStarts[maxCap], minEmployEnds[maxCap];
-    int idleStarts[maxCap], maxIdleEnds[maxCap];
+    std::vector<bool> canFired(maxCap, false), alreadyIdle(maxCap, false);
+    std::vector<int> employStarts(maxCap, 0), minEmployEnds(maxCap, 0);
+    std::vector<int> idleStarts(maxCap, 0), maxIdleEnds(maxCap, 0);
     CapSpan* lastCapSpan = nullptr;
     int reqCap, lastReqCap = 0;
     uint_t existingCap = dres->existingCap();
     existingCap = (uint_t)ceil((double)existingCap / 100.0);
-
-    // init employStarts, employEnds, idleStarts, maxIdleEnds, etc
-    for (int i = 0; i < (int)maxCap; i++)
-    {
-        //         employed[i] = true;
-        canFired[i] = alreadyIdle[i] = false;
-        employStarts[i] = minEmployEnds[i] = 0;
-        idleStarts[i] = maxIdleEnds[i] = 0;
-    }
 
     // Build cslist from resource's timetable.
     const DiscreteTimetable& tt = res.timetable();
     const IntSpan* tail = tt.tail();
     CapSpan* capSpan;
     const IntSpan* ts;
-    t = scheduleSpan.getBegin();
+    t = scheduleSpan.begin();
 
-    while (t < scheduleSpan.getEnd())
+    while (t < scheduleSpan.end())
     {
         ts = tt.find(t);
 
@@ -2487,7 +2478,7 @@ TotalCostEvaluator::cslistBuild(const SchedulingContext& context,
         Span<int> overlap = tsSpan.overlap(scheduleSpan);
 
         // reset overlap's st
-        ASSERTD(t < overlap.getEnd());
+        ASSERTD(t < overlap.end());
         overlap.setBegin(t);
 
         // convert reqCap
@@ -2533,16 +2524,16 @@ TotalCostEvaluator::cslistBuild(const SchedulingContext& context,
             {
                 //                 employed[i] = true;
                 canFired[i] = false;
-                employStarts[i] = overlap.getBegin();
+                employStarts[i] = overlap.begin();
                 minEmployEnds[i] = res.getEndTimeForStartTime(employStarts[i], mets);
                 minEmployEnds[i] = res.getNonBreakTimeNext(minEmployEnds[i]);
                 alreadyIdle[i] = false;
             }
-            t = overlap.getEnd(); //t updated
+            t = overlap.end(); //t updated
         }
         else if (reqCap <= lastReqCap)
         {
-            int spanEnd = overlap.getEnd();
+            int spanEnd = overlap.end();
             for (int i = reqCap; i < lastReqCap; i++)
             {
                 int newPayCap = payCap;
@@ -2550,7 +2541,7 @@ TotalCostEvaluator::cslistBuild(const SchedulingContext& context,
                 {
                     if (!canFired[i])
                     {
-                        if (minEmployEnds[i] > overlap.getBegin())
+                        if (minEmployEnds[i] > overlap.begin())
                         {
                             newPayCap++;
                             spanEnd = min(spanEnd, minEmployEnds[i]);
@@ -2565,7 +2556,7 @@ TotalCostEvaluator::cslistBuild(const SchedulingContext& context,
                 {
                     if (alreadyIdle[i] == false)
                     {
-                        idleStarts[i] = tsSpan.getBegin();
+                        idleStarts[i] = tsSpan.begin();
                         maxIdleEnds[i] = res.getEndTimeForStartTime(idleStarts[i], mits);
                         maxIdleEnds[i] = res.getNonBreakTimeNext(maxIdleEnds[i]);
                         alreadyIdle[i] = true;
@@ -2573,7 +2564,7 @@ TotalCostEvaluator::cslistBuild(const SchedulingContext& context,
                     if (newPayCap == payCap)
                     {
                         const IntSpan* nextTs = ts->next();
-                        while (nextTs != tail && maxIdleEnds[i] >= nextTs->span().getBegin())
+                        while (nextTs != tail && maxIdleEnds[i] >= nextTs->span().begin())
                         {
                             int nextTsCap = (int)ceil((double)nextTs->v0() / 100.0);
                             if (nextTsCap > payCap)
@@ -2604,7 +2595,7 @@ TotalCostEvaluator::cslistBuild(const SchedulingContext& context,
         // note: it's necessary to remove 2) case, because the next span will re-hire this cap and apply mets to it.
         if (lastCapSpan != nullptr &&
             (payCap == lastReqCap ||
-             (res.getNonBreakTime((int)overlap.getBegin(), (int)t - 1) == 0 && payCap == 0)))
+             (res.getNonBreakTime((int)overlap.begin(), (int)t - 1) == 0 && payCap == 0)))
         {
             capSpan = lastCapSpan;
             capSpan->end() = t;
@@ -2612,7 +2603,7 @@ TotalCostEvaluator::cslistBuild(const SchedulingContext& context,
         }
         else
         {
-            capSpan = new CapSpan(payCap, overlap.getBegin(), t);
+            capSpan = new CapSpan(payCap, overlap.begin(), t);
         }
         cslist.push_back(capSpan);
         lastCapSpan = capSpan;       // lastCapSpan updated
@@ -2684,7 +2675,7 @@ TotalCostEvaluator::calcJobOverheadCost(const SchedulingContext& context) const
             {
                 report->setName(job->name());
             }
-            std::map<utl::uint_t, double>::const_iterator i;
+            std::map<uint_t, double>::const_iterator i;
             for (i = _auditIpCosts.begin(); i != _auditIpCosts.end(); i++)
             {
                 JobOverheadCostInfo* info = new JobOverheadCostInfo();
@@ -2724,8 +2715,8 @@ TotalCostEvaluator::calcJobPeriodCost(const utl::Span<int>& p_span, double costP
     {
         uint_t timeStep = _schedulerConfig->timeStep();
         time_t originTime = _schedulerConfig->originTime();
-        time_t beginTime = originTime + (span.getBegin() * timeStep);
-        time_t endTime = originTime + (span.getEnd() * timeStep);
+        time_t beginTime = originTime + (span.begin() * timeStep);
+        time_t endTime = originTime + (span.end() * timeStep);
         *_os << " => calcJobPeriodCost(" << getTimeString(beginTime) << ", "
              << getTimeString(endTime) << ", "
              << "$" << costPerTS << ")" << std::endl;
@@ -2735,7 +2726,7 @@ TotalCostEvaluator::calcJobPeriodCost(const utl::Span<int>& p_span, double costP
     {
         const SpanInterestPeriod& sip = (const SpanInterestPeriod&)**it;
         Span<int> overlap = sip.overlap(span);
-        span.setBegin(overlap.getEnd());
+        span.setBegin(overlap.end());
         uint_t ip = sip.period();
         double cost = 0.0;
         if (costPerTS != 0.0)
@@ -2765,5 +2756,5 @@ CSE_NS_END;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-UTL_CLASS_IMPL(cse::SpanInterestPeriod, utl::Span<int>);
-UTL_CLASS_IMPL(cse::TotalCostEvaluator, cse::ScheduleEvaluator);
+UTL_CLASS_IMPL(cse::SpanInterestPeriod);
+UTL_CLASS_IMPL(cse::TotalCostEvaluator);

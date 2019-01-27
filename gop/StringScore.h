@@ -28,10 +28,10 @@ GOP_NS_BEGIN;
 
 class StringScore : public utl::Object
 {
-    UTL_CLASS_DECL(StringScore);
+    UTL_CLASS_DECL(StringScore, utl::Object);
 
 public:
-    StringScore(utl::uint_t id, String<utl::uint_t>* string, Score* score)
+    StringScore(uint_t id, String<uint_t>* string, Score* score)
     {
         init();
         _id = id;
@@ -43,20 +43,20 @@ public:
 
     virtual void copy(const utl::Object& rhs);
 
-    utl::uint_t
+    uint_t
     getId()
     {
         return _id;
     }
 
-    String<utl::uint_t>*
+    String<uint_t>*
     getString()
     {
         return _string;
     }
 
     void
-    setString(String<utl::uint_t>* string)
+    setString(String<uint_t>* string)
     {
         delete _string;
         _string = string;
@@ -95,8 +95,8 @@ private:
         delete _score;
     }
 
-    utl::uint_t _id;
-    String<utl::uint_t>* _string;
+    uint_t _id;
+    String<uint_t>* _string;
     Score* _score;
 };
 

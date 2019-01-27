@@ -27,7 +27,7 @@ CSE_NS_BEGIN;
 
 class SchedulingRun : public utl::Object
 {
-    UTL_CLASS_DECL(SchedulingRun);
+    UTL_CLASS_DECL(SchedulingRun, utl::Object);
     UTL_CLASS_NO_COPY;
 
 public:
@@ -99,13 +99,13 @@ public:
     }
 
     /** Get number of objectives. */
-    utl::uint_t numObjectives() const;
+    uint_t numObjectives() const;
 
     /** Get makespan. */
     time_t makespan() const;
 
     /** Get best score. */
-    gop::Score* bestScore(utl::uint_t objectiveIdx = 0) const;
+    gop::Score* bestScore(uint_t objectiveIdx = 0) const;
 
     /** Get best score for given objective. */
     gop::Score* bestScore(const std::string& objectiveName) const;

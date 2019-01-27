@@ -12,7 +12,7 @@ LUT_NS_USE;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-UTL_CLASS_IMPL(clp::CycleGroup, utl::Object);
+UTL_CLASS_IMPL(clp::CycleGroup);
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -400,7 +400,7 @@ CycleGroup::_saveState()
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-utl::String
+String
 CycleGroup::toString() const
 {
     utl::MemStream str;
@@ -415,12 +415,12 @@ CycleGroup::toString() const
         str << cb->name();
     }
     str << ")" << '\0';
-    return utl::String((char*)str.get());
+    return String((char*)str.get());
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-utl::String
+String
 CycleGroup::predCGsString() const
 {
     utl::MemStream str;
@@ -434,12 +434,12 @@ CycleGroup::predCGsString() const
         str << cg->toString();
     }
     str << "]" << '\0';
-    return utl::String((char*)str.get());
+    return String((char*)str.get());
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-utl::String
+String
 CycleGroup::allPredCGsString() const
 {
     utl::MemStream str;
@@ -453,12 +453,12 @@ CycleGroup::allPredCGsString() const
         str << cg->toString();
     }
     str << "]" << '\0';
-    return utl::String((char*)str.get());
+    return String((char*)str.get());
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-utl::String
+String
 CycleGroup::succCGsString() const
 {
     utl::MemStream str;
@@ -472,12 +472,12 @@ CycleGroup::succCGsString() const
         str << cg->toString();
     }
     str << "]" << '\0';
-    return utl::String((char*)str.get());
+    return String((char*)str.get());
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-utl::String
+String
 CycleGroup::allSuccCGsString() const
 {
     utl::MemStream str;
@@ -491,7 +491,7 @@ CycleGroup::allSuccCGsString() const
         str << cg->toString();
     }
     str << "]" << '\0';
-    return utl::String((char*)str.get());
+    return String((char*)str.get());
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////

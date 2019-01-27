@@ -1,5 +1,4 @@
 #include "liblut.h"
-#include <libutl/R250.h>
 #include "SkipListDepthArray.h"
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -9,7 +8,7 @@ LUT_NS_USE;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-UTL_CLASS_IMPL(lut::SkipListDepthArray, utl::Object);
+UTL_CLASS_IMPL(lut::SkipListDepthArray);
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -28,8 +27,7 @@ SkipListDepthArray::SkipListDepthArray(uint_t depth)
 void
 SkipListDepthArray::copy(const Object& rhs)
 {
-    ASSERTD(rhs.isA(SkipListDepthArray));
-    const SkipListDepthArray& slda = (const SkipListDepthArray&)rhs;
+    auto& slda = utl::cast<SkipListDepthArray>(rhs);
     _size = slda._size;
     _maxDepth = slda._maxDepth;
     _depth = new byte_t[_size];
@@ -41,14 +39,9 @@ SkipListDepthArray::copy(const Object& rhs)
 void
 SkipListDepthArray::set(uint_t depth)
 {
-    // determine _size
+    // determine _size (number of nodes)
     _maxDepth = depth - 1;
-    _size = 1;
-    for (uint_t i = 0; i < depth; ++i)
-    {
-        _size *= 2;
-    }
-    --_size;
+    _size = (1 << depth) - 1;
 
     // create depth[] array
     delete[] _depth;
@@ -67,6 +60,7 @@ SkipListDepthArray::dfs(uint_t& idx, uint_t node, uint_t level)
     {
         dfs(idx, node_x_2, level - 1);
     }
+    ASSERTD(idx < _size);
     _depth[idx++] = level;
     if ((node_x_2 + 1) <= _size)
     {

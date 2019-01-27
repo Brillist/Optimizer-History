@@ -4,7 +4,6 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 #include <libutl/Object.h>
-#include <lut/Queue.h>
 #include <clp/CycleGroup.h>
 #include <clp/RevArray.h>
 #include <clp/RevSet.h>
@@ -31,7 +30,7 @@ class Manager;
 
 class BoundPropagator : public utl::Object
 {
-    UTL_CLASS_DECL(BoundPropagator);
+    UTL_CLASS_DECL(BoundPropagator, utl::Object);
     UTL_CLASS_NO_COPY;
 
 public:
@@ -122,7 +121,7 @@ private:
 
     // for propagation
     ConstrainedBound* _boundInProcess;
-    lut::Queue<ConstrainedBound*> _propQ;
+    std::deque<ConstrainedBound*> _propQ;
     CycleGroup* _restartCG;
     cg_revset_t _cgs;
 
@@ -132,7 +131,7 @@ private:
     CycleGroup** _cgArrayLim;
     size_t _cgArraySize;
 
-    utl::uint_t _initCgId;
+    uint_t _initCgId;
 };
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////

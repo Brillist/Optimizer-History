@@ -32,7 +32,7 @@ MRP_NS_BEGIN;
 
 class MRPdataSet : public cse::ClevorDataSet
 {
-    UTL_CLASS_DECL(MRPdataSet);
+    UTL_CLASS_DECL(MRPdataSet, cse::ClevorDataSet);
 
 public:
     virtual void copy(const utl::Object& rhs);
@@ -79,13 +79,13 @@ public:
     //// \name Find objects
     //@{
     /** Find a MRPresource. */
-    Resource* findMRPresource(utl::uint_t id);
+    Resource* findMRPresource(uint_t id);
 
     /** Find a MRPresourceGroup. */
-    ResourceGroup* findMRPresourceGroup(utl::uint_t id);
+    ResourceGroup* findMRPresourceGroup(uint_t id);
 
     /** Find a Item. */
-    Item* findMRPitem(utl::uint_t id);
+    Item* findMRPitem(uint_t id);
     //@}
 
     //// \name Accessors

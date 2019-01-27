@@ -19,7 +19,7 @@ CLS_NS_USE;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-UTL_CLASS_IMPL(cse::JobSeqMutate, gop::RevOperator);
+UTL_CLASS_IMPL(cse::JobSeqMutate);
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -349,7 +349,7 @@ JobSeqMutate::selectActiveSwapJob(const job_vector_t& swapJobs)
     }
     if (jobs.size() == 0)
         return nullptr;
-    uint_t idx = _rng->evali(jobs.size());
+    uint_t idx = _rng->uniform((size_t)0, jobs.size() - 1);
     return jobs[idx];
 }
 

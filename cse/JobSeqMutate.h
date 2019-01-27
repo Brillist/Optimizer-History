@@ -22,7 +22,7 @@ CSE_NS_BEGIN;
 
 class JobSeqMutate : public gop::RevOperator
 {
-    UTL_CLASS_DECL(JobSeqMutate);
+    UTL_CLASS_DECL(JobSeqMutate, gop::RevOperator);
 
 public:
     /**
@@ -30,7 +30,7 @@ public:
        \param p probability
        \param rng PRNG
     */
-    JobSeqMutate(double p, utl::RandNumGen* rng = nullptr)
+    JobSeqMutate(double p, lut::rng_t* rng = nullptr)
         : RevOperator("JobSeqMutate", p, rng)
     {
         init();
@@ -53,12 +53,12 @@ public:
     // got by swap between two active jobs.
     // For efficiency reason, we only use active job/op for swapping in both
     // JobSeqMutate and OpSeqMutate. Joe, Nov 14, 2006
-    virtual utl::uint_t numActiveSwapJobs(const job_vector_t& swapJobs);
+    virtual uint_t numActiveSwapJobs(const job_vector_t& swapJobs);
 
     virtual Job* selectActiveSwapJob(const job_vector_t& swapJobs);
 
 private:
-    typedef std::vector<utl::uint_t> uint_vector_t;
+    typedef std::vector<uint_t> uint_vector_t;
     typedef std::vector<uint_vector_t*> uint_vector_vector_t;
     typedef std::vector<job_vector_t*> job_vector_vector_t;
     typedef std::set<Job*> job_set_t;
@@ -72,9 +72,9 @@ private:
     job_vector_t _jobs;
     job_vector_vector_t _swapJobs;
 
-    gop::StringInd<utl::uint_t>* _moveSchedule;
-    utl::uint_t _moveJobIdx;    //for successRate
-    utl::uint_t _moveJobSid;    //necessary
+    gop::StringInd<uint_t>* _moveSchedule;
+    uint_t _moveJobIdx;    //for successRate
+    uint_t _moveJobSid;    //necessary
     job_vector_t _moveJobs;     //necessary
     uint_vector_t _moveJobIdxs; //necessary
 };

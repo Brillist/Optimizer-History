@@ -24,7 +24,7 @@ GOP_NS_USE;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-UTL_CLASS_IMPL(cse::AltJobSelector, cse::Scheduler);
+UTL_CLASS_IMPL(cse::AltJobSelector);
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -86,7 +86,7 @@ AltJobSelector::initialize(const gop::DataSet* p_dataSet, uint_t stringBase)
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
-AltJobSelector::initializeInd(Ind* p_ind, const gop::DataSet* p_dataSet, RandNumGen* rng, void*)
+AltJobSelector::initializeInd(Ind* p_ind, const gop::DataSet* p_dataSet, lut::rng_t* rng, void*)
 {
     ASSERTD(dynamic_cast<StringInd<uint_t>*>(p_ind) != nullptr);
     StringInd<uint_t>* ind = (StringInd<uint_t>*)p_ind;

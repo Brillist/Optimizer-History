@@ -83,7 +83,7 @@ CapPt::deInit()
 
 class CapPtOrderingCap : public Ordering
 {
-    UTL_CLASS_DECL(CapPtOrderingCap);
+    UTL_CLASS_DECL(CapPtOrderingCap, Ordering);
     UTL_CLASS_DEFID;
 
 public:
@@ -128,7 +128,7 @@ CapPtOrderingCap::cmp(const Object* lhs, const Object* rhs) const
 
 class CapPtOrderingPt : public Ordering
 {
-    UTL_CLASS_DECL(CapPtOrderingPt);
+    UTL_CLASS_DECL(CapPtOrderingPt, Ordering);
     UTL_CLASS_DEFID;
 
 public:
@@ -288,7 +288,7 @@ ResourceCapPts::initialize(Activity* act)
     // init _capPtsArray
     _capPtsArray.clear();
     _capPtsArray.setIncrement(1);
-    _capPtsArray.grow(_capPts.size());
+    _capPtsArray.reserve(_capPts.size());
     forEachIt(utl::RBtree, _capPts, CapPt, capPt) _capPtsArray += capPt;
     endForEach;
 
@@ -478,7 +478,7 @@ CLS_NS_END;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-UTL_CLASS_IMPL(cls::CapPt, utl::Object);
-UTL_CLASS_IMPL(cls::ResourceCapPts, utl::Object);
-UTL_CLASS_IMPL(cls::CapPtOrderingCap, utl::Ordering);
-UTL_CLASS_IMPL(cls::CapPtOrderingPt, utl::Ordering);
+UTL_CLASS_IMPL(cls::CapPt);
+UTL_CLASS_IMPL(cls::ResourceCapPts);
+UTL_CLASS_IMPL(cls::CapPtOrderingCap);
+UTL_CLASS_IMPL(cls::CapPtOrderingPt);

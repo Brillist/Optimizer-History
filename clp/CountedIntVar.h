@@ -24,11 +24,11 @@ CLP_NS_BEGIN;
 
 class CountedIntVar : public IntExp
 {
-    UTL_CLASS_DECL(CountedIntVar);
+    UTL_CLASS_DECL(CountedIntVar, IntExp);
     UTL_CLASS_DEFID;
 
 public:
-    typedef std::map<int, utl::uint_t> int_uint_map_t;
+    typedef std::map<int, uint_t> int_uint_map_t;
 
 public:
     /**
@@ -39,7 +39,7 @@ public:
     CountedIntVar(Manager* mgr, const int_uint_map_t& domain);
 
     /** Decrement the count for the given value. */
-    utl::uint_t decrement(int val, utl::uint_t num = 1);
+    uint_t decrement(int val, uint_t num = 1);
 };
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////

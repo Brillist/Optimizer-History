@@ -23,7 +23,7 @@ CLP_NS_USE;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-UTL_CLASS_IMPL(cls::CompositeTimetableDomain, utl::Object);
+UTL_CLASS_IMPL(cls::CompositeTimetableDomain);
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -72,9 +72,9 @@ CompositeTimetableDomain::addCapExp(uint_t cap)
     {
         IntExp* nullIntExpPtr = nullptr;
         uint_t zero = 0;
-        utl::arrayGrow(_capExps, _capExpsSize, utl::max(K(1), ((size_t)cap + 1)), K(1024),
+        utl::arrayGrow(_capExps, _capExpsSize, utl::max(utl::KB(1), ((size_t)cap + 1)), utl::KB(1024),
                        &nullIntExpPtr);
-        utl::arrayGrow(_capExpCounts, _capExpCountsSize, utl::max(K(1), ((size_t)cap + 1)), K(1024),
+        utl::arrayGrow(_capExpCounts, _capExpCountsSize, utl::max(utl::KB(1), ((size_t)cap + 1)), utl::KB(1024),
                        &zero);
     }
 
@@ -642,7 +642,7 @@ CompositeTimetableDomain::allocate(IntExpDomainAR* resIds,
                                    const PreferredResources* pr,
                                    int min,
                                    int max,
-                                   utl::uint_t resId,
+                                   uint_t resId,
                                    bool updateDiscrete)
 {
     ASSERTD(cap > 0);

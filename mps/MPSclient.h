@@ -18,7 +18,7 @@ class MPSserver;
 
 class MPSclient : public mrp::MRPclient
 {
-    UTL_CLASS_DECL(MPSclient);
+    UTL_CLASS_DECL(MPSclient, mrp::MRPclient);
 
 public:
     MPSclient(MPSserver* server,

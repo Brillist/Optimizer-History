@@ -21,46 +21,46 @@ MRP_NS_BEGIN;
 
 class PurchaseItem : public Item
 {
-    UTL_CLASS_DECL(PurchaseItem);
+    UTL_CLASS_DECL(PurchaseItem, Item);
 
 public:
     virtual void copy(const utl::Object& rhs);
 
     virtual void
-    serialize(utl::Stream& stream, utl::uint_t io, utl::uint_t mode = utl::ser_default);
+    serialize(utl::Stream& stream, uint_t io, uint_t mode = utl::ser_default);
 
     /// \name Accessors
     //@{
     /** Lead time. */
-    utl::uint_t
+    uint_t
     leadTime() const
     {
         return _leadTime;
     }
 
     /** Lead time. */
-    utl::uint_t&
+    uint_t&
     leadTime()
     {
         return _leadTime;
     }
 
     /** Min purchase quantity. */
-    utl::uint_t
+    uint_t
     eoq() const
     {
         return _eoq;
     }
 
     /** Min purchase quantity. */
-    utl::uint_t&
+    uint_t&
     eoq()
     {
         return _eoq;
     }
     //@}
 
-    utl::String toString() const;
+    String toString() const;
 
 private:
     void init();
@@ -70,8 +70,8 @@ private:
     }
 
 private:
-    utl::uint_t _leadTime;
-    utl::uint_t _eoq;
+    uint_t _leadTime;
+    uint_t _eoq;
 };
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////

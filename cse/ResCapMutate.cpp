@@ -19,7 +19,7 @@ CLS_NS_USE;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-UTL_CLASS_IMPL(cse::ResCapMutate, gop::RevOperator);
+UTL_CLASS_IMPL(cse::ResCapMutate);
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -110,7 +110,7 @@ ResCapMutate::execute(gop::Ind* p_ind, gop::IndBuilderContext* p_context, bool s
         }
         else
         {
-            uint_t randomNum = _rng->evali(2);
+            uint_t randomNum = _rng->uniform(0, 1);
             if (randomNum == 0)
             {
                 cap = oldCap - step;
@@ -125,7 +125,8 @@ ResCapMutate::execute(gop::Ind* p_ind, gop::IndBuilderContext* p_context, bool s
     else
     {
         uint_t range = (_maxCaps[resIdx] - _minCaps[resIdx]) / step;
-        cap = _minCaps[resIdx] + (_rng->evali(range) * step);
+        ASSERTD(range != 0);
+        cap = _minCaps[resIdx] + (_rng->uniform((uint_t)0, range - 1) * step);
         if (cap >= oldCap)
             cap = utl::min(cap + step, _maxCaps[resIdx]);
     }
@@ -194,10 +195,9 @@ ResCapMutate::setResources(const ClevorDataSet* dataSet)
     res_set_id_t::const_iterator it;
     for (it = dataSet->resources().begin(); it != dataSet->resources().end(); ++it)
     {
-        DiscreteResource* res = dynamic_cast<DiscreteResource*>(*it);
-        if (res == nullptr)
-            continue;
-        cls::DiscreteResource* clsRes = (cls::DiscreteResource*)(res->clsResource());
+        if (!(*it)->isA(DiscreteResource)) continue;
+        auto res = utl::cast<DiscreteResource>(*it);
+        auto clsRes = utl::cast<cls::DiscreteResource>(res->clsResource());
         uint_t minReqCap = roundUp(clsRes->minReqCap(), (uint_t)100);
         uint_t maxReqCap = roundUp(clsRes->maxReqCap(), (uint_t)100);
         ASSERTD(res->maxCap() >= res->minCap());

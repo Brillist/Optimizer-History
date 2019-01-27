@@ -24,7 +24,7 @@ CLP_NS_BEGIN;
 
 class IntVar : public IntExp
 {
-    UTL_CLASS_DECL(IntVar);
+    UTL_CLASS_DECL(IntVar, IntExp);
     UTL_CLASS_DEFID;
 
 public:

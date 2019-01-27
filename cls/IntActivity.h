@@ -32,10 +32,10 @@ class CompositeResourceRequirement;
 class IntActivity : public Activity
 {
     friend class CompositeResourceRequirement;
-    UTL_CLASS_DECL(IntActivity);
+    UTL_CLASS_DECL(IntActivity, CompositeResourceRequirement);
 
 public:
-    typedef clp::RevArray<utl::uint_t> revarray_t;
+    typedef clp::RevArray<uint_t> revarray_t;
 
 public:
     /**
@@ -55,14 +55,14 @@ public:
     void initRequirements();
 
     /** Get processing-time. */
-    utl::uint_t
+    uint_t
     processingTime() const
     {
         return _processingTime;
     }
 
     /** Get processing-time. */
-    utl::uint_t&
+    uint_t&
     processingTime()
     {
         return _processingTime;
@@ -86,11 +86,11 @@ public:
     }
 
     /** Add an allocation. */
-    void addAllocation(utl::uint_t resId, utl::uint_t min, utl::uint_t max);
+    void addAllocation(uint_t resId, uint_t min, uint_t max);
 
     /** Get allocations array. */
     void
-    getAllocations(revarray_t**& allocations, utl::uint_t& size) const
+    getAllocations(revarray_t**& allocations, uint_t& size) const
     {
         allocations = _allocations;
         size = _allocationsSize;
@@ -110,18 +110,18 @@ public:
     }
 
     /** Select a resource. */
-    virtual bool selectResource(utl::uint_t resId);
+    virtual bool selectResource(uint_t resId);
 
 private:
     void init();
     void deInit();
 
 private:
-    typedef std::set<utl::uint_t> uint_set_t;
-    typedef std::vector<utl::uint_t> uint_vector_t;
+    typedef std::set<uint_t> uint_set_t;
+    typedef std::vector<uint_t> uint_vector_t;
 
 private:
-    utl::uint_t _processingTime;
+    uint_t _processingTime;
     clp::IntExp* _breakList;
     revarray_t** _allocations;
     size_t _allocationsSize;

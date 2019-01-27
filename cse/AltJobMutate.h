@@ -27,7 +27,7 @@ CSE_NS_BEGIN;
 
 class AltJobMutate : public gop::RevOperator
 {
-    UTL_CLASS_DECL(AltJobMutate);
+    UTL_CLASS_DECL(AltJobMutate, gop::RevOperator);
 
 public:
     /**
@@ -35,7 +35,7 @@ public:
        \param p probability
        \param rng PRNG
     */
-    AltJobMutate(double p, utl::RandNumGen* rng = nullptr)
+    AltJobMutate(double p, lut::rng_t* rng = nullptr)
         : RevOperator("AltJobMutate", p, rng)
     {
         init();
@@ -56,7 +56,7 @@ public:
     virtual void setAltJobGroups(const ClevorDataSet* dataSet);
 
 private:
-    typedef std::vector<utl::uint_t> uint_vector_t;
+    typedef std::vector<uint_t> uint_vector_t;
     typedef std::vector<uint_vector_t*> uint_vector_vector_t;
 
 private:
@@ -64,11 +64,11 @@ private:
     void deInit();
 
 private:
-    utl::uint_t _numPlanChoices;
+    uint_t _numPlanChoices;
     jobgroup_vector_t _jobGroups;
-    gop::StringInd<utl::uint_t>* _moveSchedule;
-    utl::uint_t _moveGroupIdx;
-    utl::uint_t _moveJobIdx;
+    gop::StringInd<uint_t>* _moveSchedule;
+    uint_t _moveGroupIdx;
+    uint_t _moveJobIdx;
 };
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////

@@ -28,7 +28,7 @@ class ProcessStep;
 
 class PlanStepRelation : public utl::Object
 {
-    UTL_CLASS_DECL(PlanStepRelation);
+    UTL_CLASS_DECL(PlanStepRelation, utl::Object);
 
 public:
     /** Constructor. */
@@ -41,7 +41,7 @@ public:
     virtual void copy(const utl::Object& rhs);
 
     virtual void
-    serialize(utl::Stream& stream, utl::uint_t io, utl::uint_t mode = utl::ser_default);
+    serialize(utl::Stream& stream, uint_t io, uint_t mode = utl::ser_default);
 
     /// \name Accessors
     //@{
@@ -128,7 +128,7 @@ public:
     /** create a PrecedenceCt object. */
     cse::PrecedenceCt* createPrecedenceCt();
 
-    utl::String toString() const;
+    String toString() const;
 
 private:
     void init();

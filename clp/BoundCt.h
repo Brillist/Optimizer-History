@@ -22,7 +22,7 @@ CLP_NS_BEGIN;
 
 class BoundCt : public utl::Object
 {
-    UTL_CLASS_DECL(BoundCt);
+    UTL_CLASS_DECL(BoundCt, utl::Object);
     UTL_CLASS_NO_COPY;
 
 public:
@@ -60,7 +60,7 @@ public:
 
     /** Apply pressure to lower bound. */
     void
-    increment(utl::uint_t inc)
+    increment(uint_t inc)
     {
         saveState();
         _v += inc;
@@ -69,7 +69,7 @@ public:
 
     /** Apply pressure to upper bound. */
     void
-    decrement(utl::uint_t dec)
+    decrement(uint_t dec)
     {
         saveState();
         _v -= dec;
@@ -91,7 +91,7 @@ private:
     void
     saveState()
     {
-        utl::uint_t d = _mgr->depth();
+        uint_t d = _mgr->depth();
         if (d == _stateDepth)
             return;
         ASSERTD(d > _stateDepth);
@@ -101,7 +101,7 @@ private:
 
 private:
     Manager* _mgr;
-    utl::uint_t _stateDepth;
+    uint_t _stateDepth;
     int _v;
     ConstrainedBound* _srcBound;
     ConstrainedBound* _dstBound;

@@ -23,7 +23,7 @@ CSE_NS_BEGIN;
 
 class SchedulingContext : public gop::IndBuilderContext
 {
-    UTL_CLASS_DECL(SchedulingContext);
+    UTL_CLASS_DECL(SchedulingContext, gop::IndBuilderContext);
     UTL_CLASS_NO_COPY;
 
 public:
@@ -137,7 +137,7 @@ public:
     }
 
     /** Convert time => time-slot. */
-    utl::uint_t
+    uint_t
     timeToTimeSlot(time_t t) const
     {
         return _config->timeToTimeSlot(t);
@@ -145,7 +145,7 @@ public:
 
     /** Convert time-slot => time. */
     time_t
-    timeSlotToTime(utl::uint_t ts) const
+    timeSlotToTime(uint_t ts) const
     {
         return _config->timeSlotToTime(ts);
     }
@@ -158,14 +158,14 @@ public:
     }
 
     /** Get the hard constraint score. */
-    utl::uint_t
+    uint_t
     hardCtScore() const
     {
         return _hardCtScore;
     }
 
     /** Get the number of scheduled operations. */
-    utl::uint_t
+    uint_t
     numScheduledOps() const
     {
         return _numScheduledOps;
@@ -227,8 +227,8 @@ private:
     // misc
     int _makespan;
     int _frozenMakespan;
-    utl::uint_t _hardCtScore;
-    utl::uint_t _numScheduledOps;
+    uint_t _hardCtScore;
+    uint_t _numScheduledOps;
 
     // control who will be responsible for
     // deleting _dataSet, SchedulingContext or MRPrun.

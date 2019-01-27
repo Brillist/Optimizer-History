@@ -26,10 +26,10 @@ enum rescal_t
 
 class ResourceCalendarSpec : public utl::Object
 {
-    UTL_CLASS_DECL(ResourceCalendarSpec);
+    UTL_CLASS_DECL(ResourceCalendarSpec, utl::Object);
 
 public:
-    typedef std::set<utl::uint_t> uint_set_t;
+    typedef std::set<uint_t> uint_set_t;
 
 public:
     /** Constructor. */
@@ -86,17 +86,17 @@ private:
 
 class ResourceCalendar : public utl::SpanCol<int>
 {
-    UTL_CLASS_DECL(ResourceCalendar);
+    UTL_CLASS_DECL(ResourceCalendar, utl::SpanCol<int>);
 
 public:
     virtual int compare(const utl::Object& rhs) const;
 
     virtual void
-    serialize(utl::Stream& stream, utl::uint_t io, utl::uint_t mode = utl::ser_default);
+    serialize(utl::Stream& stream, uint_t io, uint_t mode = utl::ser_default);
 
     virtual bool isMergeable(const utl::Object& lhs, const utl::Object& rhs) const;
 
-    void dump(utl::Stream& os, time_t originTime, utl::uint_t timeStep);
+    void dump(utl::Stream& os, time_t originTime, uint_t timeStep);
 
     /** Get spec. */
     const ResourceCalendarSpec&
@@ -113,21 +113,21 @@ public:
     }
 
     /** Get serial id. */
-    utl::uint_t
+    uint_t
     serialId() const
     {
         return _serialId;
     }
 
     /** Get serial id. */
-    utl::uint_t&
+    uint_t&
     serialId()
     {
         return _serialId;
     }
 
     /** Get unique id. */
-    utl::uint_t id() const;
+    uint_t id() const;
 
     /** Add a break. */
     void addBreak(int begin, int end);
@@ -146,23 +146,23 @@ public:
     }
 
     /** Find a valid es,ef pair. */
-    void findForward(int& es, int& ef, utl::uint_t pt) const;
+    void findForward(int& es, int& ef, uint_t pt) const;
 
     /** Find a valid es,ef pair. */
-    void findBackward(int& lf, int& ls, utl::uint_t pt) const;
+    void findBackward(int& lf, int& ls, uint_t pt) const;
 
     /** Add compiled spans to another calendar. */
     void addCompiledSpansTo(ResourceCalendar* cal, rcs_status_t status) const;
 
     /** Get non-break time in the given time span. */
-    utl::uint_t
+    uint_t
     getNonBreakTime(int begin, int end) const
     {
         return ((end - begin + 1) - getBreakTime(begin, end));
     }
 
     /** Get break time during the given span. */
-    utl::uint_t getBreakTime(int begin, int end) const;
+    uint_t getBreakTime(int begin, int end) const;
 
     /** Get maximum break time-slot <= t. */
     int getBreakTimePrev(int t) const;
@@ -177,18 +177,18 @@ public:
     int getNonBreakTimeNext(int t) const;
 
     /** Get start-time corresponding to end time. */
-    int getStartTimeForEndTime(int endTime, utl::uint_t pt) const;
+    int getStartTimeForEndTime(int endTime, uint_t pt) const;
 
     /** Get end-time corresponding to a start time. */
-    int getEndTimeForStartTime(int startTime, utl::uint_t pt) const;
+    int getEndTimeForStartTime(int startTime, uint_t pt) const;
 
 private:
     void init();
     void deInit();
     void makeSpansArray(int horizonTS);
     void check(const iterator* testIt = nullptr);
-    utl::uint_t tsPT(int ts) const;
-    int ptTS(utl::uint_t pt) const;
+    uint_t tsPT(int ts) const;
+    int ptTS(uint_t pt) const;
     const ResourceCalendarSpan* findSpanByTime(int ts) const;
     const ResourceCalendarSpan* findSpanByPt(int pt) const;
 
@@ -203,7 +203,7 @@ private:
     // ptTS[tsPT[ts]] = pt   iff   ts not in break
     // tsPT[ptTS[pt]] = ts
     //
-    utl::uint_t _serialId;
+    uint_t _serialId;
     ResourceCalendarSpec _spec;
     ResourceCalendarSpan** _spans;
     ResourceCalendarSpan** _spansLim;
@@ -211,7 +211,7 @@ private:
     int _maxBreakTime;
     int _minNonBreakTime;
     int _maxNonBreakTime;
-    utl::uint_t _maxPT;
+    uint_t _maxPT;
     int _maxTS;
     clp::IntVar* _breakList;
     mutable ResourceCalendarSpan _searchSpan;

@@ -3,7 +3,6 @@
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-#include <libutl/RandNumGen.h>
 #include <gop/Operator.h>
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -31,7 +30,7 @@ GOP_NS_BEGIN;
 
 class RevOperator : public Operator
 {
-    UTL_CLASS_DECL_ABC(RevOperator);
+    UTL_CLASS_DECL_ABC(RevOperator, Operator);
     UTL_CLASS_DEFID;
 
 public:
@@ -41,7 +40,7 @@ public:
       \param p probability
       \param rng PRNG
    */
-    RevOperator(const std::string& name, double p, utl::RandNumGen* rng = nullptr)
+    RevOperator(const std::string& name, double p, lut::rng_t* rng = nullptr)
         : Operator(name, p, rng)
     {
     }

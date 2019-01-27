@@ -28,7 +28,7 @@ CLS_NS_USE;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-UTL_CLASS_IMPL(mrp::MRPrun, utl::Object);
+UTL_CLASS_IMPL(mrp::MRPrun);
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -198,8 +198,8 @@ MRPrun::run()
                       << ", releaseT:" << getTimeString(job->releaseTime()).c_str()
                       << ", dueT:" << getTimeString(job->dueTime()).c_str()
                       << ", ivntC:" << Float(job->inventoryCost()).toString("precisioin:2")
-                      << ", opporC:" << Float(job->opportunityCost()).toString("precision:2")
-                      << ", lateC:" << Float(job->latenessCost()).toString("precision:2")
+                      << ", opporC:" << Float(job->opportunityCost()).toString(2)
+                      << ", lateC:" << Float(job->latenessCost()).toString(2)
                       << utl::endlf;
 #endif
         }

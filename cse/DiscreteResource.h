@@ -21,7 +21,7 @@ CSE_NS_BEGIN;
 
 class ResourceSequenceRuleApplication : public utl::Object
 {
-    UTL_CLASS_DECL(ResourceSequenceRuleApplication);
+    UTL_CLASS_DECL(ResourceSequenceRuleApplication, utl::Object);
     UTL_CLASS_DEFID;
 
 public:
@@ -83,11 +83,11 @@ typedef std::vector<ResourceSequenceRuleApplication> rsra_vector_t;
 
 class DiscreteResource : public cse::Resource
 {
-    UTL_CLASS_DECL(DiscreteResource);
+    UTL_CLASS_DECL(DiscreteResource, cse::Resource);
 
 public:
     /** Constructor. */
-    DiscreteResource(utl::uint_t id, const std::string& name)
+    DiscreteResource(uint_t id, const std::string& name)
         : Resource(id, name)
     {
         init();
@@ -97,17 +97,17 @@ public:
     virtual void copy(const utl::Object& rhs);
 
     virtual void
-    serialize(utl::Stream& stream, utl::uint_t io, utl::uint_t mode = utl::ser_default);
+    serialize(utl::Stream& stream, uint_t io, uint_t mode = utl::ser_default);
 
     /** Get sequence-id. */
-    utl::uint_t
+    uint_t
     sequenceId() const
     {
         return _sequenceId;
     }
 
     /** Get sequence-id. */
-    utl::uint_t&
+    uint_t&
     sequenceId()
     {
         return _sequenceId;
@@ -142,70 +142,70 @@ public:
     }
 
     /** Get min-capacity. */
-    utl::uint_t
+    uint_t
     minCap() const
     {
         return _minCap;
     }
 
     /** Get min-capacity. */
-    utl::uint_t&
+    uint_t&
     minCap()
     {
         return _minCap;
     }
 
     /** Get existing-capacity */
-    utl::uint_t
+    uint_t
     existingCap() const
     {
         return _existingCap;
     }
 
     /** Get existing-capacity */
-    utl::uint_t&
+    uint_t&
     existingCap()
     {
         return _existingCap;
     }
 
     /** Get max-capacity. */
-    utl::uint_t
+    uint_t
     maxCap() const
     {
         return _maxCap;
     }
 
     /** Get max-capacity. */
-    utl::uint_t&
+    uint_t&
     maxCap()
     {
         return _maxCap;
     }
 
     /** Get step-capacity. */
-    utl::uint_t
+    uint_t
     stepCap() const
     {
         return _stepCap;
     }
 
     /** Get step-capacity. */
-    utl::uint_t&
+    uint_t&
     stepCap()
     {
         return _stepCap;
     }
 
     /** Get selected-capacity. */
-    utl::uint_t
+    uint_t
     selectedCap() const
     {
         return _selectedCap;
     }
 
     /** Get selected-capacity. */
-    utl::uint_t&
+    uint_t&
     selectedCap()
     {
         return _selectedCap;
@@ -263,8 +263,7 @@ public:
     cls::DiscreteResource*
     clsResource() const
     {
-        ASSERTD(dynamic_cast<cls::DiscreteResource*>(_clsResource) != nullptr);
-        return (cls::DiscreteResource*)_clsResource;
+        return utl::cast<cls::DiscreteResource>(_clsResource);
     }
 
     /** Get the cls-resource. */
@@ -275,14 +274,14 @@ public:
     }
 
 protected:
-    utl::uint_t _sequenceId;
+    uint_t _sequenceId;
     const ResourceSequenceList* _rsl;
     rsra_vector_t _rsras;
-    utl::uint_t _minCap;
-    utl::uint_t _existingCap;
-    utl::uint_t _maxCap;
-    utl::uint_t _stepCap;
-    utl::uint_t _selectedCap;
+    uint_t _minCap;
+    uint_t _existingCap;
+    uint_t _maxCap;
+    uint_t _stepCap;
+    uint_t _selectedCap;
     ResourceCost* _cost;
     cls::ResourceCalendar* _defaultCalendar;
     cls::ResourceCalendar* _detailedCalendar;

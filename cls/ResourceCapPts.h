@@ -27,32 +27,32 @@ class IntActivity;
 
 class CapPt : public utl::Object
 {
-    UTL_CLASS_DECL(CapPt);
+    UTL_CLASS_DECL(CapPt, utl::Object);
 
 public:
     /** Constructor. */
-    CapPt(utl::uint_t cap, utl::uint_t pt);
+    CapPt(uint_t cap, uint_t pt);
 
     virtual void copy(const utl::Object& rhs);
 
     virtual int compare(const utl::Object& rhs) const;
 
     /** Get the capacity. */
-    utl::uint_t
+    uint_t
     capacity() const
     {
         return _cap;
     }
 
     /** Get the processing-time. */
-    utl::uint_t
+    uint_t
     processingTime() const
     {
         return _pt;
     }
 
     /** Get the processing-time. */
-    utl::uint_t&
+    uint_t&
     processingTime()
     {
         return _pt;
@@ -78,8 +78,8 @@ private:
     void deInit();
 
 private:
-    utl::uint_t _cap;
-    utl::uint_t _pt;
+    uint_t _cap;
+    uint_t _pt;
     utl::Object* _object;
 };
 
@@ -97,10 +97,10 @@ private:
 
 class ResourceCapPts : public utl::Object
 {
-    UTL_CLASS_DECL(ResourceCapPts);
+    UTL_CLASS_DECL(ResourceCapPts, utl::Object);
 
 public:
-    typedef utl::Vector<utl::uint_t> uint_vector_t;
+    typedef utl::Vector<uint_t> uint_vector_t;
     typedef utl::RBtree::iterator iterator;
 
 public:
@@ -115,7 +115,7 @@ public:
     }
 
     virtual void
-    serialize(utl::Stream& stream, utl::uint_t io, utl::uint_t mode = utl::ser_default);
+    serialize(utl::Stream& stream, uint_t io, uint_t mode = utl::ser_default);
 
     /** Perform initialization (after cap/pts list is complete). */
     void initialize(Activity* act);
@@ -133,7 +133,7 @@ public:
     }
 
     /** Get the resource-id. */
-    utl::uint_t
+    uint_t
     resourceId() const
     {
         return _resId;
@@ -147,7 +147,7 @@ public:
     }
 
     /** Get the resource-serial-id. */
-    utl::uint_t
+    uint_t
     resourceSerialId() const
     {
         ASSERTD(_res != nullptr);
@@ -205,7 +205,7 @@ public:
     }
 
     /** Get the number of cap/pt pairs. */
-    utl::uint_t
+    uint_t
     numCapPts() const
     {
         return _capPts.size();
@@ -213,7 +213,7 @@ public:
 
     /** Get a capacity/processing-time pair (by index). */
     void
-    getCapPt(utl::uint_t idx, utl::uint_t& cap, utl::uint_t& pt) const
+    getCapPt(uint_t idx, uint_t& cap, uint_t& pt) const
     {
         const CapPt* capPt = (const CapPt*)_capPtsArray[idx];
         cap = capPt->capacity();
@@ -221,22 +221,22 @@ public:
     }
 
     /** Add a capacity/processing-time pair. */
-    bool addCapPt(utl::uint_t cap, utl::uint_t pt);
+    bool addCapPt(uint_t cap, uint_t pt);
 
     /** Divide all pts by the given number. */
-    void dividePtsBy(utl::uint_t divisor);
+    void dividePtsBy(uint_t divisor);
 
     /** Find the CapPt object that matches the given capacity. */
-    const CapPt* findCap(utl::uint_t cap) const;
+    const CapPt* findCap(uint_t cap) const;
 
     /** Find the CapPt object that matches the given processing-time. */
-    const CapPt* findPt(utl::uint_t pt) const;
+    const CapPt* findPt(uint_t pt) const;
     //@}
 
     /// \name Cap/Pt selection
     //@{
     /** Set the selected processing-time. */
-    const CapPt* selectPt(utl::uint_t pt) const;
+    const CapPt* selectPt(uint_t pt) const;
 
     /** Decrement the number of possible caps/pt pairs. */
     void decNumPossible() const;
@@ -264,7 +264,7 @@ public:
     }
 
     /** Get the selected capacity. */
-    utl::uint_t
+    uint_t
     selectedCap() const
     {
         ASSERTD(_selectedCapPt != nullptr);
@@ -272,7 +272,7 @@ public:
     }
 
     /** Get the selected processing-time. */
-    utl::uint_t
+    uint_t
     selectedPt() const
     {
         ASSERTD(_selectedCapPt != nullptr);
@@ -311,8 +311,8 @@ private:
     utl::Array _capPtsArray;
     utl::Hashtable _capPtsHTcap;
     utl::Hashtable _capPtsHTpt;
-    mutable utl::uint_t _stateDepth;
-    mutable utl::uint_t _numPossible;
+    mutable uint_t _stateDepth;
+    mutable uint_t _numPossible;
     mutable bool _selected;
     mutable const CapPt* _selectedCapPt;
 };

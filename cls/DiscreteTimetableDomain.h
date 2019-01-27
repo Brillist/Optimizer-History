@@ -22,7 +22,7 @@ CLS_NS_BEGIN;
 
 class DiscreteTimetableDomain : public utl::Object, public clp::RevIntSpanCol
 {
-    UTL_CLASS_DECL(DiscreteTimetableDomain);
+    UTL_CLASS_DECL(DiscreteTimetableDomain, utl::Object);
     UTL_CLASS_NO_COPY;
 
 public:
@@ -37,13 +37,13 @@ public:
     void initialize(clp::Manager* mgr);
 
     /** Add capacity-expression. */
-    clp::IntExp* addCapExp(utl::uint_t cap);
+    clp::IntExp* addCapExp(uint_t cap);
 
     /** Remove capacity-expression. */
-    void remCapExp(utl::uint_t cap);
+    void remCapExp(uint_t cap);
 
     /** Add required/provided capacity over a given interval. */
-    utl::uint_t add(int min, int max, int reqCap, int prvCap);
+    uint_t add(int min, int max, int reqCap, int prvCap);
 
     /// \name Events
     //@{
@@ -88,10 +88,10 @@ private:
 
 private:
     clp::IntExp** _capExps;
-    utl::uint_t* _capExpCounts;
+    uint_t* _capExpCounts;
     size_t _capExpsSize;
     size_t _capExpCountsSize;
-    utl::uint_t _events;
+    uint_t _events;
 };
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////

@@ -33,7 +33,7 @@ enum rescappt_pt_per_t
 
 class StepAltResCapPts : public utl::Object
 {
-    UTL_CLASS_DECL(StepAltResCapPts);
+    UTL_CLASS_DECL(StepAltResCapPts, utl::Object);
 
 public:
     virtual void copy(const utl::Object& rhs);
@@ -41,24 +41,24 @@ public:
     virtual int compare(const utl::Object& rhs) const;
 
     virtual void
-    serialize(utl::Stream& stream, utl::uint_t io, utl::uint_t mode = utl::ser_default);
+    serialize(utl::Stream& stream, uint_t io, uint_t mode = utl::ser_default);
 
     /// \name Accessors
     //@{
-    utl::uint_t
+    uint_t
     resourceId() const
     {
         return _resourceId;
     }
 
-    utl::uint_t&
+    uint_t&
     resourceId()
     {
         return _resourceId;
     }
 
     /** Number of cap/pt pairs. */
-    utl::uint_t
+    uint_t
     numCapPts() const
     {
         return _caps.size();
@@ -66,7 +66,7 @@ public:
 
     /** Get cap/pt pair. */
     void
-    getCapPt(utl::uint_t idx, utl::uint_t& cap, utl::uint_t& pt) const
+    getCapPt(uint_t idx, uint_t& cap, uint_t& pt) const
     {
         ASSERTD(idx < numCapPts());
         cap = _caps[idx];
@@ -74,38 +74,38 @@ public:
     }
 
     /** Get setupId. */
-    utl::uint_t
-    getSetupId(utl::uint_t idx)
+    uint_t
+    getSetupId(uint_t idx)
     {
         ASSERTD(idx < numCapPts());
         return _setupIds[idx];
     }
 
     /** whether it contains the cap. */
-    bool hasCap(utl::uint_t cap);
+    bool hasCap(uint_t cap);
 
     /** find the min and max cap. */
-    utl::uint_t minCap();
-    utl::uint_t maxCap();
+    uint_t minCap();
+    uint_t maxCap();
 
     /** add a capacity-processingTime pair. */
-    void addCapPt(utl::uint_t cap,
-                  utl::uint_t pt,
+    void addCapPt(uint_t cap,
+                  uint_t pt,
                   rescappt_pt_per_t ptPer,
-                  utl::uint_t ptBatchSize,
-                  utl::uint_t setupId);
+                  uint_t ptBatchSize,
+                  uint_t setupId);
     //@}
 
     /** create a cls::ResourceCapPts object. */
-    cls::ResourceCapPts* createResourceCapPts(utl::uint_t quantity) const;
+    cls::ResourceCapPts* createResourceCapPts(uint_t quantity) const;
 
-    utl::String toString() const;
+    String toString() const;
 
 private:
     void
     init()
     {
-        _resourceId = utl::uint_t_max;
+        _resourceId = uint_t_max;
     }
     void
     deInit()
@@ -113,12 +113,12 @@ private:
     }
 
 private:
-    utl::uint_t _resourceId;
-    std::vector<utl::uint_t> _caps;
-    std::vector<utl::uint_t> _pts;
+    uint_t _resourceId;
+    std::vector<uint_t> _caps;
+    std::vector<uint_t> _pts;
     std::vector<rescappt_pt_per_t> _ptPers;
-    std::vector<utl::uint_t> _ptBatchSizes;
-    std::vector<utl::uint_t> _setupIds;
+    std::vector<uint_t> _ptBatchSizes;
+    std::vector<uint_t> _setupIds;
 };
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////

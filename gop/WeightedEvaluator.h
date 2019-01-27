@@ -24,7 +24,7 @@ GOP_NS_BEGIN;
 
 class WeightedEvaluator : public IndEvaluator
 {
-    UTL_CLASS_DECL(WeightedEvaluator);
+    UTL_CLASS_DECL(WeightedEvaluator, IndEvaluator);
 
 public:
     /** Copy another instance. */

@@ -1,10 +1,8 @@
-#ifndef LUT_UTIL_H
-#define LUT_UTIL_H
+#pragma once
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 #include <libutl/algorithms_inl.h>
-#include <libutl/RandNumGen.h>
 #include <lut/RCobject.h>
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -13,9 +11,20 @@ LUT_NS_BEGIN;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
+inline rng_t* make_rng()
+{
+#ifdef DEBUG
+    return new rng_t(1042614900);
+#else
+    return new rng_t();
+#endif
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
 template <class T>
 void
-serializeNullable(T* object, utl::Stream& stream, utl::uint_t io)
+serializeNullable(T* object, utl::Stream& stream, uint_t io)
 {
     if (io == utl::io_rd)
     {
@@ -63,14 +72,14 @@ serializeOutNullable(T* object, utl::Stream& os)
 
 template <class ST1, class ST2, class F, class S>
 void
-serialize(std::map<F, S>& map, utl::Stream& stream, utl::uint_t io)
+serialize(std::map<F, S>& map, utl::Stream& stream, uint_t io)
 {
     if (io == utl::io_rd)
     {
         map.clear();
-        utl::uint_t items;
+        uint_t items;
         utl::serialize(items, stream, io);
-        for (utl::uint_t i = 0; i < items; ++i)
+        for (uint_t i = 0; i < items; ++i)
         {
             ST1 first = 0;
             utl::serialize(first, stream, io, utl::ser_default);
@@ -87,7 +96,7 @@ serialize(std::map<F, S>& map, utl::Stream& stream, utl::uint_t io)
     }
     else
     {
-        utl::uint_t items = map.size();
+        uint_t items = map.size();
         utl::serialize(items, stream, io);
         typename std::map<F, S>::iterator it;
         for (it = map.begin(); it != map.end(); ++it)
@@ -105,14 +114,14 @@ serialize(std::map<F, S>& map, utl::Stream& stream, utl::uint_t io)
 
 template <class ST, class T, class L>
 void
-serialize(std::set<T, L>& set, utl::Stream& stream, utl::uint_t io)
+serialize(std::set<T, L>& set, utl::Stream& stream, uint_t io)
 {
     if (io == utl::io_rd)
     {
         set.clear();
-        utl::uint_t items;
+        uint_t items;
         utl::serialize(items, stream, io);
-        for (utl::uint_t i = 0; i < items; ++i)
+        for (uint_t i = 0; i < items; ++i)
         {
             ST object = 0;
             utl::serialize(object, stream, io, utl::ser_default);
@@ -121,7 +130,7 @@ serialize(std::set<T, L>& set, utl::Stream& stream, utl::uint_t io)
     }
     else
     {
-        utl::uint_t items = set.size();
+        uint_t items = set.size();
         utl::serialize(items, stream, io);
         typename std::set<T, L>::iterator it;
         for (it = set.begin(); it != set.end(); ++it)
@@ -136,15 +145,15 @@ serialize(std::set<T, L>& set, utl::Stream& stream, utl::uint_t io)
 
 template <class ST, class T>
 void
-serialize(std::vector<T>& vector, utl::Stream& stream, utl::uint_t io)
+serialize(std::vector<T>& vector, utl::Stream& stream, uint_t io)
 {
     if (io == utl::io_rd)
     {
         vector.clear();
-        utl::uint_t items;
+        uint_t items;
         utl::serialize(items, stream, io);
         vector.reserve(items);
-        for (utl::uint_t i = 0; i < items; ++i)
+        for (uint_t i = 0; i < items; ++i)
         {
             ST object = 0;
             utl::serialize(object, stream, io, utl::ser_default);
@@ -153,7 +162,7 @@ serialize(std::vector<T>& vector, utl::Stream& stream, utl::uint_t io)
     }
     else
     {
-        utl::uint_t items = vector.size();
+        uint_t items = vector.size();
         utl::serialize(items, stream, io);
         typename std::vector<T>::iterator it;
         for (it = vector.begin(); it != vector.end(); ++it)
@@ -166,11 +175,11 @@ serialize(std::vector<T>& vector, utl::Stream& stream, utl::uint_t io)
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-void serialize(std::string& str, utl::Stream& stream, utl::uint_t io);
+void serialize(std::string& str, utl::Stream& stream, uint_t io);
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-void serialize(time_t& t, utl::Stream& stream, utl::uint_t io);
+void serialize(time_t& t, utl::Stream& stream, uint_t io);
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -206,7 +215,7 @@ public:
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-std::string heading(const std::string& title, char ch, utl::uint_t width);
+std::string heading(const std::string& title, char ch, uint_t width);
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -231,14 +240,14 @@ std::string periodToString(period_t period);
 /**
    Get the number of seconds that correspond to a period_t value.
 */
-utl::uint_t periodToSeconds(period_t period);
+uint_t periodToSeconds(period_t period);
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
    Grow an array that was previously allocated with malloc.
 */
-void* realloc(void* ptr, utl::uint_t oldSize, utl::uint_t newSize);
+void* realloc(void* ptr, size_t oldSize, size_t newSize);
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -252,14 +261,14 @@ time_t time_date(time_t t);
 /**
    Get number of seconds since start of day for given time.
 */
-utl::uint_t time_timeOfDay(time_t t);
+uint_t time_timeOfDay(time_t t);
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
    Get day-of-week (sunday=0) for given time.
 */
-utl::uint_t time_dayOfWeek(time_t t);
+uint_t time_dayOfWeek(time_t t);
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -273,14 +282,14 @@ std::string time_str(time_t t);
 /**
    Get the flag at the given bit-position.
 */
-bool getFlag(utl::uint32_t flags, utl::uint32_t bit);
+bool getFlag(uint32_t flags, uint32_t bit);
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
    Set the flag at the given bit-position.
 */
-void setFlag(utl::uint32_t& flags, utl::uint32_t bit, bool val);
+void setFlag(uint32_t& flags, uint32_t bit, bool val);
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -456,18 +465,18 @@ deleteCont(Cont& cont)
    Delete all objects in the given container, and clear the container.
    \author Adam McKee
 */
-template <class K, class V>
+/*template <class K, class V>
 void
-deleteMapSecond(std_hash_map<K, V>& map)
+deleteMapSecond(std::unordered_map<K, V>& map)
 {
-    typename std_hash_map<K, V>::iterator it;
+    typename std::unordered_map<K, V>::iterator it;
     for (it = map.begin(); it != map.end(); ++it)
     {
-        typename std_hash_map<K, V>::value_type object = *it;
+        typename std::unordered_map<K, V>::value_type object = *it;
         delete object.second;
     }
     map.clear();
-}
+}*/
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -475,7 +484,7 @@ deleteMapSecond(std_hash_map<K, V>& map)
    Delete all objects in the given container, and clear the container.
    \author Adam McKee
 */
-template <class K, class V, class Ord>
+/*template <class K, class V, class Ord>
 void
 deleteMapSecond(std::map<K, V, Ord>& map)
 {
@@ -486,21 +495,25 @@ deleteMapSecond(std::map<K, V, Ord>& map)
         delete object.second;
     }
     map.clear();
-}
+}*/
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-/*template <class Map>
-  void deleteMapSecond(Map& map)
-  {
-  typename Map::iterator it;
-  for (it = map.begin(); it != map.end(); ++it)
-  {
-  typename Map::value_type object = *it;
-  delete object.second;
-  }
-  map.clear();
-  }*/
+/**
+   Delete all objects in the given container, and clear the container.
+   \author Adam McKee
+*/
+template <class Map>
+void deleteMapSecond(Map& map)
+{
+    typename Map::iterator it;
+    auto lim = map.end();
+    for (it = map.begin(); it != lim; ++it)
+    {
+        delete (*it).second;
+    }
+    map.clear();
+}
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -539,16 +552,13 @@ equals(const T* lhs, const T* rhs)
     {
         return false;
     }
-
-    bool res = lhs->equals(*rhs);
-    return res;
+    return lhs->equals(*rhs);
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
-   Erase the object referred to by the given iterator,
-   and increment the iterator.
+   Erase the object referred to by the given iterator, and increment the iterator.
    \author Adam McKee
 */
 template <class Cont, class Iter>
@@ -658,14 +668,14 @@ copyMap(Map& dst, const Map& src)
    \author Adam McKee
 */
 template <class Map>
-utl::uint_t
+uint_t
 uniqueKey(const Map& map)
 {
-    utl::uint_t v = 1;
+    uint_t v = 1;
     typename Map::const_iterator it;
     for (it = map.begin(); it != map.end(); ++it)
     {
-        utl::uint_t itKey = (*it).first;
+        uint_t itKey = (*it).first;
         if (itKey == v)
             return v;
         v = (itKey + 1);
@@ -704,8 +714,7 @@ removeRef(T* object)
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
-   Decrement the reference count of all objects in the given container,
-   and clear the container.
+   Decrement the reference count of all objects in the given container & clear it.
    \author Adam McKee
 */
 template <class Cont>
@@ -741,8 +750,7 @@ removeRefArray(T** array, T**& ptr)
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
-   Decrement the reference count of the key values in the given map,
-   and clear the map.
+   Decrement the reference count of the key values in the given map & clear it.
    \author Adam McKee
 */
 template <class Map>
@@ -760,8 +768,7 @@ removeRefMapFirst(Map& map)
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
-   Dump a human-readable representation of the objects in the given container
-   to the given output stream.
+   Dump a human-readable representation of the objects in the given container to a stream.
    \author Adam McKee
 */
 template <class Cont>
@@ -773,45 +780,6 @@ dumpCont(Cont& cont, std::ostream& os)
     {
         typename Cont::value_type object = *it;
         object->dump(os);
-    }
-}
-
-////////////////////////////////////////////////////////////////////////////////////////////////////
-
-/**
-   Randomly shuffle the objects in the given vector,
-   using the specified PRNG.
-   \author Adam McKee
-*/
-template <class T>
-void
-shuffle(std::vector<T>& vect, utl::RandNumGen& rng)
-{
-    utl::uint_t size = vect.size();
-    // randomly shuffle
-    for (utl::uint_t i = 1; i < size; i++)
-    {
-        utl::uint_t randOffset = rng.evali(i + 1);
-        std::swap(vect[randOffset], vect[i]);
-    }
-}
-
-////////////////////////////////////////////////////////////////////////////////////////////////////
-
-/**
-   Randomly shuffle the objects in the given array,
-   using the specified PRNG.
-   \author Adam McKee
-*/
-template <class T>
-void
-shuffle(T* array, utl::uint_t size, utl::RandNumGen& rng)
-{
-    // randomly shuffle
-    for (utl::uint_t i = 1; i < size; i++)
-    {
-        utl::uint_t randOffset = rng.evali(i + 1);
-        std::swap(array[randOffset], array[i]);
     }
 }
 
@@ -914,7 +882,3 @@ setFind(std::set<T, L>& set, T t)
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 LUT_NS_END;
-
-////////////////////////////////////////////////////////////////////////////////////////////////////
-
-#endif

@@ -28,7 +28,7 @@ GOP_NS_BEGIN;
 
 class ID_SAoptimizer : public SAoptimizer
 {
-    UTL_CLASS_DECL(ID_SAoptimizer);
+    UTL_CLASS_DECL(ID_SAoptimizer, SAoptimizer);
 
 public:
     /** Initialize. */
@@ -48,11 +48,11 @@ protected:
     Score* _targetScore;
     double _scoreStep;
 
-    utl::uint_t _initNumProbes;
-    utl::uint_t _numProbes;
+    uint_t _initNumProbes;
+    uint_t _numProbes;
 
-    utl::uint_t _numRepeats;
-    utl::uint_t _repeatId;
+    uint_t _numRepeats;
+    uint_t _repeatId;
 
 private:
     void init();

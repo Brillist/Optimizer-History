@@ -24,25 +24,25 @@ MRP_NS_BEGIN;
 
 class ManufactureItem : public Item
 {
-    UTL_CLASS_DECL(ManufactureItem);
+    UTL_CLASS_DECL(ManufactureItem, Item);
 
 public:
     virtual void copy(const utl::Object& rhs);
 
     virtual void
-    serialize(utl::Stream& stream, utl::uint_t io, utl::uint_t mode = utl::ser_default);
+    serialize(utl::Stream& stream, uint_t io, uint_t mode = utl::ser_default);
 
     /// \name Accessors
     //@{
     /** Batch size. */
-    utl::uint_t
+    uint_t
     batchSize() const
     {
         return _batchSize;
     }
 
     /** Batch size. */
-    utl::uint_t&
+    uint_t&
     batchSize()
     {
         return _batchSize;
@@ -74,7 +74,7 @@ public:
     /** get the ProcessPlan with highest preference. */
     ProcessPlan* preferredPlan();
 
-    utl::String toString() const;
+    String toString() const;
 
 private:
     void init();
@@ -84,7 +84,7 @@ private:
     }
 
 private:
-    utl::uint_t _batchSize;
+    uint_t _batchSize;
     itemplan_set_t _itemPlans;
 
     // alternative jobs groups

@@ -19,13 +19,13 @@ CSE_NS_BEGIN;
 
 class SchedulerConfiguration : public utl::Object
 {
-    UTL_CLASS_DECL(SchedulerConfiguration);
+    UTL_CLASS_DECL(SchedulerConfiguration, utl::Object);
 
 public:
     virtual void copy(const utl::Object& rhs);
 
     virtual void
-    serialize(utl::Stream& stream, utl::uint_t io, utl::uint_t mode = utl::ser_default);
+    serialize(utl::Stream& stream, uint_t io, uint_t mode = utl::ser_default);
 
     /** Get the originTime. */
     time_t
@@ -70,14 +70,14 @@ public:
     }
 
     /** Get the time-step. */
-    utl::uint_t
+    uint_t
     timeStep() const
     {
         return _timeStep;
     }
 
     /** Get the time-step. */
-    utl::uint_t&
+    uint_t&
     timeStep()
     {
         return _timeStep;
@@ -105,14 +105,14 @@ public:
     }
 
     /** Get the auto-freeze duration. */
-    utl::uint_t
+    uint_t
     autoFreezeDuration() const
     {
         return _autoFreezeDuration;
     }
 
     /** Get the auto-freeze duration. */
-    utl::uint_t&
+    uint_t&
     autoFreezeDuration()
     {
         return _autoFreezeDuration;
@@ -163,13 +163,13 @@ public:
     int timeSlotToDuration(int ts) const;
 
     /** Convert a time-slot to a duration. */
-    utl::uint_t timeSlotToDuration(utl::uint_t ts) const;
+    uint_t timeSlotToDuration(uint_t ts) const;
 
     /** Convert a duration to a time-slot. */
     int durationToTimeSlot(int t) const;
 
     /** Convert a duration to a time-slot. */
-    utl::uint_t durationToTimeSlot(utl::uint_t) const;
+    uint_t durationToTimeSlot(uint_t) const;
 
 private:
     void init();
@@ -181,9 +181,9 @@ private:
 private:
     time_t _originTime;
     time_t _horizonTime;
-    utl::uint_t _timeStep;
+    uint_t _timeStep;
     time_t _schedulingOriginTime;
-    utl::uint_t _autoFreezeDuration;
+    uint_t _autoFreezeDuration;
     bool _useInitialAsSeed;
     bool _backward;
 };

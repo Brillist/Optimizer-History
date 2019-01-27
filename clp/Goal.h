@@ -31,7 +31,7 @@ class Manager;
 
 class Goal : public lut::RCobject
 {
-    UTL_CLASS_DECL_ABC(Goal);
+    UTL_CLASS_DECL_ABC(Goal, lut::RCobject);
 
 public:
     /** Constructor. */

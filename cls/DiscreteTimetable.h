@@ -31,7 +31,7 @@ class DiscreteResource;
 
 class DiscreteTimetable : public utl::Object
 {
-    UTL_CLASS_DECL(DiscreteTimetable);
+    UTL_CLASS_DECL(DiscreteTimetable, utl::Object);
     UTL_CLASS_NO_COPY;
 
 public:
@@ -94,14 +94,14 @@ public:
 
     /** Add capacity-expression. */
     clp::IntExp*
-    addCapExp(utl::uint_t cap)
+    addCapExp(uint_t cap)
     {
         return _domain.addCapExp(cap);
     }
 
     /** Remove capacity-expression. */
     void
-    remCapExp(utl::uint_t cap)
+    remCapExp(uint_t cap)
     {
         _domain.remCapExp(cap);
     }
@@ -110,16 +110,16 @@ public:
     /// \name Energy
     //@{
     /** Get the required and provided energy. */
-    void energy(utl::uint_t& required, utl::uint_t& provided) const;
+    void energy(uint_t& required, uint_t& provided) const;
 
     /** Get the required and provided energy over the given span. */
-    void energy(const utl::Span<int>& span, utl::uint_t& required, utl::uint_t& provided) const;
+    void energy(const utl::Span<int>& span, uint_t& required, uint_t& provided) const;
     //@}
 
     /// \name Query
     //@{
     /** Get the maximal capacity at the given time. */
-    utl::uint_t max(int t) const;
+    uint_t max(int t) const;
 
     /** Find the span that overlaps the given value. */
     const clp::IntSpan* find(int val) const;
@@ -131,10 +131,10 @@ public:
     /// \name Domain Modification
     //@{
     /** Add required,provided capacity in the given span. */
-    utl::uint_t add(int min, int max, int minReq, int maxPrv);
+    uint_t add(int min, int max, int minReq, int maxPrv);
 
     /** Subtract required,provided capacity in the given span. */
-    utl::uint_t subtract(int min, int max, int minReq, int maxPrv);
+    uint_t subtract(int min, int max, int minReq, int maxPrv);
     //@}
 
     /// \name Events

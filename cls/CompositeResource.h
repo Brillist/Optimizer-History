@@ -23,10 +23,10 @@ CLS_NS_BEGIN;
 
 class CompositeResource : public Resource
 {
-    UTL_CLASS_DECL(CompositeResource);
+    UTL_CLASS_DECL(CompositeResource, Resource);
 
 public:
-    typedef std::set<utl::uint_t> uint_set_t;
+    typedef std::set<uint_t> uint_set_t;
     typedef std::vector<DiscreteResource*> dres_vector_t;
     typedef dres_vector_t::const_iterator iterator;
 
@@ -49,20 +49,20 @@ public:
     void initialize();
 
     /** Add capacity. */
-    void add(int min, int max, utl::uint_t resId);
+    void add(int min, int max, uint_t resId);
 
     /** Allocate capacity. */
     void allocate(int min,
                   int max,
-                  utl::uint_t cap,
+                  uint_t cap,
                   Activity* act,
                   const PreferredResources* pr,
                   const clp::IntExp* breakList = nullptr,
-                  utl::uint_t resId = utl::uint_t_max,
+                  uint_t resId = uint_t_max,
                   bool updateDiscrete = true);
 
     /** Get number of resources. */
-    utl::uint_t
+    uint_t
     numResources() const
     {
         return _resources.size();

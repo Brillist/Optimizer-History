@@ -19,12 +19,12 @@ GOP_NS_USE;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-UTL_CLASS_IMPL_ABC(cse::RuleBasedScheduler, cse::Scheduler);
-UTL_CLASS_IMPL(cse::JobLevelScheduler, cse::RuleBasedScheduler);
-UTL_CLASS_IMPL(cse::FrozenOpScheduler, cse::JobLevelScheduler);
-UTL_CLASS_IMPL(cse::JobSequenceScheduler, cse::JobLevelScheduler);
-UTL_CLASS_IMPL(cse::OpSequenceScheduler, cse::RuleBasedScheduler);
-UTL_CLASS_IMPL(cse::FwdScheduler, cse::JobLevelScheduler);
+UTL_CLASS_IMPL_ABC(cse::RuleBasedScheduler);
+UTL_CLASS_IMPL(cse::JobLevelScheduler);
+UTL_CLASS_IMPL(cse::FrozenOpScheduler);
+UTL_CLASS_IMPL(cse::JobSequenceScheduler);
+UTL_CLASS_IMPL(cse::OpSequenceScheduler);
+UTL_CLASS_IMPL(cse::FwdScheduler);
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 

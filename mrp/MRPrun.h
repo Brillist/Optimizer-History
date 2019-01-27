@@ -22,7 +22,7 @@ MRP_NS_BEGIN;
 
 class MRPrun : public utl::Object
 {
-    UTL_CLASS_DECL(MRPrun);
+    UTL_CLASS_DECL(MRPrun, utl::Object);
     UTL_CLASS_NO_COPY;
 
 public:
@@ -67,19 +67,19 @@ public:
 
 private:
     /** recursively create a job tree. */
-    bool createJobs(utl::uint_t woId,
+    bool createJobs(uint_t woId,
                     std::string name,
-                    utl::uint_t quantity,
+                    uint_t quantity,
                     ManufactureItem* item,
                     time_t releaseTime,
                     cse::job_set_pref_t& jobs);
 
-    void createPurchaseOrder(utl::uint_t woId,
+    void createPurchaseOrder(uint_t woId,
                              std::string poName,
-                             utl::uint_t poQuantity,
+                             uint_t poQuantity,
                              PurchaseItem* item,
                              time_t releaseTime,
-                             utl::uint_t requesterId,
+                             uint_t requesterId,
                              requester_type_t reqType);
 
     void createJobOps(cse::Job* job, ProcessPlan* plan);
@@ -96,7 +96,7 @@ private:
     bool _dataSetOwner;
     // _initId is the initialId for newly created Job and Op.
     // It's designed to replace "static uint_t id = 0" in createJobs method.
-    utl::uint_t _initId;
+    uint_t _initId;
 };
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////

@@ -32,7 +32,7 @@ MRP_NS_BEGIN;
 
 class InventoryInterval : public lut::RBtreeNode
 {
-    UTL_CLASS_DECL(InventoryInterval);
+    UTL_CLASS_DECL(InventoryInterval, lut::RBtreeNode);
 
 public:
     /** Constructors. */
@@ -47,7 +47,7 @@ public:
     virtual int compare(const utl::Object& rhs) const;
 
     virtual void
-    serialize(utl::Stream& stream, utl::uint_t io, utl::uint_t mode = utl::ser_default);
+    serialize(utl::Stream& stream, uint_t io, uint_t mode = utl::ser_default);
 
     /// \name Accessors
     //@{
@@ -148,9 +148,9 @@ public:
         _pos.insert(po);
     }
 
-    void dump(utl::Stream& os, utl::uint_t level) const;
+    void dump(utl::Stream& os, uint_t level) const;
 
-    utl::String toString() const;
+    String toString() const;
 
 private:
     void init();

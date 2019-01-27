@@ -24,7 +24,7 @@ CLS_NS_BEGIN;
 
 class LFboundCalendar : public clp::Bound
 {
-    UTL_CLASS_DECL(LFboundCalendar);
+    UTL_CLASS_DECL(LFboundCalendar, clp::Bound);
 
 public:
     /** Constructor. */

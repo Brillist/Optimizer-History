@@ -22,7 +22,7 @@ CLP_NS_USE;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-UTL_CLASS_IMPL(cls::ESboundInt, cls::SchedulableBound);
+UTL_CLASS_IMPL(cls::ESboundInt);
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -326,7 +326,7 @@ ESboundInt::initMinMaxMultiple()
     _baseWorkPerTS = 1.0 / (double)_minMultiple;
 
     // maxCaps[] : maximum allowed capacity for each resource
-    utl::uint_t* maxCaps = new uint_t[_numResources];
+    uint_t* maxCaps = new uint_t[_numResources];
 
     // fill in maxCaps[], determine if there is an upper bound on capacity
     idx = 0;

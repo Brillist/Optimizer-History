@@ -22,7 +22,7 @@ class RunningThread;
 
 class SEclient : public utl::NetServerClient
 {
-    UTL_CLASS_DECL(SEclient);
+    UTL_CLASS_DECL(SEclient, NetServerClient);
 
 public:
     SEclient(Server* server,
@@ -36,13 +36,13 @@ public:
         return _authorized;
     }
 
-    utl::uint32_t
+    uint32_t
     challenge() const
     {
         return _challenge;
     }
 
-    utl::uint32_t
+    uint32_t
     response() const
     {
         return _response;
@@ -77,7 +77,7 @@ public:
         return *_commandLog;
     }
 
-    static utl::uint32_t response(utl::uint32_t challenge);
+    static uint32_t response(uint32_t challenge);
 
 private:
     void
@@ -92,8 +92,8 @@ private:
 
 private:
     bool _authorized;
-    utl::uint32_t _challenge;
-    utl::uint32_t _response;
+    uint32_t _challenge;
+    uint32_t _response;
 
     RunningThread* _runningThread;
     SchedulingRun* _run;

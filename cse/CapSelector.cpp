@@ -24,7 +24,7 @@ GOP_NS_USE;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-UTL_CLASS_IMPL(cse::CapSelector, cse::Scheduler);
+UTL_CLASS_IMPL(cse::CapSelector);
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -86,7 +86,7 @@ CapSelector::initialize(const gop::DataSet* p_dataSet, uint_t stringBase)
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
-CapSelector::initializeInd(Ind* p_ind, const gop::DataSet* p_dataSet, RandNumGen* rng, void*)
+CapSelector::initializeInd(Ind* p_ind, const gop::DataSet* p_dataSet, rng_t* rng, void*)
 {
     ASSERTD(dynamic_cast<StringInd<uint_t>*>(p_ind) != nullptr);
     StringInd<uint_t>* ind = (StringInd<uint_t>*)p_ind;
@@ -113,7 +113,7 @@ CapSelector::initializeInd(Ind* p_ind, const gop::DataSet* p_dataSet, RandNumGen
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
-CapSelector::initializeRandomInd(Ind* p_ind, const gop::DataSet* p_dataSet, RandNumGen* rng, void*)
+CapSelector::initializeRandomInd(Ind* p_ind, const gop::DataSet* p_dataSet, rng_t* rng, void*)
 {
     utl::cout << "ERROR(JobOpSeqSelector.cpp): in the incompleted code!" << utl::endl;
     ABORT();

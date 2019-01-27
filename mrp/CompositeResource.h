@@ -22,25 +22,25 @@ MRP_NS_BEGIN;
 
 class CompositeResource : public Resource
 {
-    UTL_CLASS_DECL(CompositeResource);
+    UTL_CLASS_DECL(CompositeResource, Resource);
 
 public:
     virtual void copy(const utl::Object& rhs);
 
     virtual void
-    serialize(utl::Stream& stream, utl::uint_t io, utl::uint_t mode = utl::ser_default);
+    serialize(utl::Stream& stream, uint_t io, uint_t mode = utl::ser_default);
 
     /// \name Accessors
     //@{
     /** Resource group-id. */
-    utl::uint_t
+    uint_t
     resourceGroupId() const
     {
         return _resourceGroupId;
     }
 
     /** Resource group-id. */
-    utl::uint_t&
+    uint_t&
     resourceGroupId()
     {
         return _resourceGroupId;
@@ -54,7 +54,7 @@ private:
     void
     init()
     {
-        _resourceGroupId = utl::uint_t_max;
+        _resourceGroupId = uint_t_max;
     }
     void
     deInit()
@@ -62,7 +62,7 @@ private:
     }
 
 private:
-    utl::uint_t _resourceGroupId;
+    uint_t _resourceGroupId;
 };
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////

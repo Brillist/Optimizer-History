@@ -1,5 +1,4 @@
-#ifndef LUT_TYPES_H
-#define LUT_TYPES_H
+#pragma once
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -19,16 +18,16 @@ enum period_t
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-typedef std::set<utl::uint_t> uint_set_t;
-typedef std::vector<utl::uint_t> uint_vect_t;
+using uint_set_t = std::set<uint_t>;
+using uint_vect_t = std::vector<uint_t>;
 
-typedef std::set<int> int_set_t;
-typedef std::vector<int> int_vect_t;
+using int_set_t = std::set<int>;
+using int_vect_t = std::vector<int>;
+
+using rng_32_t = randutils::random_generator<std::mt19937>;
+using rng_64_t = randutils::random_generator<std::mt19937_64>;
+using rng_t = rng_32_t;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 LUT_NS_END;
-
-////////////////////////////////////////////////////////////////////////////////////////////////////
-
-#endif

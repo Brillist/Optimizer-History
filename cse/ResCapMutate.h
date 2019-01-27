@@ -25,7 +25,7 @@ CSE_NS_BEGIN;
 
 class ResCapMutate : public gop::RevOperator
 {
-    UTL_CLASS_DECL(ResCapMutate);
+    UTL_CLASS_DECL(ResCapMutate, gop::RevOperator);
 
 public:
     /**
@@ -33,7 +33,7 @@ public:
       \param p probability
       \param rng PRNG
    */
-    ResCapMutate(double p, utl::RandNumGen* rng = nullptr)
+    ResCapMutate(double p, lut::rng_t* rng = nullptr)
         : RevOperator("ResCapMutate", p, rng)
     {
         init();
@@ -42,7 +42,7 @@ public:
     virtual void copy(const utl::Object& rhs);
 
     /** Get the number of resource requirements. */
-    utl::uint_t
+    uint_t
     numResources() const
     {
         return _resources.size();
@@ -61,7 +61,7 @@ public:
 
 private:
     typedef std::vector<cse::Resource*> res_vector_t;
-    typedef std::vector<utl::uint_t> uint_vector_t;
+    typedef std::vector<uint_t> uint_vector_t;
 
 private:
     void init();
@@ -71,11 +71,11 @@ private:
     void setResources(const ClevorDataSet* dataSet);
 
     dres_vector_t _resources;
-    gop::StringInd<utl::uint_t>* _moveSchedule;
+    gop::StringInd<uint_t>* _moveSchedule;
     uint_vector_t _minCaps;
     uint_vector_t _maxCaps;
-    utl::uint_t _moveResIdx;
-    utl::uint_t _moveResCap;
+    uint_t _moveResIdx;
+    uint_t _moveResCap;
 };
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////

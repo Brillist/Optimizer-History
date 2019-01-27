@@ -33,7 +33,7 @@ class Manager;
 
 template <class T> class RevSet : public ConstrainedVar
 {
-    UTL_CLASS_DECL_TPL(RevSet, T);
+    UTL_CLASS_DECL_TPL(RevSet, T, ConstrainedVar);
     UTL_CLASS_NO_COPY;
 
 public:
@@ -62,7 +62,7 @@ public:
     void initialize(Manager* mgr, rsd_t type = rsd_both);
 
     /** Get the size. */
-    utl::uint_t
+    uint_t
     size() const
     {
         return _set.size();
@@ -76,7 +76,7 @@ public:
     }
 
     /** Intersection size. */
-    utl::uint_t
+    uint_t
     intersectCard(const RevSet<T>& rhs) const
     {
         return _set.intersectCard(rhs._set);
@@ -283,7 +283,7 @@ CLP_NS_END;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-UTL_CLASS_IMPL_TPL(clp::RevSet, T, utl::Object);
+UTL_CLASS_IMPL_TPL(clp::RevSet, T);
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 

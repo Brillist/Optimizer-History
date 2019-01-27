@@ -19,7 +19,7 @@ CLS_NS_USE;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-UTL_CLASS_IMPL(cse::ReleaseTimeMutate, gop::RevOperator);
+UTL_CLASS_IMPL(cse::ReleaseTimeMutate);
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -101,7 +101,7 @@ ReleaseTimeMutate::execute(gop::Ind* ind, gop::IndBuilderContext* p_context, boo
     }
     else
     {
-        uint_t randomNum = _rng->evali(2);
+        uint_t randomNum = _rng->uniform(0, 1);
         if (randomNum == 0)
         {
             newRlsTime = oldRlsTime + _changeStep;

@@ -37,7 +37,7 @@ class Schedule;
 
 class Resource : public utl::Object
 {
-    UTL_CLASS_DECL(Resource);
+    UTL_CLASS_DECL(Resource, utl::Object);
     UTL_CLASS_NO_COPY;
 
 public:
@@ -66,28 +66,28 @@ public:
     }
 
     /** Get the id. */
-    utl::uint_t
+    uint_t
     id() const
     {
         return _id;
     }
 
     /** Get the id. */
-    utl::uint_t&
+    uint_t&
     id()
     {
         return _id;
     }
 
     /** Get the serial-id. */
-    utl::uint_t
+    uint_t
     serialId() const
     {
         return _serialId;
     }
 
     /** Get the serial-id. */
-    utl::uint_t&
+    uint_t&
     serialId()
     {
         return _serialId;
@@ -140,10 +140,10 @@ private:
     void deInit();
 
 private:
-    utl::uint_t _id;
+    uint_t _id;
     //Note: _serialId is a bad name. it actually represents the position of
     //      the resource in cls::Schedule::_resourcesArray. Joe, Dec 27, 2007
-    utl::uint_t _serialId;
+    uint_t _serialId;
     Schedule* _schedule;
     std::string _name;
     void* _object;

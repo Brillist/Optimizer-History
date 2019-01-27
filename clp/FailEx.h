@@ -31,38 +31,38 @@ CLP_NS_BEGIN;
 
 class FailEx : public utl::Exception
 {
-    UTL_CLASS_DECL(FailEx);
+    UTL_CLASS_DECL(FailEx, utl::Exception);
 
 public:
     /**
       Constructor.
       \param label choice point label
    */
-    FailEx(utl::String* str, utl::uint_t label = utl::uint_t_max);
+    FailEx(String* str, uint_t label = uint_t_max);
 
     virtual void copy(const utl::Object& rhs);
 
     /** Get the string. */
-    const utl::String*
+    const String*
     str() const
     {
         return _str;
     }
 
     /** Get the label. */
-    utl::uint_t
+    uint_t
     label() const
     {
         return _label;
     }
 
 private:
-    void init(const utl::String* str = nullptr, utl::uint_t label = utl::uint_t_max);
+    void init(const String* str = nullptr, uint_t label = uint_t_max);
     void deInit();
 
 private:
-    const utl::String* _str;
-    utl::uint_t _label;
+    const String* _str;
+    uint_t _label;
 };
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////

@@ -38,7 +38,7 @@ enum inventory_period_t
 
 class InventoryRecord : public lut::RBtree
 {
-    UTL_CLASS_DECL(InventoryRecord);
+    UTL_CLASS_DECL(InventoryRecord, lut::RBtree);
 
 public:
     // initialize method used after all data are populated,
@@ -50,33 +50,33 @@ public:
     virtual int compare(const utl::Object& rhs) const;
 
     virtual void
-    serialize(utl::Stream& stream, utl::uint_t io, utl::uint_t mode = utl::ser_default);
+    serialize(utl::Stream& stream, uint_t io, uint_t mode = utl::ser_default);
 
     /// \name Accessors
     //@{
     /** Id. */
-    utl::uint_t
+    uint_t
     id() const
     {
         return _id;
     }
 
     /** Id. */
-    utl::uint_t&
+    uint_t&
     id()
     {
         return _id;
     }
 
     /** ItemId. */
-    utl::uint_t
+    uint_t
     itemId() const
     {
         return _itemId;
     }
 
     /** ItemId. */
-    utl::uint_t&
+    uint_t&
     itemId()
     {
         return _itemId;
@@ -111,42 +111,42 @@ public:
     }
 
     /** Number of periods. */
-    utl::uint_t
+    uint_t
     numberOfPeriods() const
     {
         return _numberOfPeriods;
     }
 
     /** Number of periods. */
-    utl::uint_t&
+    uint_t&
     numberOfPeriods()
     {
         return _numberOfPeriods;
     }
 
     /** Safety stock. */
-    utl::uint_t
+    uint_t
     safetyStock() const
     {
         return _safetyStock;
     }
 
     /** Safety stock. */
-    utl::uint_t&
+    uint_t&
     safetyStock()
     {
         return _safetyStock;
     }
 
     /** On-hand. */
-    utl::uint_t
+    uint_t
     onHand() const
     {
         return _onHand;
     }
 
     /** On-hand. */
-    utl::uint_t&
+    uint_t&
     onHand()
     {
         return _onHand;
@@ -208,14 +208,14 @@ public:
 
     //** check whether there is enough cap for reqCap at time t. */
     bool
-    checkAvailableCapacity(time_t t, utl::uint_t reqCap)
+    checkAvailableCapacity(time_t t, uint_t reqCap)
     {
         return availableCapacity(t) >= (utl::int_t)reqCap;
     }
 
     /** find the earliest availbe time from which there is enough reqCap.*/
     time_t
-    findEarliestAvailableTime(utl::uint_t reqCap, time_t est = 0, time_t lst = utl::int_t_max)
+    findEarliestAvailableTime(uint_t reqCap, time_t est = 0, time_t lst = utl::int_t_max)
     {
         return 0;
     }
@@ -234,7 +234,7 @@ public:
     void deleteNode(InventoryInterval* intvl);
 
     // 3 methods for debug
-    utl::String toString() const;
+    String toString() const;
 
     void dumpTree() const;
 
@@ -257,20 +257,20 @@ private:
 
     void rightRotate(lut::RBtreeNode* node);
 
-    void checkNode(InventoryInterval* node, utl::uint_t numBlackNodes);
+    void checkNode(InventoryInterval* node, uint_t numBlackNodes);
 
 private:
     void init();
     void deInit();
 
 private:
-    utl::uint_t _id;
-    utl::uint_t _itemId;
+    uint_t _id;
+    uint_t _itemId;
     std::string _name;
     inventory_period_t _periodType;
-    utl::uint_t _numberOfPeriods;
-    utl::uint_t _safetyStock;
-    utl::uint_t _onHand;
+    uint_t _numberOfPeriods;
+    uint_t _safetyStock;
+    uint_t _onHand;
     time_t _startDate;
     inventorytransaction_set_time_t _invTransactions;
     inventoryinterval_set_st_t _intervals;

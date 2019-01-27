@@ -17,35 +17,34 @@ CSE_NS_BEGIN;
 /**
    Select resource capacities, and generate a schedule.
 
-   For each resource with multiple possible capacities, ResCapSelector
-   chooses one of the possible capacities, then invokes another
-   schedule-builder.
+   For each resource with multiple possible capacities, ResCapSelector chooses one of the possible
+   capacities, then invokes another schedule-builder.
 */
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 class ResCapSelector : public Scheduler
 {
-    UTL_CLASS_DECL(ResCapSelector);
+    UTL_CLASS_DECL(ResCapSelector, Scheduler);
 
 public:
     virtual void copy(const utl::Object& rhs);
 
     virtual void setStringBase(gop::Operator* op) const;
 
-    virtual utl::uint_t stringSize(const ClevorDataSet& dataSet) const;
+    virtual uint_t stringSize(const ClevorDataSet& dataSet) const;
 
-    virtual void initialize(const gop::DataSet* dataSet = nullptr, utl::uint_t stringBase = 0);
+    virtual void initialize(const gop::DataSet* dataSet = nullptr, uint_t stringBase = 0);
 
     virtual void initializeInd(gop::Ind* ind,
                                const gop::DataSet* dataSet,
-                               utl::RandNumGen* rng = nullptr,
+                               lut::rng_t* rng = nullptr,
                                void* param = nullptr);
 
-    //joe's debug code
+    // for debugging
     virtual void initializeRandomInd(gop::Ind* ind,
                                      const gop::DataSet* dataSet,
-                                     utl::RandNumGen* rng = nullptr,
+                                     lut::rng_t* rng = nullptr,
                                      void* param = nullptr);
 
     /** Make a schedule. */
@@ -65,7 +64,7 @@ private:
     void setResources(const ClevorDataSet* dataSet);
 
     /** Select resource capacities. */
-    void setSelectedResCaps(gop::StringInd<utl::uint_t>* ind, SchedulingContext* context) const;
+    void setSelectedResCaps(gop::StringInd<uint_t>* ind, SchedulingContext* context) const;
 
 private:
     dres_vector_t _resources;

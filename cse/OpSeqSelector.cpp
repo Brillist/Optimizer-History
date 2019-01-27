@@ -22,7 +22,7 @@ GOP_NS_USE;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-UTL_CLASS_IMPL(cse::OpSeqSelector, cse::Scheduler);
+UTL_CLASS_IMPL(cse::OpSeqSelector);
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -87,7 +87,7 @@ OpSeqSelector::initialize(const gop::DataSet* p_dataSet, uint_t stringBase)
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
-OpSeqSelector::initializeInd(Ind* p_ind, const gop::DataSet* p_dataSet, RandNumGen* rng, void*)
+OpSeqSelector::initializeInd(Ind* p_ind, const gop::DataSet* p_dataSet, rng_t* rng, void*)
 {
     ASSERTD(dynamic_cast<StringInd<uint_t>*>(p_ind) != nullptr);
     ASSERTD(dynamic_cast<const ClevorDataSet*>(p_dataSet) != nullptr);
@@ -118,7 +118,7 @@ OpSeqSelector::initializeInd(Ind* p_ind, const gop::DataSet* p_dataSet, RandNumG
 void
 OpSeqSelector::initializeRandomInd(Ind* p_ind,
                                    const gop::DataSet* p_dataSet,
-                                   RandNumGen* rng,
+                                   rng_t* rng,
                                    void*)
 {
     utl::cout << "ERROR(OpSeqSelector.cpp): in the incompleted code!" << utl::endl;

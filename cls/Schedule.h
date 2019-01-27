@@ -27,7 +27,7 @@ class ResourceCalendarMgr;
 
 class Schedule : public utl::Object
 {
-    UTL_CLASS_DECL(Schedule);
+    UTL_CLASS_DECL(Schedule, utl::Object);
     UTL_CLASS_NO_COPY;
 
 public:

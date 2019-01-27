@@ -17,7 +17,7 @@ LUT_NS_USE;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-UTL_CLASS_IMPL(clp::IntExpDomainAR, clp::IntExpDomain);
+UTL_CLASS_IMPL(clp::IntExpDomainAR);
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -96,7 +96,7 @@ IntExpDomainAR::copy(const Object& rhs)
             _values = dar._values;
         }
 
-        _flags = new utl::uint32_t[_flagsSize];
+        _flags = new uint32_t[_flagsSize];
         memcpy(_flags, dar._flags, _flagsSize * 4);
     }
     if (_mgr == nullptr)
@@ -382,7 +382,7 @@ IntExpDomainAR::init(uint_t num, int* values, bool valuesOwner, bool empty)
 
     // _flags[]
     _flagsSize = utl::roundUp(_num, 32U) / 32;
-    _flags = new utl::uint32_t[_flagsSize];
+    _flags = new uint32_t[_flagsSize];
 
     // _values[]
     _valuesOwner = valuesOwner;
@@ -501,25 +501,25 @@ IntExpDomainAR::findBackward(uint_t idx) const
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 bool
-IntExpDomainAR::getFlag(utl::uint_t idx) const
+IntExpDomainAR::getFlag(uint_t idx) const
 {
     ASSERTD(idx < _num);
     uint_t word = idx >> 5;
     uint_t bit = idx & 0x1f;
-    utl::uint32_t flags = _flags[word];
-    utl::uint32_t mask = (0x80000000U >> bit);
+    uint32_t flags = _flags[word];
+    uint32_t mask = (0x80000000U >> bit);
     return ((flags & mask) != 0);
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 bool
-IntExpDomainAR::setFlag(utl::uint_t idx)
+IntExpDomainAR::setFlag(uint_t idx)
 {
     ASSERTD(idx < _num);
     uint_t word = idx >> 5;
     uint_t bit = idx & 0x1f;
-    utl::uint32_t mask = (0x80000000U >> bit);
+    uint32_t mask = (0x80000000U >> bit);
     if ((_flags[word] & mask) != 0)
         return false;
     _flags[word] |= mask;
@@ -529,12 +529,12 @@ IntExpDomainAR::setFlag(utl::uint_t idx)
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 bool
-IntExpDomainAR::clearFlag(utl::uint_t idx)
+IntExpDomainAR::clearFlag(uint_t idx)
 {
     ASSERTD(idx < _num);
     uint_t word = idx >> 5;
     uint_t bit = idx & 0x1f;
-    utl::uint32_t mask = (0x80000000U >> bit);
+    uint32_t mask = (0x80000000U >> bit);
     if ((_flags[word] & mask) == 0)
         return false;
     _flags[word] &= ~mask;

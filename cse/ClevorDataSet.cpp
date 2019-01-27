@@ -39,7 +39,7 @@ CSE_NS_BEGIN;
 
 class JobOpIncSDordering : public Ordering
 {
-    UTL_CLASS_DECL(JobOpIncSDordering);
+    UTL_CLASS_DECL(JobOpIncSDordering, Ordering);
     UTL_CLASS_DEFID;
 
 public:
@@ -76,7 +76,7 @@ JobOpIncSDordering::cmp(const Object* lhs, const Object* rhs) const
 
 class JobOpDecSDordering : public Ordering
 {
-    UTL_CLASS_DECL(JobOpDecSDordering);
+    UTL_CLASS_DECL(JobOpDecSDordering, Ordering);
     UTL_CLASS_DEFID;
 
 public:
@@ -357,7 +357,7 @@ ClevorDataSet::add(JobGroup* jobGroup)
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 Job*
-ClevorDataSet::findJob(utl::uint_t id) const
+ClevorDataSet::findJob(uint_t id) const
 {
     Job dummy;
     dummy.id() = id;
@@ -370,7 +370,7 @@ ClevorDataSet::findJob(utl::uint_t id) const
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 JobGroup*
-ClevorDataSet::findJobGroup(utl::uint_t id) const
+ClevorDataSet::findJobGroup(uint_t id) const
 {
     JobGroup dummy;
     dummy.id() = id;
@@ -383,7 +383,7 @@ ClevorDataSet::findJobGroup(utl::uint_t id) const
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 JobOp*
-ClevorDataSet::findOp(utl::uint_t id) const
+ClevorDataSet::findOp(uint_t id) const
 {
     JobOp dummy;
     dummy.id() = id;
@@ -396,7 +396,7 @@ ClevorDataSet::findOp(utl::uint_t id) const
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 Resource*
-ClevorDataSet::findResource(utl::uint_t id) const
+ClevorDataSet::findResource(uint_t id) const
 {
     Resource dummy;
     dummy.id() = id;
@@ -409,7 +409,7 @@ ClevorDataSet::findResource(utl::uint_t id) const
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 ResourceGroup*
-ClevorDataSet::findResourceGroup(utl::uint_t id) const
+ClevorDataSet::findResourceGroup(uint_t id) const
 {
     ResourceGroup dummy(id);
     resgroup_set_t::const_iterator it = _resGroups.find(&dummy);
@@ -421,7 +421,7 @@ ClevorDataSet::findResourceGroup(utl::uint_t id) const
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 ResourceSequenceList*
-ClevorDataSet::findResourceSequenceList(utl::uint_t id) const
+ClevorDataSet::findResourceSequenceList(uint_t id) const
 {
     ResourceSequenceList dummy;
     dummy.id() = id;
@@ -1209,7 +1209,7 @@ ClevorDataSet::modelBuildDiscreteResourceCalendars()
         for (spanIt = resCal->begin(); spanIt != resCal->end(); ++spanIt)
         {
             ResourceCalendarSpan* rcs = (ResourceCalendarSpan*)*spanIt;
-            clsDres->addProvidedCapacity(rcs->getBegin(), rcs->getEnd(), rcs->capacity());
+            clsDres->addProvidedCapacity(rcs->begin(), rcs->end(), rcs->capacity());
         }
 
         // add the calendar to the calendar mgr
@@ -1536,8 +1536,8 @@ ClevorDataSet::modelBuildCompositeResourceCts()
             PreferredResources* pr = utl::clone(cseResReq->preferredResources());
             if (pr != nullptr)
             {
-                std::vector<utl::uint_t>& resIds = pr->resIds();
-                std::vector<utl::uint_t>::iterator it;
+                std::vector<uint_t>& resIds = pr->resIds();
+                std::vector<uint_t>::iterator it;
                 for (it = resIds.begin(); it != resIds.end(); ++it)
                 {
                     uint_t id = *it;
@@ -1578,6 +1578,6 @@ CSE_NS_END;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-UTL_CLASS_IMPL(cse::JobOpIncSDordering, utl::Ordering);
-UTL_CLASS_IMPL(cse::JobOpDecSDordering, utl::Ordering);
-UTL_CLASS_IMPL(cse::ClevorDataSet, gop::DataSet);
+UTL_CLASS_IMPL(cse::JobOpIncSDordering);
+UTL_CLASS_IMPL(cse::JobOpDecSDordering);
+UTL_CLASS_IMPL(cse::ClevorDataSet);

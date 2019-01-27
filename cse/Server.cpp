@@ -26,7 +26,7 @@ CLS_NS_USE;
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////
 
-UTL_CLASS_IMPL(cse::Server, utl::NetCmdServer);
+UTL_CLASS_IMPL(cse::Server);
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -104,9 +104,9 @@ Server::handleCmd(NetServerClient* client, const Array& cmd)
     }
 
     ASSERTD(client->isA(SEclient));
-    SEclient* seClient = (SEclient*)client;
+    auto seClient = utl::cast<SEclient>(client);
 
-    std::string cmdStr = ((const utl::String&)cmd(0)).get();
+    std::string cmdStr = utl::cast<utl::String>(cmd(0)).get();
 
     // unauthorized client is only allowed to seek authorization
     if (!seClient->authorized() && (cmdStr != "authorizeClient"))

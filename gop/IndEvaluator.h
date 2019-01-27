@@ -29,7 +29,7 @@ GOP_NS_BEGIN;
 
 class IndEvaluator : public utl::Object
 {
-    UTL_CLASS_DECL_ABC(IndEvaluator);
+    UTL_CLASS_DECL_ABC(IndEvaluator, utl::Object);
 
 public:
     typedef std::map<std::string, int> string_int_map_t;

@@ -17,7 +17,7 @@ CLP_NS_USE;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-UTL_CLASS_IMPL(cls::DiscreteTimetableDomain, utl::Object);
+UTL_CLASS_IMPL(cls::DiscreteTimetableDomain);
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -49,9 +49,9 @@ DiscreteTimetableDomain::addCapExp(uint_t cap)
     {
         IntExp* nullIntExpPtr = nullptr;
         uint_t zero = 0;
-        utl::arrayGrow(_capExps, _capExpsSize, utl::max(K(1), ((size_t)cap + 1)), K(1024),
+        utl::arrayGrow(_capExps, _capExpsSize, utl::max(utl::KB(1), ((size_t)cap + 1)), utl::KB(1024),
                        &nullIntExpPtr);
-        utl::arrayGrow(_capExpCounts, _capExpCountsSize, utl::max(K(1), ((size_t)cap + 1)), K(1024),
+        utl::arrayGrow(_capExpCounts, _capExpCountsSize, utl::max(utl::KB(1), ((size_t)cap + 1)), utl::KB(1024),
                        &zero);
     }
 
@@ -104,7 +104,7 @@ DiscreteTimetableDomain::remCapExp(uint_t cap)
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-utl::uint_t
+uint_t
 DiscreteTimetableDomain::add(int min, int max, int v0, int v1)
 {
     ASSERTD(_mgr != nullptr);

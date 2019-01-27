@@ -25,25 +25,25 @@ MRP_NS_BEGIN;
 
 class DiscreteResource : public Resource
 {
-    UTL_CLASS_DECL(DiscreteResource);
+    UTL_CLASS_DECL(DiscreteResource, Resource);
 
 public:
     virtual void copy(const utl::Object& rhs);
 
     virtual void
-    serialize(utl::Stream& stream, utl::uint_t io, utl::uint_t mode = utl::ser_default);
+    serialize(utl::Stream& stream, uint_t io, uint_t mode = utl::ser_default);
 
     /// \name Accessors
     //@{
     /** Capacity. */
-    utl::uint_t
+    uint_t
     capacity() const
     {
         return _capacity;
     }
 
     /** Capacity. */
-    utl::uint_t&
+    uint_t&
     capacity()
     {
         return _capacity;
@@ -70,14 +70,14 @@ public:
     /** create a cse::DiscreteResource object. */
     cse::DiscreteResource* createDiscreteResource();
 
-    utl::String toString() const;
+    String toString() const;
 
 private:
     void init();
     void deInit();
 
 private:
-    utl::uint_t _capacity;
+    uint_t _capacity;
     SetupGroup* _setupGroup;
     cse::ResourceCost* _cost;
     cls::ResourceCalendar* _defaultCalendar;

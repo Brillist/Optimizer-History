@@ -14,7 +14,7 @@ LUT_NS_USE;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-UTL_CLASS_IMPL(clp::Manager, utl::Object);
+UTL_CLASS_IMPL(clp::Manager);
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -218,7 +218,7 @@ Manager::popState()
 {
     // must be choice point below root
     ASSERTD(_cpStackSize >= 2);
-    ChoicePoint* cp = _topCP;
+    auto cp = _topCP;
 
     // clear propagation queue
     _boundPropagator->clearPropQ();
@@ -247,7 +247,6 @@ Manager::init()
     _cpStackSize = 0;
     _topCP = nullptr;
 
-#if UTL_HOST_WORDSIZE == 64
     _revLongsSize = 0;
     _revLongArraysSize = 0;
     _revLongsIndSize = 0;
@@ -256,7 +255,6 @@ Manager::init()
     _revLongArrays = _revLongArraysPtr = _revLongArraysLim = nullptr;
     _revLongsInd = _revLongsIndPtr = _revLongsIndLim = nullptr;
     _revLongArraysInd = _revLongArraysIndPtr = _revLongArraysIndLim = nullptr;
-#endif
 
     _revIntsSize = 0;
     _revIntArraysSize = 0;
@@ -308,12 +306,10 @@ Manager::deInit()
     removeRefArray(_revCts, _revCtsPtr);
     deleteArray(_revAllocations, _revAllocationsPtr);
 
-#if UTL_HOST_WORDSIZE == 64
     delete[] _revLongs;
     delete[] _revLongArrays;
     delete[] _revLongsInd;
     delete[] _revLongArraysInd;
-#endif
     delete[] _revInts;
     delete[] _revIntArrays;
     delete[] _revIntsInd;
@@ -344,12 +340,10 @@ Manager::pushChoicePoint()
     }
 
     cp->setManager(this);
-#if UTL_HOST_WORDSIZE == 64
     cp->setRevLongsIdx(_revLongsPtr - _revLongs);
     cp->setRevLongArraysIdx(_revLongArraysPtr - _revLongArrays);
     cp->setRevLongsIndIdx(_revLongsIndPtr - _revLongsInd);
     cp->setRevLongArraysIndIdx(_revLongArraysIndPtr - _revLongArraysInd);
-#endif
     cp->setRevIntsIdx(_revIntsPtr - _revInts);
     cp->setRevIntArraysIdx(_revIntArraysPtr - _revIntArrays);
     cp->setRevIntsIndIdx(_revIntsIndPtr - _revIntsInd);
@@ -371,7 +365,7 @@ Manager::pushChoicePoint()
 void
 Manager::popChoicePoint()
 {
-    ChoicePoint* cp = _topCP;
+    auto cp = _topCP;
     cp->clear();
     _cpStack.pop();
     --_cpStackSize;
@@ -385,15 +379,11 @@ Manager::goalStackClear()
 {
     while (!_goalStack.empty())
     {
-        Goal* goal = _goalStack.top();
+        auto goal = _goalStack.top();
         _goalStack.pop();
         goal->removeRef();
     }
 }
-
-////////////////////////////////////////////////////////////////////////////////////////////////////
-
-#if UTL_HOST_WORDSIZE == 64
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -403,7 +393,7 @@ Manager::revSetLong(size_t& i)
     // grow if necessary
     if (_revLongsPtr == _revLongsLim)
     {
-        utl::arrayGrow(_revLongs, _revLongsPtr, _revLongsLim, utl::max(K(4), (_revLongsSize + 1)));
+        utl::arrayGrow(_revLongs, _revLongsPtr, _revLongsLim, utl::max(utl::KB(4), (_revLongsSize + 1)));
         _revLongsSize = _revLongsLim - _revLongs;
     }
     *_revLongsPtr++ = (size_t)&i;
@@ -422,7 +412,7 @@ Manager::revSetLongArray(size_t* array, uint_t size)
     {
         size_t curSize = (_revLongArraysPtr - _revLongArrays);
         utl::arrayGrow(_revLongArrays, _revLongArraysPtr, _revLongArraysLim,
-                       utl::max(K(4), curSize + growth));
+                       utl::max(utl::KB(4), curSize + growth));
         _revLongArraysSize = _revLongArraysLim - _revLongArrays;
     }
 
@@ -450,7 +440,7 @@ Manager::revSetLongInd(size_t*& array, uint_t idx)
     if (room < 3)
     {
         size_t curSize = (_revLongsIndPtr - _revLongsInd);
-        utl::arrayGrow(_revLongsInd, _revLongsIndPtr, _revLongsIndLim, utl::max(K(4), curSize + 3));
+        utl::arrayGrow(_revLongsInd, _revLongsIndPtr, _revLongsIndLim, utl::max(utl::KB(4), curSize + 3));
         _revLongsIndSize = _revLongsIndLim - _revLongsInd;
     }
 
@@ -471,7 +461,7 @@ Manager::revSetLongArrayInd(size_t*& array, uint_t idx, uint_t size)
     {
         size_t curSize = (_revLongArraysIndPtr - _revLongArraysInd);
         utl::arrayGrow(_revLongArraysInd, _revLongArraysIndPtr, _revLongArraysIndLim,
-                       utl::max(K(4), curSize + growth));
+                       utl::max(utl::KB(4), curSize + growth));
         _revLongArraysIndSize = _revLongArraysIndLim - _revLongArraysInd;
     }
 
@@ -492,17 +482,13 @@ Manager::revSetLongArrayInd(size_t*& array, uint_t idx, uint_t size)
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-#endif // UTL_HOST_WORDSIZE == 64
-
-////////////////////////////////////////////////////////////////////////////////////////////////////
-
 void
 Manager::revSetInt(uint_t& i)
 {
     // grow if necessary
     if (_revIntsPtr == _revIntsLim)
     {
-        utl::arrayGrow(_revInts, _revIntsPtr, _revIntsLim, utl::max(K(4), (_revIntsSize + 2)));
+        utl::arrayGrow(_revInts, _revIntsPtr, _revIntsLim, utl::max(utl::KB(4), (_revIntsSize + 2)));
         _revIntsSize = _revIntsLim - _revInts;
     }
 
@@ -522,7 +508,7 @@ Manager::revSetIntArray(uint_t* array, uint_t size)
     {
         size_t curSize = (_revIntArraysPtr - _revIntArrays);
         utl::arrayGrow(_revIntArrays, _revIntArraysPtr, _revIntArraysLim,
-                       utl::max(K(4), curSize + growth));
+                       utl::max(utl::KB(4), curSize + growth));
         _revIntArraysSize = _revIntArraysLim - _revIntArrays;
     }
 
@@ -550,7 +536,7 @@ Manager::revSetIntInd(uint_t*& array, uint_t idx)
     if (room < 3)
     {
         size_t curSize = (_revIntsIndPtr - _revIntsInd);
-        utl::arrayGrow(_revIntsInd, _revIntsIndPtr, _revIntsIndLim, utl::max(K(4), curSize + 3));
+        utl::arrayGrow(_revIntsInd, _revIntsIndPtr, _revIntsIndLim, utl::max(utl::KB(4), curSize + 3));
         _revIntsIndSize = _revIntsIndLim - _revIntsInd;
     }
 
@@ -571,7 +557,7 @@ Manager::revSetIntArrayInd(uint_t*& array, uint_t idx, uint_t size)
     {
         size_t curSize = (_revIntArraysIndPtr - _revIntArraysInd);
         utl::arrayGrow(_revIntArraysInd, _revIntArraysIndPtr, _revIntArraysIndLim,
-                       utl::max(K(4), curSize + growth));
+                       utl::max(utl::KB(4), curSize + growth));
         _revIntArraysIndSize = _revIntArraysIndLim - _revIntArraysInd;
     }
 
@@ -632,7 +618,6 @@ Manager::backtrackCP(ChoicePoint* cp)
     // backtrack the choice point
     cp->backtrack(_goalStack);
 
-#if UTL_HOST_WORDSIZE == 64
     // backtrack rev-long-arrays
     size_t* revLongArraysBegin = _revLongArrays + cp->getRevLongArraysIdx();
     while (_revLongArraysPtr > revLongArraysBegin)
@@ -688,7 +673,6 @@ Manager::backtrackCP(ChoicePoint* cp)
         size_t val = *(--_revLongsIndPtr);
         (*arrayPtr)[idx] = val;
     }
-#endif
 
     // backtrack rev-int-arrays
     size_t* revIntArraysBegin = _revIntArrays + cp->getRevIntArraysIdx();

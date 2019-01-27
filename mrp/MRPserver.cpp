@@ -3,12 +3,12 @@
 #include <clp/FailEx.h>
 #include <gop/ConfigEx.h>
 #include <cse/Server.h>
-#include "MRPdataSet.h"
-#include "MRPserver.h"
-#include "MRPclient.h"
 #include <cse/Scheduler.h>
 #include <cse/ScheduleEvaluatorConfiguration.h>
 #include <cse/SchedulingRun.h>
+#include "MRPdataSet.h"
+#include "MRPserver.h"
+#include "MRPclient.h"
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -26,7 +26,7 @@ CLP_NS_USE;
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////
 
-UTL_CLASS_IMPL(mrp::MRPserver, cse::Server);
+UTL_CLASS_IMPL(mrp::MRPserver);
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -46,7 +46,7 @@ MRPserver::clientMake(FDstream* socket, const InetHostAddress& addr)
 void
 MRPserver::addHandler(const char* cmd, MRPhfn handler)
 {
-    Server::addHandler(cmd, (hfn)handler);
+    Server::addHandler(cmd, reinterpret_cast<hfn>(handler));
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -361,8 +361,8 @@ MRPserver::handle_initScheduler(MRPclient* client, const Array& cmd)
     endForEach
 #endif
 
-        // initialize simple run
-        bool result = true;
+    // initialize simple run
+    bool result = true;
     utl::String str;
     try
     {
@@ -470,8 +470,8 @@ MRPserver::handle_initOptimizer(MRPclient* client, const Array& cmd)
     endForEach
 #endif
 
-        // initialize optimization run
-        bool res = true;
+    // initialize optimization run
+    bool res = true;
     utl::String str;
     try
     {
@@ -522,7 +522,7 @@ MRPserver::handle_initOptimizer(MRPclient* client, const Array& cmd)
 //         || !allAre(cmd(4), CLASS(ScheduleEvaluatorConfiguration)))
 //     {
 //         Bool(false).serializeOut(client->socket());
-//         utl::String str = "initScheduler error: wrong cmd.";
+//         String str = "initScheduler error: wrong cmd.";
 //         str.serializeOut(client->socket());
 //         finishCmd(client);
 //         clientDisconnect(client);//?
@@ -552,7 +552,7 @@ MRPserver::handle_initOptimizer(MRPclient* client, const Array& cmd)
 
 //     // initialize optimization run
 //     bool res = true;
-//     utl::String str;
+//     String str;
 //     try
 //     {
 //         client->run()->initialize(dataSet, optimizer, optimizerConfig);

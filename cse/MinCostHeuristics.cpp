@@ -1,5 +1,4 @@
 #include "libcse.h"
-#include <libutl/R250.h>
 #include <cls/BrkActivity.h>
 #include <cls/IntActivity.h>
 #include "DiscreteResource.h"
@@ -17,8 +16,8 @@ GOP_NS_USE;
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////
 
-UTL_CLASS_IMPL(cse::MinCostHeuristics, utl::Object);
-UTL_CLASS_IMPL(cse::MinCostAltResPt, utl::Object);
+UTL_CLASS_IMPL(cse::MinCostHeuristics);
+UTL_CLASS_IMPL(cse::MinCostAltResPt);
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -31,7 +30,7 @@ MinCostHeuristics::initialize(ClevorDataSet* dataSet)
 {
     ASSERTD(dataSet != nullptr);
     _timeStep = dataSet->schedulerConfig()->timeStep();
-    _rng = new R250(1042614900);
+    _rng = make_rng();
 
     // iterate over ops to set every op's minCostPt and minCostAltResIdxs
     const jobop_set_id_t& ops = dataSet->sops();
@@ -61,7 +60,7 @@ MinCostHeuristics::initialize(ClevorDataSet* dataSet)
         else
         {
             std::cout << "Warning(MinCostHeuristics.cpp): op" << op->id()
-                      << " is not either an interruptible or breakable op" << std::endl;
+                      << " is not interruptible or breakable" << std::endl;
             continue;
         }
     }
@@ -153,7 +152,7 @@ MinCostHeuristics::setMinCostAltResPt(const JobOp* op)
             }
             ASSERTD(minRgrCost < utl::double_t_max); //(double)uint_t_max);
             ASSERTD(idxCandidates.size() > 0);
-            uint_t idx = _rng->evali(idxCandidates.size());
+            uint_t idx = _rng->uniform((size_t)0, idxCandidates.size() - 1);
             altResIdx[rgrIdx] = idxCandidates[idx];
             cost += minRgrCost;
         }
@@ -173,7 +172,7 @@ MinCostHeuristics::setMinCostAltResPt(const JobOp* op)
     ASSERTD(minCost < (double)uint_t_max);
     ASSERTD(ptCandidates.size() > 0);
     ASSERTD(ptCandidates.size() == altResIdxCandidates.size());
-    uint_t idx = _rng->evali(ptCandidates.size());
+    uint_t idx = _rng->uniform((size_t)0, ptCandidates.size() - 1);
     minCostPt = ptCandidates[idx];
     minCostAltResIdx = altResIdxCandidates[idx];
     delete ptIt;

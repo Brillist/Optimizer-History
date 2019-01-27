@@ -1,5 +1,4 @@
-#ifndef LIBLUT_H
-#define LIBLUT_H
+#pragma once
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -23,7 +22,10 @@ LUT_NS_DECLARE;
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 #include <libutl/libutl.h>
+#include <libutl/RandUtils.h>
 #include <libutl/String.h>
+
+// standard library headers
 #undef new
 #include <algorithm>
 #include <fstream>
@@ -43,12 +45,6 @@ LUT_NS_DECLARE;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-#define std_hash_map std::unordered_map
-#define std_hash_set std::unordered_set
-
-////////////////////////////////////////////////////////////////////////////////////////////////////
-
-#include <lut/macros.h>
 #include <lut/types.h>
 #include <lut/lut_util.h>
 #include <lut/RBtree.h>
@@ -56,4 +52,12 @@ LUT_NS_DECLARE;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-#endif
+// for convenience
+using utl::String;
+using utl::byte_t;
+using utl::uint_t;
+using utl::uint32_t;
+using utl::uint64_t;
+using utl::uint_t_max;
+using utl::uint32_t_max;
+using utl::uint64_t_max;

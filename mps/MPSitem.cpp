@@ -20,7 +20,7 @@ MRP_NS_USE;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-UTL_CLASS_IMPL(mps::MPSitem, mrp::Item);
+UTL_CLASS_IMPL(mps::MPSitem);
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -47,7 +47,7 @@ MPSitem::copy(const Object& rhs)
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
-MPSitem::serialize(Stream& stream, utl::uint_t io, utl::uint_t)
+MPSitem::serialize(Stream& stream, uint_t io, uint_t)
 {
     Item::serialize(stream, io);
     utl::serialize(_eoq, stream, io);
@@ -89,7 +89,7 @@ MPSitem::toString() const
         << ", EOQ:" << _eoq << ", DTF:" << Time(_dtf).toString() << ", PTF:"
         << Time(_ptf).toString()
         //         << ", plngHrzn:" << Time(_planningHorizon).toString()
-        << ", ivntCost:" << Float(_inventoryCost).toString("precision:2")
+        << ", ivntCost:" << Float(_inventoryCost).toString(2)
         << ", period:" << _inventoryCostPeriod
         << ", allowMPSqntySplit:" << Bool(_allowMPSquantitySplit).toString();
     mpsitemperiod_set_id_t::const_iterator it;

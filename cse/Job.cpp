@@ -28,7 +28,7 @@ CSE_NS_BEGIN;
 
 class JobReleaseCG : public CycleGroup
 {
-    UTL_CLASS_DECL(JobReleaseCG);
+    UTL_CLASS_DECL(JobReleaseCG, CycleGroup);
     UTL_CLASS_DEFID;
 
 public:
@@ -544,5 +544,5 @@ CSE_NS_END;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-UTL_CLASS_IMPL(cse::JobReleaseCG, clp::CycleGroup);
-UTL_CLASS_IMPL(cse::Job, utl::Object);
+UTL_CLASS_IMPL(cse::JobReleaseCG);
+UTL_CLASS_IMPL(cse::Job);

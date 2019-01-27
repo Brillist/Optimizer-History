@@ -32,11 +32,11 @@ class BoundPropagator;
 
 class Manager : public utl::Object
 {
-    UTL_CLASS_DECL(Manager);
+    UTL_CLASS_DECL(Manager, utl::Object);
     UTL_CLASS_NO_COPY;
 
 public:
-    typedef std_hash_set<Constraint*, lut::HashUint<Constraint*>> ct_set_t;
+    typedef std::unordered_set<Constraint*, lut::HashUint<Constraint*>> ct_set_t;
     typedef ct_set_t::const_iterator ct_const_iterator;
 
 public:
@@ -94,7 +94,7 @@ public:
     void popState();
 
     /** Get the current depth. */
-    utl::uint_t
+    uint_t
     depth() const
     {
         return _cpStackSize;
@@ -123,19 +123,19 @@ public:
     void
     revIncrement(int& counter, int num = 1)
     {
-        revIncrement((utl::uint_t&)counter, (utl::uint_t)num);
+        revIncrement((uint_t&)counter, (uint_t)num);
     }
 
     /** Reversibly decrement the given counter. */
     void
     revDecrement(int& counter, int num = 1)
     {
-        revDecrement((utl::uint_t&)counter, (utl::uint_t)num);
+        revDecrement((uint_t&)counter, (uint_t)num);
     }
 
     /** Reversibly increment the given counter. */
     void
-    revIncrement(utl::uint_t& counter, utl::uint_t num = 1)
+    revIncrement(uint_t& counter, uint_t num = 1)
     {
         ASSERTD(!_cpStack.empty() && (_topCP == _cpStack.top()));
         revSet(counter);
@@ -144,7 +144,7 @@ public:
 
     /** Reversibly decrement the given counter. */
     void
-    revDecrement(utl::uint_t& counter, utl::uint_t num = 1)
+    revDecrement(uint_t& counter, uint_t num = 1)
     {
         ASSERTD(!_cpStack.empty() && (_topCP == _cpStack.top()));
         revSet(counter);
@@ -165,63 +165,55 @@ public:
     void
     revSet(T& i)
     {
-#if UTL_HOST_WORDSIZE == 64
         if (sizeof(T) == 8)
         {
             revSetLong((size_t&)i);
             return;
         }
-#endif
         ASSERTD(sizeof(T) == 4);
-        revSetInt((utl::uint_t&)i);
+        revSetInt((uint_t&)i);
     }
 
     /** Reversibly set the given array. */
     template <class T>
     void
-    revSet(T* array, utl::uint_t size)
+    revSet(T* array, uint_t size)
     {
-#if UTL_HOST_WORDSIZE == 64
         if (sizeof(T) == 8)
         {
             revSetLongArray((size_t*)array, size);
             return;
         }
-#endif
         ASSERTD(sizeof(T) == 4);
-        revSetIntArray((utl::uint_t*)array, size);
+        revSetIntArray((uint_t*)array, size);
     }
 
     /** Reversible set the given array element (indirectly). */
     template <class T>
     void
-    revSetIndirect(T*& array, utl::uint_t idx)
+    revSetIndirect(T*& array, uint_t idx)
     {
-#if UTL_HOST_WORDSIZE == 64
         if (sizeof(T) == 8)
         {
             revSetLongInd((size_t*&)array, idx);
             return;
         }
-#endif
         ASSERTD(sizeof(T) == 4);
-        revSetIntInd((utl::uint_t*&)array, idx);
+        revSetIntInd((uint_t*&)array, idx);
     }
 
     /** Reversible set the given array (indirectly). */
     template <class T>
     void
-    revSetIndirect(T*& array, utl::uint_t idx, utl::uint_t size)
+    revSetIndirect(T*& array, uint_t idx, uint_t size)
     {
-#if UTL_HOST_WORDSIZE == 64
         if (sizeof(T) == 8)
         {
             revSetLongArrayInd((size_t*&)array, idx, size);
             return;
         }
-#endif
         ASSERTD(sizeof(T) == 4);
-        revSetIntArrayInd((utl::uint_t*&)array, idx, size);
+        revSetIntArrayInd((uint_t*&)array, idx, size);
     }
 
     /** Indicate that the given variable was changed. */
@@ -231,7 +223,7 @@ public:
         if (_revDeltaVarsPtr == _revDeltaVarsLim)
         {
             utl::arrayGrow(_revDeltaVars, _revDeltaVarsPtr, _revDeltaVarsLim,
-                           utl::max(K(4), (_revDeltaVarsSize + 1)));
+                           utl::max(utl::KB(4), (_revDeltaVarsSize + 1)));
             _revDeltaVarsSize = _revDeltaVarsLim - _revDeltaVars;
         }
         *(_revDeltaVarsPtr++) = var;
@@ -243,7 +235,7 @@ public:
     {
         if (_revCtsPtr == _revCtsLim)
         {
-            utl::arrayGrow(_revCts, _revCtsPtr, _revCtsLim, utl::max(K(4), (_revCtsSize + 1)));
+            utl::arrayGrow(_revCts, _revCtsPtr, _revCtsLim, utl::max(utl::KB(4), (_revCtsSize + 1)));
             _revCtsSize = _revCtsLim - _revCts;
         }
         *(_revCtsPtr++) = ct;
@@ -257,7 +249,7 @@ public:
         if (_revTogglesPtr == _revTogglesLim)
         {
             utl::arrayGrow(_revToggles, _revTogglesPtr, _revTogglesLim,
-                           utl::max(K(4), (_revTogglesSize + 1)));
+                           utl::max(utl::KB(4), (_revTogglesSize + 1)));
             _revTogglesSize = _revTogglesLim - _revToggles;
         }
         bool* ptr = &flag;
@@ -272,7 +264,7 @@ public:
         if (_revAllocationsPtr == _revAllocationsLim)
         {
             utl::arrayGrow(_revAllocations, _revAllocationsPtr, _revAllocationsLim,
-                           utl::max(K(4), (_revAllocationsSize + 1)));
+                           utl::max(utl::KB(4), (_revAllocationsSize + 1)));
             _revAllocationsSize = _revAllocationsLim - _revAllocations;
         }
         *(_revAllocationsPtr++) = object;
@@ -285,7 +277,7 @@ public:
         if (_revActionsPtr == _revActionsLim)
         {
             utl::arrayGrow(_revActions, _revActionsPtr, _revActionsLim,
-                           utl::max(K(4), (_revActionsSize + 1)));
+                           utl::max(utl::KB(4), (_revActionsSize + 1)));
             _revActionsSize = _revActionsLim - _revActions;
         }
         *(_revActionsPtr++) = action;
@@ -304,19 +296,17 @@ private:
     void popChoicePoint();
     void goalStackClear();
 
-#if UTL_HOST_WORDSIZE == 64
     void revSetLong(size_t& i);
-    void revSetLongArray(size_t* array, utl::uint_t size);
-    void revSetLongInd(size_t*& array, utl::uint_t idx);
-    void revSetLongArrayInd(size_t*& array, utl::uint_t idx, utl::uint_t size);
-#endif
+    void revSetLongArray(size_t* array, uint_t size);
+    void revSetLongInd(size_t*& array, uint_t idx);
+    void revSetLongArrayInd(size_t*& array, uint_t idx, uint_t size);
 
-    void revSetInt(utl::uint_t& i);
-    void revSetIntArray(utl::uint_t* array, utl::uint_t size);
-    void revSetIntInd(utl::uint_t*& array, utl::uint_t idx);
-    void revSetIntArrayInd(utl::uint_t*& array, utl::uint_t idx, utl::uint_t size);
+    void revSetInt(uint_t& i);
+    void revSetIntArray(uint_t* array, uint_t size);
+    void revSetIntInd(uint_t*& array, uint_t idx);
+    void revSetIntArrayInd(uint_t*& array, uint_t idx, uint_t size);
 
-    bool backtrack(utl::uint_t depth = utl::uint_t_max);
+    bool backtrack(uint_t depth = uint_t_max);
     void backtrackCP(ChoicePoint* cp);
 
     // goal stack
@@ -333,10 +323,9 @@ private:
     // choice points
     cp_vector_t _storedCPs;
     cp_stack_t _cpStack;
-    utl::uint_t _cpStackSize;
+    uint_t _cpStackSize;
     ChoicePoint* _topCP;
 
-#if UTL_HOST_WORDSIZE == 64
     // rev-longs
     size_t* _revLongs;
     size_t* _revLongsPtr;
@@ -349,18 +338,17 @@ private:
     size_t* _revLongArraysLim;
     size_t _revLongArraysSize;
 
-    // indirect-rev-ints
+    // indirect-rev-longs
     size_t* _revLongsInd;
     size_t* _revLongsIndPtr;
     size_t* _revLongsIndLim;
     size_t _revLongsIndSize;
 
-    // indirect rev-arrays
+    // indirect rev-long-arrays
     size_t* _revLongArraysInd;
     size_t* _revLongArraysIndPtr;
     size_t* _revLongArraysIndLim;
     size_t _revLongArraysIndSize;
-#endif
 
     // rev-ints
     size_t* _revInts;
@@ -380,7 +368,7 @@ private:
     size_t* _revIntsIndLim;
     size_t _revIntsIndSize;
 
-    // indirect rev-arrays
+    // indirect rev-int-arrays
     size_t* _revIntArraysInd;
     size_t* _revIntArraysIndPtr;
     size_t* _revIntArraysIndLim;

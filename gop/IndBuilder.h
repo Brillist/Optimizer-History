@@ -15,10 +15,9 @@ GOP_NS_BEGIN;
 /**
    Individual construction strategy (abstract).
 
-   Each individual (Ind) contains a plan for its own construction.
-   These instructions are meant to be interpreted by a subclass of
-   IndBuilder, which knows how to read them in order to construct the
-   individual.
+   Each individual (Ind) contains a plan for its own construction.  These instructions are meant
+   to be interpreted by a subclass of IndBuilder, which knows how to read them in order to construct
+   the individual.
 
    \author Adam McKee
 */
@@ -27,7 +26,7 @@ GOP_NS_BEGIN;
 
 class IndBuilder : public utl::Object
 {
-    UTL_CLASS_DECL_ABC(IndBuilder);
+    UTL_CLASS_DECL_ABC(IndBuilder, utl::Object);
     UTL_CLASS_DEFID;
 
 public:
@@ -36,7 +35,7 @@ public:
 
     /** Initialize self. */
     virtual void
-    initialize(const DataSet* dataSet = nullptr, utl::uint_t stringBase = 0)
+    initialize(const DataSet* dataSet = nullptr, uint_t stringBase = 0)
     {
     }
 
@@ -44,7 +43,7 @@ public:
     virtual void
     initializeInd(Ind* ind,
                   const DataSet* dataSet,
-                  utl::RandNumGen* rng = nullptr,
+                  lut::rng_t* rng = nullptr,
                   void* param = nullptr)
     {
     }
@@ -53,7 +52,7 @@ public:
     virtual void
     initializeRandomInd(Ind* ind,
                         const DataSet* dataSet,
-                        utl::RandNumGen* rng = nullptr,
+                        lut::rng_t* rng = nullptr,
                         void* param = nullptr)
     {
     }

@@ -3,8 +3,6 @@
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////
 
-#include <libutl/RandNumGen.h>
-#include <libutl/R250.h>
 #include <cls/ResourceCapPts.h>
 #include "ResourceCost.h"
 #include "JobOp.h"
@@ -29,24 +27,24 @@ CSE_NS_BEGIN;
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////
 
-typedef std::vector<utl::uint_t> uint_vector_t;
+typedef std::vector<uint_t> uint_vector_t;
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////
 
 class MinCostAltResPt : public utl::Object
 {
-    UTL_CLASS_DECL(MinCostAltResPt);
+    UTL_CLASS_DECL(MinCostAltResPt, utl::Object);
     UTL_CLASS_NO_COPY;
 
 public:
-    MinCostAltResPt(utl::uint_t pt, uint_vector_t altResIdxs)
+    MinCostAltResPt(uint_t pt, uint_vector_t altResIdxs)
     {
         _pt = pt;
         _altResIdxs = altResIdxs;
     }
 
     /** get pt. */
-    const utl::uint_t
+    const uint_t
     pt() const
     {
         return _pt;
@@ -68,7 +66,7 @@ private:
     void deInit(){};
 
 private:
-    utl::uint_t _pt;
+    uint_t _pt;
     uint_vector_t _altResIdxs;
 };
 
@@ -76,7 +74,7 @@ private:
 
 class MinCostHeuristics : public utl::Object
 {
-    UTL_CLASS_DECL(MinCostHeuristics);
+    UTL_CLASS_DECL(MinCostHeuristics, utl::Object);
     UTL_CLASS_NO_COPY;
 
 public:
@@ -86,9 +84,9 @@ public:
 
     const MinCostAltResPt* getMinCostAltResPt(const JobOp* op) const;
 
-    utl::uint_t findCap(const cls::ResourceCapPts* resCapPts, utl::uint_t p_pt);
+    uint_t findCap(const cls::ResourceCapPts* resCapPts, uint_t p_pt);
 
-    double getResCost(utl::uint_t cap, utl::uint_t pt, const ResourceCost* cost);
+    double getResCost(uint_t cap, uint_t pt, const ResourceCost* cost);
 
 private:
     typedef std::map<const JobOp*, MinCostAltResPt*, JobOpIdOrdering> jobop_altrespt_map_t;
@@ -97,8 +95,8 @@ private:
     void init();
     void deInit();
 
-    utl::RandNumGen* _rng;
-    utl::uint_t _timeStep;
+    lut::rng_t* _rng;
+    uint_t _timeStep;
     jobop_altrespt_map_t _opAltResPt;
 };
 

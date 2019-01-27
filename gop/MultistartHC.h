@@ -18,7 +18,7 @@ GOP_NS_BEGIN;
 
 class MultistartHC : public HillClimber
 {
-    UTL_CLASS_DECL(MultistartHC);
+    UTL_CLASS_DECL(MultistartHC, HillClimber);
 
 public:
     /** Initialize. */
@@ -35,7 +35,7 @@ private:
     void deInit();
 
 private:
-    utl::uint_t _beamWidth;
+    uint_t _beamWidth;
     stringscore_vector_t _strScores;
 };
 

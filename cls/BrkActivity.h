@@ -47,10 +47,10 @@ class ESbound;
 class BrkActivity : public PtActivity
 {
     friend class DiscreteResourceRequirement;
-    UTL_CLASS_DECL(BrkActivity);
+    UTL_CLASS_DECL(BrkActivity, PtActivity);
 
 public:
-    typedef std::set<utl::uint_t> uint_set_t;
+    typedef std::set<uint_t> uint_set_t;
 
 public:
     /**
@@ -73,13 +73,13 @@ public:
        Select a resource.
        DEPRECATED: what if two requirements share the same resource?
     */
-    bool selectResource(utl::uint_t resId);
+    bool selectResource(uint_t resId);
 
     /** Get the break-list. */
     virtual clp::IntExp* breakList() const;
 
     /** Select the given processing-time. */
-    virtual void selectPt(utl::uint_t pt);
+    virtual void selectPt(uint_t pt);
 
     /** Forward scheduling? */
     bool forward() const;
@@ -129,7 +129,7 @@ private:
 
     void decrementUnknownReqs();
 
-    void selectResource(utl::uint_t resId, DiscreteResourceRequirement* rr);
+    void selectResource(uint_t resId, DiscreteResourceRequirement* rr);
 
     void addTimetableBounds();
 
@@ -137,7 +137,7 @@ private:
     const ResourceCalendar* _calendar;
     /*     uint_set_t _allResIds; */
     clp::IntVar* _selectedResources;
-    utl::uint_t _numUnknownReqs;
+    uint_t _numUnknownReqs;
     utl::Array _discreteReqs;
     bool _addedTimetableBounds;
 };

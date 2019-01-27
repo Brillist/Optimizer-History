@@ -19,8 +19,8 @@ class ClevorDataSet;
 /**
    Schedule builder (abstract).
 
-   A scheduler is an algorithm that builds a schedule from previously
-   made plans which are stored in the Schedule object itself.
+   A scheduler is an algorithm that builds a schedule from previously made plans which are stored
+   in the Schedule object itself.
 
    \author Adam McKee
 */
@@ -29,13 +29,13 @@ class ClevorDataSet;
 
 class Scheduler : public gop::IndBuilder
 {
-    UTL_CLASS_DECL_ABC(Scheduler);
+    UTL_CLASS_DECL_ABC(Scheduler, gop::IndBuilder);
 
 public:
     virtual void copy(const utl::Object& rhs);
 
     virtual void
-    serialize(utl::Stream& stream, utl::uint_t io, utl::uint_t mode = utl::ser_default);
+    serialize(utl::Stream& stream, uint_t io, uint_t mode = utl::ser_default);
 
     virtual void setStringBase(gop::Operator* op) const;
 
@@ -51,14 +51,14 @@ public:
     }
 
     /** Get the chromosome string size. */
-    virtual utl::uint_t
+    virtual uint_t
     stringSize(const ClevorDataSet& dataSet) const
     {
         return 0;
     }
 
     /** Get the chromosome string base. */
-    utl::uint_t
+    uint_t
     getStringBase() const
     {
         return _stringBase;
@@ -66,13 +66,13 @@ public:
 
     /** Set the chromosome string base. */
     void
-    setStringBase(utl::uint_t stringBase)
+    setStringBase(uint_t stringBase)
     {
         _stringBase = stringBase;
     }
 
 protected:
-    utl::uint_t _stringBase;
+    uint_t _stringBase;
     SchedulerConfiguration* _config;
     Scheduler* _nestedScheduler;
 

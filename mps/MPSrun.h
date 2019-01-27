@@ -24,7 +24,7 @@ MPS_NS_BEGIN;
 
 class MPSrun : public utl::Object
 {
-    UTL_CLASS_DECL(MPSrun);
+    UTL_CLASS_DECL(MPSrun, utl::Object);
     UTL_CLASS_NO_COPY;
 
 public:
@@ -35,10 +35,10 @@ public:
     /** Run. */
     bool run();
     bool generateWorkOrders();
-    mrp::WorkOrder* generateWorkOrder(utl::uint_t id,
+    mrp::WorkOrder* generateWorkOrder(uint_t id,
                                       MPSitemPeriod* period,
                                       mrp::ManufactureItem* item,
-                                      utl::uint_t quantity,
+                                      uint_t quantity,
                                       time_t releaseTime);
     //@}
 
@@ -58,7 +58,7 @@ private:
 
 private:
     MPSdataSet* _dataSet;
-    utl::uint_t _initId;
+    uint_t _initId;
 };
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////

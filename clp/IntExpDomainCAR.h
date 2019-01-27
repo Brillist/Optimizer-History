@@ -23,10 +23,10 @@ CLP_NS_BEGIN;
 class IntExpDomainCAR : public IntExpDomain
 {
     friend class IntExpDomainCARit;
-    UTL_CLASS_DECL(IntExpDomainCAR);
+    UTL_CLASS_DECL(IntExpDomainCAR, IntExpDomain);
 
 public:
-    typedef std::map<int, utl::uint_t> int_uint_map_t;
+    typedef std::map<int, uint_t> int_uint_map_t;
 
 public:
     /** Constructor. */
@@ -39,7 +39,7 @@ public:
     virtual void copy(const utl::Object& rhs);
 
     /** Decrement the count for the given value. */
-    utl::uint_t decrement(int val, utl::uint_t num = 1);
+    uint_t decrement(int val, uint_t num = 1);
 
     /** Contains the given value? */
     virtual bool has(int val) const;
@@ -73,35 +73,35 @@ private:
     void init(const int_uint_map_t& domain);
     void deInit();
 
-    utl::uint_t getCount(utl::uint_t idx) const;
+    uint_t getCount(uint_t idx) const;
 
     bool
-    zeroCount(utl::uint_t idx)
+    zeroCount(uint_t idx)
     {
         return (setCount(idx, 0) != 0);
     }
 
-    utl::uint_t setCount(utl::uint_t idx, utl::uint_t count);
+    uint_t setCount(uint_t idx, uint_t count);
 
 private:
     typedef utl::Vector<int> int_vector_t;
-    typedef utl::Vector<utl::uint32_t> uint32_vector_t;
+    typedef utl::Vector<uint32_t> uint32_vector_t;
 
 private:
-    utl::uint_t _num;
-    utl::uint_t _bits;
-    utl::uint_t _bitsLog2;
-    utl::uint_t _countsPerWord;
-    utl::uint_t _countsPerWordLog2;
-    utl::uint_t _countsPerWordMask;
-    utl::uint32_t _mask;
+    uint_t _num;
+    uint_t _bits;
+    uint_t _bitsLog2;
+    uint_t _countsPerWord;
+    uint_t _countsPerWordLog2;
+    uint_t _countsPerWordMask;
+    uint32_t _mask;
     int_vector_t _valuesArray;
     uint32_vector_t _countsArray;
     int* _values;
 
     // reversible /////////////////////////////////////
-    utl::uint32_t* _counts;
-    utl::uint_t _stateDepth;
+    uint32_t* _counts;
+    uint_t _stateDepth;
     // reversible /////////////////////////////////////
 };
 

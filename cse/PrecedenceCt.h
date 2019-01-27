@@ -29,7 +29,7 @@ enum precedence_ct_t
 
 class PrecedenceCt : public utl::Object
 {
-    UTL_CLASS_DECL(PrecedenceCt);
+    UTL_CLASS_DECL(PrecedenceCt, utl::Object);
 
 public:
     /**
@@ -39,7 +39,7 @@ public:
       \param type type of precedence constraint
       \param delay delay in seconds
    */
-    PrecedenceCt(utl::uint_t lhsOpId, utl::uint_t rhsOpId, precedence_ct_t type, utl::uint_t delay)
+    PrecedenceCt(uint_t lhsOpId, uint_t rhsOpId, precedence_ct_t type, uint_t delay)
     {
         _lhsOpId = lhsOpId;
         _rhsOpId = rhsOpId;
@@ -51,31 +51,31 @@ public:
     virtual void copy(const utl::Object& rhs);
 
     virtual void
-    serialize(utl::Stream& stream, utl::uint_t io, utl::uint_t mode = utl::ser_default);
+    serialize(utl::Stream& stream, uint_t io, uint_t mode = utl::ser_default);
 
     /** Get lhs op id. */
-    utl::uint_t
+    uint_t
     lhsOpId() const
     {
         return _lhsOpId;
     }
 
     /** Get lhs op id. */
-    utl::uint_t&
+    uint_t&
     lhsOpId()
     {
         return _lhsOpId;
     }
 
     /** Get rhs op id. */
-    utl::uint_t
+    uint_t
     rhsOpId() const
     {
         return _rhsOpId;
     }
 
     /** Get rhs op id. */
-    utl::uint_t&
+    uint_t&
     rhsOpId()
     {
         return _rhsOpId;
@@ -117,8 +117,8 @@ private:
     }
 
 private:
-    utl::uint_t _lhsOpId;
-    utl::uint_t _rhsOpId;
+    uint_t _lhsOpId;
+    uint_t _rhsOpId;
     precedence_ct_t _type;
     int _delay;
 };

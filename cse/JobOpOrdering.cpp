@@ -20,16 +20,16 @@ GOP_NS_USE;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-UTL_CLASS_IMPL_ABC(cse::JobOrdering, utl::Ordering);
-UTL_CLASS_IMPL(cse::JobOrderingDecSuccessorDepth, cse::JobOrdering);
-UTL_CLASS_IMPL(cse::JobOrderingDecLatenessCost, cse::JobOrdering);
-UTL_CLASS_IMPL(cse::JobOrderingIncDueTime, cse::JobOrdering);
-UTL_CLASS_IMPL(cse::JobOrderingIncSID, cse::JobOrdering);
-UTL_CLASS_IMPL_ABC(cse::OpOrdering, utl::Ordering);
-UTL_CLASS_IMPL(cse::OpOrderingFrozenFirst, cse::OpOrdering);
-UTL_CLASS_IMPL(cse::OpOrderingIncES, cse::OpOrdering);
-UTL_CLASS_IMPL(cse::OpOrderingIncSID, cse::OpOrdering);
-UTL_CLASS_IMPL(cse::JobOpOrderingIncSID, cse::OpOrdering);
+UTL_CLASS_IMPL_ABC(cse::JobOrdering);
+UTL_CLASS_IMPL(cse::JobOrderingDecSuccessorDepth);
+UTL_CLASS_IMPL(cse::JobOrderingDecLatenessCost);
+UTL_CLASS_IMPL(cse::JobOrderingIncDueTime);
+UTL_CLASS_IMPL(cse::JobOrderingIncSID);
+UTL_CLASS_IMPL_ABC(cse::OpOrdering);
+UTL_CLASS_IMPL(cse::OpOrderingFrozenFirst);
+UTL_CLASS_IMPL(cse::OpOrderingIncES);
+UTL_CLASS_IMPL(cse::OpOrderingIncSID);
+UTL_CLASS_IMPL(cse::JobOpOrderingIncSID);
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 

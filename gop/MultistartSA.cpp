@@ -18,7 +18,7 @@ LUT_NS_USE;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-UTL_CLASS_IMPL(gop::MultistartSA, gop::SAoptimizer);
+UTL_CLASS_IMPL(gop::MultistartSA);
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -120,7 +120,7 @@ MultistartSA::run()
             double diff;
             diff = objective->scoreDiff(_newScore, _acceptedScore);
             double acceptProb = exp(diff / _currentTemp);
-            _accept = (_rng->evalf() < acceptProb); //_accept
+            _accept = (_rng->uniform(0.0, 1.0) < acceptProb); //_accept
             _sameScore = _newBest = false;
 #ifdef DEBUG_UNIT
             utl::cout << temperatureString() << utl::endl;
@@ -151,7 +151,7 @@ MultistartSA::run()
 #ifdef DEBUG_UNIT
             utl::cout << "startId:" << _strScores[i]->getId() << "(" << i << "/" << _beamWidth
                       << ", "
-                      << Float(_strScores[i]->getScore()->getValue()).toString("precision:0")
+                      << Float(_strScores[i]->getScore()->getValue()).toString(0)
                       << "), " << iterationString() << utl::endl;
 #endif
             complete = this->complete();

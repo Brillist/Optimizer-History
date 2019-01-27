@@ -32,7 +32,7 @@ CSE_NS_BEGIN;
 
 class OptimizerFactory : public lut::Factory<gop::Optimizer>
 {
-    UTL_CLASS_DECL(OptimizerFactory);
+    UTL_CLASS_DECL(OptimizerFactory, lut::Factory<gop::Optimizer>);
     UTL_CLASS_DEFID;
 
 public:

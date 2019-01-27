@@ -1,20 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
-    <ProjectConfiguration Include="Debug|Win32">
-      <Configuration>Debug</Configuration>
+    <ProjectConfiguration Include="debug|Win32">
+      <Configuration>debug</Configuration>
       <Platform>Win32</Platform>
     </ProjectConfiguration>
-    <ProjectConfiguration Include="Release|Win32">
-      <Configuration>Release</Configuration>
+    <ProjectConfiguration Include="release|Win32">
+      <Configuration>release</Configuration>
       <Platform>Win32</Platform>
     </ProjectConfiguration>
-    <ProjectConfiguration Include="Debug|x64">
-      <Configuration>Debug</Configuration>
+    <ProjectConfiguration Include="debug|x64">
+      <Configuration>debug</Configuration>
       <Platform>x64</Platform>
     </ProjectConfiguration>
-    <ProjectConfiguration Include="Release|x64">
-      <Configuration>Release</Configuration>
+    <ProjectConfiguration Include="release|x64">
+      <Configuration>release</Configuration>
       <Platform>x64</Platform>
     </ProjectConfiguration>
   </ItemGroup>
@@ -143,6 +143,72 @@
     <ClCompile Include="cse\TotalCostEvaluator.cpp" />
     <ClCompile Include="cse\TotalCostEvaluatorConfiguration.cpp" />
     <ClCompile Include="cse\UnaryCt.cpp" />
+    <ClCompile Include="gop\AR_SAoptimizer.cpp" />
+    <ClCompile Include="gop\ConfigEx.cpp" />
+    <ClCompile Include="gop\DataSet.cpp" />
+    <ClCompile Include="gop\HillClimber.cpp" />
+    <ClCompile Include="gop\ID_SAoptimizer.cpp" />
+    <ClCompile Include="gop\Ind.cpp" />
+    <ClCompile Include="gop\IndBuilder.cpp" />
+    <ClCompile Include="gop\IndBuilderContext.cpp" />
+    <ClCompile Include="gop\IndEvaluator.cpp" />
+    <ClCompile Include="gop\IndEvaluatorConfiguration.cpp" />
+    <ClCompile Include="gop\MultistartHC.cpp" />
+    <ClCompile Include="gop\MultistartSA.cpp" />
+    <ClCompile Include="gop\Objective.cpp" />
+    <ClCompile Include="gop\Operator.cpp" />
+    <ClCompile Include="gop\OperatorVar.cpp" />
+    <ClCompile Include="gop\Optimizer.cpp" />
+    <ClCompile Include="gop\OptimizerConfiguration.cpp" />
+    <ClCompile Include="gop\Population.cpp" />
+    <ClCompile Include="gop\RandomWalk.cpp" />
+    <ClCompile Include="gop\RevOperator.cpp" />
+    <ClCompile Include="gop\RunStatus.cpp" />
+    <ClCompile Include="gop\SAoptimizer.cpp" />
+    <ClCompile Include="gop\Score.cpp" />
+    <ClCompile Include="gop\StringScore.cpp" />
+    <ClCompile Include="gop\WeightedEvaluator.cpp" />
+    <ClCompile Include="lut\Functor.cpp" />
+    <ClCompile Include="lut\lut_util.cpp" />
+    <ClCompile Include="lut\RBtree.cpp" />
+    <ClCompile Include="lut\RBtreeNode.cpp" />
+    <ClCompile Include="lut\RCobject.cpp" />
+    <ClCompile Include="lut\SkipListDepthArray.cpp" />
+    <ClCompile Include="main\clevor_se.cpp" />
+    <ClCompile Include="mps\MPSclient.cpp" />
+    <ClCompile Include="mps\MPSdataSet.cpp" />
+    <ClCompile Include="mps\MPSitem.cpp" />
+    <ClCompile Include="mps\MPSitemPeriod.cpp" />
+    <ClCompile Include="mps\MPSrun.cpp" />
+    <ClCompile Include="mps\MPSserver.cpp" />
+    <ClCompile Include="mps\ServerApp.cpp" />
+    <ClCompile Include="mrp\AlternateResources.cpp" />
+    <ClCompile Include="mrp\BOM.cpp" />
+    <ClCompile Include="mrp\CompositeResource.cpp" />
+    <ClCompile Include="mrp\DiscreteResource.cpp" />
+    <ClCompile Include="mrp\InventoryInterval.cpp" />
+    <ClCompile Include="mrp\InventoryRecord.cpp" />
+    <ClCompile Include="mrp\InventoryTransaction.cpp" />
+    <ClCompile Include="mrp\Item.cpp" />
+    <ClCompile Include="mrp\ItemPlanRelation.cpp" />
+    <ClCompile Include="mrp\ManufactureItem.cpp" />
+    <ClCompile Include="mrp\MRPclient.cpp" />
+    <ClCompile Include="mrp\MRPdataSet.cpp" />
+    <ClCompile Include="mrp\MRPrun.cpp" />
+    <ClCompile Include="mrp\MRPserver.cpp" />
+    <ClCompile Include="mrp\PlanStepRelation.cpp" />
+    <ClCompile Include="mrp\ProcessPlan.cpp" />
+    <ClCompile Include="mrp\ProcessStep.cpp" />
+    <ClCompile Include="mrp\PurchaseItem.cpp" />
+    <ClCompile Include="mrp\PurchaseOrder.cpp" />
+    <ClCompile Include="mrp\Resource.cpp" />
+    <ClCompile Include="mrp\ResourceGroup.cpp" />
+    <ClCompile Include="mrp\Setup.cpp" />
+    <ClCompile Include="mrp\SetupGroup.cpp" />
+    <ClCompile Include="mrp\StepAltResCapPts.cpp" />
+    <ClCompile Include="mrp\StepItemRequirement.cpp" />
+    <ClCompile Include="mrp\StepResourceRequirement.cpp" />
+    <ClCompile Include="mrp\WorkOrder.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="clp\And.h" />
@@ -274,29 +340,105 @@
     <ClInclude Include="cse\TotalCostEvaluator.h" />
     <ClInclude Include="cse\TotalCostEvaluatorConfiguration.h" />
     <ClInclude Include="cse\UnaryCt.h" />
+    <ClInclude Include="gop\AR_SAoptimizer.h" />
+    <ClInclude Include="gop\ConfigEx.h" />
+    <ClInclude Include="gop\DataSet.h" />
+    <ClInclude Include="gop\HillClimber.h" />
+    <ClInclude Include="gop\ID_SAoptimizer.h" />
+    <ClInclude Include="gop\Ind.h" />
+    <ClInclude Include="gop\IndBuilder.h" />
+    <ClInclude Include="gop\IndBuilderContext.h" />
+    <ClInclude Include="gop\IndEvaluator.h" />
+    <ClInclude Include="gop\IndEvaluatorConfiguration.h" />
+    <ClInclude Include="gop\libgop.h" />
+    <ClInclude Include="gop\MultistartHC.h" />
+    <ClInclude Include="gop\MultistartSA.h" />
+    <ClInclude Include="gop\Objective.h" />
+    <ClInclude Include="gop\Operator.h" />
+    <ClInclude Include="gop\OperatorVar.h" />
+    <ClInclude Include="gop\Optimizer.h" />
+    <ClInclude Include="gop\OptimizerConfiguration.h" />
+    <ClInclude Include="gop\Population.h" />
+    <ClInclude Include="gop\RandomWalk.h" />
+    <ClInclude Include="gop\RevOperator.h" />
+    <ClInclude Include="gop\RunStatus.h" />
+    <ClInclude Include="gop\SAoptimizer.h" />
+    <ClInclude Include="gop\Score.h" />
+    <ClInclude Include="gop\String.h" />
+    <ClInclude Include="gop\StringInd.h" />
+    <ClInclude Include="gop\StringScore.h" />
+    <ClInclude Include="gop\WeightedEvaluator.h" />
+    <ClInclude Include="lut\Factory.h" />
+    <ClInclude Include="lut\Functor.h" />
+    <ClInclude Include="lut\liblut.h" />
+    <ClInclude Include="lut\lut_util.h" />
+    <ClInclude Include="lut\Queue.h" />
+    <ClInclude Include="lut\RBtree.h" />
+    <ClInclude Include="lut\RBtreeNode.h" />
+    <ClInclude Include="lut\RCobject.h" />
+    <ClInclude Include="lut\SkipListDepthArray.h" />
+    <ClInclude Include="lut\types.h" />
+    <ClInclude Include="main\main.h" />
+    <ClInclude Include="mps\libmps.h" />
+    <ClInclude Include="mps\MPSclient.h" />
+    <ClInclude Include="mps\MPSdataSet.h" />
+    <ClInclude Include="mps\MPSitem.h" />
+    <ClInclude Include="mps\MPSitemPeriod.h" />
+    <ClInclude Include="mps\MPSrun.h" />
+    <ClInclude Include="mps\MPSserver.h" />
+    <ClInclude Include="mps\ServerApp.h" />
+    <ClInclude Include="mrp\AlternateResources.h" />
+    <ClInclude Include="mrp\BOM.h" />
+    <ClInclude Include="mrp\CompositeResource.h" />
+    <ClInclude Include="mrp\DiscreteResource.h" />
+    <ClInclude Include="mrp\InventoryInterval.h" />
+    <ClInclude Include="mrp\InventoryRecord.h" />
+    <ClInclude Include="mrp\InventoryTransaction.h" />
+    <ClInclude Include="mrp\Item.h" />
+    <ClInclude Include="mrp\ItemPlanRelation.h" />
+    <ClInclude Include="mrp\libmrp.h" />
+    <ClInclude Include="mrp\ManufactureItem.h" />
+    <ClInclude Include="mrp\MRPclient.h" />
+    <ClInclude Include="mrp\MRPdataSet.h" />
+    <ClInclude Include="mrp\MRPrun.h" />
+    <ClInclude Include="mrp\MRPserver.h" />
+    <ClInclude Include="mrp\PlanStepRelation.h" />
+    <ClInclude Include="mrp\ProcessPlan.h" />
+    <ClInclude Include="mrp\ProcessStep.h" />
+    <ClInclude Include="mrp\PurchaseItem.h" />
+    <ClInclude Include="mrp\PurchaseOrder.h" />
+    <ClInclude Include="mrp\Resource.h" />
+    <ClInclude Include="mrp\ResourceGroup.h" />
+    <ClInclude Include="mrp\Setup.h" />
+    <ClInclude Include="mrp\SetupGroup.h" />
+    <ClInclude Include="mrp\StepAltResCapPts.h" />
+    <ClInclude Include="mrp\StepItemRequirement.h" />
+    <ClInclude Include="mrp\StepResourceRequirement.h" />
+    <ClInclude Include="mrp\WorkOrder.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>15.0</VCProjectVersion>
     <ProjectGuid>{8BFCFC95-2046-47E6-B25E-E9B0D8385A2A}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
+    <WindowsTargetPlatformVersion>10.0.17763.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='debug|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v141</PlatformToolset>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='release|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v141</PlatformToolset>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='debug|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v141</PlatformToolset>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='release|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v141</PlatformToolset>
@@ -306,26 +448,27 @@
   </ImportGroup>
   <ImportGroup Label="Shared">
   </ImportGroup>
-  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='debug|Win32'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
-  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='release|Win32'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
-  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='debug|x64'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
-  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='release|x64'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='release|Win32'">
     <LinkIncremental>true</LinkIncremental>
   </PropertyGroup>
-  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='debug|x64'" />
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='debug|Win32'">
     <ClCompile>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;CONFIG=DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
@@ -339,7 +482,7 @@
       <SubSystem>Console</SubSystem>
     </Link>
   </ItemDefinitionGroup>
-  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='release|Win32'">
     <ClCompile>
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;CONFIG=RELEASE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
@@ -352,6 +495,29 @@
       <SubSystem>Console</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='debug|x64'">
+    <ClCompile>
+      <PreprocessorDefinitions>DEBUG;UTL_CC=UTL_CC_MSVC;UTL_HOST_OS=UTL_OS_WINDOWS;_CRT_SECURE_CPP_OVERLOAD_STANDARD_NAMES=1;_CRT_SECURE_CPP_OVERLOAD_STANDARD_NAMES_COUNT=1;_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(MSBuildProjectDirectory);$(MSBuildProjectDirectory)\..\libutl\</AdditionalIncludeDirectories>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <ObjectFileName>$(IntDir)%(RelativeDir)\%(Filename).obj</ObjectFileName>
+    </ClCompile>
+    <Link>
+      <AdditionalDependencies>$(MSBuildProjectDirectory)\..\libutl\x64\debug\libutl.lib;ws2_32.lib</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='release|x64'">
+    <ClCompile>
+      <PreprocessorDefinitions>RELEASE;UTL_CC=UTL_CC_MSVC;UTL_HOST_OS=UTL_OS_WINDOWS;_CRT_SECURE_CPP_OVERLOAD_STANDARD_NAMES=1;_CRT_SECURE_CPP_OVERLOAD_STANDARD_NAMES_COUNT=1;_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(MSBuildProjectDirectory);$(MSBuildProjectDirectory)\..\libutl\</AdditionalIncludeDirectories>
+      <ObjectFileName>$(IntDir)%(RelativeDir)\%(Filename).obj</ObjectFileName>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+    </ClCompile>
+    <Link>
+      <AdditionalDependencies>$(MSBuildProjectDirectory)\..\libutl\x64\release\libutl.lib;ws2_32.lib</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

@@ -21,11 +21,11 @@ CSE_NS_BEGIN;
 
 class Resource : public utl::Object
 {
-    UTL_CLASS_DECL(Resource);
+    UTL_CLASS_DECL(Resource, utl::Object);
 
 public:
     /** Constructor. */
-    Resource(utl::uint_t id, const std::string& name)
+    Resource(uint_t id, const std::string& name)
     {
         init();
         _id = id;
@@ -36,31 +36,31 @@ public:
     virtual void copy(const utl::Object& rhs);
 
     virtual void
-    serialize(utl::Stream& stream, utl::uint_t io, utl::uint_t mode = utl::ser_default);
+    serialize(utl::Stream& stream, uint_t io, uint_t mode = utl::ser_default);
 
     /** Get the id. */
-    utl::uint_t
+    uint_t
     id() const
     {
         return _id;
     }
 
     /** Get the id. */
-    utl::uint_t&
+    uint_t&
     id()
     {
         return _id;
     }
 
     /** Get the serial id. */
-    utl::uint_t
+    uint_t
     serialId() const
     {
         return _serialId;
     }
 
     /** Get the serial id. */
-    utl::uint_t&
+    uint_t&
     serialId()
     {
         return _serialId;
@@ -95,8 +95,8 @@ public:
     }
 
 protected:
-    utl::uint_t _id;
-    utl::uint_t _serialId;
+    uint_t _id;
+    uint_t _serialId;
     std::string _name;
     cls::Resource* _clsResource;
 

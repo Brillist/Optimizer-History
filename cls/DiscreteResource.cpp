@@ -26,7 +26,7 @@ CLS_NS_BEGIN;
 
 class TimetableBoundOrderingDecCap : public Ordering
 {
-    UTL_CLASS_DECL(TimetableBoundOrderingDecCap);
+    UTL_CLASS_DECL(TimetableBoundOrderingDecCap, Ordering);
     UTL_CLASS_DEFID;
 
 public:
@@ -78,7 +78,7 @@ DiscreteResource::initialize()
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
-DiscreteResource::addProvidedCapacity(int startTime, int endTime, utl::uint_t cap)
+DiscreteResource::addProvidedCapacity(int startTime, int endTime, uint_t cap)
 {
     _timetable.add(startTime, endTime - 1, 0, cap);
 }
@@ -140,7 +140,7 @@ DiscreteResource::allocate(int min, int max, uint_t cap, PtActivity* act, bool u
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
-DiscreteResource::deallocate(int min, int max, utl::uint_t cap, bool updateComposite)
+DiscreteResource::deallocate(int min, int max, uint_t cap, bool updateComposite)
 {
     _timetable.add(min, max, -(int)cap, 0);
 
@@ -164,7 +164,7 @@ DiscreteResource::deallocate(int min, int max, utl::uint_t cap, bool updateCompo
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
-DiscreteResource::selectCapacity(utl::uint_t cap, utl::uint_t maxCap)
+DiscreteResource::selectCapacity(uint_t cap, uint_t maxCap)
 {
     // what is the delta?
     int diff = (int)cap - (int)maxCap;
@@ -272,5 +272,5 @@ CLS_NS_END;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-UTL_CLASS_IMPL(cls::TimetableBoundOrderingDecCap, utl::Ordering);
-UTL_CLASS_IMPL(cls::DiscreteResource, cls::Resource);
+UTL_CLASS_IMPL(cls::TimetableBoundOrderingDecCap);
+UTL_CLASS_IMPL(cls::DiscreteResource);

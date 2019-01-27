@@ -22,7 +22,7 @@ GOP_NS_USE;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-UTL_CLASS_IMPL(cse::JobSeqSelector, cse::Scheduler);
+UTL_CLASS_IMPL(cse::JobSeqSelector);
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -83,7 +83,7 @@ JobSeqSelector::initialize(const gop::DataSet* p_dataSet, uint_t stringBase)
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
-JobSeqSelector::initializeInd(Ind* p_ind, const gop::DataSet* p_dataSet, RandNumGen* rng, void*)
+JobSeqSelector::initializeInd(Ind* p_ind, const gop::DataSet* p_dataSet, rng_t* rng, void*)
 {
     ASSERTD(dynamic_cast<StringInd<uint_t>*>(p_ind) != nullptr);
     ASSERTD(dynamic_cast<const ClevorDataSet*>(p_dataSet) != nullptr);
@@ -108,7 +108,7 @@ JobSeqSelector::initializeInd(Ind* p_ind, const gop::DataSet* p_dataSet, RandNum
 void
 JobSeqSelector::initializeRandomInd(Ind* p_ind,
                                     const gop::DataSet* p_dataSet,
-                                    RandNumGen* rng,
+                                    rng_t* rng,
                                     void*)
 {
     utl::cout << "ERROR(JobSeqSelector.cpp): in the incompleted code!" << utl::endl;

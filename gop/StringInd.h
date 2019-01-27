@@ -25,11 +25,11 @@ GOP_NS_BEGIN;
 
 template <class T> class StringInd : public gop::Ind
 {
-    UTL_CLASS_DECL_TPL(StringInd, T);
+    UTL_CLASS_DECL_TPL(StringInd, T, gop::Ind);
 
 public:
     /** Constructor. */
-    StringInd(utl::uint_t size)
+    StringInd(uint_t size)
     {
         init();
         _string->setSize(size);
@@ -40,7 +40,7 @@ public:
     virtual utl::String toString() const;
 
     /** Get the String size. */
-    utl::uint_t
+    uint_t
     size() const
     {
         return _string->size();
@@ -48,7 +48,7 @@ public:
 
     /** Set the size. */
     void
-    setSize(utl::uint_t size)
+    setSize(uint_t size)
     {
         _string->setSize(size);
     }
@@ -138,30 +138,30 @@ public:
        \param pos crossover position
     */
     void
-    crossover(StringInd<T>* off1, StringInd<T>* off2, const StringInd<T>& rhs, utl::uint_t pos);
+    crossover(StringInd<T>* off1, StringInd<T>* off2, const StringInd<T>& rhs, uint_t pos);
 
     /** Get a gene. */
     const T&
-    get(utl::uint_t idx)
+    get(uint_t idx)
     {
         return (*_string)[idx];
     }
 
     /** Set a gene. */
     void
-    set(utl::uint_t pos, utl::uint_t val)
+    set(uint_t pos, uint_t val)
     {
         (*_string)[pos] = val;
     }
 
     /** Get the gene at the given index (const). */
-    const T& operator[](utl::uint_t idx) const
+    const T& operator[](uint_t idx) const
     {
         return (*_string).operator[](idx);
     }
 
     /** Get the gene at the given index. */
-    T& operator[](utl::uint_t idx)
+    T& operator[](uint_t idx)
     {
         return (*_string).operator[](idx);
     }
@@ -223,7 +223,7 @@ void
 StringInd<T>::crossover(StringInd<T>* off1,
                         StringInd<T>* off2,
                         const StringInd<T>& rhs,
-                        utl::uint_t pos)
+                        uint_t pos)
 {
     _string->crossover((off1 == nullptr) ? nullptr : &off1->string(),
                        (off2 == nullptr) ? nullptr : &off2->string(), rhs.string(), pos);
@@ -256,7 +256,7 @@ GOP_NS_END;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-UTL_CLASS_IMPL_TPL(gop::StringInd, T, gop::Ind);
+UTL_CLASS_IMPL_TPL(gop::StringInd, T);
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 

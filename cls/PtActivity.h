@@ -22,7 +22,7 @@ CLS_NS_BEGIN;
 
 class PtActivity : public Activity
 {
-    UTL_CLASS_DECL_ABC(PtActivity);
+    UTL_CLASS_DECL_ABC(PtActivity, Activity);
 
 public:
     /**
@@ -37,23 +37,23 @@ public:
 
     /** Select a processing-time. */
     virtual void
-    selectPt(utl::uint_t pt)
+    selectPt(uint_t pt)
     {
         ABORT();
     }
 
     /** Exclude a processing-time. */
-    void excludePt(utl::uint_t pt);
+    void excludePt(uint_t pt);
 
     /** Get frozen-pt. */
-    utl::uint_t
+    uint_t
     frozenPt() const
     {
         return _frozenPt;
     }
 
     /** Get frozen-pt. */
-    utl::uint_t&
+    uint_t&
     frozenPt()
     {
         return _frozenPt;
@@ -67,7 +67,7 @@ public:
     }
 
 protected:
-    utl::uint_t _frozenPt;
+    uint_t _frozenPt;
     clp::IntVar* _possiblePts;
 
 private:

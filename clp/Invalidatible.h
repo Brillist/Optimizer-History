@@ -17,20 +17,20 @@ CLP_NS_BEGIN;
 
 class Invalidatible : public utl::Object
 {
-    UTL_CLASS_DECL(Invalidatible);
+    UTL_CLASS_DECL(Invalidatible, utl::Object);
     UTL_CLASS_NO_COPY;
 
 public:
     /** Invalidate the bound. */
     virtual void invalidate();
 
-    utl::uint_t
+    uint_t
     invalidateListIdx() const
     {
         return _invalidateListIdx;
     }
 
-    utl::uint_t&
+    uint_t&
     invalidateListIdx()
     {
         return _invalidateListIdx;
@@ -40,7 +40,7 @@ private:
     void
     init()
     {
-        _invalidateListIdx = utl::uint_t_max;
+        _invalidateListIdx = uint_t_max;
         _parent = nullptr;
     }
 
@@ -50,7 +50,7 @@ private:
     }
 
 private:
-    utl::uint_t _invalidateListIdx;
+    uint_t _invalidateListIdx;
     Invalidatible* _parent;
 };
 

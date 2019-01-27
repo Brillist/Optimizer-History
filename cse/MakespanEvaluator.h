@@ -22,7 +22,7 @@ CSE_NS_BEGIN;
 
 class MakespanEvaluator : public ScheduleEvaluator
 {
-    UTL_CLASS_DECL(MakespanEvaluator);
+    UTL_CLASS_DECL(MakespanEvaluator, ScheduleEvaluator);
     UTL_CLASS_DEFID;
 
 public:

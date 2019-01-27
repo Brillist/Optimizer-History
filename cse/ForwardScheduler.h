@@ -42,7 +42,7 @@ CSE_NS_BEGIN;
 
 class ForwardScheduler : public Scheduler
 {
-    UTL_CLASS_DECL(ForwardScheduler);
+    UTL_CLASS_DECL(ForwardScheduler, Scheduler);
 
 public:
     virtual void copy(const utl::Object& rhs);
@@ -55,21 +55,21 @@ public:
     void setOps(const ClevorDataSet* dataSet) const;
 
     /** get jobs start position in the string. */
-    utl::uint_t&
+    uint_t&
     jobStartPosition()
     {
         return _jobStartPosition;
     }
 
     /** get ops start position in the string */
-    utl::uint_t&
+    uint_t&
     opStartPosition()
     {
         return _opStartPosition;
     }
 
 private:
-    typedef std::vector<utl::uint_t> uint_vector_t;
+    typedef std::vector<uint_t> uint_vector_t;
     typedef std::map<Job*, jobop_vector_t*, JobIdOrdering> job_jobopvector_map_t;
 
 private:
@@ -77,17 +77,17 @@ private:
     void deInit();
 
     /** modify the optInitRun's scheduling sequence. */
-    void setInitialSeq(gop::StringInd<utl::uint_t>* ind, SchedulingContext* context) const;
+    void setInitialSeq(gop::StringInd<uint_t>* ind, SchedulingContext* context) const;
 
     /** generate a default scheduling sequence when optInitRun fails. */
-    void setDefaultInitialSeq(gop::StringInd<utl::uint_t>* ind, SchedulingContext* context) const;
+    void setDefaultInitialSeq(gop::StringInd<uint_t>* ind, SchedulingContext* context) const;
 
     /** write a scheduling sequence to the string. */
-    void setSequenceString(gop::StringInd<utl::uint_t>* ind, SchedulingContext* context) const;
+    void setSequenceString(gop::StringInd<uint_t>* ind, SchedulingContext* context) const;
 
 private:
-    utl::uint_t _jobStartPosition;
-    utl::uint_t _opStartPosition;
+    uint_t _jobStartPosition;
+    uint_t _opStartPosition;
     mutable bool _initOptRun;
     mutable job_vector_t _sortedJobs;
     mutable jobop_vector_t _sortedOps;

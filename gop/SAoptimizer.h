@@ -36,7 +36,7 @@ GOP_NS_BEGIN;
 
 class SAoptimizer : public Optimizer
 {
-    UTL_CLASS_DECL(SAoptimizer);
+    UTL_CLASS_DECL(SAoptimizer, Optimizer);
 
 public:
     /** Initialize. */
@@ -89,12 +89,12 @@ protected:
     double _stopTemp;    //stop temperature
 
     double _totalScoreDiff;          //total socre changes for every move
-    utl::uint_t _totalScoreDiffIter; //total #iters for _totalScoreDiff
+    uint_t _totalScoreDiffIter; //total #iters for _totalScoreDiff
 
     /** Optimizer customization parameters */
     bool _fixedInitTemp;
-    utl::uint_t _populationSize; // #tries at each temperature.
-    utl::uint_t _tempIteration;  // count #iters at each temperature.
+    uint_t _populationSize; // #tries at each temperature.
+    uint_t _tempIteration;  // count #iters at each temperature.
 private:
     void init();
     void deInit();

@@ -22,59 +22,59 @@ CSE_NS_BEGIN;
 
 class ResourceRequirement : public utl::Object
 {
-    UTL_CLASS_DECL(ResourceRequirement);
+    UTL_CLASS_DECL(ResourceRequirement, utl::Object);
 
 public:
     /** Copy another instance. */
     virtual void copy(const utl::Object& rhs);
 
     virtual void
-    serialize(utl::Stream& stream, utl::uint_t io, utl::uint_t mode = utl::ser_default);
+    serialize(utl::Stream& stream, uint_t io, uint_t mode = utl::ser_default);
 
     /** Get the resource id. */
-    utl::uint_t
+    uint_t
     resourceId() const
     {
         return _resourceId;
     }
 
     /** Get the resource id. */
-    utl::uint_t&
+    uint_t&
     resourceId()
     {
         return _resourceId;
     }
 
     /** Get required capacity. */
-    utl::uint_t
+    uint_t
     capacity() const
     {
         return _capacity;
     }
 
     /** Get required capacity. */
-    utl::uint_t&
+    uint_t&
     capacity()
     {
         return _capacity;
     }
 
     /** Get max capacity */
-    utl::uint_t&
+    uint_t&
     maxCapacity()
     {
         return _maxCapacity;
     }
 
     /** Get scheduled capacity. */
-    utl::uint_t
+    uint_t
     scheduledCapacity() const
     {
         return _scheduledCapacity;
     }
 
     /** Get scheduled capacity. */
-    utl::uint_t&
+    uint_t&
     scheduledCapacity()
     {
         return _scheduledCapacity;
@@ -158,10 +158,10 @@ private:
     void deInit();
 
 private:
-    utl::uint_t _resourceId;
-    utl::uint_t _capacity;
-    utl::uint_t _maxCapacity;
-    utl::uint_t _scheduledCapacity;
+    uint_t _resourceId;
+    uint_t _capacity;
+    uint_t _maxCapacity;
+    uint_t _scheduledCapacity;
     time_t _beginTime;
     time_t _endTime;
     bool _isSystem;

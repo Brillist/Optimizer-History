@@ -22,7 +22,7 @@ CLS_NS_BEGIN;
 
 class ESboundTimetable : public TimetableBound
 {
-    UTL_CLASS_DECL(ESboundTimetable);
+    UTL_CLASS_DECL(ESboundTimetable, TimetableBound);
 
 public:
     /** Constructor. */

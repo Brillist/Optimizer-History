@@ -27,66 +27,66 @@ class ResourceGroup;
 
 class ResourceGroupRequirement : public utl::Object
 {
-    UTL_CLASS_DECL(ResourceGroupRequirement);
+    UTL_CLASS_DECL(ResourceGroupRequirement, utl::Object);
 
 public:
     /** Copy another instance. */
     virtual void copy(const utl::Object& rhs);
 
     virtual void
-    serialize(utl::Stream& stream, utl::uint_t io, utl::uint_t mode = utl::ser_default);
+    serialize(utl::Stream& stream, uint_t io, uint_t mode = utl::ser_default);
 
     /** Get the resource-group id. */
-    utl::uint_t
+    uint_t
     resourceGroupId() const
     {
         return _resourceGroupId;
     }
 
     /** Get the resource-group id. */
-    utl::uint_t&
+    uint_t&
     resourceGroupId()
     {
         return _resourceGroupId;
     }
 
     /** Get the capacity. */
-    utl::uint_t
+    uint_t
     capacity() const
     {
         return _capacity;
     }
 
     /** Get the capacity. */
-    utl::uint_t&
+    uint_t&
     capacity()
     {
         return _capacity;
     }
 
     /** Get scheduled resource-id. */
-    utl::uint_t
+    uint_t
     scheduledResourceId() const
     {
         return _scheduledResourceId;
     }
 
     /** Get scheduled resource-id. */
-    utl::uint_t&
+    uint_t&
     scheduledResourceId()
     {
         return _scheduledResourceId;
     }
 
     /** Get scheduled capacity. */
-    utl::uint_t
+    uint_t
     scheduledCapacity() const
     {
         return _scheduledCapacity;
     }
 
     /** Get scheduled capacity. */
-    utl::uint_t&
+    uint_t&
     scheduledCapacity()
     {
         return _scheduledCapacity;
@@ -117,10 +117,10 @@ private:
     }
 
 private:
-    utl::uint_t _resourceGroupId;
-    utl::uint_t _capacity;
-    utl::uint_t _scheduledResourceId;
-    utl::uint_t _scheduledCapacity;
+    uint_t _resourceGroupId;
+    uint_t _capacity;
+    uint_t _scheduledResourceId;
+    uint_t _scheduledCapacity;
     cls::DiscreteResourceRequirement* _clsResReq;
 };
 

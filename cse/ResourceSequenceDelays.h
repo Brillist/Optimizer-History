@@ -19,12 +19,12 @@ CSE_NS_BEGIN;
 
 class ResourceSequenceDelay : public utl::Object
 {
-    UTL_CLASS_DECL(ResourceSequenceDelay);
+    UTL_CLASS_DECL(ResourceSequenceDelay, utl::Object);
 
 public:
     /** Constructor. */
-    ResourceSequenceDelay(utl::uint_t lhsOpSequenceId,
-                          utl::uint_t rhsOpSequenceId,
+    ResourceSequenceDelay(uint_t lhsOpSequenceId,
+                          uint_t rhsOpSequenceId,
                           int delay,
                           double cost)
     {
@@ -41,14 +41,14 @@ public:
     int compare(const utl::Object& rhs) const;
 
     /** Get lhs-op-sequence-id. */
-    utl::uint_t
+    uint_t
     lhsOpSequenceId() const
     {
         return _lhsOpSequenceId;
     }
 
     /** Get rhs-op-sequence-id. */
-    utl::uint_t
+    uint_t
     rhsOpSequenceId() const
     {
         return _rhsOpSequenceId;
@@ -76,8 +76,8 @@ private:
     }
 
 private:
-    utl::uint_t _lhsOpSequenceId;
-    utl::uint_t _rhsOpSequenceId;
+    uint_t _lhsOpSequenceId;
+    uint_t _rhsOpSequenceId;
     int _delay;
     double _cost;
 };
@@ -96,7 +96,7 @@ private:
 
 class ResourceSequenceDelays : public utl::Object
 {
-    UTL_CLASS_DECL(ResourceSequenceDelays);
+    UTL_CLASS_DECL(ResourceSequenceDelays, utl::Object);
 
 public:
     virtual void copy(const utl::Object& rhs);
@@ -105,7 +105,7 @@ public:
     int compare(const utl::Object& rhs) const;
 
     /** Add a delay/cost for the given sequencing. */
-    void add(utl::uint_t lhsOpSequenceId, utl::uint_t rhsOpSequenceId, int delay, double cost);
+    void add(uint_t lhsOpSequenceId, uint_t rhsOpSequenceId, int delay, double cost);
 
 private:
     typedef std::set<ResourceSequenceDelay*, lut::ObjectSTLordering<ResourceSequenceDelay>>
@@ -116,7 +116,7 @@ private:
     void deInit();
 
 private:
-    utl::uint_t _resourceSequenceId;
+    uint_t _resourceSequenceId;
     rsd_set_t _resourceSequenceDelays;
 };
 

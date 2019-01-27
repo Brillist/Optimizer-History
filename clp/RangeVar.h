@@ -22,7 +22,7 @@ CLP_NS_BEGIN;
 
 class RangeVar : public utl::Object
 {
-    UTL_CLASS_DECL(RangeVar);
+    UTL_CLASS_DECL(RangeVar, utl::Object);
 
 public:
     /** Constructor. */
@@ -32,7 +32,7 @@ public:
     virtual void copy(const utl::Object& rhs);
 
     /** Get a human-readable string representation. */
-    virtual utl::String toString() const;
+    virtual String toString() const;
 
     /// \name Accessors
     //@{
@@ -143,7 +143,7 @@ public:
     }
 
     /** Get the size of the domain. */
-    virtual utl::uint_t
+    virtual uint_t
     size() const
     {
         ASSERTD(!empty());

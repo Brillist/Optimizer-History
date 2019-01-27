@@ -7,7 +7,7 @@ LUT_NS_USE;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-UTL_CLASS_IMPL(clp::Or, clp::Goal);
+UTL_CLASS_IMPL(clp::Or);
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -15,7 +15,7 @@ CLP_NS_BEGIN;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-Or::Or(Goal* g0, Goal* g1, utl::uint_t label)
+Or::Or(Goal* g0, Goal* g1, uint_t label)
     : Goal(g0->manager())
 {
     init();
@@ -27,7 +27,7 @@ Or::Or(Goal* g0, Goal* g1, utl::uint_t label)
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-Or::Or(Goal* g0, Goal* g1, Goal* g2, utl::uint_t label)
+Or::Or(Goal* g0, Goal* g1, Goal* g2, uint_t label)
     : Goal(g0->manager())
 {
     init();
@@ -40,7 +40,7 @@ Or::Or(Goal* g0, Goal* g1, Goal* g2, utl::uint_t label)
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-Or::Or(Goal* g0, Goal* g1, Goal* g2, Goal* g3, utl::uint_t label)
+Or::Or(Goal* g0, Goal* g1, Goal* g2, Goal* g3, uint_t label)
     : Goal(g0->manager())
 {
     init();
@@ -54,7 +54,7 @@ Or::Or(Goal* g0, Goal* g1, Goal* g2, Goal* g3, utl::uint_t label)
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-Or::Or(Goal* g0, Goal* g1, Goal* g2, Goal* g3, Goal* g4, utl::uint_t label)
+Or::Or(Goal* g0, Goal* g1, Goal* g2, Goal* g3, Goal* g4, uint_t label)
     : Goal(g0->manager())
 {
     init();

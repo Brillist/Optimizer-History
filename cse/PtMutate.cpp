@@ -20,7 +20,7 @@ CLS_NS_USE;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-UTL_CLASS_IMPL(cse::PtMutate, gop::RevOperator);
+UTL_CLASS_IMPL(cse::PtMutate);
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -114,7 +114,7 @@ PtMutate::execute(gop::Ind* ind, gop::IndBuilderContext* p_context, bool singleS
         }
         else
         {
-            uint_t randomNum = _rng->evali(2);
+            uint_t randomNum = _rng->uniform(0, 1);
             if (randomNum == 0)
             {
                 ptIdx = oldPtIdx - 1;
@@ -128,7 +128,7 @@ PtMutate::execute(gop::Ind* ind, gop::IndBuilderContext* p_context, bool singleS
     }
     else
     {
-        ptIdx = _rng->evali(pts->size() - 1);
+        ptIdx = _rng->uniform((size_t)0, pts->size() - 2);
         pt = (*pts)[ptIdx];
         if (pt >= _movePt)
             pt = (*pts)[++ptIdx];

@@ -23,7 +23,7 @@ CLP_NS_BEGIN;
 
 class Or : public Goal
 {
-    UTL_CLASS_DECL(Or);
+    UTL_CLASS_DECL(Or, Goal);
 
 public:
     typedef std::vector<Goal*> goal_vector_t;
@@ -32,16 +32,16 @@ public:
 
 public:
     /** Constructor. */
-    Or(Goal* g0, Goal* g1, utl::uint_t label = utl::uint_t_max);
+    Or(Goal* g0, Goal* g1, uint_t label = uint_t_max);
 
     /** Constructor. */
-    Or(Goal* g0, Goal* g1, Goal* g2, utl::uint_t label = utl::uint_t_max);
+    Or(Goal* g0, Goal* g1, Goal* g2, uint_t label = uint_t_max);
 
     /** Constructor. */
-    Or(Goal* g0, Goal* g1, Goal* g2, Goal* g3, utl::uint_t label = utl::uint_t_max);
+    Or(Goal* g0, Goal* g1, Goal* g2, Goal* g3, uint_t label = uint_t_max);
 
     /** Constructor. */
-    Or(Goal* g0, Goal* g1, Goal* g2, Goal* g3, Goal* g4, utl::uint_t label = utl::uint_t_max);
+    Or(Goal* g0, Goal* g1, Goal* g2, Goal* g3, Goal* g4, uint_t label = uint_t_max);
 
     virtual void copy(const utl::Object& rhs);
 
@@ -57,18 +57,17 @@ public:
     bool
     isLabeled() const
     {
-        return (_label != utl::uint_t_max);
+        return (_label != uint_t_max);
     }
 
     /** Get the label. */
-    utl::uint_t
-    label() const
+    uint_t     label() const
     {
         return _label;
     }
 
     /** Get the number of choices. */
-    utl::uint_t
+    uint_t
     numChoices() const
     {
         return _choices.size();
@@ -76,7 +75,7 @@ public:
 
     /** Get the choice at the given index. */
     Goal*
-    getChoice(utl::uint_t idx) const
+    getChoice(uint_t idx) const
     {
         ASSERTD(idx < _choices.size());
         return _choices[idx];
@@ -112,7 +111,7 @@ private:
     void
     init()
     {
-        _label = utl::uint_t_max;
+        _label = uint_t_max;
     }
     void
     deInit()
@@ -122,7 +121,7 @@ private:
     void addRefs();
 
     goal_vector_t _choices;
-    utl::uint_t _label;
+    uint_t _label;
 };
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////

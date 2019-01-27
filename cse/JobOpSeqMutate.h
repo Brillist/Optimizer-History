@@ -24,16 +24,16 @@ CSE_NS_BEGIN;
 
 class JobOpSeqMutate : public gop::RevOperator
 {
-    UTL_CLASS_DECL(JobOpSeqMutate);
+    UTL_CLASS_DECL(JobOpSeqMutate, gop::RevOperator);
     //public:
-    //   typedef std::set<utl::uint_t> uint_set_t;
+    //   typedef std::set<uint_t> uint_set_t;
 public:
     /**
       Constructor.
       \param p probability
       \param rng PRNG
    */
-    JobOpSeqMutate(double p, utl::RandNumGen* rng = nullptr)
+    JobOpSeqMutate(double p, lut::rng_t* rng = nullptr)
         : RevOperator("JobOpSeqMutate", p, rng)
     {
         init();
@@ -52,8 +52,8 @@ public:
     virtual void undo();
 
 private:
-    typedef std::vector<utl::uint_t> uint_vector_t;
-    typedef std::set<utl::uint_t> uint_set_t;
+    typedef std::vector<uint_t> uint_vector_t;
+    typedef std::set<uint_t> uint_set_t;
     typedef std::vector<JobOp*> jobop_vector_t;
     typedef std::vector<jobop_vector_t*> jobop_vector_vector_t;
     typedef std::vector<uint_set_t*> uint_vector_set_t;
@@ -71,9 +71,9 @@ private:
     uint_vector_t _jobNumChoices;
     jobop_vector_vector_t _swapOps;
 
-    gop::StringInd<utl::uint_t>* _moveSchedule;
-    utl::uint_t _moveJobIdx;
-    utl::uint_t _moveOpSid;
+    gop::StringInd<uint_t>* _moveSchedule;
+    uint_t _moveJobIdx;
+    uint_t _moveOpSid;
     jobop_vector_t _moveOps;
     uint_vector_t _moveOpIdxs;
 };

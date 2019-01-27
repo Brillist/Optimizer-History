@@ -25,12 +25,12 @@ class IntExpDomainAR;
 
 class IntExpDomainARit : public IntExpDomainIt
 {
-    UTL_CLASS_DECL(IntExpDomainARit);
+    UTL_CLASS_DECL(IntExpDomainARit, IntExpDomainIt);
     UTL_CLASS_DEFID;
 
 public:
     /** Constructor. */
-    IntExpDomainARit(const IntExpDomainAR* domain, utl::uint_t idx, utl::uint_t val)
+    IntExpDomainARit(const IntExpDomainAR* domain, uint_t idx, uint_t val)
     {
         _domain = domain;
         _idx = idx;
@@ -48,7 +48,7 @@ public:
 
 private:
     const IntExpDomainAR* _domain;
-    utl::uint_t _idx;
+    uint_t _idx;
 };
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////

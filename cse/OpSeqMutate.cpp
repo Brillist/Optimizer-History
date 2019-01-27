@@ -20,7 +20,7 @@ CLS_NS_USE;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-UTL_CLASS_IMPL(cse::OpSeqMutate, gop::RevOperator);
+UTL_CLASS_IMPL(cse::OpSeqMutate);
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -105,9 +105,6 @@ OpSeqMutate::execute(gop::Ind* ind, gop::IndBuilderContext* p_context, bool sing
     uint_t opIdx = getSelectedVarIdx();
     _moveOpIdx = opIdx;
     JobOp* op = _ops[opIdx];
-
-    //return false when initOptRun failed
-    //to generate a feasible schedule
     ASSERTD(op->serialId() != uint_t_max);
 
     //select a swap op
@@ -117,15 +114,12 @@ OpSeqMutate::execute(gop::Ind* ind, gop::IndBuilderContext* p_context, bool sing
     JobOp* swapOp = selectActiveSwapOp(swapOps);
     if (swapOp == nullptr)
         swapOp = op;
-    //     ASSERTD(swapOps->size() > 0);
-    //     uint_t swapOpIdx = _rng->evali(swapOps->size());
-    //     JobOp* swapOp = (*swapOps)[swapOpIdx];
 
-    //swap two ops
+    // swap two ops
     uint_t opSid = op->serialId();
     uint_t swapOpSid = swapOp->serialId();
     ASSERTD(opSid != uint_t_max && swapOpSid != uint_t_max);
-    ////collect and sort all ops between op and swapOp
+    // collect and sort all ops between op and swapOp
     uint_t minOpSid = utl::min(opSid, swapOpSid);
     uint_t maxOpSid = utl::max(opSid, swapOpSid);
     _moveOpSid = minOpSid; //_moveOpSid
@@ -142,7 +136,7 @@ OpSeqMutate::execute(gop::Ind* ind, gop::IndBuilderContext* p_context, bool sing
         }
     }
     std::sort(_moveOps.begin(), _moveOps.end(), JobOpSerialIdOrdering());
-    ////move firstOp and all its sucessors to the end
+    // move firstOp and all its sucessors to the end
     jobop_vector_t changedOps = _moveOps;
     JobOp* firstOp = *(changedOps.begin());
     const cg_revset_t& allSuccCGs = firstOp->esCG()->allSuccCGs();
@@ -163,23 +157,20 @@ OpSeqMutate::execute(gop::Ind* ind, gop::IndBuilderContext* p_context, bool sing
         }
         nextOp = *startIt;
     }
-    ////re-assign sid
+    // re-assign sid
     uint_t newSid = minOpSid;
     for (jobop_vector_t::iterator it = changedOps.begin(); it != changedOps.end(); ++it)
     {
         JobOp* op1 = *it;
         op1->serialId() = newSid++;
     }
-    ////update string
+    // update string
     for (uint_vector_t::iterator it = _moveOpIdxs.begin(); it != _moveOpIdxs.end(); it++)
     {
         uint_t idx = *it;
         JobOp* op1 = _ops[idx];
         string[_stringBase + idx] = op1->serialId();
     }
-    //     ASSERTD((op->serialId() - swapOp->serialId() == 1) ||
-    //             (swapOp->serialId() - op->serialId() == 1));
-    ////selectResource(resId)
     ASSERTD(op->breakable() || op->interruptible());
     ASSERTD(swapOp->breakable() || swapOp->interruptible());
     Activity* act1 = op->activity();
@@ -190,7 +181,7 @@ OpSeqMutate::execute(gop::Ind* ind, gop::IndBuilderContext* p_context, bool sing
     std::set_intersection(opResIds.begin(), opResIds.end(), swapOpResIds.begin(),
                           swapOpResIds.end(), std::inserter(commonResIds, commonResIds.begin()));
     ASSERT(commonResIds.size() > 0);
-    uint_t resIdx = _rng->evali(commonResIds.size());
+    uint_t resIdx = _rng->uniform((size_t)0, commonResIds.size() - 1);
     uint_t resId = uint_t_max;
 
     uint_set_t::iterator resIt = commonResIds.begin();
@@ -247,7 +238,6 @@ OpSeqMutate::undo()
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-typedef std::set<utl::uint_t> uint_set_t;
 
 void
 OpSeqMutate::setOps(const ClevorDataSet* dataSet)
@@ -425,7 +415,7 @@ OpSeqMutate::selectActiveSwapOp(const jobop_vector_t* opVect)
     }
     if (ops.size() == 0)
         return nullptr;
-    uint_t idx = _rng->evali(ops.size());
+    uint_t idx = _rng->uniform((size_t)0, ops.size() - 1);
     return ops[idx];
 }
 

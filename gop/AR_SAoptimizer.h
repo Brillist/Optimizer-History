@@ -23,7 +23,7 @@ GOP_NS_BEGIN;
 
 class AR_SAoptimizer : public SAoptimizer
 {
-    UTL_CLASS_DECL(AR_SAoptimizer);
+    UTL_CLASS_DECL(AR_SAoptimizer, SAoptimizer);
 
 public:
     /** Initialize. */
@@ -39,7 +39,7 @@ protected:
     double _acceptanceRatio;
     double _ratioDcrRate;
 
-    utl::uint_t _idleIterGap;
+    uint_t _idleIterGap;
     double _gapIncRate;
 
 private:

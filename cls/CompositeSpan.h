@@ -15,21 +15,21 @@ CLS_NS_BEGIN;
 
 class CompositeSpan : public clp::IntSpan
 {
-    UTL_CLASS_DECL(CompositeSpan);
+    UTL_CLASS_DECL(CompositeSpan, clp::IntSpan);
 
 public:
     CompositeSpan(int min,
                   int max,
                   clp::IntExpDomainAR* resIds = nullptr,
-                  utl::uint_t level = utl::uint_t_max);
+                  uint_t level = uint_t_max);
 
     virtual void copy(const utl::Object& rhs);
 
-    virtual utl::String toString() const;
+    virtual String toString() const;
 
     virtual bool canMergeWith(const clp::IntSpan* rhs) const;
 
-    virtual utl::uint_t capacity() const;
+    virtual uint_t capacity() const;
 
     const clp::IntExpDomainAR*
     resIds() const

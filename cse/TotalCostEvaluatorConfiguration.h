@@ -25,14 +25,14 @@ CSE_NS_BEGIN;
 
 class TotalCostEvaluatorConfiguration : public ScheduleEvaluatorConfiguration
 {
-    UTL_CLASS_DECL(TotalCostEvaluatorConfiguration);
+    UTL_CLASS_DECL(TotalCostEvaluatorConfiguration, ScheduleEvaluatorConfiguration);
 
 public:
     /** Copy another instance. */
     virtual void copy(const utl::Object& rhs);
 
     virtual void
-    serialize(utl::Stream& stream, utl::uint_t io, utl::uint_t mode = utl::ser_default);
+    serialize(utl::Stream& stream, uint_t io, uint_t mode = utl::ser_default);
 
     /// \name Accessors
     //@{

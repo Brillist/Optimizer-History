@@ -22,10 +22,10 @@ CLS_NS_BEGIN;
 
 class CapExp : public utl::Object
 {
-    UTL_CLASS_DECL(CapExp);
+    UTL_CLASS_DECL(CapExp, utl::Object);
 
 public:
-    typedef std::vector<utl::uint_t> uint_vector_t;
+    typedef std::vector<uint_t> uint_vector_t;
 
 public:
     /** Constructor. */
@@ -54,7 +54,7 @@ private:
 
 private:
     uint_vector_t _resCaps;
-    mutable utl::uint_t _useCount;
+    mutable uint_t _useCount;
     mutable clp::IntExp* _capExp;
 };
 
@@ -70,12 +70,12 @@ private:
 
 class CapExpMgr : public utl::Object
 {
-    UTL_CLASS_DECL(CapExpMgr);
+    UTL_CLASS_DECL(CapExpMgr, utl::Object);
     UTL_CLASS_DEFID;
     UTL_CLASS_NO_COPY;
 
 public:
-    typedef std::vector<utl::uint_t> uint_vector_t;
+    typedef std::vector<uint_t> uint_vector_t;
 
 public:
     CapExpMgr(Schedule* schedule)

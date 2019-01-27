@@ -10,10 +10,10 @@ LUT_NS_USE;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-UTL_CLASS_IMPL_ABC(gop::Ind, utl::Object);
-UTL_CLASS_IMPL_ABC(gop::IndOrdering, utl::Object);
-UTL_CLASS_IMPL(gop::IndScoreOrdering, gop::IndOrdering);
-UTL_CLASS_IMPL(gop::IndFitnessOrdering, gop::IndOrdering);
+UTL_CLASS_IMPL_ABC(gop::Ind);
+UTL_CLASS_IMPL_ABC(gop::IndOrdering);
+UTL_CLASS_IMPL(gop::IndScoreOrdering);
+UTL_CLASS_IMPL(gop::IndFitnessOrdering);
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -78,7 +78,7 @@ Ind::dominates(const Ind* rhs, const std::vector<Objective*>& objectives) const
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
-Ind::setScore(utl::uint_t idx, double score)
+Ind::setScore(uint_t idx, double score)
 {
     if (_pop != nullptr)
     {

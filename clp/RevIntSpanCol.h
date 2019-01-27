@@ -73,7 +73,7 @@ public:
     IntSpan* find(int val);
 
     /** Get the revision number. */
-    utl::uint_t
+    uint_t
     rev() const
     {
         return _rev;
@@ -112,11 +112,11 @@ protected:
     virtual void _saveState();
 
     virtual IntSpan* newIntSpan(
-        int min, int max, utl::uint_t v0, utl::uint_t v1, utl::uint_t level = utl::uint_t_max);
+        int min, int max, uint_t v0, uint_t v1, uint_t level = uint_t_max);
 
     virtual void set(IntSpan* span);
 
-    void set(int min, int max, utl::uint_t v0, utl::uint_t v1);
+    void set(int min, int max, uint_t v0, uint_t v1);
 
     /** Find the span that contains val. */
     IntSpan* findPrev(int val, IntSpan** prev) const;
@@ -134,23 +134,23 @@ protected:
 
     void eclipseNext(IntSpan** prev);
 
-    utl::uint_t insertAfter(IntSpan* span, IntSpan** prevSpans);
+    uint_t insertAfter(IntSpan* span, IntSpan** prevSpans);
 
     void link(IntSpan** prev, IntSpan** next);
 
     void prevToNext(const IntSpan* span, IntSpan** prev, IntSpan** next);
 
-    virtual utl::uint_t validate(bool initialized = true) const;
+    virtual uint_t validate(bool initialized = true) const;
 
 protected:
     Manager* _mgr;
     const lut::SkipListDepthArray* _slda;
-    utl::uint_t _sldaIdx;
+    uint_t _sldaIdx;
 
     /// reversible //////////////////////////////////////
-    utl::uint_t _stateDepth;
-    utl::uint_t _level;
-    utl::uint_t _rev;
+    uint_t _stateDepth;
+    uint_t _level;
+    uint_t _rev;
     /// reversible //////////////////////////////////////
 
     IntSpan* _head;

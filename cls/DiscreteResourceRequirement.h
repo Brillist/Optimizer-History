@@ -30,11 +30,11 @@ class DiscreteResource;
 class DiscreteResourceRequirement : public utl::Object
 {
     friend class BrkActivity;
-    UTL_CLASS_DECL(DiscreteResourceRequirement);
+    UTL_CLASS_DECL(DiscreteResourceRequirement, utl::Object);
     UTL_CLASS_NO_COPY;
 
 public:
-    typedef std::set<utl::uint_t> uint_set_t;
+    typedef std::set<uint_t> uint_set_t;
 
 public:
     /** Constructor. */
@@ -43,7 +43,7 @@ public:
     /** Constructor. */
     DiscreteResourceRequirement(BrkActivity* act,
                                 const utl::Collection& rcps,
-                                utl::uint_t numRequired = 1);
+                                uint_t numRequired = 1);
 
     /** Constructor. */
     DiscreteResourceRequirement(BrkActivity* act,
@@ -56,13 +56,13 @@ public:
     void initialize(BrkActivity* act);
 
     /** Select number of required resources. */
-    void selectNumRequired(utl::uint_t numRequired);
+    void selectNumRequired(uint_t numRequired);
 
     /** Select a resource. */
-    bool selectResource(utl::uint_t resId);
+    bool selectResource(uint_t resId);
 
     /** Exclude a resource. */
-    void excludeResource(utl::uint_t resId);
+    void excludeResource(uint_t resId);
 
     /** Get the manager. */
     clp::Manager* manager() const;
@@ -77,7 +77,7 @@ public:
     /// \name Resource-Cap-Pts
     //@{
     /** How many resource-cap-pts ? */
-    utl::uint_t
+    uint_t
     numCapPts() const
     {
         return _rcps.size();
@@ -85,7 +85,7 @@ public:
 
     /** Get the resource-cap-pts at the given index. */
     const ResourceCapPts*
-    resIdxCapPts(utl::uint_t idx) const
+    resIdxCapPts(uint_t idx) const
     {
         return (const ResourceCapPts*)_rcpsArray[idx];
     }
@@ -95,14 +95,14 @@ public:
 
     /** Find the resource-cap-pts for the given resource. */
     const ResourceCapPts*
-    resCapPts(utl::uint_t resId) const
+    resCapPts(uint_t resId) const
     {
         return (ResourceCapPts*)_rcps.find(utl::Uint(resId));
     }
 
     /** Find the resource-cap-pts for the given resource. */
     ResourceCapPts*
-    resCapPts(utl::uint_t resId)
+    resCapPts(uint_t resId)
     {
         return (ResourceCapPts*)_rcps.find(utl::Uint(resId));
     }
@@ -148,11 +148,11 @@ private:
 
     void getSelectedCalendarIds(uint_set_t& calendarIds);
 
-    void selectPt(utl::uint_t pt);
+    void selectPt(uint_t pt);
 
     void checkAllSelected();
 
-    bool _selectResource(utl::uint_t resId);
+    bool _selectResource(uint_t resId);
 
     void addTimetableBounds();
 

@@ -22,7 +22,7 @@ CSE_NS_BEGIN;
 
 class Propagator : public clp::BoundPropagator
 {
-    UTL_CLASS_DECL(Propagator);
+    UTL_CLASS_DECL(Propagator, clp::BoundPropagator);
 
 public:
     Propagator(SchedulingContext* context)

@@ -9,7 +9,7 @@ CLS_NS_USE;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-UTL_CLASS_IMPL(cse::Resource, utl::Object);
+UTL_CLASS_IMPL(cse::Resource);
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -42,7 +42,7 @@ Resource::serialize(Stream& stream, uint_t io, uint_t)
 void
 Resource::init()
 {
-    _id = _serialId = utl::uint_t_max;
+    _id = _serialId = uint_t_max;
     _clsResource = nullptr;
 }
 

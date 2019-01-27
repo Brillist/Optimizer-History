@@ -247,7 +247,7 @@ time_str(time_t t)
     auto tm = localtime(&t);
     char buf[128];
     sprintf(buf, "%02u-%02u-%02u %02u:%02u:%02u", tm->tm_year + 1900, tm->tm_mon + 1, tm->tm_mday,
-        tm->tm_hour, tm->tm_min, tm->tm_sec);
+            tm->tm_hour, tm->tm_min, tm->tm_sec);
     return std::string(buf);
 }
 

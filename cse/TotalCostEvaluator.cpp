@@ -2231,8 +2231,7 @@ TotalCostEvaluator::calcPeriodCost(const utl::Span<int>& p_span, double costPerT
         time_t originTime = _schedulerConfig->originTime();
         time_t beginTime = originTime + (span.begin() * timeStep);
         time_t endTime = originTime + (span.end() * timeStep);
-        *_os << " => calcPeriodCost(" << time_str(beginTime) << ", " << time_str(endTime)
-             << ", "
+        *_os << " => calcPeriodCost(" << time_str(beginTime) << ", " << time_str(endTime) << ", "
              << "$" << costPerTS << ")" << std::endl;
     }
 
@@ -2290,8 +2289,7 @@ TotalCostEvaluator::calcPeriodCost(const utl::Span<int>& p_span,
         time_t originTime = _schedulerConfig->originTime();
         time_t beginTime = originTime + (span.begin() * timeStep);
         time_t endTime = originTime + (span.end() * timeStep);
-        *_os << " => calcPeriodCost(" << time_str(beginTime) << ", " << time_str(endTime)
-             << ", "
+        *_os << " => calcPeriodCost(" << time_str(beginTime) << ", " << time_str(endTime) << ", "
              << "$" << costPerTS << ", "
              << "%" << incrCost << ", " << periodS << ", " << timeStep << ")" << std::endl;
     }
@@ -2717,8 +2715,7 @@ TotalCostEvaluator::calcJobPeriodCost(const utl::Span<int>& p_span, double costP
         time_t originTime = _schedulerConfig->originTime();
         time_t beginTime = originTime + (span.begin() * timeStep);
         time_t endTime = originTime + (span.end() * timeStep);
-        *_os << " => calcJobPeriodCost(" << time_str(beginTime) << ", "
-             << time_str(endTime) << ", "
+        *_os << " => calcJobPeriodCost(" << time_str(beginTime) << ", " << time_str(endTime) << ", "
              << "$" << costPerTS << ")" << std::endl;
     }
     for (spanip_col_t::iterator it = _spanIPs.findFirstIt(span);

@@ -454,10 +454,9 @@ MRPrun::createJobOps(Job* job, ProcessPlan* plan)
         //                 else utl::cout << "null";
         utl::cout << ", active:" << job->active()
                   << ", releaseT:" << time_str(job->releaseTime()).c_str()
-                  << ", dueT:" << time_str(job->dueTime()).c_str()
-                  << ", item:" << job->itemId() << ", qnty:" << job->itemQuantity()
-                  << ", status:" << job->status() << ", plan:" << plan->id()
-                  << ", step:" << step->id() << ", op:" << op->id()
+                  << ", dueT:" << time_str(job->dueTime()).c_str() << ", item:" << job->itemId()
+                  << ", qnty:" << job->itemQuantity() << ", status:" << job->status()
+                  << ", plan:" << plan->id() << ", step:" << step->id() << ", op:" << op->id()
                   << ", #resReqs:" << step->resourceRequirements().size() << utl::endlf;
 #endif
     } // end of creating all normal ops

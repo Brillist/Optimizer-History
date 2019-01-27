@@ -203,6 +203,7 @@ protected:
     uint_t _level;
     IntSpan* _prev;
     IntSpan** _next;
+
 private:
     void init();
     void deInit();

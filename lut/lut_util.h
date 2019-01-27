@@ -63,8 +63,7 @@ struct ObjectOrdering
    Ordering by first element of a pair.
    \author Adam McKee
 */
-template <class X, class Y>
-struct PairFirstOrdering
+template <class X, class Y> struct PairFirstOrdering
 {
     bool
     operator()(const std::pair<X, Y>* lhs, const std::pair<X, Y>* rhs) const
@@ -79,8 +78,7 @@ struct PairFirstOrdering
    Ordering by second element of a pair.
    \author Adam McKee
 */
-template <class X, class Y>
-struct PairSecondOrdering
+template <class X, class Y> struct PairSecondOrdering
 {
     bool
     operator()(const std::pair<X, Y>* lhs, const std::pair<X, Y>* rhs) const

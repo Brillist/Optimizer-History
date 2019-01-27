@@ -51,8 +51,7 @@ public:
     /** Copy another instance. */
     virtual void copy(const utl::Object& rhs);
 
-    virtual void
-    serialize(utl::Stream& stream, uint_t io, uint_t mode = utl::ser_default);
+    virtual void serialize(utl::Stream& stream, uint_t io, uint_t mode = utl::ser_default);
 
     virtual utl::String toString() const;
 
@@ -160,10 +159,8 @@ public:
     utl::int_t getSelectedVarIdx() const;
 
     /** Creat a new operator variable. */
-    virtual void addOperatorVar(uint_t idx,
-                                uint_t successIter,
-                                uint_t totalIter,
-                                bool* active = &_active);
+    virtual void
+    addOperatorVar(uint_t idx, uint_t successIter, uint_t totalIter, bool* active = &_active);
 
     /** Select an operator variable for mutation. */
     virtual uint_t selectOperatorVarIdx();

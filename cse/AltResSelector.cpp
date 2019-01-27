@@ -120,10 +120,7 @@ AltResSelector::initializeInd(Ind* p_ind, const gop::DataSet* p_dataSet, rng_t* 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
-AltResSelector::initializeRandomInd(Ind* p_ind,
-                                    const gop::DataSet* p_dataSet,
-                                    rng_t* rng,
-                                    void*)
+AltResSelector::initializeRandomInd(Ind* p_ind, const gop::DataSet* p_dataSet, rng_t* rng, void*)
 {
     ASSERTD(dynamic_cast<StringInd<uint_t>*>(p_ind) != nullptr);
     StringInd<uint_t>* ind = (StringInd<uint_t>*)p_ind;

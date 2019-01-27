@@ -34,8 +34,7 @@ public:
 
     virtual int compare(const utl::Object& rhs) const;
 
-    virtual void
-    serialize(utl::Stream& stream, uint_t io, uint_t mode = utl::ser_default);
+    virtual void serialize(utl::Stream& stream, uint_t io, uint_t mode = utl::ser_default);
 
     /// \name Accessors
     //@{
@@ -111,10 +110,10 @@ public:
     //@}
 
     uint_t checkAndConsumeInventory(inv_transaction_op_type_t opType,
-                                         uint_t opId,
-                                         time_t t,
-                                         uint_t reqQuantity,
-                                         inv_transaction_status_t status);
+                                    uint_t opId,
+                                    time_t t,
+                                    uint_t reqQuantity,
+                                    inv_transaction_status_t status);
 
     void consumeInventory(inv_transaction_op_type_t opType,
                           uint_t opId,

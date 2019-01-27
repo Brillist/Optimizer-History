@@ -187,6 +187,7 @@ protected:
 
     /** Choose the Operator with highest success rate. */
     Operator* chooseSuccessOp() const;
+
 protected:
     // misc
     mutable lut::rng_t* _rng;
@@ -215,6 +216,7 @@ protected:
 
     // operators
     std::vector<Operator*> _ops;
+
 private:
     void init();
     void deInit();

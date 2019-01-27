@@ -98,13 +98,11 @@ protected:
     };
 
 protected:
-    CompositeSpan* newCS(int min,
-                         int max,
-                         clp::IntExpDomainAR* resIds = nullptr,
-                         uint_t level = uint_t_max);
+    CompositeSpan*
+    newCS(int min, int max, clp::IntExpDomainAR* resIds = nullptr, uint_t level = uint_t_max);
 
-    virtual clp::IntSpan* newIntSpan(
-        int min, int max, uint_t v0, uint_t v1, uint_t level = uint_t_max);
+    virtual clp::IntSpan*
+    newIntSpan(int min, int max, uint_t v0, uint_t v1, uint_t level = uint_t_max);
 
 private:
     void init();

@@ -87,10 +87,7 @@ ReleaseTimeSelector::initialize(const gop::DataSet* p_dataSet, uint_t stringBase
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
-ReleaseTimeSelector::initializeInd(Ind* p_ind,
-                                   const gop::DataSet* p_dataSet,
-                                   rng_t* rng,
-                                   void*)
+ReleaseTimeSelector::initializeInd(Ind* p_ind, const gop::DataSet* p_dataSet, rng_t* rng, void*)
 {
     ASSERTD(dynamic_cast<StringInd<uint_t>*>(p_ind) != nullptr);
     StringInd<uint_t>* ind = (StringInd<uint_t>*)p_ind;

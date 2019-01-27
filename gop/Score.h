@@ -37,8 +37,7 @@ public:
 
     virtual int compare(const utl::Object& rhs) const;
 
-    virtual void
-    serialize(utl::Stream& stream, uint_t io, uint_t mode = utl::ser_default);
+    virtual void serialize(utl::Stream& stream, uint_t io, uint_t mode = utl::ser_default);
 
     virtual utl::String toString() const;
 

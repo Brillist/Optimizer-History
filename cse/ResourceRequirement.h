@@ -27,8 +27,7 @@ public:
     /** Copy another instance. */
     virtual void copy(const utl::Object& rhs);
 
-    virtual void
-    serialize(utl::Stream& stream, uint_t io, uint_t mode = utl::ser_default);
+    virtual void serialize(utl::Stream& stream, uint_t io, uint_t mode = utl::ser_default);
 
     /** Get the resource id. */
     uint_t

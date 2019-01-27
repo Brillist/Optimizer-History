@@ -87,7 +87,7 @@ protected:
     double _currentTemp; //current temperature
     double _stopTemp;    //stop temperature
 
-    double _totalScoreDiff;          //total socre changes for every move
+    double _totalScoreDiff;     //total socre changes for every move
     uint_t _totalScoreDiffIter; //total #iters for _totalScoreDiff
 
     /** Optimizer customization parameters */

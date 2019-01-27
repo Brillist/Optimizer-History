@@ -11,7 +11,8 @@ LUT_NS_BEGIN;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-inline rng_t* make_rng()
+inline rng_t*
+make_rng()
 {
 #ifdef DEBUG
     return new rng_t(1042614900);
@@ -504,7 +505,8 @@ deleteMapSecond(std::map<K, V, Ord>& map)
    \author Adam McKee
 */
 template <class Map>
-void deleteMapSecond(Map& map)
+void
+deleteMapSecond(Map& map)
 {
     typename Map::iterator it;
     auto lim = map.end();

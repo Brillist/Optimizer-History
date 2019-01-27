@@ -393,7 +393,8 @@ Manager::revSetLong(size_t& i)
     // grow if necessary
     if (_revLongsPtr == _revLongsLim)
     {
-        utl::arrayGrow(_revLongs, _revLongsPtr, _revLongsLim, utl::max(utl::KB(4), (_revLongsSize + 1)));
+        utl::arrayGrow(_revLongs, _revLongsPtr, _revLongsLim,
+                       utl::max(utl::KB(4), (_revLongsSize + 1)));
         _revLongsSize = _revLongsLim - _revLongs;
     }
     *_revLongsPtr++ = (size_t)&i;
@@ -440,7 +441,8 @@ Manager::revSetLongInd(size_t*& array, uint_t idx)
     if (room < 3)
     {
         size_t curSize = (_revLongsIndPtr - _revLongsInd);
-        utl::arrayGrow(_revLongsInd, _revLongsIndPtr, _revLongsIndLim, utl::max(utl::KB(4), curSize + 3));
+        utl::arrayGrow(_revLongsInd, _revLongsIndPtr, _revLongsIndLim,
+                       utl::max(utl::KB(4), curSize + 3));
         _revLongsIndSize = _revLongsIndLim - _revLongsInd;
     }
 
@@ -488,7 +490,8 @@ Manager::revSetInt(uint_t& i)
     // grow if necessary
     if (_revIntsPtr == _revIntsLim)
     {
-        utl::arrayGrow(_revInts, _revIntsPtr, _revIntsLim, utl::max(utl::KB(4), (_revIntsSize + 2)));
+        utl::arrayGrow(_revInts, _revIntsPtr, _revIntsLim,
+                       utl::max(utl::KB(4), (_revIntsSize + 2)));
         _revIntsSize = _revIntsLim - _revInts;
     }
 
@@ -536,7 +539,8 @@ Manager::revSetIntInd(uint_t*& array, uint_t idx)
     if (room < 3)
     {
         size_t curSize = (_revIntsIndPtr - _revIntsInd);
-        utl::arrayGrow(_revIntsInd, _revIntsIndPtr, _revIntsIndLim, utl::max(utl::KB(4), curSize + 3));
+        utl::arrayGrow(_revIntsInd, _revIntsIndPtr, _revIntsIndLim,
+                       utl::max(utl::KB(4), curSize + 3));
         _revIntsIndSize = _revIntsIndLim - _revIntsInd;
     }
 

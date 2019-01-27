@@ -234,7 +234,8 @@ public:
     {
         if (_revCtsPtr == _revCtsLim)
         {
-            utl::arrayGrow(_revCts, _revCtsPtr, _revCtsLim, utl::max(utl::KB(4), (_revCtsSize + 1)));
+            utl::arrayGrow(_revCts, _revCtsPtr, _revCtsLim,
+                           utl::max(utl::KB(4), (_revCtsSize + 1)));
             _revCtsSize = _revCtsLim - _revCts;
         }
         *(_revCtsPtr++) = ct;

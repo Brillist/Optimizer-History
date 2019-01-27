@@ -30,14 +30,11 @@ class ItemPlanRelation : public utl::Object
 
 public:
     /** Constructor. */
-    ItemPlanRelation(ManufactureItem* item,
-                     ProcessPlan* plan,
-                     uint_t preference = uint_t_max);
+    ItemPlanRelation(ManufactureItem* item, ProcessPlan* plan, uint_t preference = uint_t_max);
 
     virtual void copy(const utl::Object& rhs);
 
-    virtual void
-    serialize(utl::Stream& stream, uint_t io, uint_t mode = utl::ser_default);
+    virtual void serialize(utl::Stream& stream, uint_t io, uint_t mode = utl::ser_default);
 
     /// \name Accessors
     //@{

@@ -113,8 +113,7 @@ public:
         return _resId;
     }
 
-    virtual void
-    serialize(utl::Stream& stream, uint_t io, uint_t mode = utl::ser_default);
+    virtual void serialize(utl::Stream& stream, uint_t io, uint_t mode = utl::ser_default);
 
     /** Perform initialization (after cap/pts list is complete). */
     void initialize(Activity* act);

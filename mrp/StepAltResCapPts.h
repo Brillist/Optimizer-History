@@ -39,8 +39,7 @@ public:
 
     virtual int compare(const utl::Object& rhs) const;
 
-    virtual void
-    serialize(utl::Stream& stream, uint_t io, uint_t mode = utl::ser_default);
+    virtual void serialize(utl::Stream& stream, uint_t io, uint_t mode = utl::ser_default);
 
     /// \name Accessors
     //@{
@@ -88,11 +87,8 @@ public:
     uint_t maxCap();
 
     /** add a capacity-processingTime pair. */
-    void addCapPt(uint_t cap,
-                  uint_t pt,
-                  rescappt_pt_per_t ptPer,
-                  uint_t ptBatchSize,
-                  uint_t setupId);
+    void
+    addCapPt(uint_t cap, uint_t pt, rescappt_pt_per_t ptPer, uint_t ptBatchSize, uint_t setupId);
     //@}
 
     /** create a cls::ResourceCapPts object. */

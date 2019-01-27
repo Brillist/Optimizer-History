@@ -89,8 +89,7 @@ MPSitem::toString() const
         << ", EOQ:" << _eoq << ", DTF:" << Time(_dtf).toString() << ", PTF:"
         << Time(_ptf).toString()
         //         << ", plngHrzn:" << Time(_planningHorizon).toString()
-        << ", ivntCost:" << Float(_inventoryCost).toString(2)
-        << ", period:" << _inventoryCostPeriod
+        << ", ivntCost:" << Float(_inventoryCost).toString(2) << ", period:" << _inventoryCostPeriod
         << ", allowMPSqntySplit:" << Bool(_allowMPSquantitySplit).toString();
     mpsitemperiod_set_id_t::const_iterator it;
     for (it = _periods.begin(); it != _periods.end(); it++)

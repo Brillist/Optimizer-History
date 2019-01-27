@@ -150,9 +150,8 @@ MultistartSA::run()
             _currentTemp = (double)pow(_tempDcrRate, (int)(_iteration / 100)) * _initTemp;
 #ifdef DEBUG_UNIT
             utl::cout << "startId:" << _strScores[i]->getId() << "(" << i << "/" << _beamWidth
-                      << ", "
-                      << Float(_strScores[i]->getScore()->getValue()).toString(0)
-                      << "), " << iterationString() << utl::endl;
+                      << ", " << Float(_strScores[i]->getScore()->getValue()).toString(0) << "), "
+                      << iterationString() << utl::endl;
 #endif
             complete = this->complete();
             if (!complete)

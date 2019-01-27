@@ -124,10 +124,7 @@ Operator::getSelectedVarIdx() const
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
-Operator::addOperatorVar(uint_t idx,
-                         uint_t initSuccessIter,
-                         uint_t initTotalIter,
-                         bool* active)
+Operator::addOperatorVar(uint_t idx, uint_t initSuccessIter, uint_t initTotalIter, bool* active)
 {
     //Note: this method is used for initialization.
     //      currently there are two ways for initialization

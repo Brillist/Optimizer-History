@@ -136,9 +136,8 @@ MultistartHC::run()
             }
 #ifdef DEBUG_UNIT
             utl::cout << "startId:" << _strScores[i]->getId() << "(" << i << "/" << _beamWidth
-                      << ", "
-                      << Float(_strScores[i]->getScore()->getValue()).toString(0)
-                      << "), " << iterationString() << utl::endl;
+                      << ", " << Float(_strScores[i]->getScore()->getValue()).toString(0) << "), "
+                      << iterationString() << utl::endl;
 #endif
 
             // update run status

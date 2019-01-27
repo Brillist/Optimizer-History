@@ -265,11 +265,9 @@ SAoptimizer::temperatureString() const
 {
     utl::MemStream str;
     str << "                     "; //temporary code
-    str << "temp:" << Float(_currentTemp).toString(3) << "/"
-        << Float(_initTemp).toString(0)
-        << ", rate:" << Float(_tempDcrRate).toString(2)
-        << ", new:" << _newScore->toString() << ", accepted:" << _acceptedScore->toString()
-        << ", diff:";
+    str << "temp:" << Float(_currentTemp).toString(3) << "/" << Float(_initTemp).toString(0)
+        << ", rate:" << Float(_tempDcrRate).toString(2) << ", new:" << _newScore->toString()
+        << ", accepted:" << _acceptedScore->toString() << ", diff:";
     if (_scoreDiff == utl::double_t_max)
     {
         str << "inf";

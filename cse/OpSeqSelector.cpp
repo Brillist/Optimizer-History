@@ -116,10 +116,7 @@ OpSeqSelector::initializeInd(Ind* p_ind, const gop::DataSet* p_dataSet, rng_t* r
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
-OpSeqSelector::initializeRandomInd(Ind* p_ind,
-                                   const gop::DataSet* p_dataSet,
-                                   rng_t* rng,
-                                   void*)
+OpSeqSelector::initializeRandomInd(Ind* p_ind, const gop::DataSet* p_dataSet, rng_t* rng, void*)
 {
     utl::cout << "ERROR(OpSeqSelector.cpp): in the incompleted code!" << utl::endl;
     ABORT();

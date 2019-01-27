@@ -361,8 +361,8 @@ MRPserver::handle_initScheduler(MRPclient* client, const Array& cmd)
     endForEach
 #endif
 
-    // initialize simple run
-    bool result = true;
+        // initialize simple run
+        bool result = true;
     utl::String str;
     try
     {
@@ -470,8 +470,8 @@ MRPserver::handle_initOptimizer(MRPclient* client, const Array& cmd)
     endForEach
 #endif
 
-    // initialize optimization run
-    bool res = true;
+        // initialize optimization run
+        bool res = true;
     utl::String str;
     try
     {

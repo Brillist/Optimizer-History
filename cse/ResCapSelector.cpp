@@ -112,10 +112,7 @@ ResCapSelector::initializeInd(Ind* p_ind, const gop::DataSet* p_dataSet, rng_t* 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
-ResCapSelector::initializeRandomInd(Ind* p_ind,
-                                    const gop::DataSet* p_dataSet,
-                                    rng_t* rng,
-                                    void*)
+ResCapSelector::initializeRandomInd(Ind* p_ind, const gop::DataSet* p_dataSet, rng_t* rng, void*)
 {
     auto ind = utl::cast<StringInd<uint_t>>(p_ind);
     gop::String<uint_t>& string = ind->string();
@@ -171,7 +168,8 @@ ResCapSelector::setResources(const ClevorDataSet* dataSet)
     res_set_id_t::const_iterator it;
     for (it = dataSet->resources().begin(); it != dataSet->resources().end(); ++it)
     {
-        if (!(*it)->isA(DiscreteResource)) continue;
+        if (!(*it)->isA(DiscreteResource))
+            continue;
         auto res = utl::cast<DiscreteResource>(*it);
         auto clsRes = utl::cast<cls::DiscreteResource>(res->clsResource());
         uint_t minReqCap = roundUp(clsRes->minReqCap(), (uint_t)100);

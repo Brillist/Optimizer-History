@@ -16,8 +16,7 @@ class InterestPeriodInfo : public utl::Object
 public:
     virtual void copy(const utl::Object& rhs);
 
-    virtual void
-    serialize(utl::Stream& stream, uint_t io, uint_t mode = utl::ser_default);
+    virtual void serialize(utl::Stream& stream, uint_t io, uint_t mode = utl::ser_default);
 
 public:
     uint_t idx;
@@ -41,8 +40,7 @@ struct ResourceInfo : public utl::Object
 public:
     virtual void copy(const utl::Object& rhs);
 
-    virtual void
-    serialize(utl::Stream& stream, uint_t io, uint_t mode = utl::ser_default);
+    virtual void serialize(utl::Stream& stream, uint_t io, uint_t mode = utl::ser_default);
 
 public:
     uint_t id;
@@ -73,8 +71,7 @@ struct FixedCostInfo : public utl::Object
 public:
     virtual void copy(const utl::Object& rhs);
 
-    virtual void
-    serialize(utl::Stream& stream, uint_t io, uint_t mode = utl::ser_default);
+    virtual void serialize(utl::Stream& stream, uint_t io, uint_t mode = utl::ser_default);
 
 public:
     uint_t opId;
@@ -98,8 +95,7 @@ struct OverheadCostInfo : public utl::Object
 public:
     virtual void copy(const utl::Object& rhs);
 
-    virtual void
-    serialize(utl::Stream& stream, uint_t io, uint_t mode = utl::ser_default);
+    virtual void serialize(utl::Stream& stream, uint_t io, uint_t mode = utl::ser_default);
 
 public:
     uint_t interestPeriod;
@@ -124,8 +120,7 @@ struct InterestCostInfo : public utl::Object
 public:
     virtual void copy(const utl::Object& rhs);
 
-    virtual void
-    serialize(utl::Stream& stream, uint_t io, uint_t mode = utl::ser_default);
+    virtual void serialize(utl::Stream& stream, uint_t io, uint_t mode = utl::ser_default);
 
 public:
     uint_t interestPeriod;
@@ -148,8 +143,7 @@ struct ResourceUsageInfo : public utl::Object
 public:
     virtual void copy(const utl::Object& rhs);
 
-    virtual void
-    serialize(utl::Stream& stream, uint_t io, uint_t mode = utl::ser_default);
+    virtual void serialize(utl::Stream& stream, uint_t io, uint_t mode = utl::ser_default);
 
 public:
     uint_t id;
@@ -176,8 +170,7 @@ struct ComponentScoreInfo : public utl::Object
 public:
     virtual void copy(const utl::Object& rhs);
 
-    virtual void
-    serialize(utl::Stream& stream, uint_t io, uint_t mode = utl::ser_default);
+    virtual void serialize(utl::Stream& stream, uint_t io, uint_t mode = utl::ser_default);
 
 public:
     std::string name;
@@ -200,8 +193,7 @@ struct ResourceSequenceCostInfo : public utl::Object
 public:
     virtual void copy(const utl::Object& rhs);
 
-    virtual void
-    serialize(utl::Stream& stream, uint_t io, uint_t mode = utl::ser_default);
+    virtual void serialize(utl::Stream& stream, uint_t io, uint_t mode = utl::ser_default);
 
 public:
     uint_t id;
@@ -227,8 +219,7 @@ struct OperationInfo : public utl::Object
 public:
     virtual void copy(const utl::Object& rhs);
 
-    virtual void
-    serialize(utl::Stream& stream, uint_t io, uint_t mode = utl::ser_default);
+    virtual void serialize(utl::Stream& stream, uint_t io, uint_t mode = utl::ser_default);
 
 public:
     uint_t id;
@@ -251,8 +242,7 @@ struct ResourceCostInfo : public utl::Object
 public:
     virtual void copy(const utl::Object& rhs);
 
-    virtual void
-    serialize(utl::Stream& stream, uint_t io, uint_t mode = utl::ser_default);
+    virtual void serialize(utl::Stream& stream, uint_t io, uint_t mode = utl::ser_default);
 
 public:
     uint_t cap;
@@ -279,8 +269,7 @@ struct ResourceWorkHoursInfo : public utl::Object
 public:
     virtual void copy(const utl::Object& rhs);
 
-    virtual void
-    serialize(utl::Stream& stream, uint_t io, uint_t mode = utl::ser_default);
+    virtual void serialize(utl::Stream& stream, uint_t io, uint_t mode = utl::ser_default);
 
 public:
     uint_t cap;
@@ -304,8 +293,7 @@ struct LatenessCostInfo : public utl::Object
 public:
     virtual void copy(const utl::Object& rhs);
 
-    virtual void
-    serialize(utl::Stream& stream, uint_t io, uint_t mode = utl::ser_default);
+    virtual void serialize(utl::Stream& stream, uint_t io, uint_t mode = utl::ser_default);
 
 public:
     uint_t interestPeriod;
@@ -353,8 +341,7 @@ class ResourceCostReport : public utl::Object
 public:
     virtual void copy(const utl::Object& rhs);
 
-    virtual void
-    serialize(utl::Stream& stream, uint_t io, uint_t mode = utl::ser_default);
+    virtual void serialize(utl::Stream& stream, uint_t io, uint_t mode = utl::ser_default);
 
 public:
     uint_t
@@ -394,7 +381,7 @@ private:
     void deInit();
 
 private:
-    uint_t _id;         // resource id
+    uint_t _id;              // resource id
     rcInfos_t _costs;        // cost info for this resource
     wkhrsInfos_t _workHours; // work hours for this reosurce
 };
@@ -414,8 +401,7 @@ class LatenessCostReport : public utl::Object
 public:
     virtual void copy(const utl::Object& rhs);
 
-    virtual void
-    serialize(utl::Stream& stream, uint_t io, uint_t mode = utl::ser_default);
+    virtual void serialize(utl::Stream& stream, uint_t io, uint_t mode = utl::ser_default);
 
 public:
     uint_t
@@ -483,8 +469,7 @@ class JobOverheadCostReport : public utl::Object
 public:
     virtual void copy(const utl::Object& rhs);
 
-    virtual void
-    serialize(utl::Stream& stream, uint_t io, uint_t mode = utl::ser_default);
+    virtual void serialize(utl::Stream& stream, uint_t io, uint_t mode = utl::ser_default);
 
 public:
     uint_t
@@ -553,8 +538,7 @@ class AuditReport : public utl::Object
 public:
     virtual void copy(const utl::Object& rhs);
 
-    virtual void
-    serialize(utl::Stream& stream, uint_t io, uint_t mode = utl::ser_default);
+    virtual void serialize(utl::Stream& stream, uint_t io, uint_t mode = utl::ser_default);
 
     std::string
     getName() const

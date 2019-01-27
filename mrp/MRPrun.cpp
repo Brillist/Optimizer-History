@@ -199,8 +199,7 @@ MRPrun::run()
                       << ", dueT:" << getTimeString(job->dueTime()).c_str()
                       << ", ivntC:" << Float(job->inventoryCost()).toString("precisioin:2")
                       << ", opporC:" << Float(job->opportunityCost()).toString(2)
-                      << ", lateC:" << Float(job->latenessCost()).toString(2)
-                      << utl::endlf;
+                      << ", lateC:" << Float(job->latenessCost()).toString(2) << utl::endlf;
 #endif
         }
     }

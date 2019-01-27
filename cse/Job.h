@@ -54,8 +54,7 @@ public:
 
     virtual int compare(const utl::Object& rhs) const;
 
-    virtual void
-    serialize(utl::Stream& stream, uint_t io, uint_t mode = utl::ser_default);
+    virtual void serialize(utl::Stream& stream, uint_t io, uint_t mode = utl::ser_default);
 
     /** Remove all operations. */
     void clear();
@@ -567,7 +566,7 @@ protected:
     uint_t _id;
     uint_t _serialId;
     uint_t _preference; //for alt jobs
-    bool _active;            //indicate the selected job from alt jobs
+    bool _active;       //indicate the selected job from alt jobs
     std::string _name;
     uint_t _groupId;
     lut::uint_set_t _workOrderIds; //ids of mrp::workorders

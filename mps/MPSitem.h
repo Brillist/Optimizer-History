@@ -26,8 +26,7 @@ class MPSitem : public mrp::Item
 public:
     virtual void copy(const utl::Object& rhs);
 
-    virtual void
-    serialize(utl::Stream& stream, uint_t io, uint_t mode = utl::ser_default);
+    virtual void serialize(utl::Stream& stream, uint_t io, uint_t mode = utl::ser_default);
 
     /// \name Accessors
     //@{
@@ -148,9 +147,9 @@ private:
 
 private:
     uint_t _eoq; // Economic order quantity
-    time_t _dtf;      // Demand time fence
-    time_t _ptf;      // Planning time fence
-                      /*     time_t _planningHorizon; */
+    time_t _dtf; // Demand time fence
+    time_t _ptf; // Planning time fence
+                 /*     time_t _planningHorizon; */
     double _inventoryCost;
     lut::period_t _inventoryCostPeriod;
     bool _allowMPSquantitySplit;

@@ -107,9 +107,9 @@ JobSeqMutate::execute(gop::Ind* ind, gop::IndBuilderContext* context, bool singl
     Job* swapJob = selectActiveSwapJob(*swapJobs);
     if (swapJob == nullptr)
         swapJob = job; // basically it will do nothing
-        //     uint_t numSwapJobs = numActiveSwapJobs(swapJobs);
-        //     uint_t idx = _rng->evali(swapJobs->size());
-        //     Job* swapJob = (*swapJobs)[idx];
+                       //     uint_t numSwapJobs = numActiveSwapJobs(swapJobs);
+                       //     uint_t idx = _rng->evali(swapJobs->size());
+                       //     Job* swapJob = (*swapJobs)[idx];
 
         //swap two jobs
 #ifdef DEBUG_UNIT

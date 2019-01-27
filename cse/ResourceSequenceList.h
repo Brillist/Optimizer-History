@@ -22,10 +22,7 @@ class ResourceSequenceRule : public utl::Object
 
 public:
     /** Constructor. */
-    ResourceSequenceRule(uint_t lhsOpSequenceId,
-                         uint_t rhsOpSequenceId,
-                         uint_t delay,
-                         double cost)
+    ResourceSequenceRule(uint_t lhsOpSequenceId, uint_t rhsOpSequenceId, uint_t delay, double cost)
     {
         _lhsOpSequenceId = lhsOpSequenceId;
         _rhsOpSequenceId = rhsOpSequenceId;
@@ -39,8 +36,7 @@ public:
     /** Compare with another instance. */
     virtual int compare(const utl::Object& rhs) const;
 
-    virtual void
-    serialize(utl::Stream& stream, uint_t io, uint_t mode = utl::ser_default);
+    virtual void serialize(utl::Stream& stream, uint_t io, uint_t mode = utl::ser_default);
 
     /** Get lhs-op-sequence-id. */
     uint_t
@@ -120,8 +116,7 @@ public:
     /** Test equality with another instance. */
     virtual bool equals(const ResourceSequenceList& rhs) const;
 
-    virtual void
-    serialize(utl::Stream& stream, uint_t io, uint_t mode = utl::ser_default);
+    virtual void serialize(utl::Stream& stream, uint_t io, uint_t mode = utl::ser_default);
 
     /** Get id. */
     uint_t
@@ -138,12 +133,10 @@ public:
     }
 
     /** Find the first record to match the give op-sequence-ids. */
-    const ResourceSequenceRule* findRule(uint_t lhsOpSequenceId,
-                                         uint_t rhsOpSequenceId) const;
+    const ResourceSequenceRule* findRule(uint_t lhsOpSequenceId, uint_t rhsOpSequenceId) const;
 
     /** Add a delay/cost for the given sequencing. */
-    void
-    add(uint_t lhsOpSequenceId, uint_t rhsOpSequenceId, uint_t delay, double cost);
+    void add(uint_t lhsOpSequenceId, uint_t rhsOpSequenceId, uint_t delay, double cost);
 
     /** Get begin iterator. */
     iterator

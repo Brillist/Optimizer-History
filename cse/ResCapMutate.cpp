@@ -195,7 +195,8 @@ ResCapMutate::setResources(const ClevorDataSet* dataSet)
     res_set_id_t::const_iterator it;
     for (it = dataSet->resources().begin(); it != dataSet->resources().end(); ++it)
     {
-        if (!(*it)->isA(DiscreteResource)) continue;
+        if (!(*it)->isA(DiscreteResource))
+            continue;
         auto res = utl::cast<DiscreteResource>(*it);
         auto clsRes = utl::cast<cls::DiscreteResource>(res->clsResource());
         uint_t minReqCap = roundUp(clsRes->minReqCap(), (uint_t)100);

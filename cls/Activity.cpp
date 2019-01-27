@@ -36,7 +36,8 @@ Activity::toString() const
     {
         ss << "name: '" << name() << "', ";
     }
-    ss << "start: " << start().toString().get() << ", " << "end: " << end().toString().get();
+    ss << "start: " << start().toString().get() << ", "
+       << "end: " << end().toString().get();
     return ss.str().c_str();
 }
 

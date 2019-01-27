@@ -106,10 +106,7 @@ JobSeqSelector::initializeInd(Ind* p_ind, const gop::DataSet* p_dataSet, rng_t* 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
-JobSeqSelector::initializeRandomInd(Ind* p_ind,
-                                    const gop::DataSet* p_dataSet,
-                                    rng_t* rng,
-                                    void*)
+JobSeqSelector::initializeRandomInd(Ind* p_ind, const gop::DataSet* p_dataSet, rng_t* rng, void*)
 {
     utl::cout << "ERROR(JobSeqSelector.cpp): in the incompleted code!" << utl::endl;
     ABORT();

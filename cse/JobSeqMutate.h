@@ -72,8 +72,8 @@ private:
     job_vector_vector_t _swapJobs;
 
     gop::StringInd<uint_t>* _moveSchedule;
-    uint_t _moveJobIdx;    //for successRate
-    uint_t _moveJobSid;    //necessary
+    uint_t _moveJobIdx;         //for successRate
+    uint_t _moveJobSid;         //necessary
     job_vector_t _moveJobs;     //necessary
     uint_vector_t _moveJobIdxs; //necessary
 };

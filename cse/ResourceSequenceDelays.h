@@ -22,10 +22,7 @@ class ResourceSequenceDelay : public utl::Object
 
 public:
     /** Constructor. */
-    ResourceSequenceDelay(uint_t lhsOpSequenceId,
-                          uint_t rhsOpSequenceId,
-                          int delay,
-                          double cost)
+    ResourceSequenceDelay(uint_t lhsOpSequenceId, uint_t rhsOpSequenceId, int delay, double cost)
     {
         _lhsOpSequenceId = lhsOpSequenceId;
         _rhsOpSequenceId = rhsOpSequenceId;

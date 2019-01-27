@@ -136,8 +136,7 @@ public:
        \param rhs rhs String (lhs is self)
        \param pos crossover position
     */
-    void
-    crossover(StringInd<T>* off1, StringInd<T>* off2, const StringInd<T>& rhs, uint_t pos);
+    void crossover(StringInd<T>* off1, StringInd<T>* off2, const StringInd<T>& rhs, uint_t pos);
 
     /** Get a gene. */
     const T&
@@ -219,10 +218,7 @@ StringInd<T>::toString() const
 
 template <class T>
 void
-StringInd<T>::crossover(StringInd<T>* off1,
-                        StringInd<T>* off2,
-                        const StringInd<T>& rhs,
-                        uint_t pos)
+StringInd<T>::crossover(StringInd<T>* off1, StringInd<T>* off2, const StringInd<T>& rhs, uint_t pos)
 {
     _string->crossover((off1 == nullptr) ? nullptr : &off1->string(),
                        (off2 == nullptr) ? nullptr : &off2->string(), rhs.string(), pos);

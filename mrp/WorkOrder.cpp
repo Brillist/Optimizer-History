@@ -123,10 +123,9 @@ WorkOrder::toString() const
         << ", item:" << _item->id() << ", qnty:" << _quantity << ", status:" << _status
         << ", rlsT:" << Time(_releaseTime).toString("$yyyy/$m/$d $h:$nn")
         << ", dueT:" << Time(_dueTime).toString("$yyyy/$m/$d $h:$nn")
-        << ", opporC:" << Float(_opportunityCost).toString(2) << "/"
-        << _opportunityCostPeriod << ", lateC:" << Float(_latenessCost).toString(2)
-        << "/" << _latenessCostPeriod << ", ivntC:" << Float(_inventoryCost).toString(2)
-        << "/" << _inventoryCostPeriod << '\0';
+        << ", opporC:" << Float(_opportunityCost).toString(2) << "/" << _opportunityCostPeriod
+        << ", lateC:" << Float(_latenessCost).toString(2) << "/" << _latenessCostPeriod
+        << ", ivntC:" << Float(_inventoryCost).toString(2) << "/" << _inventoryCostPeriod << '\0';
     return String((char*)str.get());
 }
 

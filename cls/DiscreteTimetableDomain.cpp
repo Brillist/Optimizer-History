@@ -49,10 +49,10 @@ DiscreteTimetableDomain::addCapExp(uint_t cap)
     {
         IntExp* nullIntExpPtr = nullptr;
         uint_t zero = 0;
-        utl::arrayGrow(_capExps, _capExpsSize, utl::max(utl::KB(1), ((size_t)cap + 1)), utl::KB(1024),
-                       &nullIntExpPtr);
-        utl::arrayGrow(_capExpCounts, _capExpCountsSize, utl::max(utl::KB(1), ((size_t)cap + 1)), utl::KB(1024),
-                       &zero);
+        utl::arrayGrow(_capExps, _capExpsSize, utl::max(utl::KB(1), ((size_t)cap + 1)),
+                       utl::KB(1024), &nullIntExpPtr);
+        utl::arrayGrow(_capExpCounts, _capExpCountsSize, utl::max(utl::KB(1), ((size_t)cap + 1)),
+                       utl::KB(1024), &zero);
     }
 
     IntExp* capExp = new IntVar(_mgr);

@@ -60,7 +60,8 @@ public:
     }
 
     /** Get the label. */
-    uint_t     label() const
+    uint_t
+    label() const
     {
         return _label;
     }

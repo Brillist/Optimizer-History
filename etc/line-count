@@ -1,3 +1,1 @@
-#! /bin/zsh
-
-cloc */*.h */*.cpp */*/*.h */*/*.cpp
+../../build/etc/line-count

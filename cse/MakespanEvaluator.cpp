@@ -22,11 +22,6 @@ MakespanEvaluator::calcScore(const IndBuilderContext* p_context) const
 {
     ASSERTD(dynamic_cast<const SchedulingContext*>(p_context) != nullptr);
     const SchedulingContext* context = (const SchedulingContext*)p_context;
-
-    //DEBUG_CODE
-    //static uint_t res = 0x0fffffff;
-    //return res--;
-
     return context->makespanTimeSlot();
 }
 

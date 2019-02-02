@@ -61,7 +61,7 @@ if (MSVC)
                                /DUTL_CC=UTL_CC_MSVC
                                /DUTL_HOST_OS=UTL_OS_WINDOWS)
     set(COMPILE_OPTIONS_DEBUG /DDEBUG)
-    set(COPILE_OPTIONS_RELEASE /DRELEASE)
+    set(COMPILE_OPTIONS_RELEASE /DRELEASE)
 else()
     set(COMPILE_OPTIONS_COMMON -Wall
                                -Wno-uninitialized

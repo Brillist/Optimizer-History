@@ -167,7 +167,6 @@ private:
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 struct InventoryIntervalOrderingIncST
-    : public std::binary_function<InventoryInterval*, InventoryInterval*, bool>
 {
     bool
     operator()(InventoryInterval* lhs, InventoryInterval* rhs) const

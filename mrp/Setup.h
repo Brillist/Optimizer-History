@@ -16,7 +16,7 @@ class Setup;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-struct SetupOrderingIncId : public std::binary_function<Setup*, Setup*, bool>
+struct SetupOrderingIncId
 {
     bool operator()(Setup* lhs, Setup* rhs) const;
 };

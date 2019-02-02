@@ -199,7 +199,7 @@ private:
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-struct StepOrderingIncId : public std::binary_function<ProcessStep*, ProcessStep*, bool>
+struct StepOrderingIncId
 {
     bool operator()(const ProcessStep* lhs, const ProcessStep* rhs) const;
 };

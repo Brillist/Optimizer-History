@@ -277,7 +277,6 @@ private:
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 struct InventoryRecordOrderingIncId
-    : public std::binary_function<InventoryRecord*, InventoryRecord*, bool>
 {
     bool
     operator()(InventoryRecord* lhs, InventoryRecord* rhs)

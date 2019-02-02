@@ -269,7 +269,7 @@ private:
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-struct WorkOrderIdOrdering : public std::binary_function<WorkOrder*, WorkOrder*, bool>
+struct WorkOrderIdOrdering
 {
     bool
     operator()(const WorkOrder* lhs, const WorkOrder* rhs) const
@@ -280,7 +280,7 @@ struct WorkOrderIdOrdering : public std::binary_function<WorkOrder*, WorkOrder*,
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-struct WorkOrderDueTimeOrdering : public std::binary_function<WorkOrder*, WorkOrder*, bool>
+struct WorkOrderDueTimeOrdering
 {
     bool
     operator()(const WorkOrder* lhs, const WorkOrder* rhs) const

@@ -173,7 +173,6 @@ private:
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 struct ResourceSequenceListOrdering
-    : public std::binary_function<ResourceSequenceList*, ResourceSequenceList*, bool>
 {
     /** Compare two individuals. */
     bool

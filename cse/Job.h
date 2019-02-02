@@ -611,7 +611,7 @@ private:
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-struct JobIdOrdering : public std::binary_function<Job*, Job*, bool>
+struct JobIdOrdering
 {
     bool
     operator()(const Job* lhs, const Job* rhs) const
@@ -622,7 +622,7 @@ struct JobIdOrdering : public std::binary_function<Job*, Job*, bool>
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-struct JobSerialIdOrdering : public std::binary_function<Job*, Job*, bool>
+struct JobSerialIdOrdering
 {
     bool
     operator()(const Job* lhs, const Job* rhs) const
@@ -633,7 +633,7 @@ struct JobSerialIdOrdering : public std::binary_function<Job*, Job*, bool>
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-struct JobPreferenceOrdering : public std::binary_function<Job*, Job*, bool>
+struct JobPreferenceOrdering
 {
     bool
     operator()(const Job* lhs, const Job* rhs) const
@@ -644,7 +644,7 @@ struct JobPreferenceOrdering : public std::binary_function<Job*, Job*, bool>
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-struct JobDueTimeOrdering : public std::binary_function<Job*, Job*, bool>
+struct JobDueTimeOrdering
 {
     bool
     operator()(const Job* lhs, const Job* rhs) const
@@ -655,7 +655,7 @@ struct JobDueTimeOrdering : public std::binary_function<Job*, Job*, bool>
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-struct JobSuccessorDepthDecOrdering : public std::binary_function<Job*, Job*, bool>
+struct JobSuccessorDepthDecOrdering
 {
     bool
     operator()(const Job* lhs, const Job* rhs) const
@@ -666,7 +666,7 @@ struct JobSuccessorDepthDecOrdering : public std::binary_function<Job*, Job*, bo
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-struct JobLatenessCostDecOrdering : public std::binary_function<Job*, Job*, bool>
+struct JobLatenessCostDecOrdering
 {
     bool
     operator()(const Job* lhs, const Job* rhs) const

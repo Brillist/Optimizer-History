@@ -115,7 +115,7 @@ private:
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-struct ResourceIdOrdering : public std::binary_function<Resource*, Resource*, bool>
+struct ResourceIdOrdering
 {
     /** Compare two individuals. */
     bool

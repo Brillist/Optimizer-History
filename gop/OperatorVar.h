@@ -93,7 +93,7 @@ private:
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-struct OperatorVarDecPordering : public std::binary_function<OperatorVar*, OperatorVar*, bool>
+struct OperatorVarDecPordering
 {
     bool operator()(const OperatorVar* lhs, const OperatorVar* rhs) const;
 };

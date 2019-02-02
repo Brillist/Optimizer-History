@@ -111,7 +111,7 @@ private:
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-struct PlanOrderingIncId : public std::binary_function<ProcessPlan*, ProcessPlan*, bool>
+struct PlanOrderingIncId
 {
     bool operator()(const ProcessPlan* lhs, const ProcessPlan* rhs) const;
 };

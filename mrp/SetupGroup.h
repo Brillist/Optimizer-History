@@ -72,7 +72,7 @@ private:
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-struct SetupGroupOrderingIncId : public std::binary_function<SetupGroup*, SetupGroup*, bool>
+struct SetupGroupOrderingIncId
 {
     bool operator()(SetupGroup* lhs, SetupGroup* rhs) const;
 };

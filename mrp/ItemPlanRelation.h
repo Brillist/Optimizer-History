@@ -105,7 +105,7 @@ private:
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /** Order ItemPlanRelation objects by preference. */
-struct PlanOrderingDecPref : public std::binary_function<ItemPlanRelation*, ItemPlanRelation*, bool>
+struct PlanOrderingDecPref
 {
     bool operator()(const ItemPlanRelation* lhs, const ItemPlanRelation* rhs) const;
 };

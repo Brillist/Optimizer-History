@@ -144,7 +144,7 @@ private:
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /** Order item objects by id. */
-struct ItemOrderingIncId : public std::binary_function<Item*, Item*, bool>
+struct ItemOrderingIncId
 {
     bool operator()(const Item* lhs, const Item* rhs) const;
 };

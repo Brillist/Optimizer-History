@@ -101,7 +101,7 @@ private:
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-struct stringScoreOrdering : public std::binary_function<StringScore*, StringScore*, bool>
+struct stringScoreOrdering
 {
     bool
     operator()(StringScore* strScore1, StringScore* strScore2)

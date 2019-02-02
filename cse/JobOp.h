@@ -726,7 +726,7 @@ private:
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-struct JobOpIdOrdering : public std::binary_function<JobOp*, JobOp*, bool>
+struct JobOpIdOrdering
 {
     bool
     operator()(const JobOp* lhs, const JobOp* rhs) const
@@ -737,7 +737,7 @@ struct JobOpIdOrdering : public std::binary_function<JobOp*, JobOp*, bool>
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-struct JobOpSerialIdOrdering : public std::binary_function<JobOp*, JobOp*, bool>
+struct JobOpSerialIdOrdering
 {
     bool
     operator()(const JobOp* lhs, const JobOp* rhs) const
@@ -748,7 +748,7 @@ struct JobOpSerialIdOrdering : public std::binary_function<JobOp*, JobOp*, bool>
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-struct JobOpFDsuccessorDepthDecOrdering : public std::binary_function<JobOp*, JobOp*, bool>
+struct JobOpFDsuccessorDepthDecOrdering
 {
     bool
     operator()(const JobOp* lhs, const JobOp* rhs) const
@@ -759,7 +759,7 @@ struct JobOpFDsuccessorDepthDecOrdering : public std::binary_function<JobOp*, Jo
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-struct JobOpBDsuccessorDepthDecOrdering : public std::binary_function<JobOp*, JobOp*, bool>
+struct JobOpBDsuccessorDepthDecOrdering
 {
     bool
     operator()(const JobOp* lhs, const JobOp* rhs) const

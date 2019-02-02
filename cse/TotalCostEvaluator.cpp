@@ -112,7 +112,7 @@ private:
 /// CapCostRecOrdering /////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-struct CapCostRecOrdering : public std::binary_function<CapCostRec*, CapCostRec*, bool>
+struct CapCostRecOrdering
 {
     bool
     operator()(const CapCostRec* lhs, const CapCostRec* rhs) const
@@ -129,7 +129,7 @@ struct CapCostRecOrdering : public std::binary_function<CapCostRec*, CapCostRec*
 /// CapCostRecCapOrdering //////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-struct CapCostRecCapOrdering : public std::binary_function<CapCostRec*, CapCostRec*, bool>
+struct CapCostRecCapOrdering
 {
     bool
     operator()(const CapCostRec* lhs, const CapCostRec* rhs) const

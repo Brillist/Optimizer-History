@@ -205,7 +205,7 @@ private:
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-struct PurchaseOrderIdOrdering : public std::binary_function<PurchaseOrder*, PurchaseOrder*, bool>
+struct PurchaseOrderIdOrdering
 {
     bool operator()(const PurchaseOrder* lhs, const PurchaseOrder* rhs) const;
 };
@@ -213,7 +213,6 @@ struct PurchaseOrderIdOrdering : public std::binary_function<PurchaseOrder*, Pur
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 struct PurchaseOrderOdateOrdering
-    : public std::binary_function<PurchaseOrder*, PurchaseOrder*, bool>
 {
     bool operator()(const PurchaseOrder* lhs, const PurchaseOrder* rhs) const;
 };

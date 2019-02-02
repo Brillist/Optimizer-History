@@ -159,7 +159,7 @@ private:
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-struct ResIdOrdering : public std::binary_function<Resource*, Resource*, bool>
+struct ResIdOrdering
 {
     bool
     operator()(const Resource* lhs, const Resource* rhs) const

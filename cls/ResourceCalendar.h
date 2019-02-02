@@ -226,7 +226,6 @@ private:
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 struct ResourceCalendarOrdering
-    : public std::binary_function<ResourceCalendar*, ResourceCalendar*, bool>
 {
     bool
     operator()(const ResourceCalendar* lhs, const ResourceCalendar* rhs) const
@@ -246,7 +245,6 @@ struct ResourceCalendarOrdering
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 struct ResourceCalendarSpecOrdering
-    : public std::binary_function<ResourceCalendar*, ResourceCalendar*, bool>
 {
     bool
     operator()(const ResourceCalendar* lhs, const ResourceCalendar* rhs) const

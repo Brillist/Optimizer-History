@@ -316,7 +316,7 @@ private:
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-struct ActIdOrdering : public std::binary_function<Activity*, Activity*, bool>
+struct ActIdOrdering
 {
     bool
     operator()(const Activity* lhs, const Activity* rhs) const
@@ -335,7 +335,7 @@ struct ActIdOrdering : public std::binary_function<Activity*, Activity*, bool>
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-struct ActESordering : public std::binary_function<Activity*, Activity*, bool>
+struct ActESordering
 {
     bool
     operator()(const Activity* lhs, const Activity* rhs) const

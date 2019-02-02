@@ -27,7 +27,7 @@ class CycleGroup;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-struct CycleGroupIdOrdering : public std::binary_function<CycleGroup*, CycleGroup*, bool>
+struct CycleGroupIdOrdering
 {
     bool operator()(const CycleGroup* lhs, const CycleGroup* rhs) const;
 };

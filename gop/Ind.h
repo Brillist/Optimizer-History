@@ -293,7 +293,7 @@ private:
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-struct IndOrderingSTL : public std::binary_function<Ind*, Ind*, bool>
+struct IndOrderingSTL
 {
     /** Constructor. */
     IndOrderingSTL(IndOrdering* ordering)

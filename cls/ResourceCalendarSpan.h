@@ -172,7 +172,6 @@ private:
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 struct ResourceCalendarSpanEndOrdering
-    : public std::binary_function<ResourceCalendarSpan*, ResourceCalendarSpan*, bool>
 {
     bool
     operator()(const ResourceCalendarSpan* lhs, const ResourceCalendarSpan* rhs) const
@@ -192,7 +191,6 @@ struct ResourceCalendarSpanEndOrdering
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 struct ResourceCalendarSpanCumPtOrdering
-    : public std::binary_function<ResourceCalendarSpan*, ResourceCalendarSpan*, bool>
 {
     bool
     operator()(const ResourceCalendarSpan* lhs, const ResourceCalendarSpan* rhs) const

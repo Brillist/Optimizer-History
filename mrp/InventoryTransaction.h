@@ -157,7 +157,6 @@ private:
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 struct InventoryTransactionOrderingIncT
-    : public std::binary_function<InventoryTransaction*, InventoryTransaction*, bool>
 {
     bool operator()(InventoryTransaction* lhs, InventoryTransaction* rhs) const;
 };

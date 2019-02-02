@@ -23,7 +23,7 @@ CLS_NS_BEGIN;
 /// SerializeResourcesOrdering /////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-struct ResourceSerialOrdering : public std::binary_function<Resource*, Resource*, bool>
+struct ResourceSerialOrdering
 {
     bool
     operator()(const Resource* lhs, const Resource* rhs) const

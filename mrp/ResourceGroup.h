@@ -91,7 +91,6 @@ private:
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 struct ResourceGroupOrderingIncId
-    : public std::binary_function<ResourceGroup*, ResourceGroup*, bool>
 {
     bool
     operator()(ResourceGroup* lhs, ResourceGroup* rhs) const

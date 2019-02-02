@@ -125,7 +125,7 @@ private:
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-struct JobGroupIdOrdering : public std::binary_function<JobGroup*, JobGroup*, bool>
+struct JobGroupIdOrdering
 {
     bool operator()(const JobGroup* lhs, const JobGroup* rhs) const;
 };

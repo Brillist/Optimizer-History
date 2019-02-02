@@ -307,7 +307,6 @@ private:
 
 /** Order MPSitemPeriod  objects by Id. */
 struct MPSitemPeriodOrderingIncId
-    : public std::binary_function<MPSitemPeriod*, MPSitemPeriod*, bool>
 {
     bool operator()(const MPSitemPeriod* lhs, const MPSitemPeriod* rhs) const;
 };
@@ -316,7 +315,6 @@ struct MPSitemPeriodOrderingIncId
 
 /** Order MPSitemPeriod objects by both ItemId and Id. */
 struct MPSitemPeriodOrderingIncItemId
-    : public std::binary_function<MPSitemPeriod*, MPSitemPeriod*, bool>
 {
     bool operator()(const MPSitemPeriod* lhs, const MPSitemPeriod* rhs) const;
 };
@@ -325,7 +323,6 @@ struct MPSitemPeriodOrderingIncItemId
 
 /** Order MPSitemPeriod objects by _startTime. */
 struct MPSitemPeriodOrderingIncST
-    : public std::binary_function<MPSitemPeriod*, MPSitemPeriod*, bool>
 {
     bool operator()(const MPSitemPeriod* lhs, const MPSitemPeriod* rhs) const;
 };

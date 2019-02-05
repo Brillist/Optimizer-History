@@ -19,12 +19,13 @@ function(sourceGroups SRCS)
     string(REPLACE "${CMAKE_CURRENT_SOURCE_DIR}" "" GROUP "${PARENT_DIR}")
     # make sure we are using windows slashes
     string(REPLACE "/" "\\" GROUP "${GROUP}")
+    set(GROUP "Source Files${GROUP}")
     # group into "Source Files" and "Header Files"
-    if ("${FILE}" MATCHES ".*\\.cpp")
-      set(GROUP "Source Files${GROUP}")
-    elseif("${FILE}" MATCHES ".*\\.h")
-      set(GROUP "Header Files${GROUP}")
-    endif()
+    #if ("${FILE}" MATCHES ".*\\.cpp")
+    #  set(GROUP "Source Files${GROUP}")
+    #elseif("${FILE}" MATCHES ".*\\.h")
+    #  set(GROUP "Header Files${GROUP}")
+    #endif()
     #message("source_group(${GROUP} FILES ${FILE})")
     source_group("${GROUP}" FILES "${FILE}")
   endforeach()
@@ -112,20 +113,11 @@ sourceGroups("${CSE_HDRS_AND_CPPS}") # groupings for Visual Studio
 # TARGET: clevor_se (executable)
 add_executable(clevor_se main/clevor_se.cpp)
 
-# clevor_se: include directories
-target_include_directories(clevor_se PRIVATE main ${CSE_INCLUDE_DIRS} ${UTL_INCLUDE_DIR})
-
 # clevor_se: link libraries
 target_link_libraries(clevor_se libcse debug ${UTL_STATIC_DEBUG} optimized ${UTL_STATIC_RELEASE})
 
 # TARGET: bt (executable) 
 add_executable(bt main/bt.cpp)
-
-# bt: compile options
-targetCompileOptions(bt)
-
-# bt: include directories
-target_include_directories(bt PRIVATE main ${CSE_INCLUDE_DIRS} ${UTL_INCLUDE_DIR})
 
 # bt: link libraries
 target_link_libraries(bt libcse debug ${UTL_STATIC_DEBUG} optimized ${UTL_STATIC_RELEASE})

@@ -75,7 +75,7 @@ public:
     void
     enQ(ConstrainedBound* bound)
     {
-        _propQ.enQ(bound);
+        _propQ.push_back(bound);
     }
 #endif
     //@}

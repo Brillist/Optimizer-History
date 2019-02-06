@@ -1,10 +1,14 @@
 cmake_minimum_required(VERSION 3.5)
 
+#### clevor_se ###################################################################################
+
 project(
     clevor_se VERSION 1.0
     DESCRIPTION "Clevor Scheduling Engine"
     LANGUAGES CXX
 )
+
+#### functions ###################################################################################
 
 # sourceGroups(SRCS)
 #   Create source groups based on sourcedir-relative paths of source files.
@@ -19,6 +23,7 @@ function(sourceGroups SRCS)
     string(REPLACE "${CMAKE_CURRENT_SOURCE_DIR}" "" GROUP "${PARENT_DIR}")
     # make sure we are using windows slashes
     string(REPLACE "/" "\\" GROUP "${GROUP}")
+    # group into "Source Files"
     set(GROUP "Source Files${GROUP}")
     # group into "Source Files" and "Header Files"
     #if ("${FILE}" MATCHES ".*\\.cpp")
@@ -31,93 +36,62 @@ function(sourceGroups SRCS)
   endforeach()
 endfunction()
 
-# targetCompileOptions(TARGET)
-#   Set project-wide compile options for a target.
-function(targetCompileOptions TARGET)
-  target_compile_options(${TARGET} PUBLIC ${COMPILE_OPTIONS_COMMON})
-  target_compile_options(${TARGET} PUBLIC "$<$<CONFIG:DEBUG>:${COMPILE_OPTIONS_DEBUG}>")
-  target_compile_options(${TARGET} PUBLIC "$<$<CONFIG:RELEASE>:${COMPILE_OPTIONS_RELEASE}>")
-endfunction()
+#### libcse ######################################################################################
 
-# libutl vars
-if (MSVC)
-    set(UTL_INCLUDE_DIR ../libutl)
-    set(UTL_STATIC_DEBUG ../../libutl/x64/debug/libutl)
-    set(UTL_STATIC_RELEASE ../../libutl/x64/release/libutl)
-else()
-    set(UTL_STATIC_DEBUG utl_g)
-    set(UTL_STATIC_RELEASE utl)
-endif()
-
-# compiler options
-if (MSVC)
-    set(COMPILE_OPTIONS_COMMON /W1
-                               /std:c++17
-                               /permissive-
-                               /MP
-                               /D_CRT_SECURE_CPP_OVERLOAD_STANDARD_NAMES=1
-                               /D_CRT_SECURE_CPP_OVERLOAD_STANDARD_NAMES_COUNT=1
-                               /D_CRT_SECURE_NO_DEPRECATE
-                               /D_CRT_NONSTDC_NO_DEPRECATE
-                               /DUTL_CC=UTL_CC_MSVC
-                               /DUTL_HOST_OS=UTL_OS_WINDOWS)
-    set(COMPILE_OPTIONS_DEBUG /DDEBUG)
-    set(COMPILE_OPTIONS_RELEASE /DRELEASE)
-else()
-    set(COMPILE_OPTIONS_COMMON -Wall
-                               -Wno-uninitialized
-                               -std=gnu++17
-                               -fstrict-aliasing
-                               -DUTL_CC=UTL_CC_GCC
-                               -DUTL_HOST_OS=UTL_OS_LINUX)
-    set(COMPILE_OPTIONS_DEBUG -DDEBUG)
-    set(COMPILE_OPTIONS_RELEASE -DRELEASE)
-endif()
-
-# TARGET: libcse (static library)
+# TARGET: libcse (shared library)
 add_library(libcse STATIC)
 
-# libcse: compile options
-targetCompileOptions(libcse)
+# find libUTL++
+find_package(libutl 1.0 REQUIRED)
 
-# libcse: users need ws2_32 (Winsock2) library
-target_link_libraries(libcse INTERFACE ws2_32)
+# users should link against libutl::libutl_static
+target_link_libraries(libcse PUBLIC libutl::libutl_static)
 
-# libcse: include directories
+# include directories
 set(CSE_INCLUDE_DIRS "${CMAKE_SOURCE_DIR}")
-target_include_directories(libcse PUBLIC ${UTL_INCLUDE_DIR} ${CSE_INCLUDE_DIRS})
+target_include_directories(libcse PUBLIC ${CSE_INCLUDE_DIRS})
 
-# libcse: source files
-file(GLOB_RECURSE CSE_HDRS_LUT RELATIVE ${CMAKE_SOURCE_DIR} "lut/*.h")
-file(GLOB_RECURSE CSE_HDRS_GOP RELATIVE ${CMAKE_SOURCE_DIR} "gop/*.h")
-file(GLOB_RECURSE CSE_HDRS_CLP RELATIVE ${CMAKE_SOURCE_DIR} "clp/*.h")
-file(GLOB_RECURSE CSE_HDRS_CLS RELATIVE ${CMAKE_SOURCE_DIR} "cls/*.h")
-file(GLOB_RECURSE CSE_HDRS_CSE RELATIVE ${CMAKE_SOURCE_DIR} "cse/*.h")
-file(GLOB_RECURSE CSE_HDRS_MPS RELATIVE ${CMAKE_SOURCE_DIR} "mps/*.h")
-file(GLOB_RECURSE CSE_HDRS_MRP RELATIVE ${CMAKE_SOURCE_DIR} "mrp/*.h")
-set(CSE_HDRS ${CSE_HDRS_LUT} ${CSE_HDRS_GOP} ${CSE_HDRS_CLP} ${CSE_HDRS_CLS}
-             ${CSE_HDRS_CSE} ${CSE_HDRS_MPS} ${CSE_HDRS_MRP})
+# ${CSE_CPPS}: library source files
 file(GLOB_RECURSE CSE_CPPS_LUT RELATIVE ${CMAKE_SOURCE_DIR} "lut/*.cpp")
 file(GLOB_RECURSE CSE_CPPS_GOP RELATIVE ${CMAKE_SOURCE_DIR} "gop/*.cpp")
 file(GLOB_RECURSE CSE_CPPS_CLP RELATIVE ${CMAKE_SOURCE_DIR} "clp/*.cpp")
 file(GLOB_RECURSE CSE_CPPS_CLS RELATIVE ${CMAKE_SOURCE_DIR} "cls/*.cpp")
 file(GLOB_RECURSE CSE_CPPS_CSE RELATIVE ${CMAKE_SOURCE_DIR} "cse/*.cpp")
-file(GLOB_RECURSE CSE_CPPS_MPS RELATIVE ${CMAKE_SOURCE_DIR} "mps/*.cpp")
-file(GLOB_RECURSE CSE_CPPS_MRP RELATIVE ${CMAKE_SOURCE_DIR} "mrp/*.cpp")
-set(CSE_CPPS ${CSE_CPPS_LUT} ${CSE_CPPS_GOP} ${CSE_CPPS_CLP} ${CSE_CPPS_CLS}
-             ${CSE_CPPS_CSE} ${CSE_CPPS_MPS} ${CSE_CPPS_MRP})
-set(CSE_HDRS_AND_CPPS ${CSE_HDRS} ${CSE_CPPS})
-target_sources(libcse PRIVATE ${CSE_HDRS_AND_CPPS})
-sourceGroups("${CSE_HDRS_AND_CPPS}") # groupings for Visual Studio
+set(CSE_CPPS ${CSE_CPPS_LUT} ${CSE_CPPS_GOP} ${CSE_CPPS_CLP} ${CSE_CPPS_CLS} ${CSE_CPPS_CSE})
 
-# TARGET: clevor_se (executable)
+# ${CSE_HDRS}: library header files
+file(GLOB_RECURSE CSE_HDRS_LUT RELATIVE ${CMAKE_SOURCE_DIR} "lut/*.h")
+file(GLOB_RECURSE CSE_HDRS_GOP RELATIVE ${CMAKE_SOURCE_DIR} "gop/*.h")
+file(GLOB_RECURSE CSE_HDRS_CLP RELATIVE ${CMAKE_SOURCE_DIR} "clp/*.h")
+file(GLOB_RECURSE CSE_HDRS_CLS RELATIVE ${CMAKE_SOURCE_DIR} "cls/*.h")
+file(GLOB_RECURSE CSE_HDRS_CSE RELATIVE ${CMAKE_SOURCE_DIR} "cse/*.h")
+set(CSE_HDRS ${CSE_HDRS_LUT} ${CSE_HDRS_GOP} ${CSE_HDRS_CLP} ${CSE_HDRS_CLS} ${CSE_HDRS_CSE})
+
+# ${CSE_CPPS_AND_HDRS}: source and header files
+set(CSE_CPPS_AND_HDRS ${CSE_CPPS} ${CSE_HDRS})
+
+target_sources(libcse PRIVATE ${CSE_CPPS_AND_HDRS})
+sourceGroups("${CSE_CPPS_AND_HDRS}") # groupings for Visual Studio
+
+# MSVC-only: downstream must link with /WHOLEARCHIVE
+if (MSVC)
+  target_link_options(libcse INTERFACE
+                      -WHOLEARCHIVE:$<TARGET_LINKER_FILE_NAME:libcse>)
+endif()
+
+#### clevor_se ###################################################################################
+
+# clevor_se (executable)
 add_executable(clevor_se main/clevor_se.cpp)
 
-# clevor_se: link libraries
-target_link_libraries(clevor_se libcse debug ${UTL_STATIC_DEBUG} optimized ${UTL_STATIC_RELEASE})
+# link against libcse
+target_link_libraries(clevor_se libcse)
 
-# TARGET: bt (executable) 
+#### bt ##########################################################################################
+
+# build-test tool (executable) 
 add_executable(bt main/bt.cpp)
 
-# bt: link libraries
-target_link_libraries(bt libcse debug ${UTL_STATIC_DEBUG} optimized ${UTL_STATIC_RELEASE})
+# link against libcse
+target_link_libraries(bt libcse)
+

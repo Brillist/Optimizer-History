@@ -22,8 +22,7 @@ void*
 RunningThread::run(void* arg)
 {
     ASSERT(arg != nullptr);
-    //     ASSERT(dynamic_cast<SchedulingRun*>(arg) != nullptr);
-    SchedulingRun* schedulingRun = (SchedulingRun*)arg;
+    auto schedulingRun = static_cast<SchedulingRun*>(arg);
     schedulingRun->run();
     return nullptr;
 }

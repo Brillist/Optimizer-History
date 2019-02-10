@@ -105,9 +105,6 @@ private:
     // make a cycle-group
     void makeCycleGroup();
 
-    // warshall (to find transitive closure of precedence)
-    void warshall();
-
     // set successor depth for all CGs
     void setSuccessorDepth();
     void setSuccessorDepth(CycleGroup* cg);

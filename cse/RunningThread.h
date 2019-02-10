@@ -13,19 +13,9 @@ CSE_NS_BEGIN;
 class RunningThread : public utl::Thread
 {
     UTL_CLASS_DECL(RunningThread, utl::Thread);
-
+    UTL_CLASS_DEFID;
 public:
     virtual void* run(void* arg = nullptr);
-
-private:
-    void
-    init()
-    {
-    }
-    void
-    deInit()
-    {
-    }
 };
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////

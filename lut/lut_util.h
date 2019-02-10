@@ -719,23 +719,4 @@ uniqueKey(const Map& map)
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-#define forEachIt(colType, col, itemType, item)                                                    \
-    {                                                                                              \
-        colType::iterator it__ = col.begin();                                                      \
-        for (it__ = col.begin();; ++it__)                                                          \
-        {                                                                                          \
-            utl::Object* obj__ = *it__;                                                            \
-            if (obj__ == nullptr)                                                                  \
-                break;                                                                             \
-            ASSERTD(obj__->isA(itemType));                                                         \
-            itemType& item = (itemType&)*obj__;
-
-////////////////////////////////////////////////////////////////////////////////////////////////////
-
-#define endForEach                                                                                 \
-    }                                                                                              \
-    }
-
-////////////////////////////////////////////////////////////////////////////////////////////////////
-
 LUT_NS_END;

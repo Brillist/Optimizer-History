@@ -356,11 +356,16 @@ DiscreteResourceRequirement::addTimetableBounds()
 void
 DiscreteResourceRequirement::getAllPts(uint_set_t& pts)
 {
-    forEachIt(Hashtable, _rcps, ResourceCapPts, rcp) forEachIt(ResourceCapPts, rcp, CapPt, capPt)
-        uint_t pt = capPt.processingTime();
-    pts.insert(pt);
-    endForEach;
-    endForEach;
+    for (auto rcp_ : _rcps)
+    {
+        auto rcp = utl::cast<ResourceCapPts>(rcp_);
+        for (auto capPt_ : *rcp)
+        {
+            auto capPt = utl::cast<CapPt>(capPt_);
+            uint_t pt = capPt->processingTime();
+            pts.insert(pt);
+        }
+    }
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -368,8 +373,11 @@ DiscreteResourceRequirement::getAllPts(uint_set_t& pts)
 void
 DiscreteResourceRequirement::getAllResIds(uint_set_t& resIds)
 {
-    forEachIt(Hashtable, _rcps, ResourceCapPts, rcp) resIds.insert(rcp.resourceId());
-    endForEach;
+    for (auto rcp_ : _rcps)
+    {
+        auto rcp = utl::cast<ResourceCapPts>(rcp_);
+        resIds.insert(rcp->resourceId());
+    }
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////

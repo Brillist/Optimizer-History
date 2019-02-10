@@ -148,7 +148,7 @@ JobSeqMutate::execute(gop::Ind* ind, gop::IndBuilderContext* context, bool singl
     {
         if (nextJob == firstJob || allSuccCGs.find(nextJob->cycleGroup()) != allSuccCGs.end())
         {
-            changedJobs.erase(startIt);
+            startIt = changedJobs.erase(startIt);
             changedJobs.push_back(nextJob);
         }
         else

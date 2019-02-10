@@ -70,13 +70,15 @@ ESboundInt::initialize()
     // fill in _caps[], _resources[], and init _visited[]
     _numVisited = 0;
     uint_t idx = 0;
-    forEachIt(utl::RBtree, _act->requirements(), CompositeResourceRequirement, crr) _caps[idx] =
-        crr.minCapacity();
-    _resources[idx] = crr.resource();
-    _prs[idx] = crr.preferredResources();
-    _numVisited += _resources[idx]->numResources();
-    ++idx;
-    endForEach;
+    for (auto crr_ : _act->requirements())
+    {
+        auto crr = utl::cast<CompositeResourceRequirement>(crr_);
+        _caps[idx] = crr->minCapacity();
+        _resources[idx] = crr->resource();
+        _prs[idx] = crr->preferredResources();
+        _numVisited += _resources[idx]->numResources();
+        ++idx;
+    }
     _visited = new DiscreteResource*[_numVisited];
     _numVisited = 0;
 
@@ -330,13 +332,15 @@ ESboundInt::initMinMaxMultiple()
 
     // fill in maxCaps[], determine if there is an upper bound on capacity
     idx = 0;
-    forEachIt(utl::RBtree, _act->requirements(), CompositeResourceRequirement, crr)
-        CompositeResource* cres = crr.resource();
-    // set maxCaps[idx]
-    maxCaps[idx] = utl::min(crr.maxCapacity(), cres->numResources());
-    maxCaps[idx] = utl::max(maxCaps[idx], _caps[idx]);
-    ++idx;
-    endForEach;
+    for (auto crr_ : _act->requirements())
+    {
+        auto crr = utl::cast<CompositeResourceRequirement>(crr_);
+        auto cres = crr->resource();
+        // set maxCaps[idx]
+        maxCaps[idx] = utl::min(crr->maxCapacity(), cres->numResources());
+        maxCaps[idx] = utl::max(maxCaps[idx], _caps[idx]);
+        ++idx;
+    }
 
     // _maxMultiple = highest multiple without exceeding maxCaps[]
     bool done = false;

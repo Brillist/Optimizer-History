@@ -129,25 +129,25 @@ JobOp::serialize(Stream& stream, uint_t io, uint_t)
     // res-cap-pts
     _resCapPts.serialize(stream, io);
 
-    // item-requirements
-    // uncommment it when we do inventory system
+    // item-requirements (uncommment it when we do inventory system)
     //     if (io == io_rd)
     //     {
     //         deleteCont(_itemReqs);
     //         Array array;
     //         array.serializeIn(stream);
-    //         forEachIt(Array, array, ItemRequirement, itemReq)
-    //             addItemReq(&itemReq);
-    //         endForEach
+    //         for (auto itemReq_ : array)
+    //         {
+    //             auto itemReq = utl::cast<ItemRequirement>(itemReq_);
+    //             addItemReq(itemReq);
+    //         }
     //         array.setOwner(false);
     //     }
     //     else
     //     {
     //         Array array(false);
-    //         itemreq_vector_t::iterator it;
-    //         for (it = _itemReqs.begin(); it != _itemReqs.end(); it++)
+    //         for (auto itemReq : _itemReqs)
     //         {
-    //             array += *it;
+    //             array += itemReq;
     //         }
     //         array.serializeOut(stream);
     //     }

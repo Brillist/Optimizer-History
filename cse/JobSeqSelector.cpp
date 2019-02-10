@@ -146,10 +146,8 @@ JobSeqSelector::setSelectedJobSeq(StringInd<uint_t>* ind, SchedulingContext* con
     for (it = jobs.begin(); it != jobs.end(); ++it)
     {
         // processPlanSelector -> jobSeqSelector
-        // this propagation is a partial one,
-        // because processPlanMutate can change jobSid,
-        // but jobSeqMutate cannot change job's active status
-        // Joe, Oct 27, 2006.
+        // .. this propagation is a partial one because processPlanMutate can change jobSid,
+        // .. but jobSeqMutate cannot change job's active status
         Job* job = *it;
         bool active = job->active();
         uint_t sid = string[_stringBase + i];
@@ -165,10 +163,6 @@ JobSeqSelector::setSelectedJobSeq(StringInd<uint_t>* ind, SchedulingContext* con
         {
             job->serialId() = sid;
         }
-        //       if (job->active() &&
-        //       uint_t sid = string[_stringBase + i];
-        //       if (sid != uint_t_max)
-        //           job->serialId() = string[_stringBase + i];
         i++;
     }
 }

@@ -614,6 +614,7 @@ public:
 
     /** Get ignorable flag (scheduled - but not within scheduling window). */
     bool ignorable() const;
+
     /** Remove scheduling information. */
     void unschedule();
 
@@ -713,8 +714,7 @@ private:
     cls::resCapPts_set_t _resCapPts;
     mutable cls::resCapPts_set_t _resCapPtsAdj;
 
-    // item requirements
-    // note: _itemReqs is added for inventory management in mrp.
+    // item requirements (for MRP)
     itemreq_vector_t _itemReqs;
 
     // schedulable-ops list index

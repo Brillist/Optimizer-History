@@ -210,9 +210,6 @@ protected:
     uint_t _stringBase;
 
 private:
-    typedef std::set<uint_t> uint_set_t;
-
-private:
     void init();
     void deInit();
 

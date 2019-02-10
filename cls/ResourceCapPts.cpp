@@ -244,9 +244,12 @@ ResourceCapPts::copy(const Object& rhs)
     _numPossible = 0;
     _selectedCapPt = nullptr;
 
-    forEachIt(utl::RBtree, _capPts, CapPt, capPt) _capPtsHTcap += capPt;
-    _capPtsHTpt += capPt;
-    endForEach;
+    for (auto capPt_ : _capPts)
+    {
+        auto capPt = utl::cast<CapPt>(capPt_);
+        _capPtsHTcap += capPt;
+        _capPtsHTpt += capPt;
+    }
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -261,9 +264,12 @@ ResourceCapPts::serialize(Stream& stream, uint_t io, uint_t)
     std::vector<uint_t> pts;
     if (io == io_wr)
     {
-        forEachIt(utl::RBtree, _capPts, CapPt, capPt) caps.push_back(capPt.capacity());
-        pts.push_back(capPt.processingTime());
-        endForEach
+        for (auto capPt_ : _capPts)
+        {
+            auto capPt = utl::cast<CapPt>(capPt_);
+            caps.push_back(capPt->capacity());
+            pts.push_back(capPt->processingTime());
+        }
     }
     lut::serialize<uint_t>(caps, stream, io);
     lut::serialize<uint_t>(pts, stream, io);
@@ -289,8 +295,11 @@ ResourceCapPts::initialize(Activity* act)
     _capPtsArray.clear();
     _capPtsArray.setIncrement(1);
     _capPtsArray.reserve(_capPts.size());
-    forEachIt(utl::RBtree, _capPts, CapPt, capPt) _capPtsArray += capPt;
-    endForEach;
+    for (auto capPt_ : _capPts)
+    {
+        auto capPt = utl::cast<CapPt>(capPt_);
+        _capPtsArray += capPt;
+    }
 
     // make objects
     if (act->isA(BrkActivity))
@@ -346,10 +355,13 @@ ResourceCapPts::dividePtsBy(uint_t divisor)
 {
     _capPtsHTcap.clear();
     _capPtsHTpt.clear();
-    forEachIt(utl::RBtree, _capPts, CapPt, capPt) capPt.processingTime() /= divisor;
-    _capPtsHTcap += capPt;
-    _capPtsHTpt += capPt;
-    endForEach
+    for (auto capPt_ : _capPts)
+    {
+        auto capPt = utl::cast<CapPt>(capPt_);
+        capPt->processingTime() /= divisor;
+        _capPtsHTcap += capPt;
+        _capPtsHTpt += capPt;
+    }
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -404,12 +416,15 @@ ResourceCapPts::findPt(uint_t pt) const
 bool
 ResourceCapPts::hasNonZeroCapPt() const
 {
-    forEachIt(utl::RBtree, _capPts, CapPt,
-              capPt) if ((capPt.capacity() != 0) && (capPt.processingTime() != 0))
+    for (auto capPt_ : _capPts)
     {
-        return true;
+        auto capPt = utl::cast<CapPt>(capPt_);
+        if ((capPt->capacity() != 0) && (capPt->processingTime() != 0))
+        {
+            return true;
+        }
     }
-    endForEach return false;
+    return false;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -442,33 +457,36 @@ ResourceCapPts::initialize(BrkActivity* act)
     bool forward = act->forward();
     const IntExp& possiblePts = act->possiblePts();
     uint_t maxCap = 0;
-    forEachIt(utl::RBtree, _capPts, CapPt, capPt) ASSERTD(capPt.object() == nullptr);
-
-    // skip impossible cap/pt
-    if (!possiblePts.has(capPt.processingTime()))
+    for (auto capPt_ : _capPts)
     {
-        continue;
+        auto capPt = utl::cast<CapPt>(capPt_);
+        ASSERTD(capPt->object() == nullptr);
+
+        // skip impossible cap/pt
+        if (!possiblePts.has(capPt->processingTime()))
+        {
+            continue;
+        }
+
+        maxCap = utl::max(maxCap, capPt->capacity());
+
+        Bound* ttBound;
+        if (forward)
+        {
+            ttBound = new ESboundTimetable(act, this, capPt, 0);
+        }
+        else
+        {
+            ttBound = new LFboundTimetable(act, this, capPt, 0);
+        }
+
+        ttBound->name() =
+            "-> res-" + _resId.toString() + " (" + Uint(capPt->capacity()).toString() + ")";
+        capPt->setObject(ttBound);
+        ++_numPossible;
     }
 
-    maxCap = utl::max(maxCap, capPt.capacity());
-
-    Bound* ttBound;
-    if (forward)
-    {
-        ttBound = new ESboundTimetable(act, this, capPt, 0);
-    }
-    else
-    {
-        ttBound = new LFboundTimetable(act, this, capPt, 0);
-    }
-
-    ttBound->name() =
-        "-> res-" + _resId.toString() + " (" + Uint(capPt.capacity()).toString() + ")";
-    capPt.setObject(ttBound);
-    ++_numPossible;
-    endForEach;
-
-    DiscreteResource* dres = (DiscreteResource*)_res;
+    auto dres = utl::cast<DiscreteResource>(_res);
     dres->maxReqCap() += maxCap;
 }
 

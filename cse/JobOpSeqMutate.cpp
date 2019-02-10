@@ -56,15 +56,14 @@ JobOpSeqMutate::initialize(const gop::DataSet* p_dataSet)
 {
     RevOperator::initialize();
 
-    ASSERTD(dynamic_cast<const ClevorDataSet*>(p_dataSet) != nullptr);
-    const ClevorDataSet* dataSet = (const ClevorDataSet*)p_dataSet;
+    auto dataSet = utl::cast<ClevorDataSet>(p_dataSet);
     setJobOps(dataSet);
 
     uint_t numJobs = _jobs.size();
     uint_t numChoices = 0;
     for (uint_t i = 0; i < numJobs; i++)
     {
-        Job* job = _jobs[i];
+        auto job = _jobs[i];
         if (job->active())
         {
             numChoices += _jobNumChoices[i];
@@ -77,8 +76,8 @@ JobOpSeqMutate::initialize(const gop::DataSet* p_dataSet)
     ASSERTD(_ops.size() == _swapOps.size());
     for (uint_t i = 0; i < numOps; i++)
     {
-        JobOp* op = _ops[i];
-        jobop_vector_t* swapops = _swapOps[i];
+        auto op = _ops[i];
+        auto swapops = _swapOps[i];
         if (swapops->size() == 0)
         {
             addOperatorVar(i, 0, 2, op->job()->activeP());
@@ -112,7 +111,7 @@ JobOpSeqMutate::execute(gop::Ind* ind, gop::IndBuilderContext* p_context, bool s
         op1->serialId() = string[_stringBase + i];
     }
 
-    //select an op and its job - (jobOpIdx and jobIdx)
+    // select an op and its job - (jobOpIdx and jobIdx)
     uint_t opIdx = getSelectedVarIdx();
 #ifdef DEBUG_UNIT
     utl::cout << "          varSucRate:" << getSelectedVarP() << ", idx:" << opIdx;
@@ -169,7 +168,7 @@ JobOpSeqMutate::execute(gop::Ind* ind, gop::IndBuilderContext* p_context, bool s
         }
     }
     std::sort(_moveOps.begin(), _moveOps.end(), JobOpSerialIdOrdering());
-    ////move firstOp and all its sucessors to the end
+    // move firstOp and all its successors to the end
     jobop_vector_t changedOps = _moveOps;
     JobOp* firstOp = *(changedOps.begin());
     const cg_revset_t& allSuccCGs = firstOp->esCG()->allSuccCGs();
@@ -181,7 +180,7 @@ JobOpSeqMutate::execute(gop::Ind* ind, gop::IndBuilderContext* p_context, bool s
     {
         if ((nextOp == firstOp) || (allSuccCGs.find(nextOp->esCG()) != allSuccCGs.end()))
         {
-            changedOps.erase(startIt);
+            startIt = changedOps.erase(startIt);
             changedOps.push_back(nextOp);
         }
         else
@@ -261,7 +260,6 @@ JobOpSeqMutate::undo()
     if (_moveSchedule->newString())
         _moveSchedule->deleteNewString();
     gop::String<uint_t>& string = _moveSchedule->string();
-    //Job* job = _jobs[_moveJobIdx];
     uint_t startSid = _moveOpSid;
     for (uint_t i = 0; i < _moveOps.size(); i++)
     {
@@ -283,207 +281,147 @@ JobOpSeqMutate::undo()
 void
 JobOpSeqMutate::setJobOps(const ClevorDataSet* dataSet)
 {
-    //initialize _jobStrPositions, _jobs and _ops
-    const job_set_id_t& jobs = dataSet->jobs();
+    // initialize _jobStrPositions, _jobs and _ops
+    auto& jobs = dataSet->jobs();
     uint_t strPosition = _stringBase;
-    job_set_id_t::const_iterator jobIt;
-    jobop_set_id_t::const_iterator opIt;
-    for (jobIt = jobs.begin(); jobIt != jobs.end(); jobIt++)
+    for (auto job : jobs)
     {
-        Job* job = *jobIt;
-        _jobs.push_back(job); //_jobs
-        jobop_set_id_t jobOps = job->allSops();
+        _jobs.push_back(job);
+        auto& jobOps = job->allSops();
         uint_t numOps = jobOps.size();
-        for (opIt = jobOps.begin(); opIt != jobOps.end(); opIt++)
+        for (auto op : jobOps)
         {
-            JobOp* op = *opIt;
-            _ops.push_back(op); //_ops
+            _ops.push_back(op);
         }
+        // note position for this job, and update the position
         _jobStrPositions.push_back(strPosition);
         strPosition += numOps;
     }
 
-    //init _jobNumChoices and _swapOps
-    for (jobIt = jobs.begin(); jobIt != jobs.end(); jobIt++)
+    // init _jobNumChoices and _swapOps
+    for (auto job : jobs)
     {
-        Job* job = *jobIt;
-        const jobop_set_id_t& jobOps = job->allSops();
+        auto& jobOps = job->allSops();
 
         // jobOpCGs = list of all CGs associated with job's ops
         cg_set_id_t jobOpCGs;
-        for (opIt = jobOps.begin(); opIt != jobOps.end(); ++opIt)
+        for (auto op : jobOps)
         {
-            JobOp* op = *opIt;
             jobOpCGs.insert(op->esCG());
         }
 
         // for each of the job's ops
         uint_t jobNumChoices = 0;
-        for (opIt = jobOps.begin(); opIt != jobOps.end(); opIt++)
+        for (auto op : jobOps)
         {
-            JobOp* op = *opIt;
-            jobop_vector_t* opVect = new jobop_vector_t();
+            // every op has a swap-ops list (even if it's empty)
+            auto swapOps = new jobop_vector_t();
+            _swapOps.push_back(swapOps);
 
+            // skip op that is frozen or (not breakable and not interruptible)
             if (op->frozen() || (!op->breakable() && !op->interruptible()))
-            {
-                _swapOps.push_back(opVect);
                 continue;
-            }
-            Activity* act = op->activity();
+
+            // skip op for pt-activity with pt=0
+            auto act = op->activity();
             ASSERTD(act != nullptr);
             if (act->isA(PtActivity))
             {
-                PtActivity* ptact = (PtActivity*)act;
-                const IntVar* ptExp = ptact->possiblePts();
-                if ((ptExp->isBound() && ptExp->getValue() == 0))
-                {
-                    _swapOps.push_back(opVect);
+                auto ptact = utl::cast<PtActivity>(act);
+                auto& ptExp = ptact->possiblePts();
+                if ((ptExp.isBound() && ptExp.getValue() == 0))
                     continue;
-                }
             }
 
-            CycleGroup* cg = op->esCG();
-            const cg_revset_t& allPredCGs = cg->allPredCGs();
-            const cg_revset_t& allSuccCGs = cg->allSuccCGs();
-            cg_set_id_t tempCandidates, cgCandidates;
+            // cg = op's CG (for earliest-start)
+            // allPredCGs = cg's predecessor CGs
+            // allSuccCGs = cg's successor CGs
+            auto cg = op->esCG();
+            auto& allPredCGs = cg->allPredCGs();
+            auto& allSuccCGs = cg->allSuccCGs();
 
-            // cgCandidates = CGs that neither precede nor succeed cg
+            //cg_set_id_t tempCandidates, cgCandidates;
+
+            // tempCandidates = job CGs that do not precede this op's CG
+            cg_vector_t tempCandidates;
+            tempCandidates.reserve(jobOpCGs.size());
             std::set_difference(
-                jobOpCGs.begin(), jobOpCGs.end(), allPredCGs.begin(), allPredCGs.end(),
+                jobOpCGs.begin(), jobOpCGs.end(),
+                allPredCGs.begin(), allPredCGs.end(),
                 std::inserter(tempCandidates, tempCandidates.begin()), CycleGroupIdOrdering());
+
+            // cgCandidates = job CGs that neither precede nor succeed this op's CG
+            cg_vector_t cgCandidates;
+            cgCandidates.reserve(tempCandidates.size());
             std::set_difference(tempCandidates.begin(), tempCandidates.end(), allSuccCGs.begin(),
                                 allSuccCGs.end(), std::inserter(cgCandidates, cgCandidates.begin()),
                                 CycleGroupIdOrdering());
 
-            //checking code. DON'T DELETE
-            //             utl::cout << "OP:" << op->id()
-            //                       << ", job:" << op->job()->id()
-            //                       << ", #jobOps:" << Uint(jobOps.size())
-            //                       << ", #predCGs:" << allPredCGs.size()
-            //                       << ", #succCGs:" << allSuccCGs.size()
-            //                       << ", #candidateCGs:" << Uint(cgCandidates.size())
-            //                       << utl::endl;
-            //             utl::cout << "allops:";
-            //             for (jobop_set_id_t::const_iterator it = jobOps.begin();
-            //                  it != jobOps.end(); it++)
-            //                 utl::cout <<  (*it)->id() << "("
-            //                           << ((JobOp*)(*it))->job()->id()
-            //                           << "), ";
-            //             utl::cout << utl::endl << utl::endl;
-            //             utl::cout << "allCGops:";
-            //             for (cg_set_id_t::iterator it = jobOpCGs.begin();
-            //                  it != jobOpCGs.end(); it++)
-            //             {
-            //                 CycleGroup* candCG = *it;
-            //                 utl::cout << candCG->toString() << " ";
-            //             }
-            //             utl::cout << utl::endl << utl::endl;
-            //             utl::cout << "allPreds:";
-            //             for (cg_revset_t::iterator it = allPredCGs.begin();
-            //                  it != allPredCGs.end(); it++)
-            //             {
-            //                 CycleGroup* candCG = *it;
-            //                 utl::cout << candCG->toString() << " ";
-            //             }
-            //             utl::cout << utl::endl << utl::endl;
-            //             utl::cout << "allSuccs:";
-            //             for (cg_revset_t::iterator it = allSuccCGs.begin();
-            //                  it != allSuccCGs.end(); it++)
-            //             {
-            //                 CycleGroup* candCG = *it;
-            //                 utl::cout << candCG->toString() << " ";
-            //             }
-            //             utl::cout << utl::endl << utl::endl;
-            //             utl::cout << "allcands:";
-            //             for (cg_set_id_t::iterator it = cgCandidates.begin();
-            //                  it != cgCandidates.end(); it++)
-            //             {
-            //                 CycleGroup* candCG = *it;
-            //                 utl::cout << candCG->toString() << " ";
-            //             }
-            //             utl::cout << utl::endl << utl::endl;
-
-            const uint_set_t& opRess = act->allResIds();
-            cg_set_id_t::iterator candIt;
-            for (candIt = cgCandidates.begin(); candIt != cgCandidates.end(); ++candIt)
+            auto& opRess = act->allResIds();
+            for (auto candCG : cgCandidates)
             {
-                CycleGroup* candCG = *candIt;
-                CycleGroup::iterator cbIt, cbEnd = candCG->end();
-                for (cbIt = candCG->begin(); cbIt != cbEnd; ++cbIt)
+                for (auto cb : *candCG)
                 {
-                    ConstrainedBound* cb = *cbIt;
-                    //skip if (act != ptAct && act != intAct)
-                    //or (op.frozen) or (op.pt == 0)
+                    // skip non-ES bound
                     if (!cb->isA(cls::ESbound) && !cb->isA(cls::ESboundInt))
                         continue;
-                    Activity* candidateAct = (Activity*)cb->owner();
-                    JobOp* candidateOp = (JobOp*)candidateAct->owner();
+
+                    // skip frozen op
+                    auto candidateAct = utl::cast<Activity>(cb->owner());
+                    auto candidateOp = static_cast<JobOp*>(candidateAct->owner());
                     if (candidateOp->frozen())
                         continue;
+
+                    // skip pt-activity with pt=0
                     if (candidateAct->isA(PtActivity))
                     {
-                        PtActivity* candidatePtact = (PtActivity*)candidateAct;
-                        const IntVar* candidatePtExp = candidatePtact->possiblePts();
-                        if (candidatePtExp->isBound() && candidatePtExp->getValue() == 0)
+                        auto candidatePtact = utl::cast<PtActivity>(candidateAct);
+                        auto& candidatePtExp = candidatePtact->possiblePts();
+                        if (candidatePtExp.isBound() && (candidatePtExp.getValue() == 0))
                             continue;
                     }
 
-                    const uint_set_t& candOpRess = candidateAct->allResIds();
+                    // candOpRess = candOp's possible resources
+                    auto& candOpRess = candidateAct->allResIds();
 
-                    uint_set_t tempUintVec;
+                    // commonRess = op and candOp's common resources
+                    uint_vector_t commonResIds;
                     std::set_intersection(opRess.begin(), opRess.end(), candOpRess.begin(),
                                           candOpRess.end(),
-                                          std::inserter(tempUintVec, tempUintVec.begin()));
-                    //remove dumy resources from tempUintVec
-                    for (uint_set_t::iterator resIt = tempUintVec.begin();
-                         resIt != tempUintVec.end(); resIt++)
+                                          std::inserter(commonResIds, commonResIds.begin()));
+
+                    // remove dummy resources from commonResIds
+                    for (auto it = commonResIds.begin(); it != commonResIds.end(); )
                     {
-                        uint_t resId = *resIt;
-                        DiscreteResource* dres =
-                            dynamic_cast<DiscreteResource*>(dataSet->findResource(resId));
-                        ASSERTD(dres != nullptr);
-                        cls::DiscreteResource* clsRes = (cls::DiscreteResource*)dres->clsResource();
+                        uint_t resId = *it;
+                        auto dres = utl::cast<DiscreteResource>(dataSet->findResource(resId));
+                        auto clsRes = utl::cast<cls::DiscreteResource>(dres->clsResource());
                         if (dres->maxCap() == 0 || clsRes->maxReqCap() == 0)
                         {
-                            tempUintVec.erase(resIt);
-                            continue;
+                            it = commonResIds.erase(it);
+                        }
+                        else
+                        {
+                            ++it;
                         }
                     }
-                    if (candidateOp != op && tempUintVec.size() > 0)
+
+                    if ((candidateOp != op) && (commonResIds.size() > 0))
                     {
                         ASSERTD(op->job()->id() == candidateOp->job()->id());
-                        opVect->push_back(candidateOp);
-
-                        //checking code DON'T DELETE
-                        //                         utl::cout << "    op(job):" << op->id()
-                        //                                   << "(" << op->job()->id() << ")"
-                        //                                   << ", opResIds:";
-                        //                         for (uint_set_t::const_iterator it = opRess.begin();
-                        //                              it != opRess.end();
-                        //                              ++it)
-                        //                         {
-                        //                             utl::cout << *it << ", ";
-                        //                         }
-                        //                         utl::cout << "    swapOp(job):" << candidateOp->id()
-                        //                                   << "(" << candidateOp->job()->id() << ")"
-                        //                                   << ", ResIds:";
-                        //                         uint_set_t::const_iterator it;
-                        //                         for (it = candOpRess.begin();
-                        //                              it != candOpRess.end();
-                        //                              ++it)
-                        //                         {
-                        //                             utl::cout << *it << ",  ";
-                        //                         }
-                        //                         utl::cout << utl::endl;
+                        swapOps->push_back(candidateOp);
                     }
                 }
             }
-            std::sort(opVect->begin(), opVect->end(), JobOpIdOrdering());
-            _swapOps.push_back(opVect);
-            jobNumChoices += opVect->size();
-        }
+
+            // sort swap-ops by id
+            std::sort(swapOps->begin(), swapOps->end(), JobOpIdOrdering());
+
+            // add to the required string space
+            jobNumChoices += swapOps->size();
+        } // for (auto op : jobOps)
         _jobNumChoices.push_back(jobNumChoices);
-    }
+    } // for (auto job : jobs)
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////

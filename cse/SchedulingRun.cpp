@@ -108,7 +108,7 @@ SchedulingRun::run()
                     utl::cout << "(failed), ";
                     break;
                 case score_ct_violated:
-                    utl::cout << "(ct_vialated), ";
+                    utl::cout << "(ct_violated), ";
                     break;
                 case score_succeeded:
                     utl::cout << score->toString() << ", ";

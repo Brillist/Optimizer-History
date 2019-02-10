@@ -52,26 +52,29 @@ IntActivity::initRequirements()
         CapExpMgr* capExpMgr = schedule()->capExpMgr();
         uint_vector_t resCaps;
         uint_set_t::iterator it;
-        forEachIt(utl::RBtree, _compositeReqs, CompositeResourceRequirement, crr)
-            CompositeResource* cres = crr.resource();
-        uint_t cap = crr.minCapacity();
-        resCaps.push_back(cres->serialId());
-        resCaps.push_back(cap);
-        endForEach;
+        for (auto crr_ : _compositeReqs)
+        {
+            auto crr = utl::cast<CompositeResourceRequirement>(crr_);
+            auto cres = crr->resource();
+            uint_t cap = crr->minCapacity();
+            resCaps.push_back(cres->serialId());
+            resCaps.push_back(cap);
+        }
         capExpMgr->add(resCaps);
         _breakList = capExpMgr->find(resCaps);
     }
 
     // update _allResIds, and update discrete resources' maxCap
-    forEachIt(utl::RBtree, _compositeReqs, CompositeResourceRequirement, crr)
-        CompositeResource* cres = crr.resource();
-    for (CompositeResource::iterator it = cres->begin(); it != cres->end(); ++it)
+    for (auto crr_ : _compositeReqs)
     {
-        DiscreteResource* dres = *it;
-        dres->maxReqCap() += 100;
-        allResIds().insert(dres->id());
+        auto crr = utl::cast<CompositeResourceRequirement>(crr_);
+        auto cres = crr->resource();
+        for (auto dres : *cres)
+        {
+            dres->maxReqCap() += 100;
+            allResIds().insert(dres->id());
+        }
     }
-    endForEach;
 
     // initialize ES-bound (or LF-bound)
     if (forward())

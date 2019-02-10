@@ -86,9 +86,11 @@ ResourceCalendar::isMergeable(const Object& lhs, const Object& rhs) const
 void
 ResourceCalendar::dump(Stream& os, time_t originTime, uint_t timeStep)
 {
-    forEachIt(ResourceCalendar, self, ResourceCalendarSpan, rcs) os
-        << rcs.toString(originTime, timeStep) << endl;
-    endForEach;
+    for (auto rcs_ : self)
+    {
+        auto rcs = utl::cast<ResourceCalendarSpan>(rcs_);
+        os << rcs->toString(originTime, timeStep) << endl;
+    }
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////

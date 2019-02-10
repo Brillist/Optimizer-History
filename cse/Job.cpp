@@ -149,7 +149,7 @@ Job::serialize(Stream& stream, uint_t io, uint_t)
     utl::serialize(_latenessCost, stream, io);
     utl::serialize((uint_t&)_latenessCostPeriod, stream, io);
     /* November 21, 2013 (Elisa) */
-    /* add serialization for latenes cost increment */
+    /* add serialization for lateness cost increment */
     utl::serialize(_latenessIncrement, stream, io);
     /* January 2, 2014 (Elisa) */
     /* add serialization for overhead cost and period */
@@ -163,16 +163,19 @@ Job::serialize(Stream& stream, uint_t io, uint_t)
         deleteCont(_ops);
         Array array;
         array.serializeIn(stream);
-        forEachIt(Array, array, JobOp, op) add(&op);
-        endForEach array.setOwner(false);
+        for (auto op_ : array)
+        {
+            auto op = utl::cast<JobOp>(op_);
+            add(op);
+        }
+        array.setOwner(false);
     }
     else
     {
         Array array(false);
-        jobop_set_id_t::iterator it;
-        for (it = _ops.begin(); it != _ops.end(); ++it)
+        for (auto op : _ops)
         {
-            array += *it;
+            array += op;
         }
         array.serializeOut(stream);
     }

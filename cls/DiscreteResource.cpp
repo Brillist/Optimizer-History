@@ -189,9 +189,12 @@ DiscreteResource::selectCapacity(uint_t cap, uint_t maxCap)
     ASSERTD(horizonTS != int_t_min);
 
     // exclude timetable bounds that require excessive capacity
-    forEachIt(utl::RBtree, _timetableBounds, TimetableBound, ttb) if (ttb.capacity() <= cap) break;
-    ttb.exclude();
-    endForEach;
+    for (auto ttb_ : _timetableBounds)
+    {
+        auto ttb = utl::cast<TimetableBound>(ttb_);
+        if (ttb->capacity() <= cap) break;
+        ttb->exclude();
+    }
 
     // remove capacity from timetable
     _timetable.add(0, horizonTS, 0, diff);

@@ -47,21 +47,24 @@ BrkActivity::initRequirements()
     }
 
     // get processing-times and resource-ids from requirements
-    forEachIt(Array, _discreteReqs, DiscreteResourceRequirement, rr) if (possiblePtsDomain.empty())
+    for (auto rr_ : _discreteReqs)
     {
-        rr.getAllPts(possiblePtsDomain);
+        auto rr = utl::cast<DiscreteResourceRequirement>(rr_);
+        if (possiblePtsDomain.empty())
+        {
+            rr->getAllPts(possiblePtsDomain);
+        }
+        else
+        {
+            uint_set_t curPts, isect;
+            rr->getAllPts(curPts);
+            std::set_intersection(possiblePtsDomain.begin(), possiblePtsDomain.end(), curPts.begin(),
+                curPts.end(), std::insert_iterator<uint_set_t>(isect, isect.begin()));
+            possiblePtsDomain = isect;
+        }
+        rr->getAllResIds(this->allResIds());
+        rr->getAllResIds(selectedResourcesDomain);
     }
-    else
-    {
-        uint_set_t curPts, isect;
-        rr.getAllPts(curPts);
-        std::set_intersection(possiblePtsDomain.begin(), possiblePtsDomain.end(), curPts.begin(),
-                              curPts.end(), std::insert_iterator<uint_set_t>(isect, isect.begin()));
-        possiblePtsDomain = isect;
-    }
-    rr.getAllResIds(this->allResIds());
-    rr.getAllResIds(selectedResourcesDomain);
-    endForEach;
 
     // no possible pts?
     if (possiblePtsDomain.empty())
@@ -79,8 +82,11 @@ BrkActivity::initRequirements()
 
     // initialize requirements
     _numUnknownReqs = _discreteReqs.size();
-    forEachIt(Array, _discreteReqs, DiscreteResourceRequirement, rr) rr.initialize(this);
-    endForEach;
+    for (auto rr_ : _discreteReqs)
+    {
+        auto rr = utl::cast<DiscreteResourceRequirement>(rr_);
+        rr->initialize(this);
+    }
 
     // pt bound?
     if (_possiblePts->isBound())
@@ -94,11 +100,12 @@ BrkActivity::initRequirements()
 bool
 BrkActivity::selectResource(uint_t resId)
 {
-    forEachIt(Array, _discreteReqs, DiscreteResourceRequirement, rr) if (rr.selectResource(resId))
+    for (auto rr_ : _discreteReqs)
     {
-        return true;
+        auto rr = utl::cast<DiscreteResourceRequirement>(rr_);
+        if (rr->selectResource(resId))
+            return true;
     }
-    endForEach;
     return false;
 }
 
@@ -120,8 +127,11 @@ BrkActivity::selectPt(uint_t pt)
     _possiblePts->setValue(pt);
 
     // notify res-reqs of the pt selection
-    forEachIt(Array, _discreteReqs, DiscreteResourceRequirement, rr) rr.selectPt(pt);
-    endForEach;
+    for (auto rr_ : _discreteReqs)
+    {
+        auto rr = utl::cast<DiscreteResourceRequirement>(rr_);
+        rr->selectPt(pt);
+    }
 
     addTimetableBounds();
 }
@@ -199,11 +209,14 @@ BrkActivity::selectResource(uint_t resId, DiscreteResourceRequirement* p_rr)
     _possiblePts->remove(last + 1, int_t_max);
 
     // resource is not possible for any other requirement
-    forEachIt(Array, _discreteReqs, DiscreteResourceRequirement, rr) if (&rr != p_rr)
+    for (auto rr_ : _discreteReqs)
     {
-        rr.excludeResource(resId);
+        auto rr = utl::cast<DiscreteResourceRequirement>(rr_);
+        if (rr != p_rr)
+        {
+            rr->excludeResource(resId);
+        }
     }
-    endForEach;
 
     // notify requirements if pt was bound
     if (!ptsWasBound && _possiblePts->isBound())
@@ -226,17 +239,22 @@ BrkActivity::addTimetableBounds()
     // set up calendar
     ResourceCalendarMgr* calendarMgr = schedule()->calendarMgr();
     std::set<uint_t> selectedCalendarIds;
-    forEachIt(Array, _discreteReqs, DiscreteResourceRequirement, rr)
-        rr.getSelectedCalendarIds(selectedCalendarIds);
-    endForEach;
+    for (auto rr_ : _discreteReqs)
+    {
+        auto rr = utl::cast<DiscreteResourceRequirement>(rr_);
+        rr->getSelectedCalendarIds(selectedCalendarIds);
+    }
     ResourceCalendarSpec calendarSpec(rc_allAvailable, selectedCalendarIds);
     Manager* mgr = manager();
     mgr->revSet(_calendar);
     _calendar = calendarMgr->add(calendarSpec);
 
     // add timetable bounds to ES or LF bound
-    forEachIt(Array, _discreteReqs, DiscreteResourceRequirement, rr) rr.addTimetableBounds();
-    endForEach;
+    for (auto rr_ : _discreteReqs)
+    {
+        auto rr = utl::cast<DiscreteResourceRequirement>(rr_);
+        rr->addTimetableBounds();
+    }
 
     // remember that we did this
     manager()->revToggle(_addedTimetableBounds);

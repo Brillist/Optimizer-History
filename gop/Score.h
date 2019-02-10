@@ -7,8 +7,7 @@ GOP_NS_BEGIN;
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /** 
-    Score has two major attributes: a value and a type. It is designed to handle all types of scores.
-
+    An evaluation score and its type.
 
     Joe Zhou
     Nov. 2005

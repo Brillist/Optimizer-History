@@ -378,7 +378,7 @@ CycleGroup::relationship(const CycleGroup* cg) const
 bool
 CycleGroup::precedes(const CycleGroup* cg) const
 {
-    return (cg->_allPredCGs.find((CycleGroup*)this) != cg->_allPredCGs.end());
+    return (cg->_allPredCGs.find(const_cast<CycleGroup*>(this)) != cg->_allPredCGs.end());
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -386,7 +386,7 @@ CycleGroup::precedes(const CycleGroup* cg) const
 bool
 CycleGroup::succeeds(const CycleGroup* cg) const
 {
-    return (_allPredCGs.find((CycleGroup*)cg) != _allPredCGs.end());
+    return (_allPredCGs.find(const_cast<CycleGroup*>(cg)) != _allPredCGs.end());
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////

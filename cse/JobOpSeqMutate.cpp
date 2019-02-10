@@ -346,8 +346,7 @@ JobOpSeqMutate::setJobOps(const ClevorDataSet* dataSet)
             cg_vector_t tempCandidates;
             tempCandidates.reserve(jobOpCGs.size());
             std::set_difference(
-                jobOpCGs.begin(), jobOpCGs.end(),
-                allPredCGs.begin(), allPredCGs.end(),
+                jobOpCGs.begin(), jobOpCGs.end(), allPredCGs.begin(), allPredCGs.end(),
                 std::inserter(tempCandidates, tempCandidates.begin()), CycleGroupIdOrdering());
 
             // cgCandidates = job CGs that neither precede nor succeed this op's CG
@@ -391,7 +390,7 @@ JobOpSeqMutate::setJobOps(const ClevorDataSet* dataSet)
                                           std::inserter(commonResIds, commonResIds.begin()));
 
                     // remove dummy resources from commonResIds
-                    for (auto it = commonResIds.begin(); it != commonResIds.end(); )
+                    for (auto it = commonResIds.begin(); it != commonResIds.end();)
                     {
                         uint_t resId = *it;
                         auto dres = utl::cast<DiscreteResource>(dataSet->findResource(resId));

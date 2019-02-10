@@ -192,7 +192,8 @@ DiscreteResource::selectCapacity(uint_t cap, uint_t maxCap)
     for (auto ttb_ : _timetableBounds)
     {
         auto ttb = utl::cast<TimetableBound>(ttb_);
-        if (ttb->capacity() <= cap) break;
+        if (ttb->capacity() <= cap)
+            break;
         ttb->exclude();
     }
 

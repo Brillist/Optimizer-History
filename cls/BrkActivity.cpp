@@ -58,8 +58,9 @@ BrkActivity::initRequirements()
         {
             uint_set_t curPts, isect;
             rr->getAllPts(curPts);
-            std::set_intersection(possiblePtsDomain.begin(), possiblePtsDomain.end(), curPts.begin(),
-                curPts.end(), std::insert_iterator<uint_set_t>(isect, isect.begin()));
+            std::set_intersection(possiblePtsDomain.begin(), possiblePtsDomain.end(),
+                                  curPts.begin(), curPts.end(),
+                                  std::insert_iterator<uint_set_t>(isect, isect.begin()));
             possiblePtsDomain = isect;
         }
         rr->getAllResIds(this->allResIds());

@@ -174,17 +174,14 @@ void
 Server::handle_initSimpleRun(SEclient* client, const Array& cmd)
 {
     // type checking
-    if ((cmd.size() != 11)
-        || !cmd(1).isA(SchedulerConfiguration)
-        || !cmd(2).isA(Scheduler)
-        || !cmd(3).isA(Array) || !allAre(cmd(3), CLASS(Objective))
-        || !cmd(4).isA(Array) || !allAre(cmd(4), CLASS(ScheduleEvaluatorConfiguration))
-        || !cmd(5).isA(Array) || !allAre(cmd(5), CLASS(Job))
-        || !cmd(6).isA(Array) || !allAre(cmd(6), CLASS(JobGroup))
-        || !cmd(7).isA(Array) || !allAre(cmd(7), CLASS(PrecedenceCt))
-        || !cmd(8).isA(Array) || !allAre(cmd(8), CLASS(Resource))
-        || !cmd(9).isA(Array) || !allAre(cmd(9), CLASS(ResourceGroup))
-        || !cmd(10).isA(Array) || !allAre(cmd(10), CLASS(ResourceSequenceList)))
+    if ((cmd.size() != 11) || !cmd(1).isA(SchedulerConfiguration) || !cmd(2).isA(Scheduler) ||
+        !cmd(3).isA(Array) || !allAre(cmd(3), CLASS(Objective)) || !cmd(4).isA(Array) ||
+        !allAre(cmd(4), CLASS(ScheduleEvaluatorConfiguration)) || !cmd(5).isA(Array) ||
+        !allAre(cmd(5), CLASS(Job)) || !cmd(6).isA(Array) || !allAre(cmd(6), CLASS(JobGroup)) ||
+        !cmd(7).isA(Array) || !allAre(cmd(7), CLASS(PrecedenceCt)) || !cmd(8).isA(Array) ||
+        !allAre(cmd(8), CLASS(Resource)) || !cmd(9).isA(Array) ||
+        !allAre(cmd(9), CLASS(ResourceGroup)) || !cmd(10).isA(Array) ||
+        !allAre(cmd(10), CLASS(ResourceSequenceList)))
     {
         Bool(false).serializeOut(client->socket());
         utl::String str = "initSimpleRun error: wrong cmd.";
@@ -263,17 +260,14 @@ void
 Server::handle_initOptimizerRun(SEclient* client, const Array& cmd)
 {
     // type checking
-    if ((cmd.size() != 11)
-        || !cmd(1).isA(SchedulerConfiguration)
-        || !cmd(2).isA(Optimizer)
-        || !cmd(3).isA(OptimizerConfiguration)
-        || !cmd(4).isA(Array) || !allAre(cmd(4), CLASS(ScheduleEvaluatorConfiguration))
-        || !cmd(5).isA(Array) || !allAre(cmd(5), CLASS(Job))
-        || !cmd(6).isA(Array) || !allAre(cmd(6), CLASS(JobGroup))
-        || !cmd(7).isA(Array) || !allAre(cmd(7), CLASS(PrecedenceCt))
-        || !cmd(8).isA(Array) || !allAre(cmd(8), CLASS(Resource))
-        || !cmd(9).isA(Array) || !allAre(cmd(9), CLASS(ResourceGroup))
-        || !cmd(10).isA(Array) || !allAre(cmd(10), CLASS(ResourceSequenceList)))
+    if ((cmd.size() != 11) || !cmd(1).isA(SchedulerConfiguration) || !cmd(2).isA(Optimizer) ||
+        !cmd(3).isA(OptimizerConfiguration) || !cmd(4).isA(Array) ||
+        !allAre(cmd(4), CLASS(ScheduleEvaluatorConfiguration)) || !cmd(5).isA(Array) ||
+        !allAre(cmd(5), CLASS(Job)) || !cmd(6).isA(Array) || !allAre(cmd(6), CLASS(JobGroup)) ||
+        !cmd(7).isA(Array) || !allAre(cmd(7), CLASS(PrecedenceCt)) || !cmd(8).isA(Array) ||
+        !allAre(cmd(8), CLASS(Resource)) || !cmd(9).isA(Array) ||
+        !allAre(cmd(9), CLASS(ResourceGroup)) || !cmd(10).isA(Array) ||
+        !allAre(cmd(10), CLASS(ResourceSequenceList)))
     {
         clientDisconnect(client);
         return;
@@ -580,7 +574,8 @@ Server::handle_getBestSchedule(SEclient* client, const utl::Array& cmd)
         // scheduled?
         bool scheduled = !op->ignorable() && op->isScheduled() && (op->scheduledBy() == sa_clevor);
         utl::serialize(scheduled, socket, io_wr);
-        if (!scheduled) continue;
+        if (!scheduled)
+            continue;
 
         // scheduling details
         utl::serialize((uint_t&)op->scheduledBy(), socket, io_wr);
@@ -722,11 +717,13 @@ Server::finishCmd(SEclient* client)
 bool
 Server::allAre(const Object* object, const RunTimeClass* rtc) const
 {
-    if (!object->isA(Collection)) return false;
+    if (!object->isA(Collection))
+        return false;
     auto& col = utl::cast<Collection>(*object);
     for (auto obj : col)
     {
-        if (!obj->_isA(rtc)) return false;
+        if (!obj->_isA(rtc))
+            return false;
     }
     return true;
 }

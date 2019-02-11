@@ -31,7 +31,7 @@ class CompositeResourceRequirement;
 class IntActivity : public Activity
 {
     friend class CompositeResourceRequirement;
-    UTL_CLASS_DECL(IntActivity, CompositeResourceRequirement);
+    UTL_CLASS_DECL(IntActivity, Activity);
 
 public:
     typedef clp::RevArray<uint_t> revarray_t;

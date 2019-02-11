@@ -367,7 +367,7 @@ JobOpSeqMutate::setJobOps(const ClevorDataSet* dataSet)
 
                     // skip frozen op
                     auto candidateAct = utl::cast<Activity>(cb->owner());
-                    auto candidateOp = static_cast<JobOp*>(candidateAct->owner());
+                    auto candidateOp = utl::cast<JobOp>(candidateAct->owner());
                     if (candidateOp->frozen())
                         continue;
 
@@ -410,8 +410,8 @@ JobOpSeqMutate::setJobOps(const ClevorDataSet* dataSet)
                         ASSERTD(op->job()->id() == candidateOp->job()->id());
                         swapOps->push_back(candidateOp);
                     }
-                }
-            }
+                } // for (auto cb : *candCG)
+            } // for (auto candCG : cgCandidates)
 
             // sort swap-ops by id
             std::sort(swapOps->begin(), swapOps->end(), JobOpIdOrdering());

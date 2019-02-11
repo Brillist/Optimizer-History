@@ -2453,9 +2453,9 @@ TotalCostEvaluator::cslistBuild(const SchedulingContext& context,
     uint_t maxCap = roundUp(dres->clsResource()->maxReqCap(), (uint_t)100);
     maxCap = maxCap / 100;
     //     bool employed[maxCap];
-    std::vector<bool> canFired(maxCap, false), alreadyIdle(maxCap, false);
-    std::vector<int> employStarts(maxCap, 0), minEmployEnds(maxCap, 0);
-    std::vector<int> idleStarts(maxCap, 0), maxIdleEnds(maxCap, 0);
+    std::vector<bool> canFired(maxCap + 1, false), alreadyIdle(maxCap + 1, false);
+    std::vector<int> employStarts(maxCap + 1, 0), minEmployEnds(maxCap + 1, 0);
+    std::vector<int> idleStarts(maxCap + 1, 0), maxIdleEnds(maxCap + 1, 0);
     CapSpan* lastCapSpan = nullptr;
     int reqCap, lastReqCap = 0;
     uint_t existingCap = dres->existingCap();

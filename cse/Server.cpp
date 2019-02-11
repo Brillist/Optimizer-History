@@ -702,6 +702,7 @@ Server::handle_stop(SEclient* client, const utl::Array& cmd)
     {
         client->run()->stop();
     }
+    finishCmd(client);
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////

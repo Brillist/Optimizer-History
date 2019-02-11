@@ -140,9 +140,7 @@ private:
 
 private:
     uint_t _id;
-    //Note: _serialId is a bad name. it actually represents the position of
-    //      the resource in cls::Schedule::_resourcesArray. Joe, Dec 27, 2007
-    uint_t _serialId;
+    uint_t _serialId;       // position of the resource in cls::Schedule::_resourcesArray
     Schedule* _schedule;
     std::string _name;
     void* _object;

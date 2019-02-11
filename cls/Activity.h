@@ -156,14 +156,14 @@ public:
     }
 
     /** Get the owner. */
-    void*
+    utl::Object*
     owner() const
     {
         return _owner;
     }
 
     /** Get the owner. */
-    void*&
+    utl::Object*&
     owner()
     {
         return _owner;
@@ -301,7 +301,7 @@ private:
     clp::RangeVar _start;
     clp::RangeVar _end;
     std::string _name;
-    void* _owner;
+    utl::Object* _owner;
     bool _allocated;
     uint_set_t _allResIds; //discrete resources only
 };

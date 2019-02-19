@@ -189,8 +189,8 @@ public:
        \param rhs rhs String (lhs is self)
        \param pos crossover position
     */
-    void crossover(StringInd<T>* off1, StringInd<T>* off2,
-                   const StringInd<T>& rhs, uint_t pos) const;
+    void
+    crossover(StringInd<T>* off1, StringInd<T>* off2, const StringInd<T>& rhs, uint_t pos) const;
 
 protected:
     String<T>* _string;
@@ -233,8 +233,10 @@ StringInd<T>::toString() const
 
 template <class T>
 void
-StringInd<T>::crossover(StringInd<T>* off1, StringInd<T>* off2,
-                        const StringInd<T>& rhs, uint_t pos) const
+StringInd<T>::crossover(StringInd<T>* off1,
+                        StringInd<T>* off2,
+                        const StringInd<T>& rhs,
+                        uint_t pos) const
 {
     _string->crossover((off1 == nullptr) ? nullptr : &off1->string(),
                        (off2 == nullptr) ? nullptr : &off2->string(), rhs.string(), pos);

@@ -31,7 +31,8 @@ public:
        Act like a function.
        \param arg (optional) argument
     */
-    void operator()(void* arg = nullptr)
+    void
+    operator()(void* arg = nullptr)
     {
         execute(arg);
     }

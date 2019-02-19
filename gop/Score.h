@@ -13,9 +13,9 @@ GOP_NS_BEGIN;
 */
 enum score_type_t
 {
-    score_failed = 0,       /**< construction failed */
-    score_ct_violated = 1,  /**< constraint violation */
-    score_succeeded = 2,    /**< successful */
+    score_failed = 0,      /**< construction failed */
+    score_ct_violated = 1, /**< constraint violation */
+    score_succeeded = 2,   /**< successful */
     score_undefined = 3
 };
 

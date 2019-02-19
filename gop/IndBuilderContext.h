@@ -39,7 +39,8 @@ public:
     }
 
     /** Indicate construction failure. */
-    void setFailed(bool failed = true)
+    void
+    setFailed(bool failed = true)
     {
         _failed = failed;
     }

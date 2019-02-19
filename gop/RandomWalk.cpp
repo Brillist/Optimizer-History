@@ -36,7 +36,7 @@ RandomWalk::initialize(const OptimizerConfiguration* config)
     // construct the initial _ind
     iterationRun();
 
-    // 
+    //
     setInitScore(_newScore->clone());
     setBestScore(_newScore->clone());
     if (_ind->newString())

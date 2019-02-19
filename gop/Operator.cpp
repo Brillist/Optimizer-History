@@ -132,7 +132,7 @@ Operator::selectVar()
     {
         OperatorVar* var = *it;
         utl::cout << " (" << var->idx() << ", active:" << (Bool)var->active()
-            << ", p:" << Float(var->p()).toString(2) << ")";
+                  << ", p:" << Float(var->p()).toString(2) << ")";
     }
     utl::cout << utl::endlf;
 #endif

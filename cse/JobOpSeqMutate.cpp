@@ -411,7 +411,7 @@ JobOpSeqMutate::setJobOps(const ClevorDataSet* dataSet)
                         swapOps->push_back(candidateOp);
                     }
                 } // for (auto cb : *candCG)
-            } // for (auto candCG : cgCandidates)
+            }     // for (auto candCG : cgCandidates)
 
             // sort swap-ops by id
             std::sort(swapOps->begin(), swapOps->end(), JobOpIdOrdering());

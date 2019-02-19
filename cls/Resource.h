@@ -140,7 +140,7 @@ private:
 
 private:
     uint_t _id;
-    uint_t _serialId;       // position of the resource in cls::Schedule::_resourcesArray
+    uint_t _serialId; // position of the resource in cls::Schedule::_resourcesArray
     Schedule* _schedule;
     std::string _name;
     void* _object;

@@ -69,8 +69,7 @@ public:
     }
 
     /** Get a pointer to the individual at the given index. */
-    const StringInd<uint_t>*
-    operator[](uint_t idx) const
+    const StringInd<uint_t>* operator[](uint_t idx) const
     {
         return get(idx);
     }
@@ -153,8 +152,7 @@ public:
     void set(uint_t idx, StringInd<uint_t>* ind);
 
     /** Get a pointer to the individual at the given index. */
-    StringInd<uint_t>*
-    operator[](uint_t idx)
+    StringInd<uint_t>* operator[](uint_t idx)
     {
         return get(idx);
     }
@@ -274,10 +272,10 @@ private:
     void onChangeFitness() const;
 
 private:
-    mutable double _totalScore;    // total score
-    mutable double _totalFitness;  // total fitness
-    bool _owner;                   // ownership flag
-    std::vector<StringInd<uint_t>*> _inds;  // individuals
+    mutable double _totalScore;            // total score
+    mutable double _totalFitness;          // total fitness
+    bool _owner;                           // ownership flag
+    std::vector<StringInd<uint_t>*> _inds; // individuals
 };
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////

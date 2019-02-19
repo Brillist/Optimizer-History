@@ -165,7 +165,7 @@ void serialize(time_t& tt, utl::Stream& stream, uint_t io);
 */
 template <class K, class T, class C>
 void
-serialize(std::map<K,T,C>& map, utl::Stream& stream, uint_t io)
+serialize(std::map<K, T, C>& map, utl::Stream& stream, uint_t io)
 {
     if (io == utl::io_rd)
     {
@@ -178,7 +178,7 @@ serialize(std::map<K,T,C>& map, utl::Stream& stream, uint_t io)
             T second = T();
             utl::serialize(first, stream, io, utl::ser_default);
             utl::serialize(second, stream, io, utl::ser_default);
-            typename std::map<K,T>::value_type pair(first, second);
+            typename std::map<K, T>::value_type pair(first, second);
             map.insert(pair);
         }
     }

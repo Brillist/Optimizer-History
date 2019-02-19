@@ -107,7 +107,8 @@ public:
     /// \name Accessors (non-const)
     //@{
     /** Get the minimum number of iterations. */
-    void setMinIterations(uint_t minIterations)
+    void
+    setMinIterations(uint_t minIterations)
     {
         _minIterations = minIterations;
     }

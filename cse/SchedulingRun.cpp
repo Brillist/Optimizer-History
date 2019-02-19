@@ -62,7 +62,7 @@ SchedulingRun::initialize(ClevorDataSet* dataSet,
     // context
     delete _context;
     _context = new SchedulingContext();
-    optimizerConfig->context() = _context;
+    optimizerConfig->setContext(_context);
 
     // optimizer
     delete _optimizer;

@@ -13,11 +13,10 @@ GOP_NS_BEGIN;
 /**
    Population of individuals.
 
-   Population is a simple container class that represents a grouping of
-   individuals (instances of Ind).  The individuals are stored internally
-   in an array, to allow fast random access.
+   Population is a simple container for a group of individuals.  To allow efficient random access,
+   the individuals are stored internally in an array.
 
-   \author Adam McKee
+   \ingroup gop
 */
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -28,13 +27,19 @@ class Population : public utl::Object
 
 public:
     // friends
-    friend class Ind; //??
-    // typedefs
-    typedef std::vector<StringInd<uint_t>*>::iterator iterator;
-    typedef std::vector<StringInd<uint_t>*>::const_iterator const_iterator;
+    friend class Ind;
+
+    /** Iterator. */
+    using iterator = std::vector<StringInd<uint_t>*>::iterator;
+
+    /** Const iterator. */
+    using const_iterator = std::vector<StringInd<uint_t>*>::const_iterator;
 
 public:
-    /** Constructor. */
+    /**
+       Constructor.
+       \param owner ownership flag for contained objects
+    */
     Population(bool owner)
     {
         init(owner);
@@ -46,6 +51,8 @@ public:
     /** Remove all individuals. */
     void clear();
 
+    /// \name Accessors (const)
+    //@{
     /** Get the ownership flag. */
     bool
     isOwner() const
@@ -53,51 +60,64 @@ public:
         return _owner;
     }
 
-    /** Set the ownership flag. */
-    void
-    setOwner(bool owner)
-    {
-        _owner = owner;
-    }
-
-    /** Set the size. */
-    void
-    setSize(uint_t newSize)
-    {
-        _inds.resize(newSize);
-    }
-
-    /** Add all of the given population's individuals. */
-    void add(const Population& rhs, uint_t beginIdx = 0, uint_t endIdx = uint_t_max);
-
-    /** Add an individual. */
-    void
-    add(const StringInd<uint_t>& ind)
-    {
-        add((StringInd<uint_t>&)ind);
-    }
-
-    /** Add an individual. */
-    void
-    add(StringInd<uint_t>& ind)
-    {
-        if (isOwner())
-            add(ind.clone());
-        else
-        {
-            add(&ind);
-        }
-    }
-
-    /** Add an individual. */
-    void add(StringInd<uint_t>* ind);
-
-    /** Get the individual at the given index. */
+    /** Get a pointer to the individual at the given index. */
     const StringInd<uint_t>*
     get(uint_t idx) const
     {
         ASSERTD(idx < size());
         return _inds[idx];
+    }
+
+    /** Get a pointer to the individual at the given index. */
+    const StringInd<uint_t>*
+    operator[](uint_t idx) const
+    {
+        return get(idx);
+    }
+
+    /** Get a reference to the individual at the given index. */
+    const StringInd<uint_t>&
+    operator()(uint_t idx) const
+    {
+        return *get(idx);
+    }
+
+    /** Empty? */
+    bool
+    empty() const
+    {
+        return _inds.empty();
+    }
+
+    /** Return number of individuals. */
+    uint_t
+    size() const
+    {
+        return _inds.size();
+    }
+
+    /** Get begin iterator. */
+    const_iterator
+    begin() const
+    {
+        return _inds.begin();
+    }
+
+    /** Get end iterator. */
+    const_iterator
+    end() const
+    {
+        return _inds.end();
+    }
+    //@}
+
+    /// \name Accessors (non-const)
+    //@{
+    /** Set the ownership flag. */
+    void
+    setOwner(bool owner)
+    {
+        _owner = owner;
     }
 
     /** Get the individual at the given index. */
@@ -120,7 +140,9 @@ public:
     set(uint_t idx, StringInd<uint_t>& ind)
     {
         if (isOwner())
+        {
             set(idx, ind.clone());
+        }
         else
         {
             set(idx, &ind);
@@ -130,59 +152,37 @@ public:
     /** Set the individual at the given index. */
     void set(uint_t idx, StringInd<uint_t>* ind);
 
-    /** Get the individual at the given index. */
-    const StringInd<uint_t>&
-    operator()(uint_t idx) const
+    /** Get a pointer to the individual at the given index. */
+    StringInd<uint_t>*
+    operator[](uint_t idx)
     {
-        return *get(idx);
+        return get(idx);
     }
 
-    /** Get the individual at the given index. */
+    /** Get a reference to the individual at the given index. */
     StringInd<uint_t>&
     operator()(uint_t idx)
     {
         return *get(idx);
     }
 
-    /** Get the individual at the given index. */
-    const StringInd<uint_t>* operator[](uint_t idx) const
+    /** Get begin iterator. */
+    iterator
+    begin()
     {
-        return get(idx);
+        return _inds.begin();
     }
 
-    /** Get the individual at the given index. */
-    StringInd<uint_t>* operator[](uint_t idx)
+    /** Get end iterator. */
+    iterator
+    end()
     {
-        return get(idx);
+        return _inds.end();
     }
+    //@}
 
-    /** Empty? */
-    bool
-    empty() const
-    {
-        return _inds.empty();
-    }
-
-    /** Return number of individuals. */
-    uint_t
-    size() const
-    {
-        return _inds.size();
-    }
-
-    /** Reserve space for the given number of individuals. */
-    void
-    reserve(uint_t numInds)
-    {
-        _inds.reserve(numInds);
-    }
-
-    /** Sort using the given ordering. */
-    void sort(IndOrdering* ordering);
-
-    /** Randomly shuffle the individuals. */
-    void shuffle(lut::rng_t& rng);
-
+    /// \name Calculations
+    //@{
     /** Get total score of all individuals. */
     double totalScore() const;
 
@@ -208,34 +208,62 @@ public:
 
     /** Get the standard deviation of the fitness. */
     double stdDevFitness() const;
+    //@}
 
-    /** Get begin iterator (const). */
-    const_iterator
-    begin() const
+    /// \name Modification
+    //@{
+    /**
+       Add the given population's individuals.
+       \param rhs source Population
+       \param beginIdx (optional) begin index for items copied from rhs
+       \param endIdx (optional) end index for items copied from rhs
+    */
+    void add(const Population& rhs, uint_t beginIdx = 0, uint_t endIdx = uint_t_max);
+
+    /** Add an individual. */
+    void
+    add(const StringInd<uint_t>& ind)
     {
-        return _inds.begin();
+        add(const_cast<StringInd<uint_t>&>(ind));
     }
 
-    /** Get end iterator (const). */
-    const_iterator
-    end() const
+    /** Add an individual. */
+    void
+    add(StringInd<uint_t>& ind)
     {
-        return _inds.end();
+        if (isOwner())
+        {
+            add(ind.clone());
+        }
+        else
+        {
+            add(&ind);
+        }
     }
 
-    /** Get begin iterator. */
-    iterator
-    begin()
+    /** Add an individual. */
+    void add(StringInd<uint_t>* ind);
+
+    /** Reserve space in the underlying \c std::vector (to avoid repeated resizing). */
+    void
+    reserve(uint_t numInds)
     {
-        return _inds.begin();
+        _inds.reserve(numInds);
     }
 
-    /** Get end iterator. */
-    iterator
-    end()
+    /** Resize the underlying \c std::vector. */
+    void
+    setSize(uint_t newSize)
     {
-        return _inds.end();
+        _inds.resize(newSize);
     }
+
+    /** Sort using the given ordering. */
+    void sort(IndOrdering* ordering);
+
+    /** Randomly shuffle the individuals. */
+    void shuffle(lut::rng_t& rng);
+    //@}
 
 private:
     void init(bool owner = true);
@@ -246,16 +274,10 @@ private:
     void onChangeFitness() const;
 
 private:
-    /** Total score. */
-    mutable double _totalScore;
-    /** Total fitness. */
-    mutable double _totalFitness;
-
-    /** Ownership flag. */
-    bool _owner;
-
-    /** Individuals. */
-    std::vector<StringInd<uint_t>*> _inds;
+    mutable double _totalScore;    // total score
+    mutable double _totalFitness;  // total fitness
+    bool _owner;                   // ownership flag
+    std::vector<StringInd<uint_t>*> _inds;  // individuals
 };
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////

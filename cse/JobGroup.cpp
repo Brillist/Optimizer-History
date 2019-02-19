@@ -56,7 +56,7 @@ JobGroup::serialize(Stream& stream, uint_t io, uint_t)
         // serialize in jobs and activeJob
         _jobs.clear();
         _activeJob = nullptr;
-        lut::serialize<uint_t>(jobIds, stream, io);
+        lut::serialize(jobIds, stream, io);
         utl::serialize(activeJobId, stream, io);
         //         ASSERTD(jobIds.size() > 1);
         //         ASSERTD(activeJobId != uint_t_max);
@@ -89,7 +89,7 @@ JobGroup::serialize(Stream& stream, uint_t io, uint_t)
             Job* job = *it;
             jobIds.push_back(job->id());
         }
-        lut::serialize<uint_t>(jobIds, stream, io);
+        lut::serialize(jobIds, stream, io);
         utl::serialize(_activeJob->id(), stream, io);
     }
 }

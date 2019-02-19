@@ -114,40 +114,6 @@ PtSelector::initializeInd(Ind* p_ind, const gop::DataSet* p_dataSet, rng_t* rng,
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
-PtSelector::initializeRandomInd(Ind* p_ind, const gop::DataSet* p_dataSet, rng_t* rng, void*)
-{
-    ASSERTD(dynamic_cast<StringInd<uint_t>*>(p_ind) != nullptr);
-    StringInd<uint_t>* ind = (StringInd<uint_t>*)p_ind;
-    gop::String<uint_t>& string = ind->string();
-
-    ASSERTD(dynamic_cast<const ClevorDataSet*>(p_dataSet) != nullptr);
-    const ClevorDataSet* dataSet = (const ClevorDataSet*)p_dataSet;
-
-    uint_t numActs = _acts.size();
-    if (_stringBase == 0)
-    {
-        string.setSize(stringSize(*dataSet));
-    }
-    for (uint_t i = 0; i < numActs; ++i)
-    {
-        const IntExp& ptExp = _acts[i]->possiblePts();
-        uint_t minPt = ptExp.min();
-        uint_t tt = rng->uniform(0, 1);
-        if (tt == 0)
-        {
-            string[_stringBase + i] = minPt;
-        }
-        else
-        {
-            string[_stringBase + i] = ptExp.getNext(minPt);
-        }
-    }
-    _nestedScheduler->initializeRandomInd(ind, dataSet, rng, (void*)size_t_max);
-}
-
-////////////////////////////////////////////////////////////////////////////////////////////////////
-
-void
 PtSelector::run(Ind* p_ind, IndBuilderContext* p_context) const
 {
     ASSERTD(_nestedScheduler != nullptr);

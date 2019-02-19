@@ -2,7 +2,6 @@
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-/* #include <libutl/OStimer.h> */
 #include <gop/Operator.h>
 #include <gop/OptimizerConfiguration.h>
 #include <gop/IndBuilder.h>
@@ -20,11 +19,9 @@ GOP_NS_BEGIN;
 /**
    Optimizer (abstract).
 
-   All optimization algorithms are represented as sub-classes of Optimizer.
-   Optimizer is the home of methods and data that are common among
-   different optimization strategies.
+   Optimization strategies are implemented as specializations of Optimizer.
 
-   \author Adam McKee
+   \ingroup gop
 */
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -39,26 +36,29 @@ public:
     /** Is the run complete? */
     bool complete() const;
 
-    /** stop the run. */
+    /** Stop the run. */
     void stop();
 
-    /** Initialize. */
+    /**
+       Initialize.
+       \param config configuration
+    */
     virtual void initialize(const OptimizerConfiguration* config);
 
     /**
-       Iterate the given number of times.
+       Iterate until the run is complete.
        \return true if new best result or run complete, false otherwise
-       \param numIterations maximum number of iterations to run
+       \see complete
     */
     virtual bool run() = 0;
 
-    /** iteration run: run just one iteration. */
+    /** Iteration run: run just one iteration. */
     virtual bool iterationRun(Operator* op = nullptr, bool audit = false);
 
     virtual void updateRunStatus(bool complete);
     //@}
 
-    /// \name Accessors
+    /// \name Accessors (const)
     //@{
     /** Get the random number generator. */
     lut::rng_t*
@@ -110,10 +110,10 @@ public:
         return _objectives;
     }
 
-    /** Get the best score for the given objective. */
+    /** Get the best Score for the given objective. */
     Score* bestScore(uint_t objectiveIdx = 0) const;
 
-    /** Get the best score for the given objective. */
+    /** Get the best Score for the given objective. */
     Score* bestScore(const std::string& objectiveName) const;
 
     /** Get a named component of the best score. */
@@ -138,8 +138,8 @@ public:
     }
 
     /** Get _runStatus. */
-    RunStatus*
-    runStatus()
+    const RunStatus*
+    runStatus() const
     {
         return _runStatus;
     }
@@ -148,7 +148,20 @@ public:
     /** Audit the run result. */
     virtual void audit() = 0;
 
-    /** Get a human-readable status string. */
+protected:
+    void initializeObjectives();
+    void initializeOps(StringInd<uint_t>* ind = nullptr);
+
+    /** Choose an operator randomly for multiple step move in a direction. */
+    Operator* chooseRandomOp() const;
+
+    /** Choose the Operator randomly for single step move in a direction. */
+    Operator* chooseRandomStepOp() const;
+
+    /** Choose the Operator with highest success rate. */
+    Operator* chooseSuccessOp() const;
+
+    // for debug output
     virtual utl::String iterationString() const;
     virtual utl::String initString(bool feasible) const;
     virtual utl::String finalString(bool feasible) const;
@@ -175,20 +188,6 @@ public:
     }
 
 protected:
-    void initializeStats();
-    void initializeObjectives();
-    void initializeOps(StringInd<uint_t>* ind = nullptr);
-
-    /** Choose an operator randomly for multiple step move in a direction. */
-    Operator* chooseRandomOp() const;
-
-    /** Choose the Operator randomly for single step move in a direction. */
-    Operator* chooseRandomStepOp() const;
-
-    /** Choose the Operator with highest success rate. */
-    Operator* chooseSuccessOp() const;
-
-protected:
     // misc
     mutable lut::rng_t* _rng;
     uint_t _iteration;
@@ -211,11 +210,9 @@ protected:
     bool _sameScore;
     bool _newBest;
 
-    // objectives
-    std::vector<Objective*> _objectives;
-
-    // operators
-    std::vector<Operator*> _ops;
+    // objectives and operators
+    objective_vector_t _objectives;
+    op_vector_t _ops;
 
 private:
     void init();

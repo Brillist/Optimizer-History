@@ -116,15 +116,6 @@ OpSeqSelector::initializeInd(Ind* p_ind, const gop::DataSet* p_dataSet, rng_t* r
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
-OpSeqSelector::initializeRandomInd(Ind* p_ind, const gop::DataSet* p_dataSet, rng_t* rng, void*)
-{
-    utl::cout << "ERROR(OpSeqSelector.cpp): in the incompleted code!" << utl::endl;
-    ABORT();
-}
-
-////////////////////////////////////////////////////////////////////////////////////////////////////
-
-void
 OpSeqSelector::run(Ind* p_ind, IndBuilderContext* p_context) const
 {
     ASSERTD(dynamic_cast<StringInd<uint_t>*>(p_ind) != nullptr);

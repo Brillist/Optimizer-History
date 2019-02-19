@@ -12,9 +12,15 @@ GOP_NS_BEGIN;
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
-   Time Slot (for serializing timetable).
+   Store status information for an optimization run.
 
-   \author Adam McKee
+   Particularly:
+     - completion status
+     - current count of iterations
+     - iteration that produced the best Score so far
+     - the best Score found so far
+
+   \ingroup gop
 */
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -25,9 +31,23 @@ class RunStatus : public utl::Object
     UTL_CLASS_NO_COPY;
 
 public:
+    /**
+       Update the status.
+       \param complete completion status
+       \param currentIter current iteration
+       \param bestIter best iteration so far
+       \param bestScore best Score so far
+    */
     void update(bool complete, uint_t currentIter, uint_t bestIter, Score* bestScore);
 
-    void get(bool& complete, uint_t& currentIter, uint_t& bestIter, Score*& bestScore);
+    /**
+       Get the status.
+       \param complete (out) completion status
+       \param currentIter (out) current iteration
+       \param bestIter (out) best iteration so far
+       \param bestScore (out) best Score so far
+    */
+    void get(bool& complete, uint_t& currentIter, uint_t& bestIter, Score*& bestScore) const;
 
 private:
     void init();
@@ -39,7 +59,7 @@ private:
     uint_t _bestIter;
     Score* _bestScore;
     uint_t _scoreType;
-    utl::Mutex _mutex;
+    mutable utl::Mutex _mutex;
 };
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////

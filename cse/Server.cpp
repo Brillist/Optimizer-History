@@ -217,7 +217,11 @@ Server::handle_initSimpleRun(SEclient* client, const Array& cmd)
 
     // init objectives
     std::vector<Objective*> objectiveVector;
-    copyCollection(objectiveVector, objectives);
+    for (auto obj_ : objectives)
+    {
+        auto obj = utl::cast<Objective>(obj_);
+        objectiveVector.push_back(obj);
+    }
     initObjectives(schedulerConfig, objectiveVector, evalConfigs);
 
     // initialize simple run

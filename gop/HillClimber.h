@@ -14,12 +14,14 @@ GOP_NS_BEGIN;
 /**
    Hill-climbing optimizer.
 
-   The operation of a hill-climber is easy to understand.
-   The following pseudo-code should make it clear:
+   Hill-climber finds the best solution that is reachable by a series of steps that each result
+   in improvement.
+
+   The following pseudo-code explains the operation of HillClimber:
 
    \code
    S = initial solution
-   for (iter = 0; iter < numIterations; ++iter)
+   for (iter = 0; iter != numIterations; ++iter)
    {
       P = randomly selected operator
       S' = P(S)
@@ -30,7 +32,7 @@ GOP_NS_BEGIN;
    }
    \endcode
 
-   \author Adam McKee
+   \ingroup gop
 */
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -38,32 +40,20 @@ GOP_NS_BEGIN;
 class HillClimber : public Optimizer
 {
     UTL_CLASS_DECL(HillClimber, Optimizer);
+    UTL_CLASS_DEFID;
 
 public:
-    /** Initialize. */
     virtual void initialize(const OptimizerConfiguration* config);
 
-    /** decide whether to accept the new solution. */
-    virtual void acceptanceEval(RevOperator* op);
+    virtual bool run();
+
+    virtual void audit();
 
     /** Run an iteration and return complete() or not. */
     virtual bool HCiterationRun();
 
-    /** Run the hill-climber. */
-    virtual bool run();
-
-    /** Audit the result. */
-    virtual void audit();
-
 private:
-    void
-    init()
-    {
-    }
-    void
-    deInit()
-    {
-    }
+    virtual void acceptanceEval(RevOperator* op);
 };
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////

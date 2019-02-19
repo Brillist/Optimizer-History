@@ -45,7 +45,7 @@ ResourceCalendarSpec::operator<(const ResourceCalendarSpec& rhs) const
     int res = lut::compare(_type, rhs._type);
     if (res != 0)
         return (res < 0);
-    res = compareContValues(_calIds, rhs._calIds);
+    res = compareItems(_calIds, rhs._calIds);
     return (res < 0);
 }
 

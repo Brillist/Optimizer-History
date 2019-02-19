@@ -1,8 +1,0 @@
-AR              = /opt/mingw-w64/bin/x86_64-w64-mingw32-ar
-CC              = /opt/mingw-w64/bin/x86_64-w64-mingw32-g++
-CC_SWITCHES     = $(CC_SWITCHES_COMMON) -fno-strict-aliasing -Wno-format -Wno-format-extra-args -mthreads
-CC_SWITCH_PIC   =
-CC_DEFINES      += -D__USE_MINGW_ANSI_STDIO=1 -D_GNU_SOURCE=1
-DLLTOOL         = /opt/mingw-w64/bin/x86_64-w64-mingw32-dlltool
-GENDEF          = /opt/mingw-w64/bin/gendef
-STRIP           = /opt/mingw-w64/bin/x86_64-w64-mingw32-strip

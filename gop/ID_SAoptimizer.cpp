@@ -29,10 +29,9 @@ GOP_NS_BEGIN;
 void
 ID_SAoptimizer::initialize(const OptimizerConfiguration* config)
 {
-    SAoptimizer::initialize(config);
+    super::initialize(config);
     _populationSize = 1;
     _fixedInitTemp = false;
-
     _stopTemp = 0.0001;
     _initTemp = _currentTemp = _stopTemp;
     init();
@@ -47,7 +46,7 @@ ID_SAoptimizer::run()
     ASSERTD(_ind != nullptr);
     ASSERTD(_targetScore == nullptr);
 
-    Objective* objective = _objectives[0];
+    auto objective = _objectives[0];
     _scoreStep = fabs(_bestScore->getValue() * 0.01);
     _targetScore = utl::clone(_bestScore);
     _targetScore->setValue(_targetScore->getValue() - _scoreStep);
@@ -81,6 +80,7 @@ ID_SAoptimizer::run()
             }
             _numProbes = 2 * _numProbes;
         }
+
         // init run with _initNumProbes or half numProbes of previous run
         _numProbes = max(_initNumProbes, _numProbes / 4);
         ASSERTD(_bestScore->getType() >= _targetScore->getType());
@@ -113,6 +113,21 @@ ID_SAoptimizer::run()
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
+void
+ID_SAoptimizer::init()
+{
+    _acceptanceRatio = 0.8;
+    _ratioDcrRate = 0.75;
+    _targetScore = nullptr;
+    _scoreStep = 0;
+    _initNumProbes = 100;
+    _numProbes = 100;
+    _numRepeats = 3;
+    _repeatId = 0;
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
 utl::String
 ID_SAoptimizer::ID_SAinitTempString()
 {
@@ -133,8 +148,7 @@ ID_SAoptimizer::ID_SAinitTempString()
         << ", initNumProbes:" << _initNumProbes;
     if (_totalScoreDiffIter > 0)
         str << ", avgDiffScore:" << (_totalScoreDiff / _totalScoreDiffIter);
-    str << '\0';
-    return utl::String((char*)str.get());
+    return utl::String(str.takeString(), true, false);
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -145,23 +159,8 @@ ID_SAoptimizer::ID_SAinitTempString2()
     utl::MemStream str;
     str << "repeatId:" << _repeatId << ", numProbes:" << _numProbes
         << ", tempDcrRate:" << _tempDcrRate
-        << ", targetScore:" << Float(_targetScore->getValue()).toString(2) << '\0';
-    return utl::String((char*)str.get());
-}
-
-////////////////////////////////////////////////////////////////////////////////////////////////////
-
-void
-ID_SAoptimizer::init()
-{
-    _acceptanceRatio = 0.8;
-    _ratioDcrRate = 0.75;
-    _targetScore = nullptr;
-    _scoreStep = 0;
-    _initNumProbes = 100;
-    _numProbes = 100;
-    _numRepeats = 3;
-    _repeatId = 0;
+        << ", targetScore:" << Float(_targetScore->getValue()).toString(2);
+    return utl::String(str.takeString(), true, false);
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////

@@ -19,14 +19,12 @@ GOP_NS_BEGIN;
 void
 Population::copy(const Object& rhs)
 {
-    ASSERTD(rhs.isA(Population));
-    const Population& pop = (const Population&)rhs;
+    auto& pop = utl::cast<Population>(rhs);
     clear();
     _inds.reserve(pop.size());
-    for (Population::const_iterator it = pop.begin(); it != pop.end(); ++it)
+    for (auto ind : pop)
     {
-        StringInd<uint_t>& ind = **it;
-        add(ind);
+        add(*ind);
     }
 }
 
@@ -36,10 +34,9 @@ void
 Population::clear()
 {
     // remove references
-    for (uint_t i = 0; i < _inds.size(); i++)
+    if (_owner)
     {
-        StringInd<uint_t>* ind = _inds[i];
-        if (_owner)
+        for (auto ind : self)
         {
             delete ind;
         }
@@ -52,6 +49,82 @@ Population::clear()
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
+Population::set(uint_t idx, StringInd<uint_t>* ind)
+{
+    ASSERTD(idx < size());
+    auto indPop = ind->getPop();
+    ASSERTD(indPop != this);
+    if (indPop != nullptr)
+    {
+        indPop->onAddRemoveInd();
+    }
+    _inds[idx] = ind;
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
+double
+Population::totalScore() const
+{
+    if (_totalScore == 0.0)
+    {
+        for (auto ind : self)
+        {
+            _totalScore += ind->getScore();
+        }
+    }
+    return _totalScore;
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
+double
+Population::stdDevScore() const
+{
+    double avg = averageScore();
+    double sum = 0.0;
+    uint_t i, numInds = size();
+    for (auto ind : self)
+    {
+        double diff = ind->getScore() - avg;
+        sum += (diff * diff);
+    }
+    return sqrt(sum / (double)numInds);
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
+double
+Population::totalFitness() const
+{
+    if (_totalFitness == 0.0)
+    {
+        for (auto ind : self)
+        {
+            _totalFitness += ind->getFitness();
+        }
+    }
+    return _totalFitness;
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
+double
+Population::stdDevFitness() const
+{
+    double avg = averageFitness();
+    double sum = 0.0;
+    for (auto ind : self)
+    {
+        double diff = (ind->getFitness() - avg);
+        sum += (diff * diff);
+    }
+    return sqrt(sum / (double)_inds.size());
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
+void
 Population::add(const Population& rhs, uint_t beginIdx, uint_t endIdx)
 {
     if (endIdx == uint_t_max)
@@ -59,10 +132,10 @@ Population::add(const Population& rhs, uint_t beginIdx, uint_t endIdx)
         endIdx = rhs.size();
     }
 
-    Population::const_iterator endIt = rhs.begin() + endIdx;
-    for (Population::const_iterator it = rhs.begin() + beginIdx; it != endIt; ++it)
+    auto endIt = rhs.begin() + endIdx;
+    for (auto it = rhs.begin() + beginIdx; it != endIt; ++it)
     {
-        StringInd<uint_t>& ind = **it;
+        auto& ind = **it;
         add(ind);
     }
 }
@@ -72,28 +145,13 @@ Population::add(const Population& rhs, uint_t beginIdx, uint_t endIdx)
 void
 Population::add(StringInd<uint_t>* ind)
 {
-    const Population* indPop = ind->getPop();
+    auto indPop = ind->getPop();
     ASSERTD(indPop != this);
     if (indPop != nullptr)
     {
         indPop->onAddRemoveInd();
     }
     _inds.push_back(ind);
-}
-
-////////////////////////////////////////////////////////////////////////////////////////////////////
-
-void
-Population::set(uint_t idx, StringInd<uint_t>* ind)
-{
-    ASSERTD(idx < size());
-    const Population* indPop = ind->getPop();
-    ASSERTD(indPop != this);
-    if (indPop != nullptr)
-    {
-        indPop->onAddRemoveInd();
-    }
-    _inds[idx] = ind;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -110,70 +168,6 @@ void
 Population::shuffle(rng_t& rng)
 {
     rng.shuffle(_inds);
-}
-
-////////////////////////////////////////////////////////////////////////////////////////////////////
-
-double
-Population::totalScore() const
-{
-    if (_totalScore == 0.0)
-    {
-        for (const_iterator it = begin(); it != end(); ++it)
-        {
-            const StringInd<uint_t>& ind = **it;
-            _totalScore += ind.getScore();
-        }
-    }
-    return _totalScore;
-}
-
-////////////////////////////////////////////////////////////////////////////////////////////////////
-
-double
-Population::stdDevScore() const
-{
-    double avg = averageScore();
-    double sum = 0.0;
-    uint_t i, numInds = size();
-    for (i = 0; i < numInds; i++)
-    {
-        double diff = (_inds[i]->getScore() - avg);
-        sum += (diff * diff);
-    }
-    return sqrt(sum / (double)numInds);
-}
-
-////////////////////////////////////////////////////////////////////////////////////////////////////
-
-double
-Population::totalFitness() const
-{
-    if (_totalFitness == 0.0)
-    {
-        for (const_iterator it = begin(); it != end(); ++it)
-        {
-            const StringInd<uint_t>& ind = **it;
-            _totalFitness += ind.getFitness();
-        }
-    }
-    return _totalFitness;
-}
-
-////////////////////////////////////////////////////////////////////////////////////////////////////
-
-double
-Population::stdDevFitness() const
-{
-    double avg = averageFitness();
-    double sum = 0.0;
-    uint_t i, numInds = size();
-    for (i = 0; i < numInds; i++)
-    {
-        double diff = (_inds[i]->getFitness() - avg);
-        sum += (diff * diff);
-    }
-    return sqrt(sum / (double)numInds);
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////

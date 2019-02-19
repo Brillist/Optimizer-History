@@ -28,17 +28,6 @@ class AltResMutate : public gop::RevOperator
     UTL_CLASS_DECL(AltResMutate, gop::RevOperator);
 
 public:
-    /**
-      Constructor.
-      \param p probability
-      \param rng PRNG
-   */
-    AltResMutate(double p, lut::rng_t* rng = nullptr)
-        : RevOperator("AltResMutate", p, rng)
-    {
-        init();
-    }
-
     virtual void copy(const utl::Object& rhs);
 
     /** Get the number of resource-group requirements. */

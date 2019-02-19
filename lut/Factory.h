@@ -7,9 +7,9 @@ LUT_NS_BEGIN;
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
-   Object factory.
+   Abstract base for a class that creates a new instance of T.
 
-   \author Adam McKee
+   \ingroup lut
 */
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -21,9 +21,14 @@ template <class T> class Factory : public utl::Object
     UTL_CLASS_DEFID;
 
 public:
-    /** Make a new object. */
+    /**
+       Make a new object.
+       \return (address of) new instance of T
+       \param param0 (optional) first parameter
+       \param param1 (optional) second parameter
+    */
     virtual T*
-    make(void* param = nullptr, void* param1 = nullptr) const
+    make(void* param0 = nullptr, void* param1 = nullptr) const
     {
         ABORT();
         return nullptr;

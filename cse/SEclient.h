@@ -29,6 +29,8 @@ public:
              const utl::InetHostAddress& addr,
              bool recording = false);
 
+    virtual void pause();
+
     bool&
     authorized()
     {

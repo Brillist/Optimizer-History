@@ -9,9 +9,9 @@ GOP_NS_BEGIN;
 /**
    Data-set (abstract).
 
-   A data-set is a description of an optimization problem.
+   A full specification of an optimization problem.
 
-   \author Adam McKee
+   \ingroup gop
 */
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -20,9 +20,6 @@ class DataSet : public utl::Object
 {
     UTL_CLASS_DECL_ABC(DataSet, utl::Object);
     UTL_CLASS_DEFID;
-
-public:
-    virtual void copy(const utl::Object& rhs);
 };
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////

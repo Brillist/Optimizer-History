@@ -12,26 +12,6 @@ LUT_NS_BEGIN;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-template <>
-int
-compare(const double& lhs, const double& rhs)
-{
-    if (fabs(lhs - rhs) < 0.0000000001)
-    {
-        return 0;
-    }
-    else if (lhs < rhs)
-    {
-        return -1;
-    }
-    else
-    {
-        return 1;
-    }
-}
-
-////////////////////////////////////////////////////////////////////////////////////////////////////
-
 bool
 getFlag(uint32_t flags, uint32_t bit)
 {
@@ -57,49 +37,38 @@ setFlag(uint32_t& flags, uint32_t bit, bool val)
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-std::string
-heading(const std::string& title, char ch, uint_t width)
+void
+serialize(std::string& str, Stream& stream, uint_t io)
 {
-    std::ostringstream ss;
-    uint_t i;
-    for (i = 0; i < 3; ++i)
+    if (io == utl::io_rd)
     {
-        ss << ch;
+        String utlString;
+        utlString.serialize(stream, io_rd, ser_default);
+        str = utlString.get();
     }
-    ss << " ";
-    ss << title;
-    ss << " ";
-    uint_t rem = width - title.size() - 5;
-    for (i = 0; i < rem; ++i)
+    else
     {
-        ss << ch;
+        String utlString(str.c_str(), false);
+        utlString.serialize(stream, io_wr, ser_default);
     }
-    return ss.str();
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-void*
-realloc(void* ptr, size_t oldSize, size_t newSize)
+void
+serialize(time_t& t, Stream& stream, uint_t io)
 {
-    ASSERT(ptr != nullptr);
-    void* newPtr = malloc(newSize);
-    ASSERT(newPtr != nullptr);
-    memcpy(newPtr, ptr, oldSize);
-    free(ptr);
-    return newPtr;
-}
-
-////////////////////////////////////////////////////////////////////////////////////////////////////
-
-std::string
-readLine(std::istream& is)
-{
-    char* line = new char[1024];
-    is.getline(line, 1024);
-    std::string str(line);
-    delete[] line;
-    return str;
+    if (io == io_rd)
+    {
+        int64_t i;
+        utl::serialize(i, stream, io, ser_default);
+        t = i;
+    }
+    else
+    {
+        int64_t i = t;
+        utl::serialize(i, stream, io, ser_default);
+    }
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -179,42 +148,6 @@ periodFromString(const std::string& p_str)
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-void
-serialize(std::string& str, Stream& stream, uint_t io)
-{
-    if (io == utl::io_rd)
-    {
-        String utlString;
-        utlString.serialize(stream, io_rd, ser_default);
-        str = utlString.get();
-    }
-    else
-    {
-        String utlString(str.c_str(), false);
-        utlString.serialize(stream, io_wr, ser_default);
-    }
-}
-
-////////////////////////////////////////////////////////////////////////////////////////////////////
-
-void
-serialize(time_t& t, Stream& stream, uint_t io)
-{
-    if (io == io_rd)
-    {
-        int64_t i;
-        utl::serialize(i, stream, io, ser_default);
-        t = i;
-    }
-    else
-    {
-        int64_t i = t;
-        utl::serialize(i, stream, io, ser_default);
-    }
-}
-
-////////////////////////////////////////////////////////////////////////////////////////////////////
-
 time_t
 time_date(time_t t)
 {
@@ -247,8 +180,75 @@ time_str(time_t t)
     auto tm = localtime(&t);
     char buf[128];
     sprintf(buf, "%02u-%02u-%02u %02u:%02u:%02u", tm->tm_year + 1900, tm->tm_mon + 1, tm->tm_mday,
-            tm->tm_hour, tm->tm_min, tm->tm_sec);
+        tm->tm_hour, tm->tm_min, tm->tm_sec);
     return std::string(buf);
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
+template <>
+int
+compare(const double& lhs, const double& rhs)
+{
+    if (fabs(lhs - rhs) < 0.0000000001)
+    {
+        return 0;
+    }
+    else if (lhs < rhs)
+    {
+        return -1;
+    }
+    else
+    {
+        return 1;
+    }
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
+std::string
+heading(const std::string& title, char ch, uint_t width)
+{
+    std::ostringstream ss;
+    uint_t i;
+    for (i = 0; i < 3; ++i)
+    {
+        ss << ch;
+    }
+    ss << " ";
+    ss << title;
+    ss << " ";
+    uint_t rem = width - title.size() - 5;
+    for (i = 0; i < rem; ++i)
+    {
+        ss << ch;
+    }
+    return ss.str();
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
+void*
+realloc(void* ptr, size_t oldSize, size_t newSize)
+{
+    ASSERT(ptr != nullptr);
+    void* newPtr = malloc(newSize);
+    ASSERT(newPtr != nullptr);
+    memcpy(newPtr, ptr, min(oldSize, newSize));
+    free(ptr);
+    return newPtr;
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
+std::string
+readLine(std::istream& is)
+{
+    char* line = new char[1024];
+    is.getline(line, 1024);
+    std::string str(line);
+    delete[] line;
+    return str;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////

@@ -118,13 +118,13 @@ JobOp::serialize(Stream& stream, uint_t io, uint_t)
     }
 
     // unary constraints
-    lut::serialize<Object*>(_unaryCts, stream, io);
+    lut::serialize(_unaryCts, stream, io);
 
     // res-reqs
-    lut::serialize<Object*>(_resReqs, stream, io);
+    lut::serialize(_resReqs, stream, io);
 
     // res-group-reqs
-    lut::serialize<Object*>(_resGroupReqs, stream, io);
+    lut::serialize(_resGroupReqs, stream, io);
 
     // res-cap-pts
     _resCapPts.serialize(stream, io);

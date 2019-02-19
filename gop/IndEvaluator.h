@@ -15,13 +15,9 @@ GOP_NS_BEGIN;
 /**
    Individual evaluation strategy (abstract).
 
-   IndEvaluator provides a standard interface for different individual
-   evaluation strategies.  For example, there are many different ways to
-   evaluate solutions to scheduling problems -- you could be interested in
-   the solution schedule's makespan, or its resource utilization profile,
-   or any number of other metrics that can be applied to the schedule.
+   IndEvaluator provides an interface for different individual evaluation strategies.
 
-   \author Adam McKee
+   \ingroup gop
 */
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -79,18 +75,10 @@ public:
        Evaluate an constructed individual.
 
        \return individual's score
-       \param ctx individual construction context
+       \param context construction context
     */
     virtual Score* eval(const IndBuilderContext* context) const = 0;
 
-    /** 
-        get the best fail score which is the boundary score 
-        between fail and success.
-    */
-    /*     virtual double bestFailScore(const IndBuilderContext* context) const=0; */
-
-    /** get the fail score from a failed run. */
-    /*     virtual double failScore(const IndBuilderContext* context) const=0; */
 protected:
     mutable bool _audit;
     mutable std::string _auditText;
@@ -105,6 +93,8 @@ private:
     deInit()
     {
     }
+
+private:
     mutable string_int_map_t _componentScores;
 };
 

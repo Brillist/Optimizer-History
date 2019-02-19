@@ -13,10 +13,7 @@ GOP_NS_BEGIN;
 /**
    Individual evaluator configuration (abstract).
 
-   IndEvaluatorConfiguration serves as an abstract base for classes
-   that store configuration options for IndEvaluator-derived classes.
-
-   \author Adam McKee
+   \ingroup gop
 */
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////

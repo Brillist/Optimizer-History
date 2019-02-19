@@ -16,12 +16,15 @@ LUT_NS_BEGIN;
 
    For example if our skip-list is (maximally) 3 levels deep, we number the nodes this way:
 
+   \code
           1          <- level 2
       2       3      <- level 1
     4   5   6   7    <- level 0
+   \endcode
 
    SkipListDepthArray will generate the following list of 7 node levels: [0,1,0,2,0,1,0].
    
+   \ingroup lut
    \author Adam McKee
 */
 
@@ -35,13 +38,19 @@ public:
     /** Constructor. */
     SkipListDepthArray(uint_t depth);
 
-    /** Copy another instance. */
     virtual void copy(const utl::Object& rhs);
 
-    /** Initialize. */
+    /**
+       Initialize.
+       \param depth maximum tree/list depth
+    */
     void set(uint_t depth);
 
-    /** Get the next depth. */
+    /**
+       Get the next depth and advance to the next position.
+       \return next depth
+       \param pos reference to current position
+    */
     uint_t
     next(uint_t& pos) const
     {

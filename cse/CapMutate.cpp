@@ -79,10 +79,10 @@ CapMutate::execute(gop::Ind* ind, gop::IndBuilderContext* p_context, bool single
     gop::String<uint_t>& string = _moveSchedule->string();
 
     // choose activity
-    uint_t actIdx = getSelectedVarIdx();
+    uint_t actIdx = this->varIdx();
 #ifdef DEBUG_UNIT
     utl::cout << "                                                   "
-              << "varSucRate:" << getSelectedVarP() << ", idx:" << actIdx;
+              << "varSucRate:" << this->varP() << ", idx:" << actIdx;
 #endif
     _moveCapIdx = actIdx;
     _moveCap = string[_stringBase + _moveCapIdx];

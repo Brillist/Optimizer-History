@@ -73,7 +73,7 @@ AltJobMutate::execute(gop::Ind* ind, gop::IndBuilderContext* p_context, bool sin
     gop::String<uint_t>& string = _moveSchedule->string();
 
     // choose an item
-    uint_t groupIdx = getSelectedVarIdx();
+    uint_t groupIdx = this->varIdx();
     _moveGroupIdx = _stringBase + groupIdx;
     _moveJobIdx = string[_moveGroupIdx];
     JobGroup* group = _jobGroups[groupIdx];

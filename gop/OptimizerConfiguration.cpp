@@ -28,8 +28,7 @@ OptimizerConfiguration::clear()
 void
 OptimizerConfiguration::copy(const Object& rhs)
 {
-    ASSERTD(rhs.isA(OptimizerConfiguration));
-    const OptimizerConfiguration& cf = (const OptimizerConfiguration&)rhs;
+    auto& cf = utl::cast<OptimizerConfiguration>(rhs);
     _minIterations = cf._minIterations;
     _maxIterations = cf._maxIterations;
     _improvementGap = cf._improvementGap;
@@ -54,8 +53,8 @@ OptimizerConfiguration::serialize(Stream& stream, uint_t io, uint_t)
     utl::serialize(_maxIterations, stream, io);
     utl::serialize(_improvementGap, stream, io);
     utl::serialize(_indBuilder, stream, io, ser_default);
-    lut::serialize<Objective*>(_objectives, stream, io);
-    lut::serialize<Operator*>(_ops, stream, io);
+    lut::serialize(_objectives, stream, io);
+    lut::serialize(_ops, stream, io);
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////

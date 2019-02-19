@@ -19,12 +19,15 @@ GOP_NS_BEGIN;
 int
 IndEvaluator::getComponentScore(const std::string& componentName) const
 {
-    string_int_map_t::const_iterator it = _componentScores.find(componentName);
+    auto it = _componentScores.find(componentName);
     if (it == _componentScores.end())
     {
         return int_t_max;
     }
-    return (*it).second;
+    else
+    {
+        return (*it).second;
+    }
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -32,13 +35,15 @@ IndEvaluator::getComponentScore(const std::string& componentName) const
 void
 IndEvaluator::setComponentScore(const std::string& componentName, int score) const
 {
-    string_int_map_t::iterator it = _componentScores.find(componentName);
+    auto it = _componentScores.find(componentName);
     if (it == _componentScores.end())
     {
         _componentScores.insert(string_int_map_t::value_type(componentName, score));
-        return;
     }
-    (*it).second = score;
+    else
+    {
+        (*it).second = score;
+    }
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////

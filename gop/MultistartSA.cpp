@@ -30,36 +30,40 @@ void
 MultistartSA::initialize(const OptimizerConfiguration* config)
 {
     Optimizer::initialize(config);
+
+    // initialize _ind
     ASSERTD(_ind != nullptr);
     _indBuilder->initializeInd(_ind, config->dataSet(), _rng);
     _singleStep = false;
-    Objective* objective = _objectives[0];
 
+    // construct our initial individual and set initial & best scores
     iterationRun();
     setInitScore(utl::clone(_newScore));
     setBestScore(utl::clone(_newScore));
     if (_ind->newString())
         _ind->acceptNewString();
+    auto objective = _objectives[0];
     objective->setBestScore(utl::clone(_bestScore));
 
     // it is necessary to keep a copy of the _bestStrScore for SA
-    StringScore* strScore =
-        new StringScore(0, utl::clone(_ind->getString()), utl::clone(_bestScore));
+    auto strScore = new StringScore(0, utl::clone(_ind->stringPtr()), utl::clone(_bestScore));
     setBestStrScore(strScore);
 
 #ifdef DEBUG_UNIT
     utl::cout << initString(!_fail) << utl::endlf;
 #endif
 
-    //     _ind->setScore(0, _bestScore); //???
+    // initialize _strScores[], _acceptedScoresMap
     _beamWidth = 10;
-    String<uint_t>* str = _ind->getString();
+    String<uint_t>* str = _ind->stringPtr();
     for (uint_t i = 0; i < _beamWidth; i++)
     {
-        StringScore* strScore = new StringScore(i, utl::clone(str), utl::clone(_bestScore));
+        auto strScore = new StringScore(i, utl::clone(str), utl::clone(_bestScore));
         _strScores.push_back(strScore);
         _acceptedScoresMap.insert(uint_score_map_t::value_type(i, utl::clone(_bestScore)));
     }
+
+    // forget about _ind's construction string
     _ind->setString(nullptr, false);
 }
 
@@ -73,21 +77,20 @@ MultistartSA::run()
 
     Objective* objective = _objectives[0];
     Bool complete = this->complete();
-    //     int cmpResult;
 
     while (!complete)
     {
-        // reduce the length of the _strScore list
-        if (_iteration == roundUp(_minIterations / 20, _beamWidth) || //5%
-            _iteration == roundUp(_minIterations / 4, _beamWidth) ||  // 25%
+        // halve _beamWidth at 5%, 25%, and 100% of min-iterations
+        if (_iteration == roundUp(_minIterations / 20, _beamWidth) || //   5%
+            _iteration == roundUp(_minIterations / 4, _beamWidth) ||  //  25%
             _iteration == roundUp(_minIterations, _beamWidth))        // 100%
         {
-            std::sort(_strScores.begin(), _strScores.end(), stringScoreOrdering());
+            std::sort(_strScores.begin(), _strScores.end(), StringScoreOrdering());
             _beamWidth = utl::max((uint_t)1, (_beamWidth / 2));
             stringscore_vector_t::iterator it;
             for (it = _strScores.begin() + _beamWidth; it != _strScores.end(); ++it)
             {
-                StringScore* strScore = *it;
+                auto strScore = *it;
                 _acceptedScoresMap.erase(strScore->getId());
                 delete strScore;
             }
@@ -97,29 +100,25 @@ MultistartSA::run()
         for (uint_t i = 0; i < _beamWidth; i++)
         {
             _iteration++;
-            // choose an operator
-            Operator* op = chooseRandomOp();
+            auto op = chooseRandomOp();
             if (op == nullptr)
             {
                 _iteration = _maxIterations;
                 complete = this->complete();
                 break;
             }
-            ASSERTD(dynamic_cast<RevOperator*>(op) != nullptr);
-            RevOperator* rop = (RevOperator*)op;
+            auto rop = utl::cast<RevOperator>(op);
             rop->addTotalIter();
             _ind->setString(_strScores[i]->getString(), false); //
 #ifdef DEBUG_UNIT
-            utl::cout << "                                "
-                      << "operator: " << op->toString() << utl::endl;
+            utl::cout << "operator: " << op->toString() << utl::endl;
 #endif
 
             // generate a schedule
             iterationRun(rop);
             setAcceptedScore(utl::clone(acceptedScores(_strScores[i]->getId())));
-            double diff;
-            diff = objective->scoreDiff(_newScore, _acceptedScore);
-            double acceptProb = exp(diff / _currentTemp);
+            auto diff = objective->scoreDiff(_newScore, _acceptedScore);
+            auto acceptProb = exp(diff / _currentTemp);
             _accept = (_rng->uniform(0.0, 1.0) < acceptProb); //_accept
             _sameScore = _newBest = false;
 #ifdef DEBUG_UNIT
@@ -131,15 +130,15 @@ MultistartSA::run()
                 setAcceptedScore(_strScores[i]->getId(), utl::clone(_newScore));
                 _strScores[i]->setScore(utl::clone(_newScore));
                 int globalCmpResult = objective->compare(_newScore, _bestScore);
-                _sameScore = (globalCmpResult == 0); //_sameScore
-                _newBest = (globalCmpResult > 0);    //_newBest
+                _sameScore = (globalCmpResult == 0);
+                _newBest = (globalCmpResult > 0);
                 if (globalCmpResult > 0)
                 {
                     rop->addSuccessIter();
                     _improvementIteration = _iteration;
                     setBestScore(utl::clone(_newScore));
                     _bestStrScore->setScore(utl::clone(_newScore));
-                    _bestStrScore->setString(utl::clone(_ind->getString()));
+                    _bestStrScore->setString(utl::clone(_ind->stringPtr()));
                     objective->setBestScore(utl::clone(_bestScore));
                 }
             }
@@ -147,6 +146,7 @@ MultistartSA::run()
             {
                 rop->undo();
             }
+
             _currentTemp = (double)pow(_tempDcrRate, (int)(_iteration / 100)) * _initTemp;
 #ifdef DEBUG_UNIT
             utl::cout << "startId:" << _strScores[i]->getId() << "(" << i << "/" << _beamWidth
@@ -164,9 +164,9 @@ MultistartSA::run()
             }
         }
     }
-
     ASSERT(this->complete());
-    //re-generate the best schedule and get audit text
+
+    // re-generate the best schedule and get audit text
     _ind->setString(_bestStrScore->getString(), false);
     bool scheduleFeasible = iterationRun(nullptr, true);
 #ifdef DEBUG
@@ -203,7 +203,7 @@ MultistartSA::setAcceptedScore(Score* score)
 void
 MultistartSA::setAcceptedScore(uint_t idx, Score* score)
 {
-    uint_score_map_t::iterator it = _acceptedScoresMap.find(idx);
+    auto it = _acceptedScoresMap.find(idx);
     ASSERTD(it != _acceptedScoresMap.end());
     delete (*it).second;
     (*it).second = score;
@@ -214,7 +214,7 @@ MultistartSA::setAcceptedScore(uint_t idx, Score* score)
 Score*
 MultistartSA::acceptedScores(uint_t idx)
 {
-    uint_score_map_t::iterator it = _acceptedScoresMap.find(idx);
+    auto it = _acceptedScoresMap.find(idx);
     ASSERTD(it != _acceptedScoresMap.end());
     return (*it).second;
 }

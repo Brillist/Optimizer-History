@@ -7,8 +7,12 @@ LUT_NS_BEGIN;
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
-   Reference-counted class (abstract).
-   \author Adam McKee
+   Abstract base for a reference-counted object.
+
+   The object will be deleted when the last remaining reference to it is removed
+   (by calling removeRef()).
+
+   \ingroup lut
 */
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -18,12 +22,14 @@ class RCobject : public utl::Object
     UTL_CLASS_DECL_ABC(RCobject, utl::Object);
 
 public:
+    /** Add a reference. */
     void
     addRef() const
     {
         _refCount.fetch_add(1, std::memory_order_relaxed);
     }
 
+    /** Remove a reference (and delete self if no other reference remains). */
     void
     removeRef() const
     {

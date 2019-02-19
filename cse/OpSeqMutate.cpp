@@ -102,7 +102,7 @@ OpSeqMutate::execute(gop::Ind* ind, gop::IndBuilderContext* p_context, bool sing
     }
 
     //select an op
-    uint_t opIdx = getSelectedVarIdx();
+    uint_t opIdx = this->varIdx();
     _moveOpIdx = opIdx;
     JobOp* op = _ops[opIdx];
     ASSERTD(op->serialId() != uint_t_max);

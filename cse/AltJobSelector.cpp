@@ -2,7 +2,6 @@
 #include <libutl/BufferedFDstream.h>
 #include <gop/ConfigEx.h>
 #include <cse/ForwardScheduler.h>
-// #include <mrp/MRPdataSet.h>
 #include <cse/AltJobMutate.h>
 #include "AltJobSelector.h"
 
@@ -144,25 +143,6 @@ AltJobSelector::setAltJobGroups(const ClevorDataSet* dataSet)
         JobGroup* jobGroup = *jobgroupIt;
         _jobGroups.push_back(jobGroup);
     }
-    //     const MRPdataSet* mrpDataSet = (const MRPdataSet*)dataSet;
-
-    //     _jobGroups.clear();
-    //     item_set_id_t::const_iterator itemIt;
-    //     for (itemIt = mrpDataSet->items().begin();
-    //          itemIt != mrpDataSet->items().end(); itemIt++)
-    //     {
-    //         Item* item = *itemIt;
-    //         if (dynamic_cast<ManufactureItem*>(item) == nullptr)
-    //             continue;
-    //         ManufactureItem* mitem = (ManufactureItem*)item;
-    //         altjobsgroup_vector_t::const_iterator jobgroupIt;
-    //         for (jobgroupIt = mitem->jobGroups().begin();
-    //              jobgroupIt != mitem->jobGroups().end(); jobgroupIt++)
-    //         {
-    //             AltJobsGroup* jobGroup = *jobgroupIt;
-    //             _jobGroups.push_back(jobGroup);
-    //         }
-    //     }
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -187,13 +167,7 @@ AltJobSelector::setJobs(StringInd<uint_t>* ind, SchedulingContext* context) cons
             Job* job = (*it);
             if (!job->active())
             {
-                //                 utl::cout << "AltJobSelector::setProcessPlan starts to relase job:"
-                //                           << job->id()
-                //                           << utl::endlf;
                 job->finalize(mgr);
-                //                 utl::cout << "End of release job:"
-                //                           << job->id()
-                //                           << utl::endlf;
             }
         }
     }

@@ -113,15 +113,6 @@ CapSelector::initializeInd(Ind* p_ind, const gop::DataSet* p_dataSet, rng_t* rng
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
-CapSelector::initializeRandomInd(Ind* p_ind, const gop::DataSet* p_dataSet, rng_t* rng, void*)
-{
-    utl::cout << "ERROR(JobOpSeqSelector.cpp): in the incompleted code!" << utl::endl;
-    ABORT();
-}
-
-////////////////////////////////////////////////////////////////////////////////////////////////////
-
-void
 CapSelector::run(Ind* p_ind, IndBuilderContext* p_context) const
 {
     ASSERTD(_nestedScheduler != nullptr);

@@ -7,9 +7,9 @@ LUT_NS_BEGIN;
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
-   Functor (abstract).
+   Abstract base for a "functor" (object that acts like a function).
 
-   \author Adam McKee
+   \ingroup lut
 */
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -21,8 +21,20 @@ class Functor : public utl::Object
     UTL_CLASS_DEFID;
 
 public:
-    /** Do whatever. */
+    /**
+       Execute (with an optional argument).
+       \param arg (optional) argument
+    */
     virtual void execute(void* arg = nullptr) = 0;
+
+    /**
+       Act like a function.
+       \param arg (optional) argument
+    */
+    void operator()(void* arg = nullptr)
+    {
+        execute(arg);
+    }
 };
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////

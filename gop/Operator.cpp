@@ -41,8 +41,6 @@ Operator::copy(const Object& rhs)
     _rng = nullptr;
     _stringBase = 0;
     _optimizer = nullptr;
-    _name = op._name;
-    _p = op._p;
     _successIter = op._successIter;
     _totalIter = op._totalIter;
     _numChoices = op._numChoices;
@@ -56,8 +54,11 @@ Operator::copy(const Object& rhs)
 void
 Operator::serialize(Stream& stream, uint_t io, uint_t)
 {
-    lut::serialize(_name, stream, io);
-    utl::serialize(_p, stream, io);
+    // TODO: remove these (front-end change required)
+    std::string dummyName;
+    double dummyP = 0.0;
+    lut::serialize(dummyName, stream, io);
+    utl::serialize(dummyP, stream, io);
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -66,18 +67,10 @@ utl::String
 Operator::toString() const
 {
     utl::MemStream str;
-    str << name().c_str() << ": numChoices:" << getNumChoices() << ", numValidVars:" << numVars()
+    str << name().c_str() << ": numChoices:" << numChoices() << ", numVars:" << numVars()
         << ", sucRate:" << Float(p()).toString(2) << ", successIter:" << _successIter
         << ", totalIter:" << _totalIter << '\0';
     return utl::String((char*)str.get());
-}
-
-////////////////////////////////////////////////////////////////////////////////////////////////////
-
-void
-Operator::initialize(const DataSet*)
-{
-    ASSERTD(_rng != nullptr);
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -87,27 +80,26 @@ Operator::p() const
 {
     // pick up the first var from the sorted var list,
     // return its p() as the op's p().
-    if (_varSet.size() == 0)
+    for (auto var : _varSet)
     {
-        return 0.0;
+        if (var->active())
+            return var->p();
     }
-    else
-    {
-        opvar_set_t::const_iterator it;
-        for (it = _varSet.begin(); it != _varSet.end(); it++)
-        {
-            OperatorVar* var = (*it);
-            if (var->active())
-                return var->p();
-        }
-        return 0.0;
-    }
+    return 0.0;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
+uint_t
+Operator::varIdx() const
+{
+    ASSERTD(_selectedVar != nullptr);
+    return _selectedVar->idx();
+}
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
 double
-Operator::getSelectedVarP() const
+Operator::varP() const
 {
     ASSERTD(_selectedVar != nullptr);
     return _selectedVar->p();
@@ -115,25 +107,69 @@ Operator::getSelectedVarP() const
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-int_t
-Operator::getSelectedVarIdx() const
-{
-    ASSERTD(_selectedVar != nullptr);
-    return _selectedVar->idx();
-}
-////////////////////////////////////////////////////////////////////////////////////////////////////
-
 void
 Operator::addOperatorVar(uint_t idx, uint_t initSuccessIter, uint_t initTotalIter, bool* active)
 {
-    //Note: this method is used for initialization.
-    //      currently there are two ways for initialization
-    //      addOperatorVar(i,0,2)  p = 0
-    //      addOperatorVar(i,1,2)  p = 0.5
-    OperatorVar* var = new OperatorVar(idx, active, initSuccessIter, initTotalIter);
+    // create a new OperatorVar
+    auto var = new OperatorVar(idx, active, initSuccessIter, initTotalIter);
     _varSet.insert(var);
+
+    // update count of valid variables (those with non-zero success rate)
     if (var->p() > 0)
         _numValidVars++;
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
+uint_t
+Operator::selectVar()
+{
+    ASSERTD(_varSet.size() > 0);
+
+#ifdef DEBUG_UNIT
+    utl::cout << "SelectVar  OpVarSize:" << (uint_t)_varSet.size();
+    for (it = _varSet.begin(); it != _varSet.end(); it++)
+    {
+        OperatorVar* var = *it;
+        utl::cout << " (" << var->idx() << ", active:" << (Bool)var->active()
+            << ", p:" << Float(var->p()).toString(2) << ")";
+    }
+    utl::cout << utl::endlf;
+#endif
+
+    // vars = variables that are tied for highest success rate
+    opvar_vector_t vars;
+    double successRate = 0;
+    for (auto var : _varSet)
+    {
+        if (!var->active())
+            continue;
+        if (successRate == 0)
+            successRate = var->p();
+        if (var->p() < successRate)
+            break;
+        vars.push_back(var);
+    }
+
+    // choose a var from vars
+    ASSERTD(vars.size() > 0);
+    auto idx = _rng->uniform((size_t)0, vars.size() - 1);
+    _selectedVar = vars[idx];
+
+    // return the index of the selected variable
+    return _selectedVar->idx();
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
+void
+Operator::addSuccessIter()
+{
+    _successIter++;
+    ASSERTD(_selectedVar != nullptr);
+    _varSet.erase(_selectedVar);
+    _selectedVar->addSuccessIter();
+    _varSet.insert(_selectedVar);
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -151,52 +187,9 @@ Operator::addTotalIter()
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
-Operator::addSuccessIter()
+Operator::initialize(const DataSet*)
 {
-    _successIter++;
-    ASSERTD(_selectedVar != nullptr);
-    _varSet.erase(_selectedVar);
-    _selectedVar->addSuccessIter();
-    _varSet.insert(_selectedVar);
-}
-
-////////////////////////////////////////////////////////////////////////////////////////////////////
-
-uint_t
-Operator::selectOperatorVarIdx()
-{
-    ASSERTD(_varSet.size() > 0);
-    std::vector<OperatorVar*> vars;
-    double successRate = 0; //(*_varSet.begin())->p();
-    opvar_set_t::const_iterator it;
-
-#ifdef DEBUG_UNIT
-    utl::cout << "SelectOperatorVarIdx  OpVarSize:" << (uint_t)_varSet.size();
-    for (it = _varSet.begin(); it != _varSet.end(); it++)
-    {
-        OperatorVar* var = *it;
-        utl::cout << " (" << var->idx() << ", active:" << (Bool)var->active()
-                  << ", p:" << Float(var->p()).toString(2) << ")";
-    }
-    utl::cout << utl::endlf;
-#endif
-
-    for (it = _varSet.begin(); it != _varSet.end(); ++it)
-    {
-        OperatorVar* var = *it;
-        if (!var->active())
-            continue; //deals with active
-        if (successRate == 0)
-            successRate = var->p();
-        if (var->p() < successRate)
-            break;
-        vars.push_back(var);
-    }
-    ASSERTD(vars.size() > 0);
-    uint_t idx = _rng->uniform((size_t)0, vars.size() - 1);
-    _selectedVar = vars[idx];
-
-    return _selectedVar->idx();
+    ASSERTD(_rng != nullptr);
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -207,7 +200,6 @@ Operator::init()
     _rng = nullptr;
     _stringBase = 0;
     _optimizer = nullptr;
-    _p = 0.0;
     _successIter = 1;
     _totalIter = 2;
     _selectedVar = nullptr;

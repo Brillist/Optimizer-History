@@ -27,18 +27,21 @@ GOP_NS_BEGIN;
 void
 RandomWalk::initialize(const OptimizerConfiguration* config)
 {
-    Optimizer::initialize(config);
+    super::initialize(config);
     ASSERTD(_ind != nullptr);
     _indBuilder->initializeInd(_ind, config->dataSet(), _rng);
     _singleStep = true;
-    Objective* objective = _objectives[0];
+    auto objective = _objectives[0];
 
+    // construct the initial _ind
     iterationRun();
+
+    // 
     setInitScore(_newScore->clone());
     setBestScore(_newScore->clone());
     if (_ind->newString())
         _ind->acceptNewString();
-    String<uint_t>* bestStr = _ind->getString()->clone();
+    String<uint_t>* bestStr = _ind->stringPtr()->clone();
     StringScore* strScore = new StringScore(0, bestStr, _bestScore->clone());
     setBestStrScore(strScore);
     objective->setBestScore(_bestScore->clone());
@@ -79,8 +82,10 @@ RandomWalk::run()
         utl::cout << "                                      " << op->toString() << utl::endlf;
 #endif
 
-        // generate a schedule
+        // construct the current individual
         iterationRun(rop);
+
+        // compare the new Score to the current best Score
         cmpResult = objective->compare(_newScore, _bestScore);
         _accept = true;
         _sameScore = (cmpResult == 0);
@@ -91,7 +96,7 @@ RandomWalk::run()
         {
             _improvementIteration = _iteration;
             setBestScore(_newScore->clone());
-            String<uint_t>* str = _ind->getString()->clone();
+            String<uint_t>* str = _ind->stringPtr()->clone();
             _bestStrScore->setScore(_bestScore->clone());
             _bestStrScore->setString(str);
             objective->setBestScore(_bestScore->clone());
@@ -107,6 +112,7 @@ RandomWalk::run()
     }
 
     ASSERT(this->complete());
+
     //re-generate the best schedule and get audit text
     _ind->setString(_bestStrScore->getString()->clone());
     bool scheduleFeasible = iterationRun(nullptr, true);

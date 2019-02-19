@@ -35,7 +35,7 @@ ResourceGroup::serialize(Stream& stream, uint_t io, uint_t)
     lut::serialize(_name, stream, io);
     if (io == io_rd)
         _resIds.clear();
-    lut::serialize<uint_t>(_resIds, stream, io);
+    lut::serialize(_resIds, stream, io);
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////

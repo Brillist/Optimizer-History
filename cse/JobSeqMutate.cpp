@@ -95,7 +95,7 @@ JobSeqMutate::execute(gop::Ind* ind, gop::IndBuilderContext* context, bool singl
     }
 
     //select a job - (jobIdx)
-    uint_t jobIdx = getSelectedVarIdx();
+    uint_t jobIdx = this->varIdx();
 #ifdef DEBUG_UNIT
     utl::cout << "          varSucRate:" << getSelectedVarP() << ", idx:" << jobIdx;
 #endif

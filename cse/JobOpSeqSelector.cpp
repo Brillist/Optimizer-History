@@ -118,15 +118,6 @@ JobOpSeqSelector::initializeInd(Ind* p_ind, const gop::DataSet* p_dataSet, rng_t
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
-JobOpSeqSelector::initializeRandomInd(Ind* p_ind, const gop::DataSet* p_dataSet, rng_t* rng, void*)
-{
-    utl::cout << "ERROR(JobOpSeqSelector.cpp): in the incompleted code!" << utl::endl;
-    ABORT();
-}
-
-////////////////////////////////////////////////////////////////////////////////////////////////////
-
-void
 JobOpSeqSelector::run(Ind* p_ind, IndBuilderContext* p_context) const
 {
     ASSERTD(dynamic_cast<StringInd<uint_t>*>(p_ind) != nullptr);

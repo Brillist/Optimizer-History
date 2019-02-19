@@ -33,7 +33,7 @@ MultistartHC::initialize(const OptimizerConfiguration* config)
     ASSERTD(_ind != nullptr);
     _indBuilder->initializeInd(_ind, config->dataSet(), _rng);
     _singleStep = true;
-    Objective* objective = _objectives[0];
+    auto objective = _objectives[0];
 
     iterationRun();
     setInitScore(_newScore->clone());
@@ -42,12 +42,11 @@ MultistartHC::initialize(const OptimizerConfiguration* config)
         _ind->acceptNewString();
     objective->setBestScore(_bestScore->clone());
 
-    //     _ind->setScore(0, _bestScore); //?????
     _beamWidth = 10;
-    String<uint_t>* str = _ind->getString();
+    auto str = _ind->stringPtr();
     for (uint_t i = 0; i < _beamWidth; i++)
     {
-        StringScore* strScore = new StringScore(i, str->clone(), _bestScore->clone());
+        auto strScore = new StringScore(i, str->clone(), _bestScore->clone());
         _strScores.push_back(strScore);
     }
     _ind->setString(nullptr, false);
@@ -65,23 +64,23 @@ MultistartHC::run()
     ASSERTD(!complete());
     ASSERTD(_ind != nullptr);
 
-    Objective* objective = _objectives[0];
+    auto objective = _objectives[0];
     Bool complete = this->complete();
     int cmpResult;
 
     while (!complete)
     {
         // reduce the length of the _strScores list
-        if (_iteration == roundUp(_minIterations / 20, _beamWidth) || //5%
-            _iteration == roundUp(_minIterations / 4, _beamWidth) ||  //25%
+        if (_iteration == roundUp(_minIterations / 20, _beamWidth) || //   5%
+            _iteration == roundUp(_minIterations / 4, _beamWidth) ||  //  25%
             _iteration == roundUp(_minIterations, _beamWidth))        // 100%
         {
-            std::sort(_strScores.begin(), _strScores.end(), stringScoreOrdering());
+            std::sort(_strScores.begin(), _strScores.end(), StringScoreOrdering());
             _beamWidth = utl::max((uint_t)1, (_beamWidth / 2));
             stringscore_vector_t::iterator it;
             for (it = _strScores.begin() + _beamWidth; it != _strScores.end(); ++it)
             {
-                StringScore* strScore = *it;
+                auto strScore = *it;
                 delete strScore;
             }
             _strScores.erase(_strScores.begin() + _beamWidth, _strScores.end());
@@ -99,8 +98,7 @@ MultistartHC::run()
                 complete = this->complete();
                 break;
             }
-            ASSERTD(dynamic_cast<RevOperator*>(op) != nullptr);
-            RevOperator* rop = (RevOperator*)op;
+            auto rop = utl::cast<RevOperator>(op);
             rop->addTotalIter();
             _ind->setString(_strScores[i]->getString(), false); //
 #ifdef DEBUG_UNIT
@@ -119,8 +117,8 @@ MultistartHC::run()
                 {
                     _strScores[i]->setScore(utl::clone(_newScore));
                     int globalCmpResult = objective->compare(_newScore, _bestScore);
-                    _sameScore = (globalCmpResult == 0); //_sameScore
-                    _newBest = (globalCmpResult > 0);    //_newBest
+                    _sameScore = (globalCmpResult == 0);
+                    _newBest = (globalCmpResult > 0);
                     if (_newBest)
                     {
                         _improvementIteration = _iteration;
@@ -152,15 +150,15 @@ MultistartHC::run()
             }
         }
     }
+    ASSERTD(this->complete());
 
-    ASSERT(this->complete());
-    //re-generate the best schedule and get audit text
-    std::sort(_strScores.begin(), _strScores.end(), stringScoreOrdering());
+    // re-generate the best schedule and get audit text
+    std::sort(_strScores.begin(), _strScores.end(), StringScoreOrdering());
     _ind->setString(_strScores[0]->getString(), false);
     bool scheduleFeasible = iterationRun(nullptr, true);
 #ifdef DEBUG
     if (scheduleFeasible)
-        ASSERTD(*_bestScore == *_newScore);
+        ASSERT(*_bestScore == *_newScore);
 #endif
     utl::cout << finalString(scheduleFeasible) << utl::endlf;
     updateRunStatus(true);

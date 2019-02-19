@@ -11,11 +11,11 @@ GOP_NS_BEGIN;
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /** 
-    AR_SA (Automatic Re-annealing Simulated Annealing) was designed by 
-    Joe Zhou, Clevor Technologies Inc., Canada, in 2005. 
+    Automatic Re-annealing Simulated Annealing.
+    
+    This is a specialization of SAoptimizer.
 
-    Joe Zhou
-    Dec. 2005
+    \ingroup gop
 */
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -25,13 +25,12 @@ class AR_SAoptimizer : public SAoptimizer
     UTL_CLASS_DECL(AR_SAoptimizer, SAoptimizer);
 
 public:
-    /** Initialize. */
     virtual void initialize(const OptimizerConfiguration* config);
 
-    /** Run the AR_SA. */
     virtual bool run();
 
-    /** Dump a string of init temperature parameters. */
+protected:
+    /** Generate a description of init temperature parameters. */
     utl::String AR_SAinitTempString();
 
 protected:

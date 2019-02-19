@@ -29,8 +29,7 @@ Score::Score(double value, score_type_t type)
 void
 Score::copy(const Object& rhs)
 {
-    ASSERTD(rhs.isA(Score));
-    const Score& score = (const Score&)rhs;
+    auto& score = utl::cast<Score>(rhs);
     _value = score._value;
     _type = score._type;
 }
@@ -42,13 +41,13 @@ Score::compare(const Object& rhs) const
 {
     if (!rhs.isA(Score))
         return Object::compare(rhs);
-    const Score& score = (const Score&)rhs;
-    int result;
-    result = lut::compare(_value, score._value);
-    if (result != 0)
-        return result;
-    result = lut::compare(_type, score._type);
-    return result;
+    auto& score = utl::cast<Score>(rhs);
+    int res;
+    res = lut::compare(_value, score._value);
+    if (res != 0)
+        return res;
+    res = lut::compare(_type, score._type);
+    return res;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////

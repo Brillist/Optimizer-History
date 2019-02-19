@@ -20,13 +20,9 @@ UTL_CLASS_IMPL(cse::OperationInfo);
 UTL_CLASS_IMPL(cse::ResourceCostInfo);
 UTL_CLASS_IMPL(cse::ResourceWorkHoursInfo);
 UTL_CLASS_IMPL(cse::LatenessCostInfo);
-/* January 3, 2014 (Elisa) */
-/* added information for job overhead cost */
 UTL_CLASS_IMPL(cse::JobOverheadCostInfo);
 UTL_CLASS_IMPL(cse::ResourceCostReport);
 UTL_CLASS_IMPL(cse::LatenessCostReport);
-/* January 6, 2014 (Elisa) */
-/* added job overhead costs */
 UTL_CLASS_IMPL(cse::JobOverheadCostReport);
 UTL_CLASS_IMPL(cse::AuditReport);
 
@@ -389,8 +385,8 @@ ResourceCostReport::serialize(Stream& stream, uint_t io, uint_t)
         deleteCont(_workHours);
     }
     utl::serialize(_id, stream, io);
-    lut::serialize<Object*>(_costs, stream, io);
-    lut::serialize<Object*>(_workHours, stream, io);
+    lut::serialize(_costs, stream, io);
+    lut::serialize(_workHours, stream, io);
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -445,7 +441,7 @@ LatenessCostReport::serialize(Stream& stream, uint_t io, uint_t)
     }
     utl::serialize(_id, stream, io);
     lut::serialize(_name, stream, io);
-    lut::serialize<Object*>(_costs, stream, io);
+    lut::serialize(_costs, stream, io);
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -466,8 +462,6 @@ LatenessCostReport::deInit()
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 /// JobOverheadCostReport /////////////////////////////////////////////////////////////////////////////
-// January 6, 2014 (Elisa)
-// added job overhead cost
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
@@ -491,7 +485,7 @@ JobOverheadCostReport::serialize(Stream& stream, uint_t io, uint_t)
     }
     utl::serialize(_id, stream, io);
     lut::serialize(_name, stream, io);
-    lut::serialize<Object*>(_costs, stream, io);
+    lut::serialize(_costs, stream, io);
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -510,7 +504,6 @@ JobOverheadCostReport::deInit()
     deleteCont(_costs);
 }
 
-////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 /// AuditReport ////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -531,8 +524,6 @@ AuditReport::copy(const utl::Object& rhs)
     copyMap(_resInfos, ar._resInfos);
     copyMap(_resourceCosts, ar._resourceCosts);
     copyMap(_latenessCosts, ar._latenessCosts);
-    /* January 3, 2014 (Elisa) */
-    /* added job overhead costs */
     copyMap(_joboverheadCosts, ar._joboverheadCosts);
     copyMap(_fixedCosts, ar._fixedCosts);
     copyVector(_overheadCosts, ar._overheadCosts);
@@ -553,20 +544,18 @@ AuditReport::serialize(Stream& stream, uint_t io, uint_t)
     lut::serialize(_horizonTime, stream, io);
     utl::serialize(_timeStep, stream, io);
     utl::serialize(_score, stream, io);
-    lut::serialize<Object*>(_interestPeriods, stream, io);
-    lut::serialize<uint_t, Object*>(_resInfos, stream, io);
-    lut::serialize<uint_t, Object*>(_resourceCosts, stream, io);
-    lut::serialize<uint_t, Object*>(_latenessCosts, stream, io);
-    /* January 3, 2014 (Elisa) */
-    /* added job overhead costs */
-    lut::serialize<uint_t, Object*>(_joboverheadCosts, stream, io);
-    lut::serialize<uint_t, Object*>(_fixedCosts, stream, io);
-    lut::serialize<Object*>(_overheadCosts, stream, io);
-    lut::serialize<Object*>(_interestCosts, stream, io);
-    lut::serialize<Object*>(_resourceUsages, stream, io);
-    lut::serialize<Object*>(_componentInfos, stream, io);
-    lut::serialize<uint_t, Object*>(_operationInfos, stream, io);
-    lut::serialize<Object*>(_resourceSequenceCosts, stream, io);
+    lut::serialize(_interestPeriods, stream, io);
+    lut::serialize(_resInfos, stream, io);
+    lut::serialize(_resourceCosts, stream, io);
+    lut::serialize(_latenessCosts, stream, io);
+    lut::serialize(_joboverheadCosts, stream, io);
+    lut::serialize(_fixedCosts, stream, io);
+    lut::serialize(_overheadCosts, stream, io);
+    lut::serialize(_interestCosts, stream, io);
+    lut::serialize(_resourceUsages, stream, io);
+    lut::serialize(_componentInfos, stream, io);
+    lut::serialize(_operationInfos, stream, io);
+    lut::serialize(_resourceSequenceCosts, stream, io);
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -684,8 +673,6 @@ AuditReport::init()
     _resInfos.clear();
     _resourceCosts.clear();
     _latenessCosts.clear();
-    /* January 3, 2014 (Elisa) */
-    /* added job overhead costs */
     _joboverheadCosts.clear();
     _fixedCosts.clear();
     _overheadCosts.clear();
@@ -704,8 +691,6 @@ AuditReport::deInit()
     deleteMapSecond(_resInfos);
     deleteMapSecond(_resourceCosts);
     deleteMapSecond(_latenessCosts);
-    /* January 3, 2014 (Elisa) */
-    /* added job overhead costs */
     deleteMapSecond(_joboverheadCosts);
     deleteMapSecond(_fixedCosts);
     deleteCont(_overheadCosts);

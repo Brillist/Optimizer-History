@@ -25,17 +25,6 @@ class OpSeqMutate : public gop::RevOperator
     UTL_CLASS_DECL(OpSeqMutate, gop::RevOperator);
 
 public:
-    /**
-      Constructor.
-      \param p probability
-      \param rng PRNG
-   */
-    OpSeqMutate(double p, lut::rng_t* rng = nullptr)
-        : RevOperator("OpSeqMutate", p, rng)
-    {
-        init();
-    }
-
     virtual void copy(const utl::Object& rhs);
 
     virtual void initialize(const gop::DataSet* dataSet = nullptr);

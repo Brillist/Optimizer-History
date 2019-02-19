@@ -112,7 +112,7 @@ JobOpSeqMutate::execute(gop::Ind* ind, gop::IndBuilderContext* p_context, bool s
     }
 
     // select an op and its job - (jobOpIdx and jobIdx)
-    uint_t opIdx = getSelectedVarIdx();
+    uint_t opIdx = this->varIdx();
 #ifdef DEBUG_UNIT
     utl::cout << "          varSucRate:" << getSelectedVarP() << ", idx:" << opIdx;
 #endif

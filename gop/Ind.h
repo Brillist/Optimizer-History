@@ -15,19 +15,17 @@ class Objective;
 class Population;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-/// Ind ////////////////////////////////////////////////////////////////////////////////////////////
+// Ind /////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
    Individual problem solution (abstract).
 
-   Ind is an abstract base for classes that represent individual problem
-   solutions.  For example, in scheduling problems, a schedule specifying
-   start/end times for activities is an individual.
+   Ind is an abstract base for classes that represent individual problem solutions.
 
    \see IndBuilder
    \see Population
-   \author Adam McKee
+   \ingroup gop
 */
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -37,8 +35,13 @@ class Ind : public utl::Object
     UTL_CLASS_DECL_ABC(Ind, utl::Object);
 
 public:
-    /** Copy another instance. */
+    // since we can't #include "Objective.h"
+    using objective_vector_t = std::vector<Objective*>;
+
+public:
     virtual void copy(const utl::Object& rhs);
+
+    virtual utl::String toString() const;
 
     /** Serialize from a stream. */
     virtual void
@@ -46,17 +49,14 @@ public:
     {
     }
 
-    /** Has self been built? */
+    /** Has this individual been built? */
     virtual bool isBuilt() const = 0;
 
     /** Clear the build. */
     virtual void buildClear() = 0;
 
     /** Does self dominate the given individual? */
-    bool dominates(const Ind* rhs, const std::vector<Objective*>& objectives) const;
-
-    /** Get a human-readable string representation. */
-    virtual utl::String toString() const;
+    bool dominates(const Ind* rhs, const objective_vector_t& objectives) const;
 
     /** Get the population that self belongs to. */
     const Population*
@@ -138,86 +138,28 @@ public:
         _opIdx = opIdx;
     }
 
-    /** Get the optimizer-specific related data. */
-    const OSID*
-    osid() const
-    {
-        return _osid;
-    }
-
-    /** Get the optimizer-specific related data. */
-    OSID*
-    osid()
-    {
-        return _osid;
-    }
-
-    /** Set optimizer-specific related data. */
-    void setOSID(OSID* osid);
-
-    /** Clear optimizer-specific related data. */
-    void clearOSID();
-
 private:
     void init();
     void deInit();
 
+private:
     const Population* _pop;
     std::vector<double> _scores;
     std::vector<double> _parentScores;
     double _fitness;
     uint_t _opIdx;
-
-    // optimizer-specific related data
-    OSID* _osid;
 };
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-/// OSID ///////////////////////////////////////////////////////////////////////////////////////////
+// IndOrdering /////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
-   Abstract base for optimizer-specific individual data.
+   Ordering for subclasses of Ind (abstract).
 
-   Subclasses of Optimizer may need to store additional information in
-   the individual.  OSID serves as an abstract base for classes that store
-   this extra individual-associated information.
+   Override the pure virtual method compare() to implement a customized individual ordering.
 
-   \author Adam McKee
-*/
-
-////////////////////////////////////////////////////////////////////////////////////////////////////
-
-class OSID : public utl::Object
-{
-    UTL_CLASS_DECL_ABC(OSID, utl::Object);
-    UTL_CLASS_DEFID;
-
-public:
-    /** Copy another instance. */
-    virtual void
-    copy(const utl::Object& rhs)
-    {
-    }
-
-    /** Clear data. */
-    virtual void
-    clear()
-    {
-    }
-};
-
-////////////////////////////////////////////////////////////////////////////////////////////////////
-/// IndOrdering ////////////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////////////////////////
-
-/**
-   Abstract base for individual ordering strategies.
-
-   Override to pure virtual method compare() to implement a customized
-   individual ordering.
-
-   \author Adam McKee
+   \ingroup gop
 */
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -228,16 +170,19 @@ class IndOrdering : public utl::Object
     UTL_CLASS_NO_COPY;
 
 public:
-    /** Constructor. */
+    /**
+       Constructor.
+       \param inverted inverted ordering?
+    */
     IndOrdering(bool inverted)
     {
         init(inverted);
     }
 
     /**
-       Compare two individuals.  You should override this method to
-       perform the specialized comparison you want.  Any override of this
-       method should check for an inverted comparison prior to returning.
+       Compare two individuals.  You should override this method to  perform the specialized
+       comparison you want.  Any override of this method should check for an inverted comparison
+       prior to returning.
 
        \return < 0 if lhs < rhs, 0 if lhs == rhs, > 0 if lhs > rhs
        \param lhs left-hand-side individual
@@ -282,20 +227,23 @@ private:
 };
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-/// IndOrderingSTL /////////////////////////////////////////////////////////////////////////////////
+// IndOrderingSTL //////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
    STL adaptor for IndOrdering.
 
-   \author Adam McKee
+   \ingroup gop
 */
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 struct IndOrderingSTL
 {
-    /** Constructor. */
+    /**
+       Constructor.
+       \param ordering IndOrdering that compares Ind objects
+    */
     IndOrderingSTL(IndOrdering* ordering)
     {
         _ordering = ordering;
@@ -314,14 +262,14 @@ private:
 };
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-/// IndScoreOrdering ///////////////////////////////////////////////////////////////////////////////
+// IndScoreOrdering ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
    Individual ordering based on score.
 
    \see Ind::getScore
-   \author Adam McKee
+   \ingroup gop
 */
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -342,7 +290,7 @@ public:
 
     /**
        Constructor.
-       \param objectiveIdx objective to get score for
+       \param objectiveIdx objective for score comparison
        \param inverted inverted ordering?
     */
     IndScoreOrdering(uint_t objectiveIdx, bool inverted = false)
@@ -370,14 +318,14 @@ private:
 };
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-/// IndFitnessOrdering /////////////////////////////////////////////////////////////////////////////
+// IndFitnessOrdering //////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
    Individual ordering based on fitness.
 
    \see Ind::getFitness
-   \author Adam McKee
+   \ingroup gop
 */
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -388,7 +336,10 @@ class IndFitnessOrdering : public IndOrdering
     UTL_CLASS_DEFID;
 
 public:
-    /** Constructor. */
+    /**
+       Constructor.
+       \param inverted inverted ordering?
+    */
     IndFitnessOrdering(bool inverted)
         : IndOrdering(inverted)
     {

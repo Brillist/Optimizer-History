@@ -19,8 +19,7 @@ GOP_NS_BEGIN;
 void
 StringScore::copy(const utl::Object& rhs)
 {
-    ASSERTD(rhs.isA(StringScore));
-    const StringScore& ss = (const StringScore&)rhs;
+    auto& ss = utl::cast<StringScore>(rhs);
     _id = ss._id;
     _score = utl::clone(ss._score);
     _string = utl::clone(ss._string);

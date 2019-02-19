@@ -28,14 +28,6 @@ GOP_NS_BEGIN;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-// void RunStatus::setBestScore(Score* bestScore)
-// {
-//     delete _bestScore;
-//     _bestScore = bestScore;
-// }
-
-////////////////////////////////////////////////////////////////////////////////////////////////////
-
 void
 RunStatus::update(bool complete, uint_t currentIter, uint_t bestIter, Score* bestScore)
 {
@@ -58,7 +50,7 @@ RunStatus::update(bool complete, uint_t currentIter, uint_t bestIter, Score* bes
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
-RunStatus::get(bool& complete, uint_t& currentIter, uint_t& bestIter, Score*& bestScore)
+RunStatus::get(bool& complete, uint_t& currentIter, uint_t& bestIter, Score*& bestScore) const
 {
     _mutex.lock();
     complete = _complete;

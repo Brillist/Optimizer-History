@@ -7,15 +7,15 @@ GOP_NS_BEGIN;
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
-   Chromosome string.
+   Construction string.
 
-   A chromosome string is a sequence of bytes that represent a construction plan for an individual.
-   The format of the instructions must be known by the operators that change them, and by the
-   individual-builder that follows them in order to construct individuals.
+   A construction string is a sequence of bytes that contain instructions for constructing an
+   individual.  The format of the instructions must be known by the operators that change them,
+   and by the individual-builder that follows them in order to construct individuals.
 
    \see gop::IndBuilder
    \see gop::Operator
-   \author Adam McKee
+   \ingroup gop
 */
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -37,6 +37,8 @@ public:
     /** Get a human-readable string representation. */
     virtual utl::String toString() const;
 
+    /// \name Accessors (const)
+    //@{
     /** Get the size. */
     uint_t
     size() const
@@ -44,6 +46,54 @@ public:
         return _size;
     }
 
+    /** Get the array. */
+    const T*
+    get() const
+    {
+        return _vect;
+    }
+
+    /** Get the value at the given index. */
+    const T& operator[](int idx) const
+    {
+        ASSERTD((idx >= 0) && ((uint_t)idx < _size));
+        return _vect[idx];
+    }
+
+    /** Get the value at the given index. */
+    const T& operator[](uint_t idx) const
+    {
+        ASSERTD(idx < size());
+        return _vect[idx];
+    }
+    //@}
+
+    /// \name Accessors (non-const)
+    //@{
+    /** Get the array. */
+    T*
+    get()
+    {
+        return _vect;
+    }
+
+    /** Get the value at the given index. */
+    T& operator[](int idx)
+    {
+        ASSERTD((idx >= 0) && ((uint_t)idx < _size));
+        return _vect[idx];
+    }
+
+    /** Get the value at the given index. */
+    T& operator[](uint_t idx)
+    {
+        ASSERTD(idx < size());
+        return _vect[idx];
+    }
+    //@}
+
+    /// \name Modification
+    //@{
     /** Clear. */
     void
     clear()
@@ -54,26 +104,13 @@ public:
     /** Set the size. */
     void setSize(uint_t size);
 
-    /** Get the array. */
-    const T*
-    get() const
-    {
-        return _vect;
-    }
-
-    /** Get the array. */
-    T*
-    get()
-    {
-        return _vect;
-    }
-
     /** Randomly shuffle. */
     void
     shuffle(lut::rng_t& rng)
     {
         rng.shuffle(_vect, _vect + _size);
     }
+    //@}
 
     /**
        Perform a crossover.
@@ -82,40 +119,13 @@ public:
        \param rhs rhs String (lhs is self)
        \param pos crossover position
     */
-    void crossover(String<T>* off1, String<T>* off2, const String<T>& rhs, uint_t pos);
-
-    /** Get the chromosome at the given index (const). */
-    const T& operator[](int idx) const
-    {
-        ASSERTD((idx >= 0) && ((uint_t)idx < _size));
-        return _vect[idx];
-    }
-
-    /** Get the chromosome at the given index. */
-    T& operator[](int idx)
-    {
-        ASSERTD((idx >= 0) && ((uint_t)idx < _size));
-        return _vect[idx];
-    }
-
-    /** Get the chromosome at the given index (const). */
-    const T& operator[](uint_t idx) const
-    {
-        ASSERTD(idx < size());
-        return _vect[idx];
-    }
-
-    /** Get the chromosome at the given index. */
-    T& operator[](uint_t idx)
-    {
-        ASSERTD(idx < size());
-        return _vect[idx];
-    }
+    void crossover(String<T>* off1, String<T>* off2, const String<T>& rhs, uint_t pos) const;
 
 private:
     void init(uint_t size = 0);
     void deInit();
 
+private:
     uint_t _size;
     T* _vect;
 };
@@ -173,7 +183,7 @@ String<T>::setSize(uint_t size)
 
 template <class T>
 void
-String<T>::crossover(String<T>* off1, String<T>* off2, const String<T>& rhs, uint_t pos)
+String<T>::crossover(String<T>* off1, String<T>* off2, const String<T>& rhs, uint_t pos) const
 {
     ASSERTD(size() == rhs.size());
 

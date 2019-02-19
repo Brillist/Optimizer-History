@@ -17,6 +17,8 @@ GOP_NS_BEGIN;
     degree of Master of Science, University of Illinois at Urbana-Champaign, 2001.
 
     This implementation contains some modifications.
+
+    \ingroup gop
 */
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -26,15 +28,9 @@ class ID_SAoptimizer : public SAoptimizer
     UTL_CLASS_DECL(ID_SAoptimizer, SAoptimizer);
 
 public:
-    /** Initialize. */
     virtual void initialize(const OptimizerConfiguration* config);
 
-    /** Run the ID_SA. */
     virtual bool run();
-
-    /** dump a string of init temperature parameters. */
-    utl::String ID_SAinitTempString();
-    utl::String ID_SAinitTempString2();
 
 protected:
     double _acceptanceRatio;
@@ -55,6 +51,9 @@ private:
     deInit()
     {
     }
+
+    utl::String ID_SAinitTempString();
+    utl::String ID_SAinitTempString2();
 };
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////

@@ -81,10 +81,9 @@ AltResMutate::execute(gop::Ind* ind, gop::IndBuilderContext* p_context, bool sin
     Manager* mgr = context->manager();
     _moveSchedule = (StringInd<uint_t>*)ind;
     gop::String<uint_t>& string = _moveSchedule->string();
-    ////utl::cout << string.toString() << utl::endl;
 
     // choose a resGroupReq
-    uint_t resGroupReqIdx = getSelectedVarIdx();
+    uint_t resGroupReqIdx = this->varIdx();
     cls::DiscreteResourceRequirement* resGroupReq = _resGroupReqs[resGroupReqIdx];
     _moveResGroupReqIdx = _stringBase + resGroupReqIdx;
     _moveResIdx = string[_moveResGroupReqIdx];

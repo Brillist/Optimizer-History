@@ -12,12 +12,11 @@ GOP_NS_BEGIN;
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
-   Individual with chromosome (abstract).
+   Individual with construction string (abstract).
 
-   StringInd is an abstract base for individuals that have a string
-   chromosome representation.
+   StringInd is an abstract base for individuals that have a String representation.
 
-   \author Adam McKee
+   \ingroup gop
 */
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -27,7 +26,10 @@ template <class T> class StringInd : public gop::Ind
     UTL_CLASS_DECL_TPL(StringInd, T, gop::Ind);
 
 public:
-    /** Constructor. */
+    /**
+       Constructor.
+       \param size String size
+    */
     StringInd(uint_t size)
     {
         init();
@@ -38,6 +40,14 @@ public:
 
     virtual utl::String toString() const;
 
+    /** Override from gop::Ind. */
+    virtual void
+    buildClear()
+    {
+    }
+
+    /// \name Accessors (const)
+    //@{
     /** Get the String size. */
     uint_t
     size() const
@@ -45,20 +55,50 @@ public:
         return _string->size();
     }
 
-    /** Set the size. */
-    void
-    setSize(uint_t size)
-    {
-        _string->setSize(size);
-    }
-
-    /** Get the String (const). */
+    /** Get the String. */
     const String<T>&
     string() const
     {
         return *_string;
     }
 
+    /** Get the String (pointer). */
+    const String<T>*
+    stringPtr() const
+    {
+        return _string;
+    }
+
+    /** Get the new String. */
+    const String<T>*
+    newString() const
+    {
+        return _newString;
+    }
+
+    /** Get a value from the String. */
+    const T&
+    get(uint_t idx) const
+    {
+        return (*_string)[idx];
+    }
+
+    /** Get the String value at the given index. */
+    const T& operator[](uint_t idx) const
+    {
+        return (*_string).operator[](idx);
+    }
+
+    /** Override from gop::Ind. */
+    virtual bool
+    isBuilt() const
+    {
+        return false;
+    }
+    //@}
+
+    /// \name Accessors (non-const)
+    //@{
     /** Get the String. */
     String<T>&
     string()
@@ -67,17 +107,44 @@ public:
     }
 
     /** Get string pointer. */
-    const String<T>*
-    getString() const
+    String<T>*
+    stringPtr()
     {
         return _string;
     }
 
-    /** Get string pointer. */
+    /** Get the new String. */
     String<T>*
-    getString()
+    newString()
     {
-        return _string;
+        return _newString;
+    }
+
+    /** Get the value at the given String index. */
+    T& operator[](uint_t idx)
+    {
+        return (*_string).operator[](idx);
+    }
+    //@}
+
+    /// \name Modification
+    //@{
+    /** Set the size. */
+    void
+    setSize(uint_t size)
+    {
+        _string->setSize(size);
+    }
+
+    /**
+       Set a value in the String.
+       \param pos position of value to modify
+       \param val value to set at position \c pos
+    */
+    void
+    set(uint_t pos, uint_t val)
+    {
+        (*_string)[pos] = val;
     }
 
     /** Set string pointer. */
@@ -90,21 +157,7 @@ public:
         _stringOwner = owner;
     }
 
-    /** Get the new String (const). */
-    const String<T>*
-    newString() const
-    {
-        return _newString;
-    }
-
-    /** Get the new String. */
-    String<T>*
-    newString()
-    {
-        return _newString;
-    }
-
-    /** delete the new string. */
+    /** Delete the new string. */
     void
     deleteNewString()
     {
@@ -112,12 +165,11 @@ public:
         _newString = nullptr;
     }
 
-    /** create the new string. */
+    /** Create the new string. */
     void
     createNewString()
     {
-        if (_newString)
-            deleteNewString();
+        delete _newString;
         _newString = _string->clone();
     }
 
@@ -128,54 +180,17 @@ public:
         _string->copy(*_newString);
         deleteNewString();
     }
+    //@}
 
     /**
-       Perform a crossover.
-       \param off1 offspring 1
-       \param off2 offspring 2
+       Construct two new individuals by performing a crossover with the given StringInd.
+       \param off1 (output) offspring 1
+       \param off2 (output) offspring 2
        \param rhs rhs String (lhs is self)
        \param pos crossover position
     */
-    void crossover(StringInd<T>* off1, StringInd<T>* off2, const StringInd<T>& rhs, uint_t pos);
-
-    /** Get a gene. */
-    const T&
-    get(uint_t idx)
-    {
-        return (*_string)[idx];
-    }
-
-    /** Set a gene. */
-    void
-    set(uint_t pos, uint_t val)
-    {
-        (*_string)[pos] = val;
-    }
-
-    /** Get the gene at the given index (const). */
-    const T& operator[](uint_t idx) const
-    {
-        return (*_string).operator[](idx);
-    }
-
-    /** Get the gene at the given index. */
-    T& operator[](uint_t idx)
-    {
-        return (*_string).operator[](idx);
-    }
-
-    /** Override from gop::Ind. */
-    virtual bool
-    isBuilt() const
-    {
-        return false;
-    }
-
-    /** Override from gop::Ind. */
-    virtual void
-    buildClear()
-    {
-    }
+    void crossover(StringInd<T>* off1, StringInd<T>* off2,
+                   const StringInd<T>& rhs, uint_t pos) const;
 
 protected:
     String<T>* _string;
@@ -218,7 +233,8 @@ StringInd<T>::toString() const
 
 template <class T>
 void
-StringInd<T>::crossover(StringInd<T>* off1, StringInd<T>* off2, const StringInd<T>& rhs, uint_t pos)
+StringInd<T>::crossover(StringInd<T>* off1, StringInd<T>* off2,
+                        const StringInd<T>& rhs, uint_t pos) const
 {
     _string->crossover((off1 == nullptr) ? nullptr : &off1->string(),
                        (off2 == nullptr) ? nullptr : &off2->string(), rhs.string(), pos);
@@ -231,8 +247,8 @@ void
 StringInd<T>::init()
 {
     _string = new String<T>();
-    _newString = nullptr;
     _stringOwner = true;
+    _newString = nullptr;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////

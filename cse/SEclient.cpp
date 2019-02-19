@@ -62,10 +62,20 @@ SEclient::SEclient(Server* server,
 /////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
+SEclient::pause()
+{
+    super::pause();
+    deInit();
+    makeChallengeResponsePair();
+    _run = new SchedulingRun();
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+
+void
 SEclient::createRunningThread()
 {
     ASSERTD(_runningThread == nullptr);
-    //     _runningThread = new RunningThread(this);
     _runningThread = new RunningThread();
 }
 
@@ -111,14 +121,19 @@ SEclient::response(uint32_t challenge)
 void
 SEclient::deInit()
 {
-    if (_run)
+    if (_run != nullptr)
+    {
         _run->stop();
+    }
     if (_runningThread != nullptr)
     {
         _runningThread->join();
     }
     delete _run;
+    _run = nullptr;
+    _runningThread = nullptr;
     delete _commandLog;
+    _commandLog = nullptr;
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////

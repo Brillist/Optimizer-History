@@ -33,7 +33,6 @@ Ind::copy(const Object& rhs)
     _fitness = ind._fitness;
     _parentScores = ind._parentScores;
     _opIdx = ind._opIdx;
-    _osid = utl::clone(ind._osid);
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -51,22 +50,21 @@ Ind::toString() const
         }
     }
     return ss.str().c_str();
-    ;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 bool
-Ind::dominates(const Ind* rhs, const std::vector<Objective*>& objectives) const
+Ind::dominates(const Ind* rhs, const objective_vector_t& objectives) const
 {
     // self dominates rhs if all self's scores are better
     uint_t i;
     uint_t numScores = _scores.size();
     for (i = 0; i < numScores; ++i)
     {
-        Objective* objective = objectives[i];
-        double lhsScore = _scores[i];
-        double rhsScore = rhs->_scores[i];
+        auto objective = objectives[i];
+        auto lhsScore = _scores[i];
+        auto rhsScore = rhs->_scores[i];
         if (objective->compare(lhsScore, rhsScore) <= 0)
         {
             return false;
@@ -106,24 +104,6 @@ Ind::setFitness(double fitness)
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
-Ind::clearOSID()
-{
-    ASSERTD(_osid != nullptr);
-    _osid->clear();
-}
-
-////////////////////////////////////////////////////////////////////////////////////////////////////
-
-void
-Ind::setOSID(OSID* osid)
-{
-    delete _osid;
-    _osid = osid;
-}
-
-////////////////////////////////////////////////////////////////////////////////////////////////////
-
-void
 Ind::init()
 {
     _pop = nullptr;
@@ -133,7 +113,6 @@ Ind::init()
     _parentScores.resize(1);
     _parentScores[0] = double_t_max;
     _opIdx = uint_t_max;
-    _osid = nullptr;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -141,7 +120,6 @@ Ind::init()
 void
 Ind::deInit()
 {
-    delete _osid;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////

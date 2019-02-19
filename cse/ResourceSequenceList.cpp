@@ -101,7 +101,7 @@ ResourceSequenceList::compare(const Object& rhs) const
     res = lut::compare(_id, rsl._id);
     if (res != 0)
         return res;
-    res = compareContObjects(_rsl, rsl._rsl);
+    res = compareItems(_rsl, rsl._rsl);
     return res;
 }
 
@@ -119,7 +119,7 @@ void
 ResourceSequenceList::serialize(Stream& stream, uint_t io, uint_t)
 {
     utl::serialize(_id, stream, io);
-    lut::serialize<Object*>(_rsl, stream, io);
+    lut::serialize(_rsl, stream, io);
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////

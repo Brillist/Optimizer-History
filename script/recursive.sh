@@ -1,1 +1,0 @@
-../../libutl/script/recursive.sh

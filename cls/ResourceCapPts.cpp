@@ -271,8 +271,8 @@ ResourceCapPts::serialize(Stream& stream, uint_t io, uint_t)
             pts.push_back(capPt->processingTime());
         }
     }
-    lut::serialize<uint_t>(caps, stream, io);
-    lut::serialize<uint_t>(pts, stream, io);
+    lut::serialize(caps, stream, io);
+    lut::serialize(pts, stream, io);
     if (io == io_rd)
     {
         clear();

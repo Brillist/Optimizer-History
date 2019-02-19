@@ -79,10 +79,10 @@ PtMutate::execute(gop::Ind* ind, gop::IndBuilderContext* p_context, bool singleS
     gop::String<uint_t>& string = _moveSchedule->string();
 
     // choose activity
-    uint_t actIdx = getSelectedVarIdx();
+    uint_t actIdx = this->varIdx();
 #ifdef DEBUG_UNIT
     utl::cout << "                                                   "
-              << "varSucRate:" << getSelectedVarP() << ", idx:" << actIdx;
+              << "varSucRate:" << this->varP() << ", idx:" << actIdx;
 #endif
     _movePtIdx = _stringBase + actIdx;
     _movePt = string[_movePtIdx];

@@ -70,7 +70,7 @@ Optimizer::initialize(const OptimizerConfiguration* config)
     _indBuilder = lut::clone(config->indBuilder());
     _context = config->context();
     copyVector(_objectives, config->objectives());
-    copyVector(_ops, config->getOperators());
+    copyVector(_ops, config->operators());
 
     ASSERTD(_rng != nullptr);
     ASSERTD(_minIterations != uint_t_max);
@@ -105,7 +105,7 @@ Optimizer::iterationRun(Operator* op, bool audit)
     }
     catch (...)
     {
-        _context->failed() = true;
+        _context->setFailed();
         _fail = true;
     }
 
@@ -142,9 +142,8 @@ Optimizer::bestScore(uint_t objectiveIdx) const
 Score*
 Optimizer::bestScore(const std::string& objectiveName) const
 {
-    for (uint_t i = 0; i < _objectives.size(); ++i)
+    for (auto objective : _objectives)
     {
-        const Objective* objective = _objectives[i];
         if (objective->name() == objectiveName)
         {
             return objective->getBestScore();
@@ -159,9 +158,8 @@ int
 Optimizer::bestScoreComponent(const std::string& objectiveName,
                               const std::string& componentName) const
 {
-    for (uint_t i = 0; i < _objectives.size(); ++i)
+    for (auto objective : _objectives)
     {
-        const Objective* objective = _objectives[i];
         if (objective->name() == objectiveName)
         {
             return objective->getBestScoreComponent(componentName);
@@ -177,7 +175,7 @@ Optimizer::bestScoreAudit() const
 {
     // single objective only function
     ASSERTD(_objectives.size() >= 1);
-    Objective* objective = _objectives[0];
+    auto objective = _objectives[0];
     return objective->indEvaluator()->auditText();
 }
 
@@ -276,10 +274,8 @@ Optimizer::finalString(bool feasible) const
 void
 Optimizer::initializeObjectives()
 {
-    uint_t numObjectives = _objectives.size();
-    for (uint_t i = 0; i < numObjectives; ++i)
+    for (auto objective : _objectives)
     {
-        Objective* objective = _objectives[i];
         objective->setBestScore(objective->worstPossibleScore());
     }
     setInitScore(_objectives[0]->worstPossibleScore());
@@ -292,12 +288,10 @@ Optimizer::initializeObjectives()
 void
 Optimizer::initializeOps(StringInd<uint_t>* ind)
 {
-    uint_t numOps = _ops.size();
-    for (uint_t i = 0; i < numOps; ++i)
+    for (auto op : _ops)
     {
-        Operator* op = _ops[i];
         _indBuilder->setStringBase(op);
-        ASSERTD(op->getStringBase() != uint_t_max);
+        ASSERTD(op->stringBase() != uint_t_max);
         op->setOptimizer(this);
         op->setRNG(_rng);
         op->initialize(_context->dataSet());
@@ -309,41 +303,45 @@ Optimizer::initializeOps(StringInd<uint_t>* ind)
 Operator*
 Optimizer::chooseSuccessOp() const
 {
-    uint_t numOps = _ops.size();
-    uint_t opIdx = uint_t_max;
     double bestSuccessRate = 0.0;
-    uint_t numChoices;
-    for (uint_t i = 0; i < numOps; i++)
+    uint_t bestNumChoices = 0;
+    uint_t opIdx = uint_t_max;
+    for (auto op : _ops)
     {
-        uint_t opNumChoices = _ops[i]->getNumChoices();
+        ++opIdx;
+        uint_t opNumChoices = op->numChoices();
         if (opNumChoices == 0)
             continue;
-        double opSuccessRate = _ops[i]->p();
+        double opSuccessRate = op->p();
         if (opSuccessRate >= bestSuccessRate)
         {
+            // same success rate as current best?
             if (opSuccessRate == bestSuccessRate)
             {
-                uint_t totalNumChoices = opNumChoices + numChoices;
+                // give each op a fair chance based on its number of choices
+                uint_t totalNumChoices = opNumChoices + bestNumChoices;
                 uint_t randomNum = _rng->uniform((uint_t)0, totalNumChoices - 1);
                 if (randomNum >= opNumChoices)
                     continue;
             }
             bestSuccessRate = opSuccessRate;
-            opIdx = i;
-            numChoices = opNumChoices;
+            bestNumChoices = opNumChoices;
         }
     }
+
+    // we found an op?
     if (opIdx != uint_t_max)
     {
-        Operator* op = _ops[opIdx];
-        op->selectOperatorVarIdx();
+        // direct the chosen op to select a variable
+        auto op = _ops[opIdx];
+        op->selectVar();
+
+        // return the chosen op
         return op;
     }
-    else
-    {
-        std::cout << "WARNING: This problem has no optimization opportunity!" << std::endl;
-        return nullptr;
-    }
+
+    std::cout << "WARNING: This problem has no optimization opportunity!" << std::endl;
+    return nullptr;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -352,25 +350,19 @@ Operator*
 Optimizer::chooseRandomOp() const
 {
     uint_t totalChoices = 0;
-    uint_t numOps = _ops.size();
-    for (uint_t i = 0; i < numOps; i++)
+    for (auto op : _ops)
     {
-        totalChoices += _ops[i]->getNumChoices();
+        totalChoices += op->numChoices();
     }
     ASSERTD(totalChoices != 0);
     uint_t randomNum = _rng->uniform((uint_t)0, totalChoices - 1);
     uint_t cumNum = 0;
-    for (uint_t i = 0; i < numOps; i++)
+    for (auto op : _ops)
     {
-        if (_ops[i]->getNumChoices() == 0)
-        {
-            continue;
-        }
-        cumNum += _ops[i]->getNumChoices();
+        cumNum += op->numChoices();
         if (randomNum < cumNum)
         {
-            Operator* op = _ops[i];
-            op->selectOperatorVarIdx();
+            op->selectVar();
             return op;
         }
     }
@@ -384,24 +376,18 @@ Operator*
 Optimizer::chooseRandomStepOp() const
 {
     uint_t totalSteps = 0;
-    uint_t numOps = _ops.size();
-    for (uint_t i = 0; i < numOps; i++)
+    for (auto op : _ops)
     {
-        totalSteps += _ops[i]->numVars();
+        totalSteps += op->numVars();
     }
     uint_t randomNum = _rng->uniform((uint_t)0, totalSteps - 1);
     uint_t cumNum = 0;
-    for (uint_t i = 0; i < numOps; i++)
+    for (auto op : _ops)
     {
-        if (_ops[i]->numVars() == 0)
-        {
-            continue;
-        }
-        cumNum += _ops[i]->numVars();
+        cumNum += op->numVars();
         if (randomNum < cumNum)
         {
-            Operator* op = _ops[i];
-            op->selectOperatorVarIdx();
+            op->selectVar();
             return op;
         }
     }

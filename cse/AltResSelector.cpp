@@ -120,30 +120,6 @@ AltResSelector::initializeInd(Ind* p_ind, const gop::DataSet* p_dataSet, rng_t* 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
-AltResSelector::initializeRandomInd(Ind* p_ind, const gop::DataSet* p_dataSet, rng_t* rng, void*)
-{
-    ASSERTD(dynamic_cast<StringInd<uint_t>*>(p_ind) != nullptr);
-    StringInd<uint_t>* ind = (StringInd<uint_t>*)p_ind;
-    gop::String<uint_t>& string = ind->string();
-
-    ASSERTD(dynamic_cast<const ClevorDataSet*>(p_dataSet) != nullptr);
-    const ClevorDataSet* dataSet = (const ClevorDataSet*)p_dataSet;
-
-    uint_t numResGroupReqs = _resGroupReqs.size();
-    if (_stringBase == 0)
-    {
-        string.setSize(stringSize(*dataSet));
-    }
-    for (uint_t i = 0; i < numResGroupReqs; ++i)
-    {
-        string[_stringBase + i] = 0;
-    }
-    _nestedScheduler->initializeRandomInd(ind, dataSet, rng, (void*)size_t_max);
-}
-
-////////////////////////////////////////////////////////////////////////////////////////////////////
-
-void
 AltResSelector::run(Ind* p_ind, IndBuilderContext* p_context) const
 {
     ASSERTD(dynamic_cast<StringInd<uint_t>*>(p_ind) != nullptr);

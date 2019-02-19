@@ -88,8 +88,7 @@ ResCapMutate::execute(gop::Ind* p_ind, gop::IndBuilderContext* p_context, bool s
 #endif
 
     // select a resource (resIdx)
-    //     uint_t resIdx = selectOperatorVarIdx();
-    uint_t resIdx = getSelectedVarIdx();
+    uint_t resIdx = this->varIdx();
     _moveResIdx = resIdx;
     _moveResCap = string[_stringBase + _moveResIdx];
     cse::DiscreteResource* res = _resources[resIdx];

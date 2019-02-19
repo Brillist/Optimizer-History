@@ -15,7 +15,7 @@ GOP_NS_BEGIN;
 /**
    Operator Variable.
 
-   \author Joe Zhou
+   \ingroup gop
 */
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -25,29 +25,37 @@ class OperatorVar : public utl::Object
     UTL_CLASS_DECL(OperatorVar, utl::Object);
 
 public:
-    /** Constructor. */
+    /**
+       Constructor.
+
+       The initial success rate (\see p) of the operator is (successIter / totalIter).
+
+       \param idx index of this variable (corresponding to a value the Operator can change).
+       \param active pointer to active status flag
+       \param successIter initial success iterations
+       \param totalIter initial total iterations
+    */
     OperatorVar(uint_t idx, bool* active, uint_t successIter, uint_t totalIter);
 
-    /** Copy. */
     void copy(const utl::Object& rhs);
 
-    /// \name Accessors
+    /// \name Accessors (const)
     //@{
-    /** Get _idx. */
+    /** Get index. */
     const uint_t
     idx() const
     {
         return _idx;
     }
 
-    /** Get active value. */
+    /** Get \c active flag. */
     bool
-    active()
+    active() const
     {
         return *_active;
     }
 
-    /** success probability. */
+    /** Get success rate. */
     const double
     p() const
     {
@@ -55,7 +63,9 @@ public:
     }
     //@}
 
-    /** Increase _successIter. */
+    /// \name Modification
+    //@{
+    /** Increase the count of successful iterations (and update the success rate). */
     void
     addSuccessIter()
     {
@@ -63,13 +73,14 @@ public:
         _p = (double)_successIter / (double)_totalIter;
     }
 
-    /** Increase _totalIter. */
+    /** Increase the count of total iterations (and update the success rate). */
     void
     addTotalIter()
     {
         _totalIter++;
         _p = (double)_successIter / (double)_totalIter;
     }
+    //@}
 
 private:
     void
@@ -93,6 +104,10 @@ private:
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
+/**
+   Non-increasing ordering for OperatorVar objects.
+   \ingroup gop
+*/
 struct OperatorVarDecPordering
 {
     bool operator()(const OperatorVar* lhs, const OperatorVar* rhs) const;
@@ -100,7 +115,17 @@ struct OperatorVarDecPordering
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-typedef std::set<OperatorVar*, OperatorVarDecPordering> opvar_set_t;
+/**
+   A \c std::set of OperatorVar pointers ordered by OperatorVarDecPordering.
+   \ingroup gop
+*/
+using opvar_set_t = std::set<OperatorVar*, OperatorVarDecPordering>;
+
+/**
+   A \c std::vector of OperatorVar pointers.
+   \ingroup gop
+*/
+using opvar_vector_t = std::vector<OperatorVar*>;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 

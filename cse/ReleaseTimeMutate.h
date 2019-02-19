@@ -31,17 +31,6 @@ class ReleaseTimeMutate : public gop::RevOperator
     UTL_CLASS_DECL(ReleaseTimeMutate, gop::RevOperator);
 
 public:
-    /**
-       Constructor.
-       \param p probability
-       \param rng PRNG
-    */
-    ReleaseTimeMutate(double p, lut::rng_t* rng = nullptr)
-        : RevOperator("ReleaseTimeMutate", p, rng)
-    {
-        init();
-    }
-
     virtual void copy(const utl::Object& rhs);
 
     virtual void initialize(const gop::DataSet* dataSet = nullptr);

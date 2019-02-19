@@ -13,7 +13,7 @@ class DataSet;
 /**
    Individual construction context (abstract).
 
-   \author Adam McKee
+   \ingroup gop
 */
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -23,27 +23,25 @@ class IndBuilderContext : public utl::Object
     UTL_CLASS_DECL_ABC(IndBuilderContext, utl::Object);
 
 public:
-    /** Copy another instance. */
     virtual void copy(const utl::Object& rhs);
 
-    /** Clear the context. */
+    /** Clear this context. */
     virtual void clear();
 
     /** Get the data-set. */
     virtual const DataSet* dataSet() const = 0;
 
-    /** Construction failed? */
+    /** Has construction failed? */
     bool
     failed() const
     {
         return _failed;
     }
 
-    /** Construction failed? */
-    bool&
-    failed()
+    /** Indicate construction failure. */
+    void setFailed(bool failed = true)
     {
-        return _failed;
+        _failed = failed;
     }
 
 private:

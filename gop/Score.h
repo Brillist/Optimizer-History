@@ -6,22 +6,26 @@ GOP_NS_BEGIN;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-/** 
-    An evaluation score and its type.
+/**
+   Score type.
 
-    Joe Zhou
-    Nov. 2005
+   \ingroup gop
 */
+enum score_type_t
+{
+    score_failed = 0,       /**< construction failed */
+    score_ct_violated = 1,  /**< constraint violation */
+    score_succeeded = 2,    /**< successful */
+    score_undefined = 3
+};
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-enum score_type_t
-{
-    score_failed = 0,
-    score_ct_violated = 1,
-    score_succeeded = 2,
-    score_undefined = 3
-};
+/**
+    An IndEvaluator score and its type.
+
+   \ingroup gop
+*/
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -30,6 +34,11 @@ class Score : public utl::Object
     UTL_CLASS_DECL(Score, utl::Object);
 
 public:
+    /**
+       Constructor.
+       \param value evaluation score
+       \param type type of score
+    */
     Score(double value, score_type_t type = score_undefined);
 
     virtual void copy(const utl::Object& rhs);
@@ -40,29 +49,39 @@ public:
 
     virtual utl::String toString() const;
 
+    /// \name Accessors
+    //@{
+    /** Get the score value. */
     double
-    getValue()
+    getValue() const
     {
         return _value;
     }
 
-    score_type_t
+    /** Get the score type. */
+    score_type_t const
     getType()
     {
         return _type;
     }
+    //@}
 
+    /// \name Modification
+    //@{
+    /** Set the score value. */
     void
     setValue(double value)
     {
         _value = value;
     }
 
+    /** Set the score type. */
     void
     setType(score_type_t type)
     {
         _type = type;
     }
+    //@}
 
 private:
     void init();
@@ -71,13 +90,18 @@ private:
     {
     }
 
+private:
     double _value;
     score_type_t _type;
 };
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-typedef std::map<uint_t, Score*> uint_score_map_t;
+/**
+   A \c std::map from keys of type \ref uint_t to values of type Score pointer.
+   \ingroup gop
+*/
+using uint_score_map_t = std::map<uint_t, Score*>;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 

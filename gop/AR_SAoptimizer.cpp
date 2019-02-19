@@ -29,10 +29,9 @@ GOP_NS_BEGIN;
 void
 AR_SAoptimizer::initialize(const OptimizerConfiguration* config)
 {
-    SAoptimizer::initialize(config);
+    super::initialize(config);
     _populationSize = 1;
     _fixedInitTemp = false;
-
     _initTemp = _currentTemp = 1000.0;
     _stopTemp = 0.001;
     init();
@@ -67,7 +66,7 @@ AR_SAoptimizer::run()
     }
 
     ASSERT(this->complete());
-    //re-generate the best schedule and get audit text
+    // re-generate the best schedule and get audit text
     _ind->setString(_bestStrScore->getString()->clone());
     bool scheduleFeasible = iterationRun(nullptr, true);
 #ifdef DEBUG

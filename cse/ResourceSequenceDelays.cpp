@@ -86,7 +86,7 @@ ResourceSequenceDelays::compare(const Object& rhs) const
     res = lut::compare(_resourceSequenceId, rsd._resourceSequenceId);
     if (res != 0)
         return res;
-    res = compareContObjects(_resourceSequenceDelays, rsd._resourceSequenceDelays);
+    res = compareItems(_resourceSequenceDelays, rsd._resourceSequenceDelays);
     return res;
 }
 

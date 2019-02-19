@@ -112,32 +112,6 @@ ResCapSelector::initializeInd(Ind* p_ind, const gop::DataSet* p_dataSet, rng_t* 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
-ResCapSelector::initializeRandomInd(Ind* p_ind, const gop::DataSet* p_dataSet, rng_t* rng, void*)
-{
-    auto ind = utl::cast<StringInd<uint_t>>(p_ind);
-    gop::String<uint_t>& string = ind->string();
-
-    ASSERTD(dynamic_cast<const ClevorDataSet*>(p_dataSet) != nullptr);
-    const ClevorDataSet* dataSet = (const ClevorDataSet*)p_dataSet;
-
-    uint_t numResources = _resources.size();
-    if (_stringBase == 0)
-    {
-        string.setSize(stringSize(*dataSet));
-    }
-    for (uint_t i = 0; i < numResources; ++i)
-    {
-        uint_t range = (_resources[i]->maxCap() - _resources[i]->minCap()) / 100;
-        ASSERTD(range != 0);
-        uint_t cap = _resources[i]->minCap() + (rng->uniform((uint_t)0, range - 1)) * 100;
-        string[_stringBase + i] = cap;
-    }
-    _nestedScheduler->initializeRandomInd(ind, dataSet, rng, (void*)size_t_max);
-}
-
-////////////////////////////////////////////////////////////////////////////////////////////////////
-
-void
 ResCapSelector::run(Ind* p_ind, IndBuilderContext* p_context) const
 {
     ASSERTD(dynamic_cast<StringInd<uint_t>*>(p_ind) != nullptr);

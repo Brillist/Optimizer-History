@@ -13,17 +13,11 @@ GOP_NS_BEGIN;
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
-   Random Walk optimizer.
+   Random walk optimizer.
 
-   It is different from Hill Climber. It ignores the score of current node
-   and the best score which has been found  so far, and keeps on walking 
-   to the next neighbouring node randomly.
+   Unlike HillClimber, RandomWalk continues to move in single steps without ever backing up.
 
-   It is also different from Random Sampling. It walks in the search space 
-   one step at a time.
-
-   Joe Zhou
-   Oct. 2005
+   \ingroup gop
 */
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -33,14 +27,15 @@ class RandomWalk : public Optimizer
     UTL_CLASS_DECL(RandomWalk, Optimizer);
 
 public:
-    virtual bool
-    requiresRevOp() const
-    {
-        return true;
-    }
-
-    /** Initialize. */
     virtual void initialize(const OptimizerConfiguration* config);
+
+    virtual bool run();
+
+    virtual void audit();
+
+private:
+    void init();
+    void deInit();
 
     void
     setBestStrScore(StringScore* strScore)
@@ -49,18 +44,8 @@ public:
         _bestStrScore = strScore;
     }
 
-    /** Run the Random Walk. */
-    virtual bool run();
-
-    /** Audit the result */
-    virtual void audit();
-
-protected:
-    StringScore* _bestStrScore;
-
 private:
-    void init();
-    void deInit();
+    StringScore* _bestStrScore;
 };
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////

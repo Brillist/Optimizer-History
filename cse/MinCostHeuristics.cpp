@@ -77,7 +77,7 @@ MinCostHeuristics::setMinCostAltResPt(const JobOp* op)
         return;
     }
     ASSERTD(op->breakable());
-    double minCost = utl::double_t_max; //(double)uint_t_max;
+    double minCost = utl::double_t_max;
     uint_t minCostPt = uint_t_max;
     uint_vector_t minCostAltResIdx;
     BrkActivity* act = op->brkact();
@@ -139,10 +139,8 @@ MinCostHeuristics::setMinCostAltResPt(const JobOp* op)
                 double curResCost = getResCost(cap, pt, resCost);
                 int cmpResult = lut::compare(curResCost, minRgrCost);
                 if (cmpResult <= 0)
-                //                 if (curResCost <= minRgrCost)
                 {
                     if (cmpResult < 0)
-                    //                     if (curResCost < minRgrCost)
                     {
                         minRgrCost = curResCost;
                         idxCandidates.clear();
@@ -150,7 +148,7 @@ MinCostHeuristics::setMinCostAltResPt(const JobOp* op)
                     idxCandidates.push_back(resIdx);
                 }
             }
-            ASSERTD(minRgrCost < utl::double_t_max); //(double)uint_t_max);
+            ASSERTD(minRgrCost < utl::double_t_max);
             ASSERTD(idxCandidates.size() > 0);
             uint_t idx = _rng->uniform((size_t)0, idxCandidates.size() - 1);
             altResIdx[rgrIdx] = idxCandidates[idx];

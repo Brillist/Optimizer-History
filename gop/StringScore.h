@@ -11,16 +11,10 @@ GOP_NS_BEGIN;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-/** 
-    StringScore has two major attributes: a string and its corresponding 
-    score. It is designed to be used by optimizers (e.g. SA, RandomWalk, etc)
-    to remember a string and its score (usually it's the best score so
-    far).
+/**
+   A String and its corresponding Score.
 
-    Joe Zhou
-    Oct. 2005
-
-    Note: this class was defined in HillClimber.h before.
+   \ingroup gop
 */
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -30,30 +24,56 @@ class StringScore : public utl::Object
     UTL_CLASS_DECL(StringScore, utl::Object);
 
 public:
+    /**
+       Constructor.
+       \param id id
+       \param string construction String
+       \param score string's evaluation Score
+    */
     StringScore(uint_t id, String<uint_t>* string, Score* score)
     {
         init();
         _id = id;
         setString(string);
         setScore(score);
-        /*         _string = string; */
-        /*         _score = score; */
     }
 
     virtual void copy(const utl::Object& rhs);
 
+    /// \name Accessors (const)
+    //@{
+    /** Get id. */
     uint_t
     getId()
     {
         return _id;
     }
 
+    /** Get the String. */
     String<uint_t>*
     getString()
     {
         return _string;
     }
 
+    /** Get the Score. */
+    Score*
+    getScore()
+    {
+        return _score;
+    }
+
+    /** Get the Score's value. */
+    double
+    getScoreValue()
+    {
+        return _score->getValue();
+    }
+    //@}
+
+    /// \name Modification
+    //@{
+    /** Set the String. */
     void
     setString(String<uint_t>* string)
     {
@@ -61,24 +81,14 @@ public:
         _string = string;
     }
 
-    Score*
-    getScore()
-    {
-        return _score;
-    }
-
+    /** Set the Score. */
     void
     setScore(Score* score)
     {
         delete _score;
         _score = score;
     }
-
-    double
-    getScoreValue()
-    {
-        return _score->getValue();
-    }
+    //@}
 
 private:
     void
@@ -94,6 +104,7 @@ private:
         delete _score;
     }
 
+private:
     uint_t _id;
     String<uint_t>* _string;
     Score* _score;
@@ -101,20 +112,30 @@ private:
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-struct stringScoreOrdering
+/**
+   Non-decreasing ordering for StringScore objects.
+
+   \ingroup gop
+*/
+struct StringScoreOrdering
 {
+    /** Evaluate to true iff lhs has a lower Score than rhs. */
     bool
-    operator()(StringScore* strScore1, StringScore* strScore2)
+    operator()(StringScore* lhs, StringScore* rhs)
     {
-        double score1 = strScore1->getScoreValue();
-        double score2 = strScore2->getScoreValue();
-        return score1 < score2;
+        double lhsScore = lhs->getScoreValue();
+        double rhsScore = rhs->getScoreValue();
+        return lhsScore < rhsScore;
     }
 };
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-typedef std::vector<StringScore*> stringscore_vector_t;
+/**
+   A \c std::vector of StringScore pointers.
+   \ingroup gop
+*/
+using stringscore_vector_t = std::vector<StringScore*>;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 

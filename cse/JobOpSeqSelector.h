@@ -42,12 +42,6 @@ public:
                                lut::rng_t* rng = nullptr,
                                void* param = nullptr);
 
-    //joe's debug code
-    virtual void initializeRandomInd(gop::Ind* ind,
-                                     const gop::DataSet* dataSet,
-                                     lut::rng_t* rng = nullptr,
-                                     void* param = nullptr);
-
     /** Make a schedule. */
     virtual void run(gop::Ind* ind, gop::IndBuilderContext* context) const;
 

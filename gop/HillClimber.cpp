@@ -34,7 +34,7 @@ HillClimber::initialize(const OptimizerConfiguration* config)
     ASSERTD(_ind != nullptr);
     _indBuilder->initializeInd(_ind, config->dataSet(), _rng);
     _singleStep = true;
-    Objective* objective = _objectives[0];
+    auto objective = _objectives[0];
 
     iterationRun();
     setInitScore(_newScore->clone());
@@ -50,33 +50,36 @@ HillClimber::initialize(const OptimizerConfiguration* config)
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-void
-HillClimber::acceptanceEval(RevOperator* op)
+bool
+HillClimber::run()
 {
-    Objective* objective = _objectives[0];
-    int cmpResult;
-    cmpResult = objective->compare(_newScore, _bestScore);
-    _accept = (cmpResult >= 0);    //_accept
-    _sameScore = (cmpResult == 0); //_sameScore
-    _newBest = (cmpResult > 0);    //_newScore
-    if (_accept)
-    {
-        op->accept();
-        if (_newBest)
-        {
-            _improvementIteration = _iteration;
-            op->addSuccessIter();
-            setBestScore(utl::clone(_newScore));
-            objective->setBestScore(utl::clone(_bestScore));
-        }
-    }
-    else
-    {
-        op->undo();
-    }
-#ifdef DEBUG_UNIT
-    utl::cout << iterationString() << utl::endl;
+    ASSERTD(!complete());
+    ASSERTD(_ind != nullptr);
+
+    bool complete = this->complete();
+    while (!complete)
+        complete = HCiterationRun();
+    ASSERTD(this->complete());
+
+    // re-generate the best schedule and get audit text
+    bool scheduleFeasible = iterationRun(nullptr, true);
+#ifdef DEBUG
+    if (scheduleFeasible)
+        ASSERT(*_bestScore == *_newScore);
 #endif
+    utl::cout << finalString(scheduleFeasible) << utl::endlf;
+    updateRunStatus(true);
+    return scheduleFeasible;
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
+void
+HillClimber::audit()
+{
+    if (!iterationRun(nullptr, true))
+        ABORT();
+    ASSERTD(*_bestScore == *_newScore);
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -88,7 +91,7 @@ HillClimber::HCiterationRun()
     _iteration++;
 
     // choose an operator
-    Operator* op = chooseSuccessOp();
+    auto op = chooseSuccessOp();
     if (op == nullptr)
     {
         _iteration = _maxIterations;
@@ -117,36 +120,33 @@ HillClimber::HCiterationRun()
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-bool
-HillClimber::run()
-{
-    ASSERTD(!complete());
-    ASSERTD(_ind != nullptr);
-
-    bool complete = this->complete();
-    while (!complete)
-        complete = HCiterationRun();
-    ASSERT(this->complete());
-
-    //re-generate the best schedule and get audit text
-    bool scheduleFeasible = iterationRun(nullptr, true);
-#ifdef DEBUG
-    if (scheduleFeasible)
-        ASSERT(*_bestScore == *_newScore);
-#endif
-    utl::cout << finalString(scheduleFeasible) << utl::endlf;
-    updateRunStatus(true);
-    return scheduleFeasible;
-}
-
-////////////////////////////////////////////////////////////////////////////////////////////////////
-
 void
-HillClimber::audit()
+HillClimber::acceptanceEval(RevOperator* op)
 {
-    if (!iterationRun(nullptr, true))
-        ABORT();
-    ASSERTD(*_bestScore == *_newScore);
+    auto objective = _objectives[0];
+    int cmpResult;
+    cmpResult = objective->compare(_newScore, _bestScore);
+    _accept = (cmpResult >= 0);    //_accept
+    _sameScore = (cmpResult == 0); //_sameScore
+    _newBest = (cmpResult > 0);    //_newScore
+    if (_accept)
+    {
+        op->accept();
+        if (_newBest)
+        {
+            _improvementIteration = _iteration;
+            op->addSuccessIter();
+            setBestScore(utl::clone(_newScore));
+            objective->setBestScore(utl::clone(_bestScore));
+        }
+    }
+    else
+    {
+        op->undo();
+    }
+#ifdef DEBUG_UNIT
+    utl::cout << iterationString() << utl::endl;
+#endif
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////

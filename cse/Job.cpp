@@ -117,7 +117,7 @@ Job::serialize(Stream& stream, uint_t io, uint_t)
     lut::serialize(_name, stream, io);
     utl::serialize(_preference, stream, io);
     utl::serialize(_groupId, stream, io);
-    lut::serialize<uint_t>(_workOrderIds, stream, io);
+    lut::serialize(_workOrderIds, stream, io);
     utl::serialize(_itemId, stream, io);
     utl::serialize(_itemQuantity, stream, io);
     utl::serialize(_releaseTime, stream, io);

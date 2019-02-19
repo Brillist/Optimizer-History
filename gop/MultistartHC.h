@@ -15,6 +15,16 @@ GOP_NS_BEGIN;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
+/**
+   Multi-start version of HillClimber.
+
+   MultistartHC can be thought of as multiple instances of HillClimber operating in parallel.
+
+   \ingroup gop
+*/
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
 class MultistartHC : public HillClimber
 {
     UTL_CLASS_DECL(MultistartHC, HillClimber);

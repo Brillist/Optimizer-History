@@ -29,17 +29,6 @@ class AltJobMutate : public gop::RevOperator
     UTL_CLASS_DECL(AltJobMutate, gop::RevOperator);
 
 public:
-    /**
-       Constructor.
-       \param p probability
-       \param rng PRNG
-    */
-    AltJobMutate(double p, lut::rng_t* rng = nullptr)
-        : RevOperator("AltJobMutate", p, rng)
-    {
-        init();
-    }
-
     virtual void copy(const utl::Object& rhs);
 
     virtual void initialize(const gop::DataSet* dataSet = nullptr);

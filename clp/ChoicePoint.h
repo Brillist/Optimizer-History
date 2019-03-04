@@ -205,7 +205,7 @@ public:
     //@{
     /** Set the manager. */
     void
-        setManager(Manager* mgr)
+    setManager(Manager* mgr)
     {
         _mgr = mgr;
     }

@@ -146,7 +146,8 @@ public:
     /// \name Domain Queries
     //@{
     /** Get the size of the domain. */
-    uint_t size() const
+    uint_t
+    size() const
     {
         return _domain->size();
     }

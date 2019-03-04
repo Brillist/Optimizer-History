@@ -75,8 +75,8 @@ CompositeTimetableDomain::addCapExp(uint_t cap)
     {
         IntExp* nullIntExpPtr = nullptr;
         uint_t zero = 0;
-        utl::arrayGrow(_capExps, _capExpsSize, utl::max((size_t)16, ((size_t)cap + 1)),
-                       size_t_max, &nullIntExpPtr);
+        utl::arrayGrow(_capExps, _capExpsSize, utl::max((size_t)16, ((size_t)cap + 1)), size_t_max,
+                       &nullIntExpPtr);
         utl::arrayGrow(_capExpCounts, _capExpCountsSize, utl::max((size_t)16, ((size_t)cap + 1)),
                        size_t_max, &zero);
     }

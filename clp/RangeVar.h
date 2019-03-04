@@ -124,7 +124,8 @@ public:
     }
 
     /** Set the object. */
-    void setObject(void* object)
+    void
+    setObject(void* object)
     {
         _object = object;
     }
@@ -203,7 +204,8 @@ public:
     //@}
 private:
     void init();
-    void deInit()
+    void
+    deInit()
     {
     }
 

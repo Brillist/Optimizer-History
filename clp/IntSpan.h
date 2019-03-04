@@ -132,13 +132,15 @@ public:
     /// \name Accessors (non-const)
     //@{
     /** Set minimum value (beginning point) of span. */
-    void setMin(int min)
+    void
+    setMin(int min)
     {
         _min = min;
     }
 
     /** Set maximum value (end point) of span. */
-    void setMax(int max)
+    void
+    setMax(int max)
     {
         _max = max;
     }
@@ -158,19 +160,22 @@ public:
     }
 
     /** Set previous span. */
-    void setPrev(IntSpan* prev)
+    void
+    setPrev(IntSpan* prev)
     {
         _prev = prev;
     }
 
     /** Set next span (for level 0). */
-    void setNext(IntSpan* next)
+    void
+    setNext(IntSpan* next)
     {
         _next[0] = next;
     }
 
     /** Set next span for the given level. */
-    void setNext(uint_t lvl, IntSpan* next)
+    void
+    setNext(uint_t lvl, IntSpan* next)
     {
         ASSERTD(lvl <= _level);
         _next[lvl] = next;

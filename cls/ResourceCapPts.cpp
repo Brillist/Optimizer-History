@@ -480,8 +480,8 @@ ResourceCapPts::initialize(BrkActivity* act)
             ttBound = new LFboundTimetable(act, this, capPt, 0);
         }
 
-        ttBound->setName(
-            "-> res-" + _resId.toString() + " (" + Uint(capPt->capacity()).toString() + ")");
+        ttBound->setName("-> res-" + _resId.toString() + " (" + Uint(capPt->capacity()).toString() +
+                         ")");
         capPt->setObject(ttBound);
         ++_numPossible;
     }

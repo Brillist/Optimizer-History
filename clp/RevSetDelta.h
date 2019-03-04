@@ -91,7 +91,8 @@ private:
     {
         ABORT();
     }
-    void deInit()
+    void
+    deInit()
     {
     }
 

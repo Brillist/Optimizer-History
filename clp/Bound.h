@@ -108,13 +108,15 @@ public:
     /// \name Accessors (non-const)
     //@{
     /** Set the name. */
-    void setName(const char* name)
+    void
+    setName(const char* name)
     {
         _name = name;
     }
 
     /** Set the debug flag. */
-    void setDebugFlag(bool debugFlag)
+    void
+    setDebugFlag(bool debugFlag)
     {
         _debugFlag = debugFlag;
     }

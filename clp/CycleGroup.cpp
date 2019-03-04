@@ -233,7 +233,7 @@ CycleGroup::addPred(CycleGroup* cg, bool updateIndirect)
     }
 
     // update indirect relationships
-    //   NOTE: 
+    //   NOTE:
     //     1. when a cycle is detected we record that
     //     2. we don't create additional cyclical indirect links here
 
@@ -439,7 +439,7 @@ CycleGroup::allPredCGsString() const
     utl::MemStream str;
     str << "AllPredCGs[";
     for (auto cg : _allPredCGs)
-    { 
+    {
         if (cg != *_allPredCGs.begin())
             str << ", ";
         str << cg->toString();

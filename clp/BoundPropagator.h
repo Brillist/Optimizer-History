@@ -71,7 +71,8 @@ public:
        \param delta extra distance between source and destination bounds
        \param cycleCheck check for cycles?
     */
-    void addBoundCt(ConstrainedBound* src, ConstrainedBound* dst, int delta, bool cycleCheck = true);
+    void
+    addBoundCt(ConstrainedBound* src, ConstrainedBound* dst, int delta, bool cycleCheck = true);
 
     /** Add a new precedence relationship between two cycle-groups. */
     void addPrecedenceLink(CycleGroup* src, CycleGroup* dst, bool cycleCheck = true);

@@ -120,9 +120,8 @@ DiscreteResourceRequirement::excludeResource(uint_t resId)
     }
     else if (_selectedResources->has(resId))
     {
-        throw FailEx(
-            "act-" + Uint(_act->id()).toString() + ": " +
-            "excluding selected resource: " + Uint(resId).toString());
+        throw FailEx("act-" + Uint(_act->id()).toString() + ": " +
+                     "excluding selected resource: " + Uint(resId).toString());
     }
 }
 
@@ -255,10 +254,10 @@ DiscreteResourceRequirement::checkAllSelected()
         // not possible to satisfy requirement?
         if (numPossible < numRequired)
         {
-            throw FailEx(
-                "act-" + Uint(_act->id()).toString() + ": " + Uint(numRequired).toString() +
-                " additional resource(s) needed, but only " + Uint(numPossible).toString() +
-                " possible");
+            throw FailEx("act-" + Uint(_act->id()).toString() + ": " +
+                         Uint(numRequired).toString() +
+                         " additional resource(s) needed, but only " +
+                         Uint(numPossible).toString() + " possible");
         }
 
         // requirements are known
@@ -319,9 +318,8 @@ DiscreteResourceRequirement::addTimetableBounds()
         const CapPt* capPt = rcp->findPt(pt);
         if (capPt == nullptr)
         {
-            throw FailEx(
-                "act-" + Uint(_act->id()).toString() + ": " +
-                "could not find CapPt for pt = " + Uint(pt).toString());
+            throw FailEx("act-" + Uint(_act->id()).toString() + ": " +
+                         "could not find CapPt for pt = " + Uint(pt).toString());
         }
         if (forward)
         {

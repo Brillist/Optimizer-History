@@ -138,13 +138,15 @@ public:
     }
 
     /** Set \b queued flag. */
-    void setQueued(bool queued)
+    void
+    setQueued(bool queued)
     {
         _queued = queued;
     }
 
     /** Set the owner. */
-    void setOwner(utl::Object* owner)
+    void
+    setOwner(utl::Object* owner)
     {
         _owner = owner;
     }

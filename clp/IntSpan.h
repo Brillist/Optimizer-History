@@ -19,43 +19,47 @@ class Manager;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
+/**
+   Integer Span.
+
+   A span of integer values specified as `[min,max]` that maps to a pair of integer values
+   specified as `[v0,v1]`.
+
+   RevIntSpanCol stores IntSpan objects in a skip-list.  To support that, an IntSpan has
+   a \c prev pointer (pointing to the previous IntSpan at level 0), and an array of \c next
+   pointers that link to the next IntSpan at each level of the node.
+
+   \ingroup clp
+*/
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
 class IntSpan : public utl::Object
 {
     UTL_CLASS_DECL(IntSpan, utl::Object);
 
 public:
+    /**
+       Constructor.
+       \param min minimum spanned value
+       \param max maximum spanned value
+       \param v0 first mapped value
+       \param v1 second mapped value
+       \param level level within skip-list
+    */
     IntSpan(int min, int max, uint_t v0, uint_t v1, uint_t level = uint_t_max);
 
     virtual void copy(const utl::Object& rhs);
 
     virtual String toString() const;
 
-    virtual bool canMergeWith(const IntSpan* rhs) const;
-
-    void clearPointers();
-
-    virtual uint_t capacity() const;
-
+    /// \name Accessors (const)
+    //@{
     uint_t
-    getStateDepth() const
+    level() const
     {
-        return _stateDepth;
+        return _level;
     }
-
-    void
-    setStateDepth(uint_t stateDepth)
-    {
-        _stateDepth = stateDepth;
-    }
-
-    void
-    saveState(Manager* mgr)
-    {
-        if (_stateDepth < mgr->depth())
-            _saveState(mgr);
-    }
-
-    void _saveState(Manager* mgr);
 
     uint_t
     size() const
@@ -71,18 +75,6 @@ public:
 
     int
     max() const
-    {
-        return _max;
-    }
-
-    int&
-    min()
-    {
-        return _min;
-    }
-
-    int&
-    max()
     {
         return _max;
     }
@@ -105,18 +97,6 @@ public:
         return _v1;
     }
 
-    uint_t&
-    v0()
-    {
-        return _v0;
-    }
-
-    uint_t&
-    v1()
-    {
-        return _v1;
-    }
-
     bool
     isHead() const
     {
@@ -129,20 +109,8 @@ public:
         return (_next[0] == this);
     }
 
-    bool
-    contains(int val) const
-    {
-        return (_min <= val) && (val <= _max);
-    }
-
     IntSpan*
     prev() const
-    {
-        return _prev;
-    }
-
-    IntSpan*&
-    prev()
     {
         return _prev;
     }
@@ -153,41 +121,95 @@ public:
         return _next[0];
     }
 
-    IntSpan*&
-    next()
-    {
-        return _next[0];
-    }
-
     IntSpan*
     next(uint_t idx) const
     {
+        ASSERTD(idx <= _level);
         return _next[idx];
     }
+    //@}
 
-    IntSpan*&
-    next(uint_t idx)
+    /// \name Accessors (non-const)
+    //@{
+    /** Set minimum value (beginning point) of span. */
+    void setMin(int min)
     {
-        return _next[idx];
+        _min = min;
     }
 
+    /** Set maximum value (end point) of span. */
+    void setMax(int max)
+    {
+        _max = max;
+    }
+
+    /** Set first mapped value. */
     void
-    setPrev(IntSpan* prev)
+    setV0(uint_t v0)
+    {
+        _v0 = v0;
+    }
+
+    /** Set second mapped value. */
+    void
+    setV1(uint_t v1)
+    {
+        _v1 = v1;
+    }
+
+    /** Set previous span. */
+    void setPrev(IntSpan* prev)
     {
         _prev = prev;
     }
 
-    void
-    setNext(uint_t idx, IntSpan* span)
+    /** Set next span (for level 0). */
+    void setNext(IntSpan* next)
     {
-        _next[idx] = span;
+        _next[0] = next;
     }
 
-    uint_t
-    getLevel() const
+    /** Set next span for the given level. */
+    void setNext(uint_t lvl, IntSpan* next)
     {
-        return _level;
+        ASSERTD(lvl <= _level);
+        _next[lvl] = next;
     }
+    //@}
+
+    /// \name Backtracking
+    //@{
+    uint_t
+    stateDepth() const
+    {
+        return _stateDepth;
+    }
+
+    void
+    setStateDepth(uint_t stateDepth)
+    {
+        _stateDepth = stateDepth;
+    }
+
+    void
+    saveState(Manager* mgr)
+    {
+        if (_stateDepth < mgr->depth())
+            _saveState(mgr);
+    }
+
+    void _saveState(Manager* mgr);
+    //@}
+
+    virtual uint_t capacity() const;
+
+    bool
+    contains(int val) const
+    {
+        return (_min <= val) && (val <= _max);
+    }
+
+    virtual bool canMergeWith(const IntSpan* rhs) const;
 
     void setLevel(uint_t level);
 

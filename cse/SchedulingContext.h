@@ -214,13 +214,7 @@ private:
     // scheduler configuration
     const SchedulerConfiguration* _config;
 
-    // list of all schedulable ops
-    // This seems obsolete.
-    // Joe, Oct 10, 2006
-    /*     jobop_set_id_t _allSops; */
-
-    // a dynamic list of schedulable jobs
-    // controlled by cse::Propagator::unsuspend().
+    // dynamic list of schedulable jobs (see cse::Propagator::unsuspend)
     clp::RevArray<Job*> _sjobs;
 
     // misc

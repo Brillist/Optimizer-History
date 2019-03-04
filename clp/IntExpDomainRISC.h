@@ -24,42 +24,40 @@ class IntExpDomainRISC : public IntExpDomain, public RevIntSpanCol
     UTL_CLASS_DECL(IntExpDomainRISC, IntExpDomain);
 
 public:
-    /** Constructor. */
+    /**
+       Constructor.
+       \param mgr associated Manager
+    */
     IntExpDomainRISC(Manager* mgr)
         : IntExpDomain(mgr)
     {
         init();
     }
 
-    /** Copy another instance. */
     virtual void copy(const utl::Object& rhs);
 
-    /** Get a human-readable string representation. */
     virtual String toString() const;
 
-    /** Intersect with the given domain. */
     virtual void intersect(const IntExpDomain* rhs);
 
-    /** Contains the given value? */
+    /// \name Accessors (const)
+    //@{
     virtual bool has(int val) const;
 
-    /** Get begin iterator. */
     virtual IntExpDomainIt* begin() const;
 
-    /** Get end iterator. */
     virtual IntExpDomainIt* end() const;
 
-    /** Get the maximum value < val. */
     virtual int getPrev(int val) const;
 
-    /** Get the minimum value > val. */
     virtual int getNext(int val) const;
+    //@}
 
 protected:
     Manager*
     mgr()
     {
-        return IntExpDomain::_mgr;
+        return super::_mgr;
     }
 
     virtual void _saveState();

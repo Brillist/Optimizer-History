@@ -15,9 +15,9 @@ class IntExpDomainCAR;
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
-   Integer expression domain.
+   Iterator for IntExpDomainCAR.
 
-   \author Adam McKee
+   \ingroup clp
 */
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -36,14 +36,14 @@ public:
         _val = val;
     }
 
-    /** Copy another instance. */
     virtual void copy(const utl::Object& rhs);
 
-    /** Move forward. */
+    /// \name Movement
+    //@{
     virtual void next();
 
-    /** Move backward. */
     virtual void prev();
+    //@}
 
 private:
     const IntExpDomainCAR* _domain;

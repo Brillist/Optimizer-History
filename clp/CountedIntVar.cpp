@@ -28,7 +28,7 @@ CountedIntVar::CountedIntVar(Manager* mgr, const int_uint_map_t& domain)
 uint_t
 CountedIntVar::decrement(int val, uint_t num)
 {
-    IntExpDomainCAR* domain = (IntExpDomainCAR*)_domain;
+    auto domain = utl::cast<IntExpDomainCAR>(_domain);
     uint_t count = domain->decrement(val, num);
     if (domain->anyEvent())
     {

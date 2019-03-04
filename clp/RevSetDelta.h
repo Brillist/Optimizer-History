@@ -14,20 +14,27 @@ class Manager;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
+/**
+   RevSetDelta tracked changes.
+   \ingroup clp
+*/
 enum rsd_t
 {
-    rsd_add,    /**< only add objects */
-    rsd_remove, /**< only remove objects */
-    rsd_both,   /**< add and remove objects */
+    rsd_add,    /**< track added objects */
+    rsd_remove, /**< track removed objects */
+    rsd_both,   /**< track both added and removed objects */
     rsd_undefined
 };
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
-   Delta record for reversible sets.
+   Record of changes in a RevSet.
 
-   \author Adam McKee
+   RevSetDelta records changes to a RevSet (additions, removals, or both).
+
+   \see rsd_t
+   \ingroup clp
 */
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -40,10 +47,13 @@ class RevSetDelta : public utl::Object
 public:
     /**
        Constructor.
-       \param depth search-tree depth.
+       \param type 
+       \param depth search-tree depth
     */
     RevSetDelta(rsd_t type, uint_t depth);
 
+    /// \name Accessors (const)
+    //@{
     /** Get the state-depth. */
     uint_t
     depth() const
@@ -51,27 +61,29 @@ public:
         return _depth;
     }
 
-    /** Record the addition of an item into the set. */
-    void add(const utl::Object* object);
-
-    /** Record the removal of an item from the set. */
-    void remove(const utl::Object* object);
-
     /** Get a list of all added items. */
     const utl::Hashtable&
     addedItems() const
     {
-        ASSERTD(_addedItems != nullptr);
-        return *_addedItems;
+        return _addedItems;
     }
 
     /** Get a list of all removed items. */
     const utl::Hashtable&
     removedItems() const
     {
-        ASSERTD(_removedItems != nullptr);
-        return *_removedItems;
+        return _removedItems;
     }
+    //@}
+
+    /// \name Recording Changes
+    //@{
+    /** Record the addition of an item into a RevSet. */
+    void add(const utl::Object* object);
+
+    /** Record the removal of an item from a RevSet. */
+    void remove(const utl::Object* object);
+    //@}
 
 private:
     void
@@ -79,13 +91,15 @@ private:
     {
         ABORT();
     }
-    void deInit();
+    void deInit()
+    {
+    }
 
 private:
     uint_t _depth;
     rsd_t _type;
-    utl::Hashtable* _addedItems;
-    utl::Hashtable* _removedItems;
+    utl::Hashtable _addedItems;
+    utl::Hashtable _removedItems;
 };
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////

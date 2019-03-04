@@ -20,25 +20,8 @@ RevSetDelta::RevSetDelta(rsd_t type, uint_t depth)
 {
     _depth = depth;
     _type = type;
-
-    // make hash-tables
-    switch (_type)
-    {
-    case rsd_add:
-        _addedItems = new Hashtable(false);
-        _removedItems = nullptr;
-        break;
-    case rsd_remove:
-        _addedItems = nullptr;
-        _removedItems = new Hashtable(false);
-        break;
-    case rsd_both:
-        _addedItems = new Hashtable(false);
-        _removedItems = new Hashtable(false);
-        break;
-    default:
-        ABORT();
-    }
+    _addedItems.setOwner(false);
+    _removedItems.setOwner(false);
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -49,13 +32,13 @@ RevSetDelta::add(const Object* object)
     ASSERTD(_type != rsd_remove);
     if (_type == rsd_both)
     {
-        // already removed object => add cancels remove
-        if (_removedItems->remove(*object))
+        // already removed object -> add cancels remove
+        if (_removedItems.remove(*object))
         {
             return;
         }
     }
-    _addedItems->add(object);
+    _addedItems.add(object);
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -66,22 +49,13 @@ RevSetDelta::remove(const Object* object)
     ASSERTD(_type != rsd_add);
     if (_type == rsd_both)
     {
-        // already added object => remove cancels add
-        if (_addedItems->remove(*object))
+        // already added object -> remove cancels add
+        if (_addedItems.remove(*object))
         {
             return;
         }
     }
-    _removedItems->add(object);
-}
-
-////////////////////////////////////////////////////////////////////////////////////////////////////
-
-void
-RevSetDelta::deInit()
-{
-    delete _addedItems;
-    delete _removedItems;
+    _removedItems.add(object);
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////

@@ -33,15 +33,13 @@ void
 ESbound::registerEvents()
 {
     // register for timetable events
-    bound_array_t::iterator it, endIt = _bounds.end();
-    for (it = _bounds.begin(); it != endIt; ++it)
+    for (auto bound : _bounds)
     {
-        Bound* bound = *it;
         if (!bound->isA(ESboundTimetable))
         {
             continue;
         }
-        ESboundTimetable* ttb = (ESboundTimetable*)bound;
+        auto ttb = utl::cast<ESboundTimetable>(bound);
         ttb->registerEvents(this);
     }
 }
@@ -52,15 +50,13 @@ void
 ESbound::allocateCapacity()
 {
     // allocate resource capacity
-    bound_array_t::iterator it, endIt = _bounds.end();
-    for (it = _bounds.begin(); it != endIt; ++it)
+    for (auto bound : _bounds)
     {
-        Bound* bound = *it;
         if (!bound->isA(ESboundTimetable))
         {
             continue;
         }
-        ESboundTimetable* ttb = (ESboundTimetable*)bound;
+        auto ttb = utl::cast<ESboundTimetable>(bound);
         ttb->deregisterEvents(this);
         ttb->allocateCapacity();
     }
@@ -72,15 +68,13 @@ void
 ESbound::allocateCapacity(int t1, int t2)
 {
     // allocate resource capacity
-    bound_array_t::iterator it, endIt = _bounds.end();
-    for (it = _bounds.begin(); it != endIt; ++it)
+    for (auto bound : _bounds)
     {
-        Bound* bound = *it;
         if (!bound->isA(ESboundTimetable))
         {
             continue;
         }
-        ESboundTimetable* ttb = (ESboundTimetable*)bound;
+        auto ttb = utl::cast<ESboundTimetable>(bound);
         ttb->allocateCapacity(t1, t2);
     }
 }
@@ -91,15 +85,13 @@ void
 ESbound::deallocateCapacity()
 {
     // deallocate resource capacity
-    bound_array_t::iterator it, endIt = _bounds.end();
-    for (it = _bounds.begin(); it != endIt; ++it)
+    for (auto bound : _bounds)
     {
-        Bound* bound = *it;
         if (!bound->isA(ESboundTimetable))
         {
             continue;
         }
-        ESboundTimetable* ttb = (ESboundTimetable*)bound;
+        auto ttb = utl::cast<ESboundTimetable>(bound);
         ttb->deallocateCapacity();
     }
 }
@@ -110,15 +102,13 @@ void
 ESbound::deallocateCapacity(int t1, int t2)
 {
     // deallocate resource capacity
-    bound_array_t::iterator it, endIt = _bounds.end();
-    for (it = _bounds.begin(); it != endIt; ++it)
+    for (auto bound : _bounds)
     {
-        Bound* bound = *it;
         if (!bound->isA(ESboundTimetable))
         {
             continue;
         }
-        ESboundTimetable* ttb = (ESboundTimetable*)bound;
+        auto ttb = utl::cast<ESboundTimetable>(bound);
         ttb->deallocateCapacity(t1, t2);
     }
 }
@@ -141,42 +131,50 @@ ESbound::find()
 
     // find the activity
     ASSERTD(_owner->isA(BrkActivity));
-    BrkActivity* act = (BrkActivity*)_owner;
+    auto act = utl::cast<BrkActivity>(_owner);
 
-    int oldBound = _bound; //only for setAllocatedLB later
+    // so we can determine whether _bound moved later
+    int oldBound = _bound;
 
+    // reconcile _bound with _bounds until _bound stabilizes
     do
     {
         _findPoint = int_t_max;
         bool first = true;
-        bound_array_t::iterator it;
-        bound_array_t::iterator endIt = _bounds.end();
-        for (it = _bounds.begin(); (it != endIt) && (_bound <= _findPoint); ++it)
+        for (auto bound : _bounds)
         {
-            Bound* itBound = *it;
-            itBound->invalidate();
-            itBound->setLB(_bound);
-            _bound = itBound->get();
-            if (_bound == int_t_max)
+            // don't exceed _findPoint
+            if (_bound > _findPoint)
             {
-                String& str = *new String();
-                str = _name + ": ";
-                str += "no workable bound";
-                throw FailEx(str);
+                break;
             }
 
-            // first iter?
+            // reconcile _bound with bound (_bound -> bound, then bound -> _bound)
+            bound->invalidate();
+            bound->setLB(_bound);
+            _bound = bound->get();
+
+            // can't find a workable value?
+            if (_bound == int_t_max)
+            {
+                throw FailEx(_name + ": no workable bound");
+            }
+
+            // update _findPoint only for the first iteration (the calendar)
             if (first)
             {
                 first = false;
                 _findPoint = _bound;
-                // only track calendar if bound is already finalized
+                // bound is already finalized -> only check calendar (resources are already allocated)
                 if (act->allocated())
-                    break; //why? joez
+                {
+                    break;
+                }
             }
         }
     } while (_bound > _findPoint);
 
+    // moving a scheduled activity?
     if (act->allocated() && (oldBound < _bound))
     {
         setAllocatedLB(oldBound, _bound);

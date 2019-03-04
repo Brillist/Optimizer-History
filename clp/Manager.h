@@ -22,9 +22,51 @@ class BoundPropagator;
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
-   Management of constraints, variables, and solution search.
+   Management of constraints, constrained variables, and the solution search.
 
-   \author Adam McKee
+   ## Constructing solutions (and backtracking to continue searching)
+
+   Constructing a solution is a process of making choices until each constrained variable has been
+   bound (without violating any constraint).  The solution search is a process of experimenting
+   with different possibilities to find the best one(s).  To experiment with different choices we
+   require the ability to *backtrack* the search state.  With backtracking support, we can place a
+   marker for the current state (a ChoicePoint), then make choices (changing the state accordingly)
+   leading to either the successful construction of a solution, or failure/inconsistency.  Whether
+   our choices end in success or failure, we can backtrack to the previous state and try something
+   different.
+
+   ## The goal stack
+
+   The execution of a goal makes a decision (or multiple decisions) that lead toward a solution.
+   A goal can have sub-goals, so Manager uses a stack to control Goal execution.
+
+   Looking at the implementation of \ref nextSolution, we find code that looks like this:
+
+   \code
+   while (!_goalStack.empty())
+   {
+       // pop a goal from the stack
+       auto goal = _goalStack.top();
+       _goalStack.pop();
+
+       // execute the goal and propagate
+       goal->execute();
+       propagate();
+
+       // remove our reference
+       goal->removeRef();
+   }
+   \endcode
+
+   That's a bit simplified because it ignores the special handling of Or goals, but it shows
+   how "normal" goal execution is controlled.  A goal can push other goals onto the stack (by
+   calling \ref add), and Manager will execute those (in LIFO/stack order), continuing that loop
+   until the goal stack is empty.
+   
+   \see BoundPropagator
+   \see ChoicePoint
+   \see Goal
+   \ingroup clp
 */
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -35,44 +77,17 @@ class Manager : public utl::Object
     UTL_CLASS_NO_COPY;
 
 public:
-    typedef std::unordered_set<Constraint*, lut::HashUint<Constraint*>> ct_set_t;
-    typedef ct_set_t::const_iterator ct_const_iterator;
+    using ct_set_t = std::unordered_set<Constraint*, lut::HashUint<Constraint*>>;
+    using ct_const_iterator = ct_set_t::const_iterator;
 
 public:
-    /** Push the given goal onto the goal stack. */
+    /// \name Solution search
+    //@{
+    /** Push a goal onto the goal stack. */
     void add(const Goal& goal);
 
-    /** Push the given goal onto the goal stack. */
+    /** Push a goal onto the goal stack. */
     void add(Goal* goal);
-
-    /** Add the given constraint to the list of constraints. */
-    void add(const Constraint& ct);
-
-    /** Add the given constraint to the list of constraints. */
-    bool add(Constraint* ct);
-
-    /** Add a constrained variable. */
-    void add(ConstrainedVar* var);
-
-    /** Remove a constraint. */
-    void remove(Constraint* ct);
-
-    /** Remove the given constrained variable. */
-    void remove(ConstrainedVar* var);
-
-    /** Get begin constraint iterator. */
-    ct_set_t::const_iterator
-    ctsBegin() const
-    {
-        return _cts.begin();
-    }
-
-    /** Get end constraint iterator. */
-    ct_set_t::const_iterator
-    ctsEnd() const
-    {
-        return _cts.end();
-    }
 
     /** Reset completely. */
     void reset();
@@ -83,15 +98,42 @@ public:
     /** Find the next solution. */
     bool nextSolution();
 
-    /** Propagate. */
+    /**
+       Propagate.
+       \see BoundPropagator::propagate
+    */
     void propagate();
 
-    /** Push state. */
+    /** Push a ChoicePoint onto the stack to enable backtracking to the current search state. */
     void pushState();
 
-    /** Pop state. */
+    /** Backtrack to the ChoicePoint created by the most recent call to \ref pushState. */
     void popState();
+    //@}
 
+    /// \name Constraints
+    //@{
+    /** Add a constraint. */
+    void add(const Constraint& ct);
+
+    /** Add a constraint. */
+    bool add(Constraint* ct);
+
+    /** Remove a constraint. */
+    void remove(Constraint* ct);
+    //@}
+
+    /// \name Constrained variables
+    //@{
+    /** Add a constrained variable. */
+    void add(ConstrainedVar* var);
+
+    /** Remove the given constrained variable. */
+    void remove(ConstrainedVar* var);
+    //@}
+
+    /// \name Accessors (const)
+    //@{
     /** Get the current depth. */
     uint_t
     depth() const
@@ -113,8 +155,26 @@ public:
         return _boundPropagator;
     }
 
+    /** Get constraints begin iterator. */
+    ct_set_t::const_iterator
+    ctsBegin() const
+    {
+        return _cts.begin();
+    }
+
+    /** Get constraints end iterator. */
+    ct_set_t::const_iterator
+    ctsEnd() const
+    {
+        return _cts.end();
+    }
+    //@}
+
+    /// \name Accessors (non-const)
+    //@{
     /** Set the bound propagator. */
     void setBoundPropagator(BoundPropagator* bp);
+    //@}
 
     /// \name Reversible Actions
     //@{
@@ -187,7 +247,7 @@ public:
         revSetIntArray((uint_t*)array, size);
     }
 
-    /** Reversible set the given array element (indirectly). */
+    /** Reversibly set the given array element (indirectly). */
     template <class T>
     void
     revSetIndirect(T*& array, uint_t idx)
@@ -201,7 +261,7 @@ public:
         revSetIntInd((uint_t*&)array, idx);
     }
 
-    /** Reversible set the given array (indirectly). */
+    /** Reversibly set the given array (indirectly). */
     template <class T>
     void
     revSetIndirect(T*& array, uint_t idx, uint_t size)
@@ -225,7 +285,7 @@ public:
                            utl::max(utl::KB(4), (_revDeltaVarsSize + 1)));
             _revDeltaVarsSize = _revDeltaVarsLim - _revDeltaVars;
         }
-        *(_revDeltaVarsPtr++) = var;
+        *_revDeltaVarsPtr++ = var;
     }
 
     /** Indicate that the given variable was changed. */
@@ -238,7 +298,7 @@ public:
                            utl::max(utl::KB(4), (_revCtsSize + 1)));
             _revCtsSize = _revCtsLim - _revCts;
         }
-        *(_revCtsPtr++) = ct;
+        *_revCtsPtr++ = ct;
         ct->addRef();
     }
 
@@ -253,7 +313,7 @@ public:
             _revTogglesSize = _revTogglesLim - _revToggles;
         }
         bool* ptr = &flag;
-        *(_revTogglesPtr++) = ptr;
+        *_revTogglesPtr++ = ptr;
         flag = !flag;
     }
 
@@ -267,7 +327,7 @@ public:
                            utl::max(utl::KB(4), (_revAllocationsSize + 1)));
             _revAllocationsSize = _revAllocationsLim - _revAllocations;
         }
-        *(_revAllocationsPtr++) = object;
+        *_revAllocationsPtr++ = object;
     }
 
     /** Execute the given function when backtracking. */
@@ -280,18 +340,19 @@ public:
                            utl::max(utl::KB(4), (_revActionsSize + 1)));
             _revActionsSize = _revActionsLim - _revActions;
         }
-        *(_revActionsPtr++) = action;
+        *_revActionsPtr++ = action;
     }
     //@}
 private:
-    typedef std::stack<Goal*> goal_stack_t;
-    typedef std::vector<ChoicePoint*> cp_vector_t;
-    typedef std::stack<ChoicePoint*> cp_stack_t;
-    typedef std::set<ConstrainedVar*> cv_set_t;
+    using goal_stack_t = std::stack<Goal*>;
+    using cp_vector_t = std::vector<ChoicePoint*>;
+    using cp_stack_t = std::stack<ChoicePoint*>;
+    using cv_set_t = std::set<ConstrainedVar*>;
 
 private:
     void init();
     void deInit();
+
     ChoicePoint* pushChoicePoint();
     void popChoicePoint();
     void goalStackClear();
@@ -318,7 +379,7 @@ private:
     lut::SkipListDepthArray* _skipListDepthArray;
     BoundPropagator* _boundPropagator;
 
-    // Backtracking /////////////////////////////////////////////////////////////////////////////////
+    // Backtracking ////////////////////////////////////////////////////////////////////////////////
 
     // choice points
     cp_vector_t _storedCPs;

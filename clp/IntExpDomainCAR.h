@@ -12,9 +12,12 @@ CLP_NS_BEGIN;
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
-   Integer expression domain (counted array representation).
+   Integer expression domain (Counted Array Representation).
 
-   \author Adam McKee
+   IntExpDomainCAR records the domain of a CountedIntVar.
+
+   \see CountedIntVar
+   \ingroup clp
 */
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -25,7 +28,7 @@ class IntExpDomainCAR : public IntExpDomain
     UTL_CLASS_DECL(IntExpDomainCAR, IntExpDomain);
 
 public:
-    typedef std::map<int, uint_t> int_uint_map_t;
+    using int_uint_map_t = std::map<int, uint_t>;
 
 public:
     /** Constructor. */
@@ -34,26 +37,23 @@ public:
     /** Constructor. */
     IntExpDomainCAR(Manager* mgr, const int_uint_map_t& domain);
 
-    /** Copy another instance. */
     virtual void copy(const utl::Object& rhs);
 
-    /** Decrement the count for the given value. */
+    /**
+       Decrement the count for a value.
+       \param val value to decrement the count for
+       \param num amount to deduct (default is 1)
+    */
     uint_t decrement(int val, uint_t num = 1);
 
-    /** Contains the given value? */
+    /// \name Accessors (const)
+    //@{
     virtual bool has(int val) const;
-
-    /** Get begin iterator. */
     virtual IntExpDomainIt* begin() const;
-
-    /** Get end iterator. */
     virtual IntExpDomainIt* end() const;
-
-    /** Get the maximum value < val. */
     virtual int getPrev(int val) const;
-
-    /** Get the minimum value > val. */
     virtual int getNext(int val) const;
+    //@}
 
 protected:
     void
@@ -83,8 +83,8 @@ private:
     uint_t setCount(uint_t idx, uint_t count);
 
 private:
-    typedef utl::Vector<int> int_vector_t;
-    typedef utl::Vector<uint32_t> uint32_vector_t;
+    using int_vector_t = utl::Vector<int>;
+    using uint32_vector_t = utl::Vector<uint32_t>;
 
 private:
     uint_t _num;

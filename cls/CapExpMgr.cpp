@@ -62,9 +62,9 @@ CapExp::initExp(const Schedule* schedule)
         uint_t cap = _resCaps[idx + 1];
         Resource* res = resourcesArray[resId];
         ASSERTD(res->isA(CompositeResource));
-        CompositeResource* cres = (CompositeResource*)res;
-        CompositeTimetable& timetable = cres->timetable();
-        IntExp* resCapExp = timetable.addCapExp(cap);
+        auto cres = utl::cast<CompositeResource>(res);
+        auto& timetable = cres->timetable();
+        auto resCapExp = timetable.addCapExp(cap);
         _capExp->intersect(resCapExp);
     }
 }

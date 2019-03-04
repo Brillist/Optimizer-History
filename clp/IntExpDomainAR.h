@@ -12,9 +12,14 @@ CLP_NS_BEGIN;
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
-   Integer expression domain (simple array representation).
+   Integer expression domain (array representation).
 
-   \author Adam McKee
+   IntExpDomainAR is a domain representation for IntExp that begins with a set of values,
+   and records the presence or absence of those values with a single bit.  It's an efficient
+   domain representation if the difference between the smallest and largest initial domain
+   values is not very large.
+
+   \ingroup clp
 */
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -25,54 +30,59 @@ class IntExpDomainAR : public IntExpDomain
     UTL_CLASS_DECL(IntExpDomainAR, IntExpDomain);
 
 public:
-    typedef std::set<int> int_set_t;
-    typedef std::set<uint_t> uint_set_t;
+    using int_set_t = std::set<int>;
+    using uint_set_t = std::set<uint_t>;
 
 public:
-    /** Constructor. */
+    /**
+       Constructor.
+       \param mgr associated Manager
+    */
     IntExpDomainAR(Manager* mgr);
 
-    /** Constructor. */
+    /**
+       Constructor.
+       \param mgr associated Manager
+       \param domain initial domain (a set of signed integer values)
+       \param empty initialize as empty?
+    */
     IntExpDomainAR(Manager* mgr, const int_set_t& domain, bool empty = false);
 
-    /** Constructor. */
+    /**
+       Constructor.
+       \param mgr associated Manager
+       \param domain initial domain (a set of usigned integer values)
+       \param empty initialize as empty?
+    */
     IntExpDomainAR(Manager* mgr, const uint_set_t& domain, bool empty = false);
 
-    /** Constructor. */
+    /**
+       Constructor.
+       \param mgr associated Manager
+       \param num number of values
+       \param values array of signed integer values
+       \param valuesOwner take ownership of `values`?
+       \param empty initialize as empty?
+    */
     IntExpDomainAR(
         Manager* mgr, uint_t num, int* values, bool valuesOwner = true, bool empty = false);
 
-    /** Copy another instance. */
     virtual void copy(const utl::Object& rhs);
 
     /** Copy flags from another instance. */
     void copyFlags(const IntExpDomainAR* rhs);
 
-    /** Contains the given value? */
+    /** Test equality of flags with another instance. */
+    bool flagsEqual(const IntExpDomainAR* rhs) const;
+
     virtual bool has(int val) const;
 
-    /** Test equality of flags. */
-    bool
-    flagsEqual(const IntExpDomainAR* rhs) const
-    {
-        ASSERTD(_flagsSize == rhs->_flagsSize);
-        if (_size != rhs->_size)
-            return false;
-        if (_flagsSize == 1)
-            return (*_flags == *rhs->_flags);
-        return (memcmp(_flags, rhs->_flags, _flagsSize * 4) == 0);
-    }
-
-    /** Get begin iterator. */
     virtual IntExpDomainIt* begin() const;
 
-    /** Get end iterator. */
     virtual IntExpDomainIt* end() const;
 
-    /** Get the maximum value < val. */
     virtual int getPrev(int val) const;
 
-    /** Get the minimum value > val. */
     virtual int getNext(int val) const;
 
 protected:

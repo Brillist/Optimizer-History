@@ -16,16 +16,13 @@ CLP_NS_BEGIN;
 class Manager;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-//// RevSet ////////////////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
    Reversible set.
 
-   RevSet is a set of objects that tracks changes to itself, so they can be reversed in the event
-   of backtracking.
+   RevSet is a set that supports backtracking.
 
-   \author Adam McKee
+   \ingroup clp
 */
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -36,8 +33,8 @@ template <class T> class RevSet : public ConstrainedVar
     UTL_CLASS_NO_COPY;
 
 public:
-    typedef utl::TRBtree<T> set_t;
-    typedef typename set_t::iterator iterator;
+    using set_t = utl::TRBtree<T>;
+    using iterator = typename set_t::iterator;
 
 public:
     /** Constructor. */
@@ -50,15 +47,17 @@ public:
 
     virtual void backtrack();
 
+    /** Initialize. */
+    void initialize(Manager* mgr, rsd_t type = rsd_both);
+
+    /// \name Accessors (const)
+    //@{
     /** Get the manager. */
     Manager*
     manager() const
     {
         return _mgr;
     }
-
-    /** Initialize. */
-    void initialize(Manager* mgr, rsd_t type = rsd_both);
 
     /** Get the size. */
     uint_t
@@ -74,46 +73,57 @@ public:
         return _set.empty();
     }
 
-    /** Intersection size. */
+    /** Intersection cardinality (size). */
     uint_t
     intersectCard(const RevSet<T>& rhs) const
     {
         return _set.intersectCard(rhs._set);
     }
 
-    /** Add the given object to the set. */
-    bool add(const utl::Object* object);
-
-    /** Remove the given object from the set. */
-    bool remove(const utl::Object* object);
-
-    /** Contains the given object? */
-    bool
-    has(const utl::Object* key) const
-    {
-        return (_set.has(*key));
-    }
-
-    /** Find the given object in the set. */
-    iterator
-    find(const utl::Object* key) const
-    {
-        return _set.findIt(*key);
-    }
-
-    /** Get a begin iterator. */
+    /** Get begin iterator. */
     iterator
     begin() const
     {
         return _set.begin();
     }
 
-    /** Get an end iterator. */
+    /** Get end iterator. */
     iterator
     end() const
     {
         return _set.end();
     }
+    //@}
+
+    /// \name Searching
+    //@{
+    /** Set contains a matching object? */
+    bool
+    has(const utl::Object* key) const
+    {
+        return (_set.has(*key));
+    }
+
+    /** Find the matching object in the set. */
+    iterator
+    find(const utl::Object* key) const
+    {
+        return _set.findIt(*key);
+    }
+    //@}
+
+    /// \name Modification
+    //@{
+    /**
+       Add the given object to the set.
+       \param object object to be added
+       \return true iff the object was added
+    */
+    bool add(const utl::Object* object);
+
+    /** Remove the given object from the set. */
+    bool remove(const utl::Object* object);
+    //@}
 
 private:
     void init();

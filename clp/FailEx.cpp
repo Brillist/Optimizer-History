@@ -16,10 +16,10 @@ CLP_NS_BEGIN;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-FailEx::FailEx(String* str, uint_t label)
+FailEx::FailEx(const String& str, uint_t label)
     : utl::Exception("inconsistency", nullptr)
 {
-    init(str, label);
+    init(str.clone(), label);
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -27,9 +27,8 @@ FailEx::FailEx(String* str, uint_t label)
 void
 FailEx::copy(const utl::Object& rhs)
 {
-    ASSERTD(rhs.isA(FailEx));
-    const FailEx& ex = (const FailEx&)rhs;
-    Exception::copy(ex);
+    auto& ex = utl::cast<FailEx>(rhs);
+    super::copy(ex);
     delete _str;
     _str = utl::clone(ex._str);
     _label = ex._label;

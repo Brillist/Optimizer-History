@@ -288,7 +288,7 @@ OpSeqMutate::setOps(const ClevorDataSet* dataSet)
             {
                 PtActivity* ptact = (PtActivity*)act;
                 const IntVar* ptExp = ptact->possiblePts();
-                if ((ptExp->isBound() && ptExp->getValue() == 0))
+                if ((ptExp->isBound() && ptExp->value() == 0))
                 {
                     continue;
                 }

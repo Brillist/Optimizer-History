@@ -11,11 +11,14 @@ CLP_NS_BEGIN;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-/** Precedence relationship. */
+/**
+   RevArray backtracking mode.
+   \ingroup clp
+*/
 enum ra_btmode_t
 {
     ra_bt_full, /**< save entire array */
-    ra_bt_elem  /**< save individually modified elements */
+    ra_bt_elem  /**< save modified elements individually */
 };
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -25,10 +28,10 @@ enum ra_btmode_t
 /**
    Reversible array.
 
-   RevArray is an array that tracks changes to itself, so they can be reversed in the event of
-   backtracking.
+   RevArray is an array that supports backtracking.
 
-   \author Adam McKee
+   \see Manager
+   \ingroup clp
 */
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -39,26 +42,27 @@ template <class T> class RevArray : public utl::Object
     UTL_CLASS_NO_COPY;
 
 public:
-    typedef T value_type;
-    typedef T* iterator;
-    typedef const T* const_iterator;
+    using value_type = T;
+    using iterator = T*;
+    using const_iterator = const T*;
 
 public:
-    /** Constructor. */
+    /**
+       Constructor.
+       \param mgr associated Manager
+       \param btMode backtracking mode
+    */
     RevArray(Manager* mgr, ra_btmode_t btMode = ra_bt_full)
     {
         init();
         initialize(mgr, btMode);
     }
 
-    /** Get the manager. */
-    Manager*
-    manager() const
-    {
-        return _mgr;
-    }
-
-    /** Initialize. */
+    /**
+       Initialize.
+       \param mgr associated Manager
+       \param btMode backtracking mode
+    */
     void
     initialize(Manager* mgr, ra_btmode_t btMode = ra_bt_full)
     {
@@ -67,8 +71,14 @@ public:
         _btMode = btMode;
     }
 
-    /** Empty the array. */
-    void clear();
+    /// \name Accessors (const)
+    //@{
+    /** Get the manager. */
+    Manager*
+    manager() const
+    {
+        return _mgr;
+    }
 
     /** Get the size. */
     uint_t
@@ -84,9 +94,6 @@ public:
         return (_size == 0);
     }
 
-    /** Add the given object to the end of the array. */
-    void add(const T& val);
-
     /** Index into the array. */
     const T&
     get(uint_t idx) const
@@ -95,46 +102,59 @@ public:
         return _array[idx];
     }
 
-    /** Set the value of an array element. */
-    void set(uint_t idx, const T& val);
-
-    /** Remove an array element. */
-    void remove(uint_t idx);
-
-    /** Get a begin iterator. */
-    const_iterator
-    begin() const
-    {
-        return _array;
-    }
-
-    /** Get an end iterator. */
-    const_iterator
-    end() const
-    {
-        return (_array + _size);
-    }
-
-    /** Get a begin iterator. */
-    iterator
-    begin()
-    {
-        return _array;
-    }
-
-    /** Get an end iterator. */
-    iterator
-    end()
-    {
-        return (_array + _size);
-    }
-
     /** Index into the array. */
     const T& operator[](uint_t idx) const
     {
         ASSERTD(idx < _size);
         return _array[idx];
     }
+
+    /** Get begin iterator. */
+    const_iterator
+    begin() const
+    {
+        return _array;
+    }
+
+    /** Get end iterator. */
+    const_iterator
+    end() const
+    {
+        return (_array + _size);
+    }
+    //@}
+
+    /// \name Accessors (non-const)
+    //@{
+    /** Get begin iterator. */
+    iterator
+    begin()
+    {
+        return _array;
+    }
+
+    /** Get end iterator. */
+    iterator
+    end()
+    {
+        return (_array + _size);
+    }
+    //@}
+
+    /// \name Modification
+    //@{
+    /** Empty the array. */
+    void clear();
+
+    /** Add the given object to the end of the array. */
+    void add(const T& val);
+
+    /** Set the value of an array element. */
+    void set(uint_t idx, const T& val);
+
+    /** Remove an array element. */
+    void remove(uint_t idx);
+    //@}
 
 private:
     void
@@ -168,11 +188,11 @@ private:
     ra_btmode_t _btMode;
     uint_t _btFullDepth;
 
-    /// reversible //////////////////////////////////////////
+    /// reversible /////////////////////////////////////////////
     uint_t _stateDepth;
-    uint_t _maxSize;
     uint_t _size;
-    /// reversible //////////////////////////////////////////
+    uint_t _maxSize; // _size at last _saveState() call
+    /// reversible /////////////////////////////////////////////
 
     T* _array;
     size_t _allocSize;
@@ -202,8 +222,7 @@ RevArray<T>::add(const T& val)
         utl::arrayGrow(_array, _allocSize);
     }
 
-    // if we are modifying something that is visible to a prior state,
-    // we must save the old array value(s)
+    // if we are modifying something that is visible to a prior state, save old value(s)
     if (_size < _maxSize)
     {
         if (_btMode == ra_bt_full)
@@ -261,7 +280,7 @@ RevArray<T>::remove(uint_t idx)
 
     saveState();
 
-    // cleaner to do this up front
+    // one less element
     --_size;
 
     // removing the last element is a simple case
@@ -270,8 +289,9 @@ RevArray<T>::remove(uint_t idx)
         return;
     }
 
-    // if we are modifying something that is visible to a prior state,
-    // we must save the old array value(s)
+    // NOTE: _size is an index to the last element (not the removed element)
+
+    // if we are modifying something that is visible to a prior state, save old value(s)
     if (idx < _maxSize)
     {
         if (_btMode == ra_bt_full)

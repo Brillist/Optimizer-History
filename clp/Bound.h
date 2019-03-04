@@ -10,7 +10,10 @@ CLP_NS_BEGIN;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-/** Bound type (lower or upper bound). */
+/**
+   Bound type (lower or upper bound).
+   \ingroup clp
+*/
 enum bound_t
 {
     bound_lb, /**< lower bound */
@@ -23,7 +26,16 @@ enum bound_t
 /**
    Lower or upper bound.
 
-   \author Adam McKee
+   For example, a lower bound could represent an activity's earliest possible start time (and
+   an upper bound could represent its latest possible start time).  Apart from backtracking, bounds
+   only move in one direction: lower bounds can only increase, and upper bounds can only decrease.
+
+   The (protected) virtual function `find()` provides a way for a subclass of Bound to perform
+   additional calculation to adjust the bound when it moves, ensuring it lands at a valid point.
+   *Invalidating* a bound forces `find()` to be called to re-check the bound.
+
+   \see CycleGroup
+   \ingroup clp
 */
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -34,10 +46,21 @@ class Bound : public utl::Object
     UTL_CLASS_NO_COPY;
 
 public:
-    /** Constructor. */
+    /**
+       Constructor.
+
+       If the initial bound isn't specified it will be set to the loosest value based on bound type.
+
+       \param mgr associated Manager
+       \param type bound type
+       \param bound (optional) initial bound
+    */
     Bound(Manager* mgr, bound_t type, int bound = utl::int_t_min);
 
-    /// \name Accessors
+    /** Get a reference to the value of the bound. */
+    virtual const int& get();
+
+    /// \name Accessors (const)
     //@{
     /** Get the manager. */
     Manager*
@@ -53,23 +76,9 @@ public:
         return _name;
     }
 
-    /** Get the name. */
-    String&
-    name()
-    {
-        return _name;
-    }
-
     /** Get the debug flag. */
     bool
     debugFlag() const
-    {
-        return _debugFlag;
-    }
-
-    /** Get the debug flag. */
-    bool&
-    debugFlag()
     {
         return _debugFlag;
     }
@@ -81,10 +90,7 @@ public:
         return _type;
     }
 
-    /** Get the bound. */
-    virtual const int& get();
-
-    /** Get a reference to the bound. */
+    /** Get a reference to the value of the bound. */
     const int&
     getRef() const
     {
@@ -97,24 +103,24 @@ public:
     {
         return _findPoint;
     }
+    //@}
 
-    /** Get loosest bound. */
-    int
-    loosest()
+    /// \name Accessors (non-const)
+    //@{
+    /** Set the name. */
+    void setName(const char* name)
     {
-        return (_type == bound_lb) ? utl::int_t_min : utl::int_t_max;
+        _name = name;
     }
 
-    /** Get tightest bound. */
-    int
-    tightest()
+    /** Set the debug flag. */
+    void setDebugFlag(bool debugFlag)
     {
-        return (_type == bound_lb) ? utl::int_t_max : utl::int_t_min;
+        _debugFlag = debugFlag;
     }
     //@}
 
-    /// \name Update
-    //@{
+    /// \name Calculation (const)
     /** Bound is valid? */
     bool
     valid() const
@@ -122,6 +128,23 @@ public:
         return (_type == bound_lb) ? (_bound <= _findPoint) : (_bound >= _findPoint);
     }
 
+    /** Get loosest bound. */
+    int
+    loosest() const
+    {
+        return (_type == bound_lb) ? utl::int_t_min : utl::int_t_max;
+    }
+
+    /** Get tightest bound. */
+    int
+    tightest() const
+    {
+        return (_type == bound_lb) ? utl::int_t_max : utl::int_t_min;
+    }
+    //@}
+
+    /// \name Update
+    //@{
     /** Invalidate the bound. */
     void
     invalidate()
@@ -144,7 +167,7 @@ public:
         set(tightest());
     }
 
-    /** Set the given lower or upper bound. */
+    /** Set lower or upper bound (according to bound type). */
     int
     set(int bound)
     {

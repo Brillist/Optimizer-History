@@ -15,16 +15,13 @@ class Or;
 /**
    Choice point.
 
-   In a solution search, a choice point corresponds to a logical "Or" of goals.  At a choice point,
-   the search state (including domains of all constrained variables) is preserved, then one of the
-   goals is tried (pushed onto the goal stack).  If the execution of an Or-related goal fails, the
-   search state is recovered from the choice point, and the next Or-related goal (if any) is tried.
-   If no remaining goals are left, then failure continues down the goal stack until another choice
-   point (Or goal) is encountered.
+   A choice point records the state of all managed data, allowing that state to be restored
+   so that different choices can be made to find a different solution.
 
    \see Manager
-   \see Or
-   \author Adam McKee
+   \see Manager::pushState
+   \see Manager::popState
+   \ingroup clp
 */
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -32,7 +29,7 @@ class Or;
 class ChoicePoint
 {
 public:
-    typedef std::stack<Goal*> goal_stack_t;
+    using goal_stack_t = std::stack<Goal*>;
 
 public:
     /** Constructor. */
@@ -41,7 +38,11 @@ public:
         init();
     }
 
-    /** Constructor. */
+    /**
+       Constructor.
+       \param orGoal Or goal associated with this ChoicePoint
+       \param goalStack goal stack at time of ChoicePoint's creation (restored when backtracking)
+    */
     ChoicePoint(Or* orGoal, const goal_stack_t& goalStack)
     {
         init();
@@ -54,206 +55,39 @@ public:
         deInit();
     }
 
-    /** Re-initialize. */
+    /** Reset to default state. */
     void clear();
 
-    /** Set attributes. */
+    /**
+       (Re-)initialize.
+       \param orGoal Or goal associated with this ChoicePoint
+       \param goalStack goal stack at time of ChoicePoint's creation (restored when backtracking)
+    */
     void set(Or* orGoal, const goal_stack_t& goalStack);
 
-    /** Get rev-longs index. */
-    uint_t
-    getRevLongsIdx() const
+    /** Has a remaining choice? */
+    bool hasRemainingChoice() const;
+
+    /** Get the next choice and increment the index. */
+    Goal* nextChoice();
+
+    /** Backtrack. */
+    void backtrack(goal_stack_t& goalStack);
+
+    /** This is the root choice point? */
+    bool
+    isRoot() const
     {
-        return _revLongsIdx;
+        return (_or == nullptr);
     }
 
-    /** Set rev-longs index. */
-    void
-    setRevLongsIdx(uint_t revLongsIdx)
-    {
-        _revLongsIdx = revLongsIdx;
-    }
-
-    /** Get rev-long-arrays index. */
-    uint_t
-    getRevLongArraysIdx() const
-    {
-        return _revLongArraysIdx;
-    }
-
-    /** Set rev-long-arrays index. */
-    void
-    setRevLongArraysIdx(uint_t revLongArraysIdx)
-    {
-        _revLongArraysIdx = revLongArraysIdx;
-    }
-
-    /** Get rev-longs indirect index. */
-    uint_t
-    getRevLongsIndIdx() const
-    {
-        return _revLongsIndIdx;
-    }
-
-    /** Set rev-longs indirect index. */
-    void
-    setRevLongsIndIdx(uint_t revLongsIndIdx)
-    {
-        _revLongsIndIdx = revLongsIndIdx;
-    }
-
-    /** Get rev-long-arrays indirect index. */
-    uint_t
-    getRevLongArraysIndIdx() const
-    {
-        return _revLongArraysIndIdx;
-    }
-
-    /** Set rev-long-arrays indirect index. */
-    void
-    setRevLongArraysIndIdx(uint_t revLongArraysIndIdx)
-    {
-        _revLongArraysIndIdx = revLongArraysIndIdx;
-    }
-
-    /** Get rev-ints index. */
-    uint_t
-    getRevIntsIdx() const
-    {
-        return _revIntsIdx;
-    }
-
-    /** Set rev-ints index. */
-    void
-    setRevIntsIdx(uint_t revIntsIdx)
-    {
-        _revIntsIdx = revIntsIdx;
-    }
-
-    /** Get rev-arrays index. */
-    uint_t
-    getRevIntArraysIdx() const
-    {
-        return _revIntArraysIdx;
-    }
-
-    /** Set rev-arrays index. */
-    void
-    setRevIntArraysIdx(uint_t revIntArraysIdx)
-    {
-        _revIntArraysIdx = revIntArraysIdx;
-    }
-
-    /** Get rev-ints indirect index. */
-    uint_t
-    getRevIntsIndIdx() const
-    {
-        return _revIntsIndIdx;
-    }
-
-    /** Set rev-ints indirect index. */
-    void
-    setRevIntsIndIdx(uint_t revIntsIndIdx)
-    {
-        _revIntsIndIdx = revIntsIndIdx;
-    }
-
-    /** Get rev-arrays indirect index. */
-    uint_t
-    getRevIntArraysIndIdx() const
-    {
-        return _revIntArraysIndIdx;
-    }
-
-    /** Set rev-arrays indirect index. */
-    void
-    setRevIntArraysIndIdx(uint_t revIntArraysIndIdx)
-    {
-        _revIntArraysIndIdx = revIntArraysIndIdx;
-    }
-
-    /** Get rev-delta-vars index. */
-    uint_t
-    getRevDeltaVarsIdx() const
-    {
-        return _revDeltaVarsIdx;
-    }
-
-    /** Set rev-delta-vars index. */
-    void
-    setRevDeltaVarsIdx(uint_t revDeltaVarsIdx)
-    {
-        _revDeltaVarsIdx = revDeltaVarsIdx;
-    }
-
-    /** Get rev-cts index. */
-    uint_t
-    getRevCtsIdx() const
-    {
-        return _revCtsIdx;
-    }
-
-    /** Set rev-cts index. */
-    void
-    setRevCtsIdx(uint_t revCtsIdx)
-    {
-        _revCtsIdx = revCtsIdx;
-    }
-
-    /** Get rev-toggles index. */
-    uint_t
-    getRevTogglesIdx() const
-    {
-        return _revTogglesIdx;
-    }
-
-    /** Set rev-toggles index. */
-    void
-    setRevTogglesIdx(uint_t revTogglesIdx)
-    {
-        _revTogglesIdx = revTogglesIdx;
-    }
-
-    /** Get rev-allocations index. */
-    uint_t
-    getRevAllocationsIdx() const
-    {
-        return _revAllocationsIdx;
-    }
-
-    /** Set rev-allocations index. */
-    void
-    setRevAllocationsIdx(uint_t revAllocationsIdx)
-    {
-        _revAllocationsIdx = revAllocationsIdx;
-    }
-
-    /** Get rev-actions index. */
-    uint_t
-    getRevActionsIdx() const
-    {
-        return _revActionsIdx;
-    }
-
-    /** Set rev-actions index. */
-    void
-    setRevActionsIdx(uint_t revActionsIdx)
-    {
-        _revActionsIdx = revActionsIdx;
-    }
-
+    /// \name Accessors (const)
+    //@{
     /** Get the manager. */
     Manager*
     manager() const
     {
         return _mgr;
-    }
-
-    /** Set the manager. */
-    void
-    setManager(Manager* mgr)
-    {
-        _mgr = mgr;
     }
 
     /** Get the or goal. */
@@ -270,30 +104,203 @@ public:
         return _orIdx;
     }
 
-    /** Is the root choice point? */
-    bool
-    isRoot() const
-    {
-        return (_or == nullptr);
-    }
-
-    /** Has a remaining choice? */
-    bool hasRemainingChoice() const;
-
-    /** Get the next choice and increment the index. */
-    Goal* getNextChoice();
-
     /** Has a label? */
-    bool isLabeled() const;
+    bool hasLabel() const;
 
     /** Get the label. */
     uint_t label() const;
 
-    /** Backtrack. */
-    void backtrack(goal_stack_t& goalStack);
+    /** Get rev-longs index. */
+    uint_t
+    revLongsIdx() const
+    {
+        return _revLongsIdx;
+    }
 
-private:
-    typedef std::vector<Goal*> goal_vector_t;
+    /** Get rev-long-arrays index. */
+    uint_t
+    revLongArraysIdx() const
+    {
+        return _revLongArraysIdx;
+    }
+
+    /** Get rev-longs indirect index. */
+    uint_t
+    revLongsIndIdx() const
+    {
+        return _revLongsIndIdx;
+    }
+
+    /** Get rev-long-arrays indirect index. */
+    uint_t
+    revLongArraysIndIdx() const
+    {
+        return _revLongArraysIndIdx;
+    }
+
+    /** Get rev-ints index. */
+    uint_t
+    revIntsIdx() const
+    {
+        return _revIntsIdx;
+    }
+
+    /** Get rev-arrays index. */
+    uint_t
+    revIntArraysIdx() const
+    {
+        return _revIntArraysIdx;
+    }
+    /** Get rev-ints indirect index. */
+    uint_t
+    revIntsIndIdx() const
+    {
+        return _revIntsIndIdx;
+    }
+
+    /** Get rev-arrays indirect index. */
+    uint_t
+    revIntArraysIndIdx() const
+    {
+        return _revIntArraysIndIdx;
+    }
+
+    /** Get rev-delta-vars index. */
+    uint_t
+    revDeltaVarsIdx() const
+    {
+        return _revDeltaVarsIdx;
+    }
+
+    /** Get rev-cts index. */
+    uint_t
+    revCtsIdx() const
+    {
+        return _revCtsIdx;
+    }
+
+    /** Get rev-toggles index. */
+    uint_t
+    revTogglesIdx() const
+    {
+        return _revTogglesIdx;
+    }
+
+    /** Get rev-allocations index. */
+    uint_t
+    revAllocationsIdx() const
+    {
+        return _revAllocationsIdx;
+    }
+
+    /** Get rev-actions index. */
+    uint_t
+    revActionsIdx() const
+    {
+        return _revActionsIdx;
+    }
+    //@}
+
+    /// \name Accessors (non-const)
+    //@{
+    /** Set the manager. */
+    void
+        setManager(Manager* mgr)
+    {
+        _mgr = mgr;
+    }
+
+    /** Set rev-longs index. */
+    void
+    setRevLongsIdx(uint_t revLongsIdx)
+    {
+        _revLongsIdx = revLongsIdx;
+    }
+
+    /** Set rev-long-arrays index. */
+    void
+    setRevLongArraysIdx(uint_t revLongArraysIdx)
+    {
+        _revLongArraysIdx = revLongArraysIdx;
+    }
+
+    /** Set rev-longs indirect index. */
+    void
+    setRevLongsIndIdx(uint_t revLongsIndIdx)
+    {
+        _revLongsIndIdx = revLongsIndIdx;
+    }
+
+    /** Set rev-long-arrays indirect index. */
+    void
+    setRevLongArraysIndIdx(uint_t revLongArraysIndIdx)
+    {
+        _revLongArraysIndIdx = revLongArraysIndIdx;
+    }
+
+    /** Set rev-ints index. */
+    void
+    setRevIntsIdx(uint_t revIntsIdx)
+    {
+        _revIntsIdx = revIntsIdx;
+    }
+
+    /** Set rev-arrays index. */
+    void
+    setRevIntArraysIdx(uint_t revIntArraysIdx)
+    {
+        _revIntArraysIdx = revIntArraysIdx;
+    }
+
+    /** Set rev-ints indirect index. */
+    void
+    setRevIntsIndIdx(uint_t revIntsIndIdx)
+    {
+        _revIntsIndIdx = revIntsIndIdx;
+    }
+
+    /** Set rev-arrays indirect index. */
+    void
+    setRevIntArraysIndIdx(uint_t revIntArraysIndIdx)
+    {
+        _revIntArraysIndIdx = revIntArraysIndIdx;
+    }
+
+    /** Set rev-delta-vars index. */
+    void
+    setRevDeltaVarsIdx(uint_t revDeltaVarsIdx)
+    {
+        _revDeltaVarsIdx = revDeltaVarsIdx;
+    }
+
+    /** Set rev-cts index. */
+    void
+    setRevCtsIdx(uint_t revCtsIdx)
+    {
+        _revCtsIdx = revCtsIdx;
+    }
+
+    /** Set rev-toggles index. */
+    void
+    setRevTogglesIdx(uint_t revTogglesIdx)
+    {
+        _revTogglesIdx = revTogglesIdx;
+    }
+
+    /** Set rev-allocations index. */
+    void
+    setRevAllocationsIdx(uint_t revAllocationsIdx)
+    {
+        _revAllocationsIdx = revAllocationsIdx;
+    }
+
+    /** Set rev-actions index. */
+    void
+    setRevActionsIdx(uint_t revActionsIdx)
+    {
+        _revActionsIdx = revActionsIdx;
+    }
+    //@}
 
 private:
     void init();

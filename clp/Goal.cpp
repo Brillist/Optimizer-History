@@ -18,8 +18,7 @@ CLP_NS_BEGIN;
 void
 Goal::copy(const Object& rhs)
 {
-    ASSERTD(rhs.isA(Goal));
-    const Goal& goal = (const Goal&)rhs;
+    auto& goal = utl::cast<Goal>(rhs);
     _mgr = goal._mgr;
 }
 

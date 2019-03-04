@@ -128,7 +128,7 @@ ResourceCalendar::makeBreakList(Manager* mgr)
 {
     ASSERTD(_breakList == nullptr);
     _breakList = new IntVar(mgr);
-    _breakList->failOnEmpty() = false;
+    _breakList->setFailOnEmpty(false);
     _breakList->remove(int_t_min, -1);
     ResourceCalendarSpan** it;
     int horizonTS = int_t_min;

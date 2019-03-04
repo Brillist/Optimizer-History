@@ -5,7 +5,6 @@
 #include <lut/SkipListDepthArray.h>
 #include <clp/ConstrainedVar.h>
 #include <clp/IntSpan.h>
-#include <clp/IntSpanArray.h>
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -18,9 +17,13 @@ class Manager;
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
-   Reversible collection of non-overlapping integer spans.
+   Reversible collection of integer spans.
 
-   \author Adam McKee
+   RevIntSpanCol is a set of non-overlapping integer spans that supports backtracking.
+
+   \see IntSpan
+   \see Manager
+   \ingroup clp
 */
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -34,7 +37,10 @@ public:
         init();
     }
 
-    /** Constructor. */
+    /**
+       Constructor.
+       \param mgr associated Manager
+    */
     RevIntSpanCol(Manager* mgr)
     {
         init(mgr);
@@ -49,7 +55,20 @@ public:
     /** Copy another instance. */
     virtual void copy(const RevIntSpanCol& rhs);
 
-    /// \name Accessors
+    /// \name Searching
+    //@{
+    /** Find the span that contains val. */
+    IntSpan* find(int val);
+
+    /** Find the span that contains val. */
+    const IntSpan*
+    find(int val) const
+    {
+        return ((RevIntSpanCol*)this)->find(val);
+    }
+    //@}
+
+    /// \name Accessors (const)
     //@{
     /** Get the manager. */
     Manager*
@@ -57,19 +76,6 @@ public:
     {
         return _mgr;
     }
-
-    /** Set the manager. */
-    void setManager(Manager* mgr);
-
-    /** Find the last span s.t. span.min <= val. */
-    const IntSpan*
-    find(int val) const
-    {
-        return ((RevIntSpanCol*)this)->find(val);
-    }
-
-    /** Find the span that contains val. */
-    IntSpan* find(int val);
 
     /** Get the revision number. */
     uint_t
@@ -92,6 +98,12 @@ public:
         return _tail;
     }
     //@}
+
+    /// \name Accessors (non-const)
+    //@{
+    /** Set the manager. */
+    void setManager(Manager* mgr);
+    //@}
 private:
     void init(Manager* mgr = nullptr);
     void deInit();
@@ -107,37 +119,23 @@ protected:
         else
             ++_rev;
     }
-
     virtual void _saveState();
 
     virtual IntSpan* newIntSpan(int min, int max, uint_t v0, uint_t v1, uint_t level = uint_t_max);
 
     virtual void set(IntSpan* span);
-
     void set(int min, int max, uint_t v0, uint_t v1);
 
-    /** Find the span that contains val. */
     IntSpan* findPrev(int val, IntSpan** prev) const;
-
-    /** Find the span that contains val. */
     IntSpan* findNext(int val, IntSpan** next) const;
-
-    /** Find the span that contains val. */
     IntSpan* findPrevForward(int val, IntSpan** prev) const;
-
-    /** Find the span that contains val. */
     IntSpan* findNextForward(int val, IntSpan** next) const;
 
     void backward(IntSpan** next);
-
     void eclipseNext(IntSpan** prev);
-
     uint_t insertAfter(IntSpan* span, IntSpan** prevSpans);
-
     void link(IntSpan** prev, IntSpan** next);
-
     void prevToNext(const IntSpan* span, IntSpan** prev, IntSpan** next);
-
     virtual uint_t validate(bool initialized = true) const;
 
 protected:

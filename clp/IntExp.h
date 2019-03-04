@@ -5,7 +5,6 @@
 #include <libutl/Span.h>
 #include <clp/ConstrainedBound.h>
 #include <clp/IntExpDomain.h>
-#include <clp/IntSpanArray.h>
 #include <clp/RevSet.h>
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -25,16 +24,17 @@ class Manager;
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
-   Constrained integer expression (abstract).
+   Integer expression (abstract).
 
-   IntExp is an abstract base for all integer expression classes.  It
-   records the domain of the integer expression, and tracks changes to the
-   domain between choice points (see ChoicePoint).  IntExp also keeps track
-   of the constraints that are interested in changes to it, and notifies
-   those constraints when events of interest occur.  See RevIntSpanCol for a
-   description of the events.
+   IntExp is an abstract base for all integer expression classes.  It records the domain of the
+   integer expression, and tracks changes to the domain between choice points.
 
-   \author Adam McKee
+   IntExp provides facilities for updating a ConstrainedBound or another IntExp in response to
+   changes in its domain (see \ref addIntersectExp, \ref addDomainBound, \ref addValueBound).
+
+   \see ChoicePoint
+   \see ConstrainedBound
+   \ingroup clp
 */
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -47,38 +47,28 @@ public:
     typedef IntExpDomainIt* iterator;
 
 public:
-    /** Constructor. */
+    /**
+       Constructor.
+       \param mgr associated Manager
+       \param domain domain implementation (default is IntExpDomainRISC)
+    */
     IntExp(Manager* mgr, IntExpDomain* domain = nullptr);
 
-    /** Copy another instance. */
     virtual void copy(const utl::Object& rhs);
 
-    /** Backtrack. */
-    virtual void
-    backtrack()
-    {
-        ABORT();
-    }
-
-    /** Return a fully managed copy of self. */
+    /** Return a managed copy of self. */
     virtual IntExp* mclone();
 
     /** Make managed copies of unmanaged referenced objects. */
-    virtual void
-    mcopy()
-    {
-    }
+    virtual void mcopy();
 
-    /** Post constraints. */
-    virtual void
-    postConstraints()
-    {
-    }
-
-    /// \name Accessors
-    //@{
-    /** Get a human-readable string representation. */
     virtual String toString() const;
+
+    virtual void backtrack();
+
+    /// \name Accessors (const)
+    //@{
+    virtual bool managed() const;
 
     /** Get the manager. */
     Manager*
@@ -87,14 +77,55 @@ public:
         return _mgr;
     }
 
+    /** Get the name. */
+    const std::string&
+    name() const
+    {
+        return _name;
+    }
+
+    /** Empty domain triggers search failure? */
+    bool
+    failOnEmpty() const
+    {
+        return _failOnEmpty;
+    }
+
+    /** Get the domain. */
+    const IntExpDomain*
+    domain() const
+    {
+        return _domain;
+    }
+
+    /** Get the domain (which must be of type IntExpDomainRISC). */
+    const IntExpDomainRISC* domainRISC() const;
+
+    /** Get begin iterator. */
+    iterator
+    begin() const
+    {
+        return _domain->begin();
+    }
+
+    /** Get end iterator. */
+    iterator
+    end() const
+    {
+        return _domain->end();
+    }
+    //@}
+
+    /// \name Accessors (non-const)
+    //@{
     /** Set the manager. */
     void setManager(Manager* mgr);
 
-    /** Get the name. */
-    const std::string&
-    getName() const
+    /** Set the \c managed flag. */
+    void
+    setManaged(bool managed)
     {
-        return _name;
+        _managed = managed;
     }
 
     /** Set the name. */
@@ -104,21 +135,37 @@ public:
         _name = name;
     }
 
-    /** Fail-on-empty? */
+    /** Indicate whether an empty domain should trigger failure of the current search. */
+    void
+    setFailOnEmpty(bool failOnEmpty)
+    {
+        _failOnEmpty = failOnEmpty;
+    }
+    //@}
+
+    /// \name Domain Queries
+    //@{
+    /** Get the size of the domain. */
+    uint_t size() const
+    {
+        return _domain->size();
+    }
+
+    /** Domain is empty? */
     bool
-    failOnEmpty() const
+    empty() const
     {
-        return _failOnEmpty;
+        return _domain->empty();
     }
 
-    /** Fail-on-empty? */
-    bool&
-    failOnEmpty()
+    /** Domain contains a single value? */
+    bool
+    isBound() const
     {
-        return _failOnEmpty;
+        return (size() == 1);
     }
 
-    /** Get the domain span. */
+    /** Return a span that contains all values in the domain. */
     utl::Span<int>
     span() const
     {
@@ -141,31 +188,10 @@ public:
 
     /** Get the single value in the domain. */
     int
-    getValue() const
+    value() const
     {
         ASSERTD(isBound());
         return _domain->min();
-    }
-
-    /** Get the size of the domain. */
-    virtual uint_t
-    size() const
-    {
-        return _domain->size();
-    }
-
-    /** Empty domain? */
-    bool
-    empty()
-    {
-        return _domain->empty();
-    }
-
-    /** Does the domain contain a single value? */
-    virtual bool
-    isBound() const
-    {
-        return (size() == 1);
     }
 
     /** Does the domain include the given value? */
@@ -175,39 +201,9 @@ public:
         return _domain->has(val);
     }
 
-    /** Get the domain. */
-    const IntExpDomain*
-    domain() const
-    {
-        return _domain;
-    }
-
-    /** Get the IntExpDomainRISC. */
-    const IntExpDomainRISC* domainRISC() const;
-
-    /** Get head. */
-    const IntSpan* head() const;
-
-    /** Get tail. */
-    const IntSpan* tail() const;
-
-    /** Get begin iterator. */
-    iterator
-    begin() const
-    {
-        return _domain->begin();
-    }
-
-    /** Get end iterator. */
-    iterator
-    end() const
-    {
-        return _domain->end();
-    }
-
     /**
-       If \b val is less than or equal to min(), return utl::int_t_min.
-       Otherwise, return the first domain value that is less than val.
+       Return the largest domain value that is smaller than \c val
+       (or `utl::int_t_min` if no such domain value exists).
     */
     int
     getPrev(int val) const
@@ -216,27 +212,13 @@ public:
     }
 
     /**
-       If \b val is greater than or equal to max(), return utl::int_t_max.
-       Otherwise, return the first domain value that is greater than val.
+       Return the largest domain value that is smaller than \c val
+       (or `utl::int_t_min` if no such domain value exists).
     */
     int
     getNext(int val) const
     {
         return _domain->getNext(val);
-    }
-
-    /** Get the \b managed flag. */
-    bool
-    isManaged() const
-    {
-        return _managed;
-    }
-
-    /** Set the \b managed flag. */
-    void
-    setManaged(bool managed)
-    {
-        _managed = managed;
     }
 
     /** Get the associated object. */
@@ -256,114 +238,108 @@ public:
 
     /// \name Domain Modification
     //@{
-    /** Set the domain. */
-    void set(int min, int max);
+    /**
+       Add a value.
+       \param val value to add
+       \return true if the value was added, false if it was present
+    */
+    bool add(int val);
 
-    /** Remove all domain values smaller than min. */
-    void
-    setMin(int min)
-    {
-        if (min <= _domain->min())
-            return;
-        _domain->remove(utl::int_t_min, min - 1);
-        if (_domain->anyEvent())
-            raiseEvents();
-    }
+    /**
+       Add values in the range `[min,max]`.
+       \param min minimum of added range
+       \param max maximum of added range
+       \return count of values in `[min,max]` that were actually added (not already present)
+    */
+    uint_t add(int min, int max);
 
-    /** Remove all domain values larger than max. */
-    void
-    setMax(int max)
-    {
-        if (max >= _domain->max())
-            return;
-        _domain->remove(max + 1, utl::int_t_max);
-        if (_domain->anyEvent())
-            raiseEvents();
-    }
+    /**
+       Remove a value.
+       \param val value to remove
+       \return true if the value was removed, false if it wasn't present
+    */
+    bool remove(int val);
 
-    /** Remove from the domain all values except \b val. */
+    /**
+       Remove domain values in the range `[min,max]`.
+       \param min minimum value of removed range
+       \param max maximum value of removed range
+       \return count of values in `[min,max]` that were actually removed (not already absent)
+    */
+    uint_t remove(int min, int max);
+
+    /** Enable or disable deferment of domain modifications. */
+    void setDeferRemoves(bool deferRemoves = true);
+
+    /** Remove values outside `[min,max]`. */
+    void setRange(int min, int max);
+
+    /** Remove values greater than `min`. */
+    void setMin(int min);
+
+    /** Remove values less than `max`. */
+    void setMax(int max);
+
+    /** Remove values except \c val. */
     void
     setValue(int val)
     {
         setRange(val, val);
-        ASSERTD(_domain->empty() || (getValue() == val));
+        ASSERTD(_domain->empty() || (value() == val));
     }
 
-    /**
-       Remove domain values that are not in the domain of
-       the given expression.
-    */
+    /** Remove values that are not in the domain of the given expression. */
     void intersect(const IntExp* expr);
 
-    /** Remove domain values that are not in the given array. */
+    /** Remove values that are not in the given array. */
     void intersect(const int* array, uint_t size);
 
-    /** Remove domain values that are not in the given array. */
+    /** Remove values that are not in the given array. */
     void intersect(const uint_t* array, uint_t size);
 
-    /** Remove domain values that are not in the given set. */
+    /** Remove values that are not in the given set. */
     void intersect(const std::set<int>& intSet);
-
-    /** Add the given value to the domain. */
-    bool add(int val);
-
-    /** Add domain values in the range [min,max]. */
-    uint_t add(int min, int max);
-
-    /** Remove the given value from the domain. */
-    bool remove(int val);
-
-    /** Defer domain modification. */
-    void deferRemoves(bool b);
-
-    /** Remove domain values in the range [min,max]. */
-    uint_t remove(int min, int max);
-
-    /** Remove domain values less than \b min or greater than \b max. */
-    void
-    setRange(int min, int max)
-    {
-        if (min > _domain->min())
-            _domain->remove(utl::int_t_min, min - 1);
-        if (max < _domain->max())
-            _domain->remove(max + 1, utl::int_t_max);
-        if (_domain->anyEvent())
-        {
-            raiseEvents();
-        }
-    }
     //@}
 
+    /// \name Events
+    //@{
+    /**
+       Add an "intersect expression" (one whose domain is a subset of this expression's domain).
+    */
     void
     addIntersectExp(IntExp* exp)
     {
         _intersectExps.add(exp);
     }
 
-    /// \name Events
-    //@{
-    /** Add a domain-bound. */
+    /**
+       Changes in this IntExp's domain will invalidate the given bound.
+       \see Bound::invalidate
+    */
     void
     addDomainBound(ConstrainedBound* bound)
     {
         _domainBounds.add(bound);
     }
 
-    /** Remove a domain-bound. */
-    void
-    removeDomainBound(ConstrainedBound* bound)
-    {
-        _domainBounds.remove(bound);
-    }
-
-    /** Add a value-bound. */
+    /**
+       Reduction of this IntExp's domain to a single value will invalidate the given bound.
+       \see Bound::invalidate
+    */
     void
     addValueBound(ConstrainedBound* bound)
     {
         _valueBounds.add(bound);
     }
 
-    /** Remove a value-bound. */
+    /** Undo addDomainBound. */
+    void
+    removeDomainBound(ConstrainedBound* bound)
+    {
+        _domainBounds.remove(bound);
+    }
+
+    /** Undo addValueBound. */
     void
     removeValueBound(ConstrainedBound* bound)
     {
@@ -381,8 +357,8 @@ private:
     void deInit();
 
 private:
-    typedef RevSet<ConstrainedBound> cb_set_t;
-    typedef RevArray<IntExp*> intexp_array_t;
+    using cb_set_t = RevSet<ConstrainedBound>;
+    using intexp_array_t = RevArray<IntExp*>;
 
 private:
     Manager* _mgr;

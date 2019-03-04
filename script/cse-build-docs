@@ -1,11 +1,1 @@
-#! /bin/sh
-
-# initialize
-. $(dirname "${BASH_SOURCE[0]}")/init.sh
-
-# remove and re-build documentation
-cd ${SOURCE_DIR}
-rm -rf build/doc
-mkdir build/doc
-doxygen etc/doxygen.cfg
-#sphinx-build etc/sphinx build/doc/sphinx
+../../libutl/script/libutl-build-docs

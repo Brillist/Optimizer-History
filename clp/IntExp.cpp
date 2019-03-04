@@ -36,8 +36,7 @@ IntExp::IntExp(Manager* mgr, IntExpDomain* domain)
 void
 IntExp::copy(const Object& rhs)
 {
-    ASSERTD(rhs.isA(IntExp));
-    const IntExp& rhsExp = (const IntExp&)rhs;
+    auto& rhsExp = utl::cast<IntExp>(rhs);
     _domain = lut::clone(rhsExp._domain);
     setManager(rhsExp.manager());
     _name = rhsExp._name;
@@ -48,11 +47,27 @@ IntExp::copy(const Object& rhs)
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
+String
+IntExp::toString() const
+{
+    return _domain->toString();
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
+void
+IntExp::backtrack()
+{
+    ABORT();
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
 IntExp*
 IntExp::mclone()
 {
     IntExp* exp;
-    if (isManaged())
+    if (this->managed())
     {
         exp = this;
         exp->mcopy();
@@ -69,10 +84,25 @@ IntExp::mclone()
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-String
-IntExp::toString() const
+void
+IntExp::mcopy()
 {
-    return _domain->toString();
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
+bool
+IntExp::managed() const
+{
+    return _managed;
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
+const IntExpDomainRISC*
+IntExp::domainRISC() const
+{
+    return utl::cast<IntExpDomainRISC>(_domain);
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -91,43 +121,92 @@ IntExp::setManager(Manager* mgr)
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-const IntExpDomainRISC*
-IntExp::domainRISC() const
+bool
+IntExp::add(int val)
 {
-    const IntExpDomainRISC* risc = dynamic_cast<const IntExpDomainRISC*>(_domain);
-    ASSERTD(risc != nullptr);
-    return risc;
+    _domain->add(val, val);
+    if (_domain->anyEvent())
+    {
+        raiseEvents();
+        return true;
+    }
+    return false;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-const IntSpan*
-IntExp::head() const
+uint_t
+IntExp::add(int min, int max)
 {
-    const IntExpDomainRISC* domain = dynamic_cast<const IntExpDomainRISC*>(_domain);
-    ASSERTD(domain != nullptr);
-    return domain->head();
-}
-
-////////////////////////////////////////////////////////////////////////////////////////////////////
-
-const IntSpan*
-IntExp::tail() const
-{
-    const IntExpDomainRISC* domain = dynamic_cast<const IntExpDomainRISC*>(_domain);
-    ASSERTD(domain != nullptr);
-    return domain->tail();
+    uint_t oldSize = _domain->size();
+    _domain->add(min, max);
+    if (_domain->anyEvent())
+    {
+        raiseEvents();
+        return (_domain->size() - oldSize);
+    }
+    return 0U;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
-IntExp::set(int min, int max)
+IntExp::setDeferRemoves(bool deferRemoves)
 {
-    min = utl::max(min, int_t_min + 1);
-    max = utl::min(max, int_t_max - 1);
-    _domain->remove(int_t_min, min - 1);
-    _domain->remove(max + 1, int_t_max);
+    if (_stateDepth < _mgr->depth())
+    {
+        _mgr->revSet(&_stateDepth, 2);
+        _stateDepth = _mgr->depth();
+    }
+    _deferRemoves = deferRemoves;
+    if (_deferRemoves)
+    {
+        _deferredRemovesPtr = _deferredRemoves;
+    }
+    else
+    {
+        // remove the deferred stuff
+        int* it = _deferredRemoves;
+        while (it != _deferredRemovesPtr)
+        {
+            int min = *it++;
+            int max = *it++;
+            remove(min, max);
+        }
+    }
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
+void
+IntExp::setRange(int min, int max)
+{
+    setMin(min);
+    setMax(max);
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
+void
+IntExp::setMin(int min)
+{
+    if (min <= _domain->min())
+        return;
+    _domain->remove(utl::int_t_min, min - 1);
+    if (_domain->anyEvent())
+        raiseEvents();
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
+void
+IntExp::setMax(int max)
+{
+    if (max >= _domain->max())
+        return;
+    _domain->remove(max + 1, utl::int_t_max);
+    if (_domain->anyEvent())
+        raiseEvents();
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -164,63 +243,6 @@ IntExp::intersect(const std::set<int>& intSet)
 {
     _domain->intersect(intSet);
     raiseEvents();
-}
-
-////////////////////////////////////////////////////////////////////////////////////////////////////
-
-bool
-IntExp::add(int val)
-{
-    _domain->add(val, val);
-    if (_domain->anyEvent())
-    {
-        raiseEvents();
-        return true;
-    }
-    return false;
-}
-
-////////////////////////////////////////////////////////////////////////////////////////////////////
-
-uint_t
-IntExp::add(int min, int max)
-{
-    uint_t oldSize = _domain->size();
-    _domain->add(min, max);
-    if (_domain->anyEvent())
-    {
-        raiseEvents();
-        return (_domain->size() - oldSize);
-    }
-    return 0U;
-}
-
-////////////////////////////////////////////////////////////////////////////////////////////////////
-
-void
-IntExp::deferRemoves(bool b)
-{
-    if (_stateDepth < _mgr->depth())
-    {
-        _mgr->revSet(&_stateDepth, 2);
-        _stateDepth = _mgr->depth();
-    }
-    _deferRemoves = b;
-    if (_deferRemoves)
-    {
-        _deferredRemovesPtr = _deferredRemoves;
-    }
-    else
-    {
-        // remove the deferred stuff
-        int* it = _deferredRemoves;
-        while (it != _deferredRemovesPtr)
-        {
-            int min = *it++;
-            int max = *it++;
-            remove(min, max);
-        }
-    }
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -272,14 +294,9 @@ IntExp::remove(int min, int max)
     if (_domain->anyEvent())
     {
         // update intersect-exps
-        if (_intersectExps.size() > 0)
+        for (auto intersectExp : _intersectExps)
         {
-            intexp_array_t::iterator it, lim = _intersectExps.end();
-            for (it = _intersectExps.begin(); it != lim; ++it)
-            {
-                IntExp* intersectExp = *it;
-                intersectExp->remove(min, max);
-            }
+            intersectExp->remove(min, max);
         }
 
         raiseEvents();
@@ -299,33 +316,31 @@ IntExp::raiseEvents()
         return;
     }
 
+    // domain is now empty and we're supposed to fail?
     if (_domain->emptyEvent() && _failOnEmpty)
     {
+        // clear events and fail
         _domain->clearEvents();
         throw FailEx();
     }
 
     try
     {
-        //////////////////////////////////////////////
-        // domain/value event //
-        //////////////////////////////////////////////
-
+        // domain event?
         if (_domain->domainEvent())
         {
-            cb_set_t::iterator it, endIt = _domainBounds.end();
-            for (it = _domainBounds.begin(); it != endIt; ++it)
+            // invalidate domain-bounds
+            for (auto cb : _domainBounds)
             {
-                ConstrainedBound* cb = *it;
                 cb->invalidate();
             }
 
+            // constrained to a single value?
             if (_domain->valueEvent())
             {
-                endIt = _valueBounds.end();
-                for (it = _valueBounds.begin(); it != endIt; ++it)
+                // invalidate value-bounds
+                for (auto cb : _valueBounds)
                 {
-                    ConstrainedBound* cb = *it;
                     cb->invalidate();
                 }
             }
@@ -350,7 +365,6 @@ IntExp::init()
     _managed = false;
     _failOnEmpty = true;
     _object = nullptr;
-
     _stateDepth = 0;
     _deferRemoves = false;
     _deferredRemoves = _deferredRemovesPtr = _deferredRemovesLim = nullptr;

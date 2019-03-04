@@ -14,7 +14,10 @@ CLP_NS_BEGIN;
 /**
    Bound constraint.
 
-   \author Adam McKee
+   BoundCt forces a destination bound to maintain a required relationship with a source bound.
+
+   \see Manager
+   \ingroup clp
 */
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -25,19 +28,18 @@ class BoundCt : public utl::Object
     UTL_CLASS_NO_COPY;
 
 public:
-    /** Constructor. */
-    BoundCt(int v, ConstrainedBound* srcBound, ConstrainedBound* dstBound);
+    /**
+       Constructor.
+       \param val initially propagated value for destination bound
+       \param srcBound source bound
+       \param dstBound destination bound
+    */
+    BoundCt(int val, ConstrainedBound* srcBound, ConstrainedBound* dstBound);
 
-    /// \name Accessors
+    /// \name Accessors (const)
     //@{
     int
     v() const
-    {
-        return _v;
-    }
-
-    int&
-    v()
     {
         return _v;
     }
@@ -57,6 +59,16 @@ public:
     }
     //@}
 
+    /// \name Accessors (non-const)
+    //@{
+    void
+    setV(int val)
+    {
+        _v = val;
+    }
+    //@}
+
+    /// \name Modification
     /** Apply pressure to lower bound. */
     void
     increment(uint_t inc)
@@ -74,6 +86,7 @@ public:
         _v -= dec;
         _dstBound->setUB(_v);
     }
+    //@}
 
 private:
     void

@@ -29,10 +29,10 @@ BoundPropagator::addBoundCt(ConstrainedBound* src, ConstrainedBound* dst, int d,
 {
     // initially constrain dst bound
     dst->set(src->get() + d);
-    BoundCt* bct = new BoundCt(src->last() + d, src, dst);
+    auto bct = new BoundCt(src->last() + d, src, dst);
     _mgr->revAllocate(bct);
 
-    // link src => dst
+    // link src -> dst
     ASSERTD(dst != src);
     if (dst->type() == bound_lb)
     {
@@ -52,7 +52,7 @@ BoundPropagator::addBoundCt(ConstrainedBound* src, ConstrainedBound* dst, int d,
 void
 BoundPropagator::addPrecedenceLink(CycleGroup* src, CycleGroup* dst, bool cycleCheck)
 {
-    // do nothing else if src and dst are the same
+    // do nothing if src and dst are the same
     if (src == dst)
     {
         return;
@@ -76,56 +76,6 @@ BoundPropagator::staticAnalysis()
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-void
-BoundPropagator::unsuspendInitial()
-{
-    cg_set_id_t initialCGs;
-    cg_revset_t::iterator rit;
-    for (rit = _cgs.begin(); rit != _cgs.end(); ++rit)
-    {
-        CycleGroup* cg = *rit;
-        if (!cg->suspended())
-        {
-            initialCGs.insert(cg);
-        }
-    }
-
-    cg_set_id_t::iterator it;
-    for (it = initialCGs.begin(); it != initialCGs.end(); ++it)
-    {
-        CycleGroup* initialCG = *it;
-        initialCG->unsuspend();
-    }
-}
-
-////////////////////////////////////////////////////////////////////////////////////////////////////
-
-void
-BoundPropagator::unsuspend(ConstrainedBound* cb)
-{
-    cb->invalidate();
-}
-
-////////////////////////////////////////////////////////////////////////////////////////////////////
-
-void
-BoundPropagator::finalize(ConstrainedBound* cb)
-{
-    CycleGroup* cg = cb->cycleGroup();
-    // added the if-condition line, and commented out the ASSERTD(..)
-    // because this finalize() function is called by Job::xxx to
-    // release an inactive job's successor jobs for scheduling.
-    // the if-condition is used to stop to finalize the cg again
-    // during normal scheduling. Joe, Nov 1, 2006
-    if (cg->finalized())
-        return;
-    //     ASSERTD(!cg->suspended());
-    cb->queueFind();
-    cg->finalizeMember();
-}
-
-////////////////////////////////////////////////////////////////////////////////////////////////////
-
 CycleGroup*
 BoundPropagator::newCycleGroup(CycleGroup* cg)
 {
@@ -133,7 +83,7 @@ BoundPropagator::newCycleGroup(CycleGroup* cg)
     {
         cg = new CycleGroup(_mgr);
     }
-    cg->id() = _initCgId++;
+    cg->setId(_initCgId++);
     _mgr->revAllocate(cg);
     _cgs.add(cg);
     return cg;
@@ -151,7 +101,7 @@ BoundPropagator::propagate()
         _propQ.pop_front();
         _boundInProcess = bound;
         bound->propagate();
-        bound->queued() = false;
+        bound->setQueued(false);
     }
     _boundInProcess = nullptr;
 }
@@ -163,12 +113,12 @@ BoundPropagator::clearPropQ()
 {
     if (_boundInProcess != nullptr)
     {
-        _boundInProcess->queued() = false;
+        _boundInProcess->setQueued(false);
         _boundInProcess = nullptr;
     }
     for (auto bound : _propQ)
     {
-        bound->queued() = false;
+        bound->setQueued(false);
     }
     _propQ.clear();
 }
@@ -190,16 +140,58 @@ BoundPropagator::enQ(ConstrainedBound* bound)
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
+BoundPropagator::unsuspendInitial()
+{
+    // initialCGS (cycle groups with no unfinalized predecessors)
+    cg_set_id_t initialCGs;
+    for (auto cg : _cgs)
+    {
+        if (!cg->suspended())
+        {
+            initialCGs.insert(cg);
+        }
+    }
+
+    // unsuspend member bounds for initialCGs
+    for (auto initialCG : initialCGs)
+    {
+        initialCG->unsuspend();
+    }
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
+void
+BoundPropagator::unsuspend(ConstrainedBound* cb)
+{
+    cb->invalidate();
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
+void
+BoundPropagator::finalize(ConstrainedBound* cb)
+{
+    auto cg = cb->cycleGroup();
+    if (cg->finalized())
+    {
+        return;
+    }
+    cb->queueFind();
+    cg->finalizeMember();
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
+void
 BoundPropagator::init(Manager* mgr)
 {
     _mgr = mgr;
     _boundInProcess = nullptr;
     _restartCG = nullptr;
     _cgs.initialize(mgr);
-
     _cgArray = _cgArrayPtr = _cgArrayLim = nullptr;
     _cgArraySize = 0;
-
     _initCgId = 0;
 }
 
@@ -226,7 +218,7 @@ BoundPropagator::dfs(CycleGroup* src, CycleGroup* dst)
     // keep re-starting the search until no more cycles are found
     while (_restartCG != nullptr)
     {
-        CycleGroup* restartCG = _restartCG;
+        auto restartCG = _restartCG;
         _restartCG = nullptr;
         dfs(restartCG);
     }
@@ -237,7 +229,7 @@ BoundPropagator::dfs(CycleGroup* src, CycleGroup* dst)
 void
 BoundPropagator::dfs(CycleGroup* cg)
 {
-    // already visited cg ==> make cycle group
+    // already visited cg -> make cycle group
     if (cg->visited())
     {
         ASSERTD(cg->visitedIdx() == 0);
@@ -245,23 +237,21 @@ BoundPropagator::dfs(CycleGroup* cg)
         return;
     }
 
-    // does cg lead toward a cycle?
-    CycleGroup* firstCG = _cgArray[0];
-    const cg_revset_t& cgAllSucc = cg->allSuccCGs();
-    if (!cgAllSucc.has(firstCG))
+    // cg doesn't lead toward a cycle -> ignore it
+    auto firstCG = _cgArray[0];
+    if (!cg->allSuccCGs().has(firstCG))
     {
         return;
     }
 
-    // put cg onto the stack
+    // put cg (leading to cycle) onto the stack
     dfs_push(cg);
 
-    // iterate thru cg's successors
-    CycleGroup::cg_iterator it, lim = cg->succCGs().end();
-    for (it = cg->succCGs().begin(); it != lim; ++it)
+    // recursive invocation for cg's successors
+    for (auto succCG : cg->succCGs())
     {
-        CycleGroup* succCG = *it;
         dfs(succCG);
+        // stop when restart is needed
         if (_restartCG != nullptr)
         {
             break;
@@ -287,7 +277,8 @@ BoundPropagator::dfs_push(CycleGroup* cg)
     }
 
     // record cg's position in the array
-    cg->visitedIdx() = (_cgArrayPtr - _cgArray);
+    cg->setVisitedIdx(_cgArrayPtr - _cgArray);
+    ASSERTD(cg->visited());
 
     // push cg onto stack
     *_cgArrayPtr++ = cg;
@@ -301,10 +292,10 @@ BoundPropagator::dfs_pop()
     ASSERTD(_cgArrayPtr > _cgArray);
 
     // remove cg from stack
-    CycleGroup* cg = *(--_cgArrayPtr);
+    auto cg = *(--_cgArrayPtr);
 
     // clear cg's visited flag
-    cg->visitedIdx() = uint_t_max;
+    cg->setVisitedIdx(uint_t_max);
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -315,8 +306,7 @@ BoundPropagator::makeCycleGroup()
     ASSERTD((_cgArrayPtr - _cgArray) >= 2);
 
     // find largest cycle group
-    CycleGroup* motherCG = _cgArray[0];
-    //uint_t motherCGidx = 0;
+    auto motherCG = _cgArray[0];
     uint_t motherCGsize = motherCG->size();
     CycleGroup** cgIt;
     CycleGroup** cgLim = _cgArrayPtr;
@@ -326,7 +316,6 @@ BoundPropagator::makeCycleGroup()
         if (cg->size() > motherCGsize)
         {
             motherCG = cg;
-            //motherCGidx = (cgIt - _cgArray);
             motherCGsize = motherCG->size();
         }
     }
@@ -343,12 +332,11 @@ BoundPropagator::makeCycleGroup()
 
         CycleGroup* predCG = *predIt;
 
-        // skip predCG if it's not part of the new cycle
-        if (predCG->visitedIdx() == uint_t_max)
-            continue;
-
-        // remove the (predCG ==> motherCG) link
-        motherCG->removePred(predCG);
+        // preCG is part of new cycle -> remove (predCG->motherCG) link
+        if (predCG->visited())
+        {
+            motherCG->removePred(predCG);
+        }
     }
 
     // for each successor of motherCG
@@ -359,31 +347,33 @@ BoundPropagator::makeCycleGroup()
         succNext = succIt;
         ++succNext;
 
-        CycleGroup* succCG = *succIt;
-
-        // skip succCG if it's not part of the new cycle
-        if (succCG->visitedIdx() == uint_t_max)
-            continue;
-
-        // remove the (succCG => cg) link
-        succCG->removePred(motherCG);
+        // succCG is part of new cycle -> remove (motherCG->succCG) link
+        auto succCG = *succIt;
+        if (succCG->visited())
+        {
+            succCG->removePred(motherCG);
+        }
     }
 
     // motherCG eclipses all others
     for (cgIt = _cgArray; cgIt != cgLim; ++cgIt)
     {
-        // if cg is not motherCG, then clear its indirect lists
-        CycleGroup* cg = *cgIt;
+        // cg is motherCG -> skip it
+        auto cg = *cgIt;
         if (cg == motherCG)
             continue;
+
+        // clear cg's indirect lists
         cg->clearIndirectLists();
     }
     for (cgIt = _cgArray; cgIt != cgLim; ++cgIt)
     {
-        // if cg is not motherCG, then motherCG swallows it
-        CycleGroup* cg = *cgIt;
+        // cg is motherCG -> skip it
+        auto cg = *cgIt;
         if (cg == motherCG)
             continue;
+
+        // motherCG gobbles up cg
         motherCG->eclipse(cg);
         _cgs.remove(cg);
     }
@@ -401,32 +391,27 @@ BoundPropagator::makeCycleGroup()
 void
 BoundPropagator::setSuccessorDepth()
 {
-    cg_revset_t::iterator it;
-
     // all CGs have successor-depth = 0 initially
-    for (it = _cgs.begin(); it != _cgs.end(); ++it)
+    for (auto cg : _cgs)
     {
-        CycleGroup* cg = *it;
-        cg->successorCount() = cg->succCGs().size();
-        cg->successorDepth() = 0;
+        cg->setSuccessorCount(cg->succCGs().size());
+        cg->setSuccessorDepth(0);
     }
 
-    // recursively set successor-depth
-    // (starting at CGs with no successors)
-    cg_set_id_t zsdCGs;
-    for (it = _cgs.begin(); it != _cgs.end(); ++it)
+    // make a list of terminal CGs (those with no successors)
+    cg_set_id_t terminalCGs;
+    for (auto cg : _cgs)
     {
-        CycleGroup* cg = *it;
         if (cg->successorCount() == 0)
         {
-            zsdCGs.insert(cg);
+            terminalCGs.insert(cg);
         }
     }
-    cg_set_id_t::iterator zsdIt;
-    for (zsdIt = zsdCGs.begin(); zsdIt != zsdCGs.end(); ++zsdIt)
+
+    // set successor depth for terminal CGs
+    for (auto terminalCG : terminalCGs)
     {
-        CycleGroup* zsdCG = *zsdIt;
-        setSuccessorDepth(zsdCG);
+        setSuccessorDepth(terminalCG);
     }
 }
 
@@ -436,16 +421,11 @@ void
 BoundPropagator::setSuccessorDepth(CycleGroup* cg)
 {
     uint_t sd = cg->successorDepth();
-
-    cg_revset_t::iterator it, endIt = cg->predCGs().end();
-    for (it = cg->predCGs().begin(); it != endIt; ++it)
+    for (auto predCG : cg->predCGs())
     {
-        CycleGroup* predCG = *it;
-        uint_t& predSC = predCG->successorCount();
-        uint_t& predSD = predCG->successorDepth();
-        predSD = utl::max(predSD, sd + 1);
-        ASSERTD(predSC > 0);
-        if (--predSC == 0)
+        ASSERTD(predCG->successorCount() > 0);
+        predCG->setSuccessorDepth(utl::max(predCG->successorDepth(), sd + 1));
+        if (predCG->setSuccessorCount(predCG->successorCount() - 1) == 0)
         {
             setSuccessorDepth(predCG);
         }
@@ -458,10 +438,8 @@ BoundPropagator::setSuccessorDepth(CycleGroup* cg)
 void
 BoundPropagator::sanityCheckCGs()
 {
-    cg_revset_t::iterator it;
-    for (it = _cgs.begin(); it != _cgs.end(); ++it)
+    for (auto cg : _cgs)
     {
-        CycleGroup* cg = *it;
         sanityCheckCG(cg);
     }
 }
@@ -476,10 +454,8 @@ BoundPropagator::sanityCheckCG(CycleGroup* cg)
     // check predecessors
     uint_t num = 0;
     CycleGroup* last = nullptr;
-    cg_revset_t::iterator predIt;
-    for (predIt = cg->predCGs().begin(); predIt != cg->predCGs().end(); ++predIt, ++num)
+    for (auto predCG : cg->predCGs())
     {
-        CycleGroup* predCG = *predIt;
         ASSERT(_cgs.has(predCG));
         ASSERT(predCG > last);
         last = predCG;
@@ -491,10 +467,8 @@ BoundPropagator::sanityCheckCG(CycleGroup* cg)
     // check successors
     num = 0;
     last = nullptr;
-    cg_revset_t::iterator succIt;
-    for (succIt = cg->succCGs().begin(); succIt != cg->succCGs().end(); ++succIt, ++num)
+    for (auto succCG : cg->succCGs())
     {
-        CycleGroup* succCG = *succIt;
         ASSERT(_cgs.has(succCG));
         ASSERT(succCG > last);
         last = succCG;

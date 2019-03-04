@@ -123,7 +123,7 @@ ESboundInt::allocateCapacity()
         return;
     }
 
-    breakList->deferRemoves(true);
+    breakList->setDeferRemoves(true);
 
     // find forward (with allocation)
     int ef;
@@ -132,12 +132,10 @@ ESboundInt::allocateCapacity()
     // allocation failed?!
     if (_bound == int_t_max)
     {
-        String* str = new String();
-        *str = _name + ": allocation failed";
-        throw FailEx(str);
+        throw FailEx(_name + ": allocation failed");
     }
 
-    breakList->deferRemoves(false);
+    breakList->setDeferRemoves(false);
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -164,7 +162,6 @@ int
 ESboundInt::find()
 {
     int ef;
-    String* str;
     const IntExpDomainRISC* domain;
 
     saveState();
@@ -264,9 +261,7 @@ succeed:
     return _bound;
 fail:
     _bound = ef = int_t_max;
-    str = new String();
-    *str = _name + ": no workable bound";
-    throw FailEx(str);
+    throw FailEx(_name + ": no workable bound");
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////

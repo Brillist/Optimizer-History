@@ -121,9 +121,7 @@ LFbound::find()
             _bound = itBound->get();
             if (_bound == int_t_min)
             {
-                String& str = *new String();
-                str = _name + ": no workable bound";
-                throw FailEx(str);
+                throw FailEx(_name + ": no workable bound");
             }
 
             // first iter?

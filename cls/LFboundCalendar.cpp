@@ -43,7 +43,7 @@ LFboundCalendar::find()
         ls = _lsBound->get();
         goto succeed;
     }
-    pt = (uint_t)ptExp->getValue();
+    pt = (uint_t)ptExp->value();
 
     // handle (pt == 0) as special case
     if (pt == 0)

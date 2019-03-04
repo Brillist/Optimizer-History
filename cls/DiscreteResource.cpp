@@ -226,10 +226,9 @@ DiscreteResource::doubleProvidedCap()
     for (span = _timetable.head()->next(); span != tail; span = span->next())
     {
         uint_t cap = span->v1();
-        // this check is here because the function can only be used
-        // by unary resource for now.
+        // this function can only be invoked on a unary resource
         ASSERTD(cap <= 100);
-        span->v1() = 2 * cap;
+        span->setV1(cap * 2);
     }
 }
 
@@ -243,10 +242,9 @@ DiscreteResource::halveProvidedCap()
     for (span = _timetable.head()->next(); span != tail; span = span->next())
     {
         uint_t cap = span->v1();
-        // this check is here because the function can only be used
-        // by unary resource whose provided cap has been doubled.
+        // this function can only be invoked on a unary resource
         ASSERTD(cap == 0 || cap == 200);
-        span->v1() = cap / 2;
+        span->setV1(cap / 2);
     }
 }
 

@@ -21,7 +21,11 @@ class CycleGroup;
 /**
    Constrained/propagated bound.
 
-   \author Adam McKee
+   A Bound with constraints attached.
+
+   \see BoundCt
+   \see BoundPropagator
+   \ingroup clp
 */
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -33,13 +37,18 @@ class ConstrainedBound : public Bound
     UTL_CLASS_NO_COPY;
 
 public:
-    typedef RevArray<BoundCt*> bct_array_t;
+    using bct_array_t = RevArray<BoundCt*>;
 
 public:
-    /** Constructor. */
+    /**
+       Constructor.
+       \param mgr associated Manager
+       \param type bound type
+       \param bound (optional) initial bound
+    */
     ConstrainedBound(Manager* mgr, bound_t type, int bound = utl::int_t_min);
 
-    /// \name Accessors
+    /// \name Accessors (const)
     //@{
     virtual const int& get();
 
@@ -60,23 +69,6 @@ public:
         return _owner;
     }
 
-    /** Get the owner. */
-    utl::Object*&
-    owner()
-    {
-        return _owner;
-    }
-
-    /** Set the twin bound. */
-    void
-    setTwinBound(Bound* twinBound)
-    {
-        if (twinBound == nullptr)
-            _twinBound = nullptr;
-        else
-            _twinBound = &twinBound->getRef();
-    }
-
     /** Get visited flag. */
     bool
     visited() const
@@ -89,6 +81,16 @@ public:
     visitedIdx() const
     {
         return _visitedIdx;
+    }
+
+    /** Set the twin bound. */
+    void
+    setTwinBound(Bound* twinBound)
+    {
+        if (twinBound == nullptr)
+            _twinBound = nullptr;
+        else
+            _twinBound = &twinBound->getRef();
     }
 
     /** Get visited index. */
@@ -105,29 +107,12 @@ public:
         return _queued;
     }
 
-    /** Already in propagation queue? */
-    bool&
-    queued()
-    {
-        return _queued;
-    }
-
     /** Get the cycle-group. */
     const CycleGroup*
     cycleGroup() const
     {
         return _cycleGroup;
     }
-
-    /** Get the cycle-group. */
-    CycleGroup*
-    cycleGroup()
-    {
-        return _cycleGroup;
-    }
-
-    /** Set the cycle-group. */
-    void setCycleGroup(CycleGroup* cycleGroup);
 
     /** Suspended? */
     bool suspended() const;
@@ -140,6 +125,28 @@ public:
     last() const
     {
         return _oldBound;
+    }
+    //@}
+
+    /// \name Accessors (non-const)
+    //@{
+    /** Get the cycle-group. */
+    CycleGroup*
+    cycleGroup()
+    {
+        return _cycleGroup;
+    }
+
+    /** Set \b queued flag. */
+    void setQueued(bool queued)
+    {
+        _queued = queued;
+    }
+
+    /** Set the owner. */
+    void setOwner(utl::Object* owner)
+    {
+        _owner = owner;
     }
     //@}
 
@@ -162,6 +169,9 @@ public:
 
     /// \name Update
     //@{
+    /** Set the cycle-group. */
+    void setCycleGroup(CycleGroup* cycleGroup);
+
     /** Put the bound in the queue (and force find). */
     void queueFind();
 
@@ -218,8 +228,6 @@ protected:
     void propagateLB();
 
     void propagateUB();
-
-    bool addPred(ConstrainedBound* cb);
 
     virtual void _saveState();
 

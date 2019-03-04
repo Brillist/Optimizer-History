@@ -19,10 +19,10 @@ class Manager;
 /**
    Reversible stack.
 
-   RevStack is a stack that tracks changes to itself, so they can
-   be reversed in the event of backtracking.
+   RevStack is a stack that supports backtracking.
 
-   \author Adam McKee
+   \see Manager
+   \ingroup clp
 */
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -44,18 +44,13 @@ public:
         _array.setManager(mgr);
     }
 
+    /// \name Accessors (const)
+    //@{
     /** Get the manager. */
     Manager*
     manager() const
     {
         return _mgr;
-    }
-
-    /** Set the manager. */
-    void
-    setManager(Manager* mgr)
-    {
-        _mgr = mgr;
     }
 
     /** Get the size. */
@@ -65,32 +60,46 @@ public:
         return _array.size();
     }
 
-    /** Push the given object onto the stack. */
-    void
-    push(const T& object)
+    /** Array element accessor. */
+    const T& operator[](uint_t idx) const
     {
-        _array.add(object);
+        return _array[idx];
     }
 
-    /** Get a begin iterator. */
+    /** Get begin iterator. */
     iterator
     begin() const
     {
         return _array.begin();
     }
 
-    /** Get an end iterator. */
+    /** Get end iterator. */
     iterator
     end() const
     {
         return _array.end();
     }
+    //@}
 
-    /** Index into the stack. */
-    const T& operator[](uint_t idx) const
+    /// \name Accessors (non-const)
+    //@{
+    /** Set the manager. */
+    void
+    setManager(Manager* mgr)
     {
-        return _array[idx];
+        _mgr = mgr;
     }
+    //@}
+
+    /// \name Modification
+    //@{
+    /** Push an object onto the stack. */
+    void
+    push(const T& object)
+    {
+        _array.add(object);
+    }
+    //@}
 
 private:
     RevArray<T> _array;

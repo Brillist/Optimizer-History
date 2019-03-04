@@ -13,6 +13,8 @@ CLS_NS_BEGIN;
 /**
    Schedulable bound.
 
+   A 
+
    \author Adam McKee
 */
 
@@ -24,7 +26,7 @@ class SchedulableBound : public clp::ConstrainedBound
     UTL_CLASS_DEFID;
 
 public:
-    typedef clp::RevArray<clp::Bound*> bound_array_t;
+    using bound_array_t = clp::RevArray<clp::Bound*>;
 
 public:
     /** Constructor. */

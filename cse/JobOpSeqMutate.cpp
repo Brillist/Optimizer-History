@@ -329,7 +329,7 @@ JobOpSeqMutate::setJobOps(const ClevorDataSet* dataSet)
             {
                 auto ptact = utl::cast<PtActivity>(act);
                 auto& ptExp = ptact->possiblePts();
-                if ((ptExp.isBound() && ptExp.getValue() == 0))
+                if ((ptExp.isBound() && ptExp.value() == 0))
                     continue;
             }
 
@@ -376,7 +376,7 @@ JobOpSeqMutate::setJobOps(const ClevorDataSet* dataSet)
                     {
                         auto candidatePtact = utl::cast<PtActivity>(candidateAct);
                         auto& candidatePtExp = candidatePtact->possiblePts();
-                        if (candidatePtExp.isBound() && (candidatePtExp.getValue() == 0))
+                        if (candidatePtExp.isBound() && (candidatePtExp.value() == 0))
                             continue;
                     }
 

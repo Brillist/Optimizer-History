@@ -120,10 +120,9 @@ DiscreteResourceRequirement::excludeResource(uint_t resId)
     }
     else if (_selectedResources->has(resId))
     {
-        String& str = *new String();
-        str = "act-" + Uint(_act->id()).toString() + ": ";
-        str += "excluding selected resource: " + Uint(resId).toString();
-        throw FailEx(str);
+        throw FailEx(
+            "act-" + Uint(_act->id()).toString() + ": " +
+            "excluding selected resource: " + Uint(resId).toString());
     }
 }
 
@@ -166,7 +165,7 @@ DiscreteResourceRequirement::init(BrkActivity* act,
     _numRequired = new IntVar(mgr, new IntExpDomainAR(mgr, numRequiredDomain));
 
     _possibleResources = new IntVar(mgr, new IntExpDomainAR(mgr, allResIds));
-    _possibleResources->failOnEmpty() = false;
+    _possibleResources->setFailOnEmpty(false);
 
     _selectedResources = new IntVar(mgr, new IntExpDomainAR(mgr, allResIds, true));
 }
@@ -238,7 +237,7 @@ DiscreteResourceRequirement::checkAllSelected()
         return;
     }
 
-    uint_t numRequired = _numRequired->getValue();
+    uint_t numRequired = _numRequired->value();
     uint_t numSelected = _selectedResources->size();
     uint_t numPossible = _possibleResources->size();
     ASSERTD(numSelected <= numRequired);
@@ -256,11 +255,10 @@ DiscreteResourceRequirement::checkAllSelected()
         // not possible to satisfy requirement?
         if (numPossible < numRequired)
         {
-            String& str = *new String();
-            str = "act-" + Uint(_act->id()).toString() + ": " + Uint(numRequired).toString() +
-                  " additional resource(s) needed, but only " + Uint(numPossible).toString() +
-                  " possible";
-            throw FailEx(str);
+            throw FailEx(
+                "act-" + Uint(_act->id()).toString() + ": " + Uint(numRequired).toString() +
+                " additional resource(s) needed, but only " + Uint(numPossible).toString() +
+                " possible");
         }
 
         // requirements are known
@@ -275,7 +273,7 @@ DiscreteResourceRequirement::checkAllSelected()
     }
 
     // all required resources known
-    ASSERTD(_selectedResources->size() == (uint_t)_numRequired->getValue());
+    ASSERTD(_selectedResources->size() == (uint_t)_numRequired->value());
     manager()->revToggle(_allSelected);
     _possibleResources->remove(_possibleResources->min(), _possibleResources->max());
     _act->decrementUnknownReqs();
@@ -297,7 +295,7 @@ DiscreteResourceRequirement::_selectResource(uint_t resId)
     resCapPts->select();
     if (possiblePts.isBound())
     {
-        uint_t pt = possiblePts.getValue();
+        uint_t pt = possiblePts.value();
         ASSERTD(resCapPts != nullptr);
         resCapPts->selectPt(pt);
     }
@@ -310,7 +308,7 @@ DiscreteResourceRequirement::_selectResource(uint_t resId)
 void
 DiscreteResourceRequirement::addTimetableBounds()
 {
-    uint_t pt = _act->possiblePts().getValue();
+    uint_t pt = _act->possiblePts().value();
     bool forward = _act->forward();
     IntExpDomainIt* it;
     AutoPtr<IntExpDomainIt> itPtr;
@@ -321,10 +319,9 @@ DiscreteResourceRequirement::addTimetableBounds()
         const CapPt* capPt = rcp->findPt(pt);
         if (capPt == nullptr)
         {
-            String& str = *new String();
-            str = "act-" + Uint(_act->id()).toString() + ": " +
-                  "could not find CapPt for pt = " + Uint(pt).toString();
-            throw FailEx(str);
+            throw FailEx(
+                "act-" + Uint(_act->id()).toString() + ": " +
+                "could not find CapPt for pt = " + Uint(pt).toString());
         }
         if (forward)
         {

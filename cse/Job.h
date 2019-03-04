@@ -201,10 +201,6 @@ public:
         return _allSops;
     }
 
-    /** Job is complete? */
-    /*     bool complete() const */
-    /*     { return (_sops.size() == 0); } */
-
     /** Initialize schedulable-ops lists. */
     void sopsInit(clp::Manager* mgr);
 
@@ -216,9 +212,6 @@ public:
 
     /** Prepare to generate new schedule. */
     void scheduleClear();
-
-    /** Schedule an operation. */
-    /*     void schedule(JobOp* op, bool forward); */
 
     /** Calculate _makespan and _frozenMakespan. */
     void calculateMakespan(bool forward);
@@ -591,13 +584,9 @@ protected:
     lut::period_t _opportunityCostPeriod;
     double _latenessCost;
     lut::period_t _latenessCostPeriod;
-    // November 21, 2013 (Elisa)
-    // add variable to hold the lateness cost increment
     double _latenessIncrement;
     double _inventoryCost;
     lut::period_t _inventoryCostPeriod;
-    // January 2, 2014 (Elisa)
-    // add variables to hold the overhead dost and period
     double _overheadCost;
     lut::period_t _overheadCostPeriod;
 

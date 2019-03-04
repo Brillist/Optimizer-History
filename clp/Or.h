@@ -11,11 +11,19 @@ CLP_NS_BEGIN;
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
-   Logical OR of goals.
+   Exclusive-Or of goals in a solution search.
 
-   An Or goal creates a choice point (see ChoicePoint) in the search.
+   Or is a special type of Goal that is attached to a ChoicePoint.  The current search state is
+   marked by the ChoicePoint, enabling the different alternative Goals to be tried (backtracking
+   to the marked state after each one).
 
-   \author Adam McKee
+   An Or goal can be labelled by number, enabling backtracking to its ChoicePoint (continuing
+   to backtrack through any intervening ChoicePoints until reaching it).
+
+   \see FailEx
+   \see Manager
+   \see Manager::nextSolution
+   \ingroup clp
 */
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -25,33 +33,23 @@ class Or : public Goal
     UTL_CLASS_DECL(Or, Goal);
 
 public:
-    typedef std::vector<Goal*> goal_vector_t;
-    typedef goal_vector_t::iterator iterator;
-    typedef goal_vector_t::const_iterator const_iterator;
+    using goal_vector_t = std::vector<Goal*>;
+    using iterator = goal_vector_t::iterator;
+    using const_iterator = goal_vector_t::const_iterator;
 
 public:
     /** Constructor. */
     Or(Goal* g0, Goal* g1, uint_t label = uint_t_max);
 
-    /** Constructor. */
-    Or(Goal* g0, Goal* g1, Goal* g2, uint_t label = uint_t_max);
-
-    /** Constructor. */
-    Or(Goal* g0, Goal* g1, Goal* g2, Goal* g3, uint_t label = uint_t_max);
-
-    /** Constructor. */
-    Or(Goal* g0, Goal* g1, Goal* g2, Goal* g3, Goal* g4, uint_t label = uint_t_max);
-
     virtual void copy(const utl::Object& rhs);
 
-    virtual void
-    execute()
-    {
-    }
+    virtual void execute();
 
     /** Clear goal list. */
     void clear();
 
+    /// \name Accessors (const)
+    //@{
     /** Has a label? */
     bool
     isLabeled() const
@@ -75,7 +73,7 @@ public:
 
     /** Get the choice at the given index. */
     Goal*
-    getChoice(uint_t idx) const
+    choice(uint_t idx) const
     {
         ASSERTD(idx < _choices.size());
         return _choices[idx];
@@ -87,25 +85,31 @@ public:
     {
         return _choices.begin();
     }
+
     /** Get end iterator (const). */
     const_iterator
     end() const
     {
         return _choices.end();
     }
+    //@}
 
+    /// \name Accessors (non-const)
+    //@{
     /** Get begin iterator. */
     iterator
     begin()
     {
         return _choices.begin();
     }
+
     /** Get end iterator. */
     iterator
     end()
     {
         return _choices.end();
     }
+    //@}
 
 private:
     void
@@ -120,6 +124,7 @@ private:
     }
     void addRefs();
 
+private:
     goal_vector_t _choices;
     uint_t _label;
 };

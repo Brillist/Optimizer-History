@@ -11,12 +11,13 @@ CLP_NS_BEGIN;
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
-   Integer variable.
+   Counted integer variable.
 
-   IntVar is an integer expression (IntExp) that simply stores its domain
-   instead of computing it.
+   A CountedIntVar is initialized with a set of `[value,count]` tuples, and its domain includes
+   all values whose `count` is non-zero.  The count for a value can be reversibly decremented
+   by calling \ref decrement.
 
-   \author Adam McKee
+   \ingroup clp
 */
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -27,7 +28,7 @@ class CountedIntVar : public IntExp
     UTL_CLASS_DEFID;
 
 public:
-    typedef std::map<int, uint_t> int_uint_map_t;
+    using int_uint_map_t = std::map<int, uint_t>;
 
 public:
     /**
@@ -37,7 +38,11 @@ public:
     */
     CountedIntVar(Manager* mgr, const int_uint_map_t& domain);
 
-    /** Decrement the count for the given value. */
+    /**
+       Decrement the count for a value.
+       \param val value to decrement the count for
+       \param num amount to deduct (default is 1)
+    */
     uint_t decrement(int val, uint_t num = 1);
 };
 

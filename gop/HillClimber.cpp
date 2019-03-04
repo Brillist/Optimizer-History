@@ -105,10 +105,10 @@ HillClimber::HCiterationRun()
     utl::cout << "                                      " << op->toString() << utl::endl;
 #endif
 
-    // generate a schedule
+    // construct the new solution
     iterationRun(rop);
 
-    //decide whether accept the new schedule
+    // decide whether accept the new solution
     acceptanceEval(rop);
 
     // update run status

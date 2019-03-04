@@ -18,27 +18,13 @@ class Schedule;
 /**
    Activity to be executed (abstract).
 
-   An activity has the following important properties:
+   An activity's start and end times are represented as ranges (see RangeVar) that are bound
+   to a single value when the activity is scheduled.
 
-   - <b>start time</b> : when the activity begins execution
-   - <b>duration</b> : the total time required to complete the activity
-   - <b>end time</b> : when the activity completes execution
-
-   The following relationship is pretty obvious:
-
-   \code
-   startTime + duration = endTime
-   \endcode
-
-   Precedence constraints involving activities are easy to formulate.
-   For example, if an activity A is required to complete execution before
-   another activity B can begin execution, this is easily expressed as:
-
-   \code
-   A.endTime <= B.startTime
-   \endcode
-
-   \author Adam McKee
+   \see PtActivity
+   \see BrkActivity
+   \see IntActivity
+   \ingroup cls
 */
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -311,7 +297,7 @@ private:
 /**
    Order activities by id.
 
-   \author Adam McKee
+   \ingroup cls
 */
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -330,7 +316,7 @@ struct ActIdOrdering
 /**
    Order activities by earliest-start-time.
 
-   \author Adam McKee
+   \ingroup cls
 */
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -349,8 +335,8 @@ struct ActESordering
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-typedef std::set<Activity*, ActESordering> act_set_es_t;
-typedef std::vector<Activity*> act_vect_t;
+using act_set_es_t = std::set<Activity*, ActESordering>;
+using act_vect_t = std::vector<Activity*>;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 

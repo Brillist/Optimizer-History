@@ -27,56 +27,13 @@ Or::Or(Goal* g0, Goal* g1, uint_t label)
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-Or::Or(Goal* g0, Goal* g1, Goal* g2, uint_t label)
-    : Goal(g0->manager())
-{
-    init();
-    _label = label;
-    _choices.push_back(g0);
-    _choices.push_back(g1);
-    _choices.push_back(g2);
-    addRefs();
-}
-
-////////////////////////////////////////////////////////////////////////////////////////////////////
-
-Or::Or(Goal* g0, Goal* g1, Goal* g2, Goal* g3, uint_t label)
-    : Goal(g0->manager())
-{
-    init();
-    _label = label;
-    _choices.push_back(g0);
-    _choices.push_back(g1);
-    _choices.push_back(g2);
-    _choices.push_back(g3);
-    addRefs();
-}
-
-////////////////////////////////////////////////////////////////////////////////////////////////////
-
-Or::Or(Goal* g0, Goal* g1, Goal* g2, Goal* g3, Goal* g4, uint_t label)
-    : Goal(g0->manager())
-{
-    init();
-    _label = label;
-    _choices.push_back(g0);
-    _choices.push_back(g1);
-    _choices.push_back(g2);
-    _choices.push_back(g3);
-    _choices.push_back(g4);
-    addRefs();
-}
-
-////////////////////////////////////////////////////////////////////////////////////////////////////
-
 void
-Or::copy(const Object& rhs)
+Or::copy(const Object& rhs_)
 {
-    ASSERTD(rhs.isA(Or));
-    const Or& orGoal = (const Or&)rhs;
-    Goal::copy(orGoal);
+    auto& rhs = utl::cast<Or>(rhs_);
+    super::copy(rhs);
     clear();
-    copyVector(_choices, orGoal._choices);
+    copyVector(_choices, rhs._choices);
     addRefs();
 }
 
@@ -86,6 +43,13 @@ void
 Or::clear()
 {
     removeRefCont(_choices);
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
+void
+Or::execute()
+{
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////

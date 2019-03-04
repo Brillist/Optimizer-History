@@ -26,11 +26,10 @@ CLP_NS_BEGIN;
 void
 IntExpDomainRISC::copy(const Object& rhs)
 {
-    ASSERTD(rhs.isA(IntExpDomainRISC));
-    const IntExpDomainRISC& dr = (const IntExpDomainRISC&)rhs;
+    auto& dr = utl::cast<IntExpDomainRISC>(rhs);
 
     // copy base
-    IntExpDomain::copy(dr);
+    super::copy(dr);
     RevIntSpanCol::copy(dr);
 
 #ifdef DEBUG_UNIT
@@ -75,15 +74,16 @@ IntExpDomainRISC::toString() const
 void
 IntExpDomainRISC::intersect(const IntExpDomain* rhs)
 {
-    if (dynamic_cast<const IntExpDomainRISC*>(rhs) == nullptr)
+    // rhs isn't IntExpDomainRISC -> let superclass handle this
+    if (!rhs->isA(IntExpDomainRISC))
     {
-        IntExpDomain::intersect(rhs);
+        super::intersect(rhs);
         return;
     }
 
-    const IntExpDomainRISC& rhsDomain = (const IntExpDomainRISC&)*rhs;
-    const IntSpan* rhsSpan = rhsDomain.head()->next();
-    const IntSpan* rhsTail = rhsDomain.tail();
+    auto& rhsDomain = utl::cast<IntExpDomainRISC>(*rhs);
+    auto rhsSpan = rhsDomain.head()->next();
+    auto rhsTail = rhsDomain.tail();
     if (rhsSpan->v0() == 0)
     {
         rhsSpan = rhsSpan->next();
@@ -107,7 +107,7 @@ IntExpDomainRISC::has(int val) const
     {
         return false;
     }
-    const IntSpan* span = find(val);
+    auto span = find(val);
     return (span->v0() == 1);
 }
 
@@ -118,7 +118,7 @@ IntExpDomainRISC::begin() const
 {
     if (_size == 0)
         return end();
-    IntExpDomainRISCit* it = new IntExpDomainRISCit(this, _head, int_t_min);
+    auto it = new IntExpDomainRISCit(this, _head, int_t_min);
     it->next();
     return it;
 }
@@ -128,7 +128,7 @@ IntExpDomainRISC::begin() const
 IntExpDomainIt*
 IntExpDomainRISC::end() const
 {
-    IntExpDomainRISCit* it = new IntExpDomainRISCit(this, _tail, int_t_max);
+    auto it = new IntExpDomainRISCit(this, _tail, int_t_max);
     return it;
 }
 
@@ -147,7 +147,7 @@ IntExpDomainRISC::getPrev(int val) const
         return _max;
     }
 
-    const IntSpan* span = find(val - 1);
+    auto span = find(val - 1);
     if (span->v0() == 0)
     {
         return (span->min() - 1);
@@ -170,7 +170,7 @@ IntExpDomainRISC::getNext(int val) const
         return int_t_max;
     }
 
-    const IntSpan* span = find(val + 1);
+    auto span = find(val + 1);
     if (span->v0() == 0)
     {
         return (span->max() + 1);
@@ -183,7 +183,7 @@ IntExpDomainRISC::getNext(int val) const
 void
 IntExpDomainRISC::_saveState()
 {
-    IntExpDomain::_saveState();
+    super::_saveState();
     RevIntSpanCol::_saveState();
 }
 
@@ -285,30 +285,29 @@ IntExpDomainRISC::addRange(int min, int max)
         {
             findNextForward(next0->max(), next);
             link(prev, next);
-
-            prev0->max() = next0->max();
+            prev0->setMax(next0->max());
         }
         if (minEdge)
         {
             prev0->saveState(mgr());
             span->saveState(mgr());
-            prev0->max() = maxAdd;
-            span->min() = (maxAdd + 1);
+            prev0->setMax(maxAdd);
+            span->setMin(maxAdd + 1);
         }
         else if (maxEdge)
         {
             span->saveState(mgr());
             next0->saveState(mgr());
-            span->max() = (minAdd - 1);
-            next0->min() = minAdd;
+            span->setMax(minAdd - 1);
+            next0->setMin(minAdd);
         }
         else
         {
             int spanMax = span->max();
             findPrevForward(spanMax + 1, prev);
             span->saveState(mgr());
-            span->max() = (minAdd - 1);
-            IntSpan* newSpan = new IntSpan(minAdd, maxAdd, 1, 0);
+            span->setMax(minAdd - 1);
+            auto newSpan = new IntSpan(minAdd, maxAdd, 1, 0);
             mgr()->revAllocate(newSpan);
             insertAfter(newSpan, prev);
             findPrevForward(maxAdd + 1, prev);
@@ -329,7 +328,7 @@ IntExpDomainRISC::addRange(int min, int max)
     // update size
     _size += (minSpan->max() - minAdd + 1);
     _size += (maxAdd - maxSpan->min() + 1);
-    for (IntSpan* span = minSpan->next()->next(); span != maxSpan; span = span->next()->next())
+    for (auto span = minSpan->next()->next(); span != maxSpan; span = span->next()->next())
     {
         _size += span->size();
     }
@@ -342,7 +341,7 @@ IntExpDomainRISC::addRange(int min, int max)
         findNextForward(next0->max(), next);
         link(prev, next);
 
-        prev0->max() = next0->max();
+        prev0->setMax(next0->max());
     }
     else if (minEdge)
     {
@@ -351,8 +350,8 @@ IntExpDomainRISC::addRange(int min, int max)
         backward(next);
         link(prev, next);
 
-        prev0->max() = maxAdd;
-        maxSpan->min() = (maxAdd + 1);
+        prev0->setMax(maxAdd);
+        maxSpan->setMin(maxAdd + 1);
     }
     else if (maxEdge)
     {
@@ -361,8 +360,8 @@ IntExpDomainRISC::addRange(int min, int max)
         findPrevForward(minSpan->max() + 1, prev);
         link(prev, next);
 
-        minSpan->max() = (minAdd - 1);
-        maxSpan->next()->min() = minAdd;
+        minSpan->setMax(minAdd - 1);
+        maxSpan->next()->setMin(minAdd);
     }
     else
     {
@@ -372,11 +371,11 @@ IntExpDomainRISC::addRange(int min, int max)
         backward(next);
         link(prev, next);
 
-        minSpan->max() = (minAdd - 1);
-        minSpan->next()->min() = minAdd;
+        minSpan->setMax(minAdd - 1);
+        minSpan->next()->setMin(minAdd);
 
-        maxSpan->prev()->max() = maxAdd;
-        maxSpan->min() = (maxAdd + 1);
+        maxSpan->prev()->setMax(maxAdd);
+        maxSpan->setMin(maxAdd + 1);
     }
 
 #ifdef DEBUG_UNIT
@@ -436,8 +435,8 @@ IntExpDomainRISC::removeRange(int min, int max)
 
         prev0->saveState(mgr());
         minSpan->saveState(mgr());
-        prev0->max() = max;
-        minSpan->min() = (max + 1);
+        prev0->setMax(max);
+        minSpan->setMin(max + 1);
 
         return;
     }
@@ -463,8 +462,8 @@ IntExpDomainRISC::removeRange(int min, int max)
 
         maxSpan->saveState(mgr());
         next0->saveState(mgr());
-        maxSpan->max() = (min - 1);
-        next0->min() = min;
+        maxSpan->setMax(min - 1);
+        next0->setMin(min);
         return;
     }
 
@@ -550,28 +549,28 @@ IntExpDomainRISC::removeRange(int min, int max)
             findNextForward(next0->max(), next);
             link(prev, next);
 
-            prev0->max() = next0->max();
+            prev0->setMax(next0->max());
         }
         else if (minEdge)
         {
             prev0->saveState(mgr());
             span->saveState(mgr());
-            prev0->max() = max;
-            span->min() = (max + 1);
+            prev0->setMax(max);
+            span->setMin(max + 1);
         }
         else if (maxEdge)
         {
             span->saveState(mgr());
             next0->saveState(mgr());
-            span->max() = (min - 1);
-            next0->min() = min;
+            span->setMax(min - 1);
+            next0->setMin(min);
         }
         else
         {
             int spanMax = span->max();
             findPrevForward(spanMax + 1, prev);
             span->saveState(mgr());
-            span->max() = (min - 1);
+            span->setMax(min - 1);
             IntSpan* newSpan = new IntSpan(min, max, 0, 0);
             mgr()->revAllocate(newSpan);
             insertAfter(newSpan, prev);
@@ -599,7 +598,7 @@ IntExpDomainRISC::removeRange(int min, int max)
     {
         _size -= (minSpan->max() - minRemove + 1);
         _size -= (maxRemove - maxSpan->min() + 1);
-        for (IntSpan* span = minSpan->next()->next(); span != maxSpan; span = span->next()->next())
+        for (auto span = minSpan->next()->next(); span != maxSpan; span = span->next()->next())
         {
             _size -= span->size();
         }
@@ -613,7 +612,7 @@ IntExpDomainRISC::removeRange(int min, int max)
         findNextForward(next0->max(), next);
         link(prev, next);
 
-        prev0->max() = next0->max();
+        prev0->setMax(next0->max());
     }
     else if (minEdge)
     {
@@ -622,8 +621,8 @@ IntExpDomainRISC::removeRange(int min, int max)
         backward(next);
         link(prev, next);
 
-        prev0->max() = maxRemove;
-        maxSpan->min() = (maxRemove + 1);
+        prev0->setMax(maxRemove);
+        maxSpan->setMin(maxRemove + 1);
     }
     else if (maxEdge)
     {
@@ -632,8 +631,8 @@ IntExpDomainRISC::removeRange(int min, int max)
         findPrevForward(minSpan->max() + 1, prev);
         link(prev, next);
 
-        minSpan->max() = (minRemove - 1);
-        maxSpan->next()->min() = minRemove;
+        minSpan->setMax(minRemove - 1);
+        maxSpan->next()->setMin(minRemove);
     }
     else
     {
@@ -643,11 +642,11 @@ IntExpDomainRISC::removeRange(int min, int max)
         backward(next);
         link(prev, next);
 
-        minSpan->max() = (minRemove - 1);
-        minSpan->next()->min() = minRemove;
+        minSpan->setMax(minRemove - 1);
+        minSpan->next()->setMin(minRemove);
 
-        maxSpan->prev()->max() = maxRemove;
-        maxSpan->min() = (maxRemove + 1);
+        maxSpan->prev()->setMax(maxRemove);
+        maxSpan->setMin(maxRemove + 1);
     }
 
 #ifdef DEBUG_UNIT
@@ -679,8 +678,8 @@ IntExpDomainRISC::validate(bool initialized) const
     uint_t size = RevIntSpanCol::validate(initialized);
     if (initialized && (_head->next() != _tail))
     {
-        IntSpan* minSpan = _head->next()->next();
-        IntSpan* maxSpan = _tail->prev()->prev();
+        auto minSpan = _head->next()->next();
+        auto maxSpan = _tail->prev()->prev();
         if (minSpan->min() < _min)
         {
             size -= (_min - minSpan->min());

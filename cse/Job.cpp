@@ -339,9 +339,9 @@ Job::initPrecedenceBound(Manager* mgr)
     _precedenceBound = new ConstrainedBound(mgr, bound_lb, 0);
 
     //add name
-    _precedenceBound->name() = "job-" + Uint(id()).toString() + " predBound";
+    _precedenceBound->setName("job-" + Uint(id()).toString() + " predBound");
 
-    _precedenceBound->owner() = this;
+    _precedenceBound->setOwner(this);
     mgr->revAllocate(_precedenceBound);
     CycleGroup* cg = bp->newCycleGroup();
     cg->add(_precedenceBound);
@@ -360,9 +360,9 @@ Job::initReleaseBound(Manager* mgr)
         new ConstrainedBound(mgr, forward ? bound_lb : bound_ub, forward ? int_t_min : int_t_max);
 
     // add name
-    _releaseBound->name() = "job-" + Uint(id()).toString() + " relsBound";
+    _releaseBound->setName("job-" + Uint(id()).toString() + " relsBound");
 
-    _releaseBound->owner() = this;
+    _releaseBound->setOwner(this);
     mgr->revAllocate(_releaseBound);
     CycleGroup* cg = bp->newCycleGroup(new JobReleaseCG(mgr));
     cg->add(_releaseBound);
@@ -521,13 +521,9 @@ Job::init()
     _opportunityCostPeriod = period_undefined;
     _latenessCost = 0.0;
     _latenessCostPeriod = period_undefined;
-    /* November 21, 2013 (Elisa) */
-    /* initialize lateness cost increment */
     _latenessIncrement = 0.0;
     _inventoryCost = 0.0;
     _inventoryCostPeriod = period_undefined;
-    /* Janaury 2, 2014 (Elisa) */
-    /* initialize overhead cost and period */
     _overheadCost = 0.0;
     _overheadCostPeriod = period_undefined;
     _schedulableJobsIdx = uint_t_max;

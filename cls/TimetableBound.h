@@ -14,7 +14,7 @@ CLS_NS_BEGIN;
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
-   An activity's execution time cannot overlap with any period of insufficient resource capacity.
+   An activity's execution cannot overlap with a period of insufficient resource capacity.
 
    \author Adam McKee
 */

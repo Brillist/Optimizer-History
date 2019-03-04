@@ -81,27 +81,11 @@ ChoicePoint::hasRemainingChoice() const
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-bool
-ChoicePoint::isLabeled() const
-{
-    return ((_or == nullptr) || (_or->label() != uint_t_max));
-}
-
-////////////////////////////////////////////////////////////////////////////////////////////////////
-
-uint_t
-ChoicePoint::label() const
-{
-    return (_or == nullptr) ? uint_t_max - 1 : _or->label();
-}
-
-////////////////////////////////////////////////////////////////////////////////////////////////////
-
 Goal*
-ChoicePoint::getNextChoice()
+ChoicePoint::nextChoice()
 {
     ASSERTD(hasRemainingChoice());
-    Goal* nextChoice = _or->getChoice(_orIdx++);
+    auto nextChoice = _or->choice(_orIdx++);
     return nextChoice;
 }
 
@@ -112,6 +96,22 @@ ChoicePoint::backtrack(goal_stack_t& goalStack)
 {
     // restore goal stack
     restoreGoalStack(goalStack);
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
+bool
+ChoicePoint::hasLabel() const
+{
+    return ((_or == nullptr) || (_or->label() != uint_t_max));
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
+uint_t
+ChoicePoint::label() const
+{
+    return (_or == nullptr) ? uint_t_max - 1 : _or->label();
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -136,10 +136,10 @@ ChoicePoint::deInit()
 void
 ChoicePoint::saveGoalStack(const goal_stack_t& goalStack)
 {
-    goal_stack_t gscopy = goalStack;
+    auto gscopy = goalStack;
     while (!gscopy.empty())
     {
-        Goal* goal = gscopy.top();
+        auto goal = gscopy.top();
         gscopy.pop();
         _goals.push_back(goal);
         goal->addRef();
@@ -154,7 +154,7 @@ ChoicePoint::restoreGoalStack(goal_stack_t& goalStack)
     // empty the goal stack
     while (!goalStack.empty())
     {
-        Goal* goal = goalStack.top();
+        auto goal = goalStack.top();
         goalStack.pop();
         goal->removeRef();
     }
@@ -165,11 +165,11 @@ ChoicePoint::restoreGoalStack(goal_stack_t& goalStack)
         return;
     }
 
-    goal_vector_t::const_iterator it = _goals.end();
+    auto it = _goals.end();
     while (it != _goals.begin())
     {
         --it;
-        Goal* goal = *it;
+        auto goal = *it;
         goalStack.push(goal);
         goal->addRef();
     }

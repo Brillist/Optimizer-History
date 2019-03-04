@@ -38,11 +38,11 @@ IntActivity::initRequirements()
     // set _breakList
     if (_compositeReqs.size() == 0)
     {
-        // _breakList is already nullptr (nothing to do)
+        // _breakList is already null (nothing to do)
     }
     else if (_compositeReqs.size() == 1)
     {
-        CompositeResourceRequirement* crr = (CompositeResourceRequirement*)_compositeReqs.first();
+        auto crr = utl::cast<CompositeResourceRequirement>(_compositeReqs.first());
         CompositeResource* cres = crr->resource();
         ASSERTD(cres != nullptr);
         _breakList = cres->timetable().addCapExp(crr->minCapacity());

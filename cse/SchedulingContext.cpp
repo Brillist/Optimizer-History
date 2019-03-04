@@ -119,10 +119,6 @@ SchedulingContext::clear()
     for (jobIt = jobs.begin(); jobIt != jobs.end(); ++jobIt)
     {
         Job* job = *jobIt;
-        //         if (!job->active())
-        //         {
-        //             job->release(_mgr);
-        //         }
         job->scheduleClear();
         _mgr->revSet(job->schedulableJobsIdx());
         jobop_set_id_t::const_iterator opIt;
@@ -175,11 +171,9 @@ SchedulingContext::clear()
 void
 SchedulingContext::schedule(JobOp* op)
 {
-#ifdef DEBUG
     ASSERTD(op->schedulable());
-#endif
 
-    Activity* act = op->activity();
+    auto act = op->activity();
     ASSERTD(act != nullptr);
 
     // finalize the ES bound
@@ -313,12 +307,9 @@ SchedulingContext::store()
         {
             if (&(brkact->possiblePts()) == nullptr)
             {
-                String& str = *new String();
-                str = "scheduling error detected for op ";
-                str += Uint(op->id()).toString();
-                throw FailEx(str);
+                throw FailEx("scheduling error detected for op " + Uint(op->id()).toString());
             }
-            pt = brkact->possiblePts().getValue();
+            pt = brkact->possiblePts().value();
         }
         if (intact != nullptr)
             pt = intact->processingTime();
@@ -409,7 +400,7 @@ SchedulingContext::store()
             if (clsResReq == nullptr)
                 continue;
             const clp::IntVar& selectedResources = clsResReq->selectedResources();
-            uint_t resId = selectedResources.getValue();
+            uint_t resId = selectedResources.value();
             const ResourceCapPts* resCapPts = clsResReq->resCapPts(resId);
             resCapPts->selectPt(pt);
             cseResGroupReq->scheduledResourceId() = resCapPts->resourceId();
@@ -1027,8 +1018,8 @@ SchedulingContext::findResourceSequenceRuleApplications()
         if ((clsRes == nullptr) || !clsRes->isUnary())
             continue;
 
-            // uncomment to see the activities scheduled on the resource
 #ifdef DEBUG_UNIT
+        // show activities scheduled on the resource
         utl::cout << utl::endlf << "SchedulingContext::findResourceSequenceRuleApplications()"
                   << utl::endlf;
         const act_set_es_t& debug_acts = clsRes->actsByStartTime();
@@ -1042,6 +1033,7 @@ SchedulingContext::findResourceSequenceRuleApplications()
                       << ", ef=" << act->ef() << utl::endl;
         }
 #endif
+
         // iterate over activities scheduled on unary resource
         // assessing delays based on rules in sequence-list
         Activity* lhsAct = nullptr;

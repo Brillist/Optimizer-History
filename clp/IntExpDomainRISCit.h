@@ -18,7 +18,7 @@ class IntSpan;
 /**
    Integer expression domain.
 
-   \author Adam McKee
+   \ingroup clp
 */
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -37,14 +37,16 @@ public:
         _val = val;
     }
 
-    /** Copy another instance. */
     virtual void copy(const utl::Object& rhs);
 
+    /// \name Movement
+    //@{
     /** Move forward. */
     virtual void next();
 
     /** Move backward. */
     virtual void prev();
+    //@}
 
 private:
     const IntExpDomainRISC* _domain;

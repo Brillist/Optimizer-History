@@ -61,25 +61,28 @@ CompositeTimetableDomain::addCapExp(uint_t cap)
 {
     ASSERTD(cap > 0);
 
+    // we already have an expression for cap?
     if ((cap < _capExpsSize) && (_capExps[cap] != nullptr))
     {
+        // increment its count and return it
         _mgr->revSetIndirect(_capExpCounts, cap);
         ++_capExpCounts[cap];
         return _capExps[cap];
     }
 
+    // need to grow _capExps[], _capExpCounts[] ?
     if (_capExpsSize <= cap)
     {
         IntExp* nullIntExpPtr = nullptr;
         uint_t zero = 0;
-        utl::arrayGrow(_capExps, _capExpsSize, utl::max(utl::KB(1), ((size_t)cap + 1)),
-                       utl::KB(1024), &nullIntExpPtr);
-        utl::arrayGrow(_capExpCounts, _capExpCountsSize, utl::max(utl::KB(1), ((size_t)cap + 1)),
-                       utl::KB(1024), &zero);
+        utl::arrayGrow(_capExps, _capExpsSize, utl::max((size_t)16, ((size_t)cap + 1)),
+                       size_t_max, &nullIntExpPtr);
+        utl::arrayGrow(_capExpCounts, _capExpCountsSize, utl::max((size_t)16, ((size_t)cap + 1)),
+                       size_t_max, &zero);
     }
 
     IntExp* capExp = new IntVar(_mgr);
-    capExp->failOnEmpty() = false;
+    capExp->setFailOnEmpty(false);
     _mgr->add(capExp);
     _mgr->revSetIndirect(_capExps, cap);
     _mgr->revSetIndirect(_capExpCounts, cap);
@@ -88,8 +91,7 @@ CompositeTimetableDomain::addCapExp(uint_t cap)
 
     int removeMin = int_t_min;
     int removeMax = int_t_min;
-    IntSpan* span;
-    for (span = _head->next(); span != _tail; span = span->next())
+    for (auto span = _head->next(); span != _tail; span = span->next())
     {
         if (span->capacity() < cap)
         {
@@ -322,7 +324,7 @@ CompositeTimetableDomain::add(int min, int max, uint_t resId)
         else if (minEdge)
         {
             ttSpan->saveState(_mgr);
-            ttSpan->min() = (e + 1);
+            ttSpan->setMin(e + 1);
             _mgr->revAllocate(resIds);
             CompositeSpan* newSpan = newCS(t, e, resIds);
             insertAfter(newSpan, prev);
@@ -331,7 +333,7 @@ CompositeTimetableDomain::add(int min, int max, uint_t resId)
         {
             findPrevForward(e + 1, prev);
             ttSpan->saveState(_mgr);
-            ttSpan->max() = (t - 1);
+            ttSpan->setMax(t - 1);
             _mgr->revAllocate(resIds);
             CompositeSpan* newSpan = newCS(t, e, resIds);
             insertAfter(newSpan, prev);
@@ -342,8 +344,8 @@ CompositeTimetableDomain::add(int min, int max, uint_t resId)
             int spanMin = ttSpan->min();
             int spanMax = ttSpan->max();
             ttSpan->saveState(_mgr);
-            ttSpan->min() = t;
-            ttSpan->max() = e;
+            ttSpan->setMin(t);
+            ttSpan->setMax(e);
 
             // create resIds for (left, right) spans
             IntExpDomainAR* lhsResIds = ttSpan->resIds();
@@ -367,7 +369,7 @@ CompositeTimetableDomain::add(int min, int max, uint_t resId)
         while (prev[0]->canMergeWith(prev[0]->next()))
         {
             prev[0]->saveState(_mgr);
-            prev[0]->max() = prev[0]->next()->max();
+            prev[0]->setMax(prev[0]->next()->max());
             eclipseNext(prev);
         }
 
@@ -471,7 +473,7 @@ CompositeTimetableDomain::allocate(int min,
             else if (minEdge)
             {
                 ttSpan->saveState(_mgr);
-                ttSpan->min() = (e + 1);
+                ttSpan->setMin(e + 1);
                 _mgr->revAllocate(resIds);
                 CompositeSpan* newSpan = newCS(t, e, resIds);
                 insertAfter(newSpan, prev);
@@ -480,7 +482,7 @@ CompositeTimetableDomain::allocate(int min,
             {
                 findPrevForward(e + 1, prev);
                 ttSpan->saveState(_mgr);
-                ttSpan->max() = (t - 1);
+                ttSpan->setMax(t - 1);
                 _mgr->revAllocate(resIds);
                 CompositeSpan* newSpan = newCS(t, e, resIds);
                 insertAfter(newSpan, prev);
@@ -491,8 +493,8 @@ CompositeTimetableDomain::allocate(int min,
                 int spanMin = ttSpan->min();
                 int spanMax = ttSpan->max();
                 ttSpan->saveState(_mgr);
-                ttSpan->min() = t;
-                ttSpan->max() = e;
+                ttSpan->setMin(t);
+                ttSpan->setMax(e);
 
                 // create resIds for (left, right) spans
                 IntExpDomainAR* lhsResIds = ttSpan->resIds();
@@ -526,7 +528,7 @@ CompositeTimetableDomain::allocate(int min,
         while (prev[0]->canMergeWith(prev[0]->next()))
         {
             prev[0]->saveState(_mgr);
-            prev[0]->max() = prev[0]->next()->max();
+            prev[0]->setMax(prev[0]->next()->max());
             eclipseNext(prev);
         }
 

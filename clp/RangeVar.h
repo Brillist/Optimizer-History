@@ -27,24 +27,15 @@ public:
     /** Constructor. */
     RangeVar(ConstrainedBound* lb, ConstrainedBound* ub, bool failOnEmpty);
 
-    /** Copy another instance. */
     virtual void copy(const utl::Object& rhs);
 
-    /** Get a human-readable string representation. */
     virtual String toString() const;
 
-    /// \name Accessors
+    /// \name Accessors (const)
     //@{
     /** Get the name. */
     const std::string&
     name() const
-    {
-        return _name;
-    }
-
-    /** Set the name. */
-    std::string&
-    name()
     {
         return _name;
     }
@@ -56,13 +47,6 @@ public:
         return _object;
     }
 
-    /** Set the object. */
-    void*&
-    object()
-    {
-        return _object;
-    }
-
     /** Get the domain span. */
     utl::Span<int>
     span() const
@@ -70,21 +54,19 @@ public:
         return utl::Span<int>(lb(), ub() + 1);
     }
 
-    /** Set debug flag. */
-    void setDebugFlag(bool debugFlag);
-
-    /** Get the lower bound. */
-    int
-    lb() const
+    /** Only one value in range? */
+    bool
+    isBound() const
     {
-        return _lb->get();
+        return (lb() == ub());
     }
 
-    /** Get the upper bound. */
+    /** Get the single value in the range. */
     int
-    ub() const
+    value() const
     {
-        return _ub->get();
+        ASSERTD(isBound());
+        return lb();
     }
 
     /** Lower bound defined? */
@@ -102,19 +84,17 @@ public:
     }
 
     /** Get the lower bound. */
-    ConstrainedBound&
-    lowerBound()
+    int
+    lb() const
     {
-        ASSERTD(_lb != nullptr);
-        return *_lb;
+        return _lb->get();
     }
 
     /** Get the upper bound. */
-    ConstrainedBound&
-    upperBound()
+    int
+    ub() const
     {
-        ASSERTD(_ub != nullptr);
-        return *_ub;
+        return _ub->get();
     }
 
     /** Get the lower bound. */
@@ -132,46 +112,44 @@ public:
         ASSERTD(_ub != nullptr);
         return *_ub;
     }
+    //@}
 
-    /** Get the single value in the range. */
-    int
-    value() const
+    /// \name Accessors (non-const)
+    //@{
+    /** Set the name. */
+    void
+    setName(const std::string& name)
     {
-        ASSERTD(isBound());
-        return lb();
+        _name = name;
     }
 
-    /** Get the size of the domain. */
-    virtual uint_t
-    size() const
+    /** Set the object. */
+    void setObject(void* object)
     {
-        ASSERTD(!empty());
-        return (ub() - lb() + 1);
+        _object = object;
     }
 
-    /** Empty domain? */
-    bool
-    empty() const
+    /** Set debug flag. */
+    void setDebugFlag(bool debugFlag);
+
+    /** Get the lower bound. */
+    ConstrainedBound&
+    lowerBound()
     {
-        return (lb() > ub());
+        ASSERTD(_lb != nullptr);
+        return *_lb;
     }
 
-    /** Does the domain contain a single value? */
-    bool
-    isBound() const
+    /** Get the upper bound. */
+    ConstrainedBound&
+    upperBound()
     {
-        return (lb() == ub());
-    }
-
-    /** Does the domain include the given value? */
-    bool
-    has(int val) const
-    {
-        return ((val >= lb()) && (val <= ub()));
+        ASSERTD(_ub != nullptr);
+        return *_ub;
     }
     //@}
 
-    /// \name Domain Modification
+    /// \name Modification
     //@{
     /** Set bounds. */
     void
@@ -201,23 +179,21 @@ public:
         _ub->setUB(ub);
     }
 
-    /** Remove all values except 'val'. */
+    /** Remove all values except \c val. */
     void
     setValue(int val)
     {
         setRange(val, val);
     }
 
-    /**
-       Remove domain values that are not in the given range.
-    */
+    /** Remove values not in the given range. */
     void
     intersect(const RangeVar* rangeVar)
     {
         setRange(rangeVar->lb(), rangeVar->ub());
     }
 
-    /** Remove domain values less than \b lb or greater than \b ub. */
+    /** Remove values that don't fall in \c [lb,ub]. */
     void
     setRange(int lb, int ub)
     {
@@ -227,7 +203,9 @@ public:
     //@}
 private:
     void init();
-    void deInit();
+    void deInit()
+    {
+    }
 
 private:
     std::string _name;

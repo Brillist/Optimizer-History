@@ -20,8 +20,7 @@ CLP_NS_BEGIN;
 void
 IntExpDomainARit::copy(const utl::Object& rhs)
 {
-    ASSERTD(rhs.isA(IntExpDomainARit));
-    const IntExpDomainARit& dit = (const IntExpDomainARit&)rhs;
+    auto& dit = utl::cast<IntExpDomainARit>(rhs);
     _domain = dit._domain;
     _idx = dit._idx;
     _val = dit._val;

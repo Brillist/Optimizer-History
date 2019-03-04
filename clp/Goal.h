@@ -18,12 +18,11 @@ class Manager;
 /**
    Search goal (abstract).
 
-   The purpose of goals is to guide the solution search, through a process
-   of decision-making.  Override the execute() method to define your own
-   goal's behavior.
+   The purpose of goals is to guide the solution search through a process of decision-making.
+   Override the execute() method to define your own goal's behavior.
 
    \see Manager
-   \author Adam McKee
+   \ingroup clp
 */
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -45,6 +44,8 @@ public:
     /** Execute the goal. */
     virtual void execute() = 0;
 
+    /// \name Accessors (const)
+    //@{
     /** Get the manager. */
     Manager*
     manager() const
@@ -52,18 +53,21 @@ public:
         return _mgr;
     }
 
+    /** Get the general-purpose flag. */
+    bool
+    flag() const
+    {
+        return _flag;
+    }
+    //@}
+
+    /// \name Accessors (non-const)
+    //@{
     /** Set the manager. */
     void
     setManager(Manager* mgr)
     {
         _mgr = mgr;
-    }
-
-    /** Get the general-purpose flag. */
-    bool
-    getFlag() const
-    {
-        return _flag;
     }
 
     /** Set the general-purpose flag. */
@@ -72,6 +76,7 @@ public:
     {
         _flag = flag;
     }
+    //@}
 
 private:
     void
@@ -85,9 +90,18 @@ private:
     {
     }
 
+private:
     Manager* _mgr;
     bool _flag;
 };
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
+/**
+   A \c std::vector of Goal pointers.
+   \ingroup clp
+*/
+using goal_vector_t = std::vector<Goal*>;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 

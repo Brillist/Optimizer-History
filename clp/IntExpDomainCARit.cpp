@@ -20,11 +20,10 @@ CLP_NS_BEGIN;
 void
 IntExpDomainCARit::copy(const utl::Object& rhs)
 {
-    ASSERTD(rhs.isA(IntExpDomainCARit));
-    const IntExpDomainCARit& dit = (const IntExpDomainCARit&)rhs;
-    _domain = dit._domain;
-    _idx = dit._idx;
-    _val = dit._val;
+    auto& it = utl::cast<IntExpDomainCARit>(rhs);
+    _domain = it._domain;
+    _idx = it._idx;
+    _val = it._val;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////

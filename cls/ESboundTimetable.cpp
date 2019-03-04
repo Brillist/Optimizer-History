@@ -39,11 +39,9 @@ void
 ESboundTimetable::allocateCapacity(int t1, int t2)
 {
     uint_t cap = capacity();
-    //_act is only usefull for composite resource,
-    // so it will be ignored later anyway.
+    // _act is only useful for composite resource, so it will be ignored later anyway
     _res->allocate(t1, t2, cap, _act);
-    // no need to insert _act again into _res->actsByStartTime
-    // because this function should only be used for shifting ef
+    // no need to update _res->actsByStartTime (this function is only for shifting ef)
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -69,6 +67,7 @@ ESboundTimetable::deallocateCapacity(int t1, int t2)
 {
     uint_t cap = capacity();
     _res->deallocate(t1, t2, cap, _act);
+    // update _res->actsByStartTime (this function is for shifting es)
     // to erase _act from and re-insert it into
     // _res->actsByStartTime() is necessary, because
     // this function is used for shifting es
@@ -99,7 +98,7 @@ ESboundTimetable::find()
     {
         goto succeed;
     }
-    pt = (uint_t)ptExp->getValue();
+    pt = (uint_t)ptExp->value();
 
     // handle (pt == 0) as special case
     if (pt == 0)

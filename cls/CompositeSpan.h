@@ -33,19 +33,19 @@ public:
     const clp::IntExpDomainAR*
     resIds() const
     {
-        return *(const clp::IntExpDomainAR**)&_v0;
+        return *reinterpret_cast<const clp::IntExpDomainAR* const*>(&_v0);
     }
 
     clp::IntExpDomainAR*
     resIds()
     {
-        return *(clp::IntExpDomainAR**)&_v0;
+        return *reinterpret_cast<clp::IntExpDomainAR**>(&_v0);
     }
 
     void
     setResIds(clp::IntExpDomainAR* resIds)
     {
-        (*(clp::IntExpDomainAR**)&_v0) = resIds;
+        *reinterpret_cast<clp::IntExpDomainAR**>(&_v0) = resIds;
     }
 
     void

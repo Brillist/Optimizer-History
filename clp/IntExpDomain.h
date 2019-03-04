@@ -14,7 +14,10 @@ CLP_NS_BEGIN;
 /**
    Integer expression domain.
 
-   \author Adam McKee
+   IntExpDomain is a concrete base for classes that store the domain of an integer expression
+   (IntExp).
+
+   \ingroup clp
 */
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -24,16 +27,17 @@ class IntExpDomain : public utl::Object
     UTL_CLASS_DECL_ABC(IntExpDomain, utl::Object);
 
 public:
-    /** Constructor. */
+    /**
+       Constructor.
+       \param mgr associated Manager
+    */
     IntExpDomain(Manager* mgr)
     {
         init(mgr);
     }
 
-    /** Copy another instance. */
     virtual void copy(const utl::Object& rhs);
 
-    /** Get a human-readable string representation. */
     virtual String toString() const;
 
     /** Remove domain values that are not in the given array. */

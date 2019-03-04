@@ -70,9 +70,7 @@ BrkActivity::initRequirements()
     // no possible pts?
     if (possiblePtsDomain.empty())
     {
-        String& str = *new String();
-        str = "act-" + Uint(id()).toString() + ": no possible pts";
-        throw FailEx(str);
+        throw FailEx("act-" + Uint(id()).toString() + ": no possible pts");
     }
 
     // make possible-pts var
@@ -92,7 +90,7 @@ BrkActivity::initRequirements()
     // pt bound?
     if (_possiblePts->isBound())
     {
-        selectPt(_possiblePts->getValue());
+        selectPt(_possiblePts->value());
     }
 }
 
@@ -222,7 +220,7 @@ BrkActivity::selectResource(uint_t resId, DiscreteResourceRequirement* p_rr)
     // notify requirements if pt was bound
     if (!ptsWasBound && _possiblePts->isBound())
     {
-        selectPt(_possiblePts->getValue());
+        selectPt(_possiblePts->value());
     }
 }
 

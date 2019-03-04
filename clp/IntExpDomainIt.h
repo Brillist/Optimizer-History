@@ -7,9 +7,9 @@ CLP_NS_BEGIN;
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
-   Integer expression domain.
+   Iterator for IntExpDomain.
 
-   \author Adam McKee
+   \ingroup clp
 */
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -20,12 +20,8 @@ class IntExpDomainIt : public utl::Object
     UTL_CLASS_DEFID;
 
 public:
-    /** Move forward. */
-    virtual void next() = 0;
-
-    /** Move backward. */
-    virtual void prev() = 0;
-
+    /// \name Accessors (const)
+    //@{
     /** At end of domain? */
     bool
     atEnd() const
@@ -45,6 +41,16 @@ public:
     {
         return _val;
     }
+    //@}
+
+    /// \name Movement
+    //@{
+    /** Move forward. */
+    virtual void next() = 0;
+
+    /** Move backward. */
+    virtual void prev() = 0;
+    //@}
 
 protected:
     int _val;

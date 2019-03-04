@@ -40,75 +40,6 @@ Manager::add(Goal* goal)
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
-Manager::add(const Constraint& ct)
-{
-    ((Constraint&)ct).mclone();
-}
-
-////////////////////////////////////////////////////////////////////////////////////////////////////
-
-bool
-Manager::add(Constraint* ct)
-{
-    if (_cts.find(ct) != _cts.end())
-    {
-        return false;
-    }
-
-    ASSERTD(!_cpStack.empty() && (_topCP == _cpStack.top()));
-    revAdd(ct);
-    ct->setManaged(true);
-    _cts.insert(ct);
-    ct->addRef();
-    try
-    {
-        ct->postExpConstraints();
-        ct->post();
-        propagate();
-    }
-    catch (FailEx&)
-    {
-        throw;
-    }
-
-    return true;
-}
-
-////////////////////////////////////////////////////////////////////////////////////////////////////
-
-void
-Manager::add(ConstrainedVar* var)
-{
-    ASSERTD(!var->isManaged());
-    _vars.insert(var);
-    var->setManaged(true);
-    var->postConstraints();
-}
-
-////////////////////////////////////////////////////////////////////////////////////////////////////
-
-void
-Manager::remove(Constraint* ct)
-{
-    ct->unpost();
-    if (_cts.erase(ct) != 0)
-    {
-        ct->removeRef();
-    }
-}
-
-////////////////////////////////////////////////////////////////////////////////////////////////////
-
-void
-Manager::remove(ConstrainedVar* var)
-{
-    _vars.erase(var);
-    delete var;
-}
-
-////////////////////////////////////////////////////////////////////////////////////////////////////
-
-void
 Manager::reset()
 {
     backtrack(uint_t_max - 2);
@@ -136,11 +67,11 @@ Manager::nextSolution()
         // create root choice point
         pushChoicePoint();
 
-        // reverse the goal stack
+        // reverse the goal stack (to execute goals in the order they were added)
         goal_stack_t goalStack;
         while (!_goalStack.empty())
         {
-            Goal* goal = _goalStack.top();
+            auto goal = _goalStack.top();
             _goalStack.pop();
             goalStack.push(goal);
         }
@@ -155,40 +86,52 @@ Manager::nextSolution()
         }
     }
 
+    // empty the goal stack
     while (!_goalStack.empty())
     {
-        Goal* goal = _goalStack.top();
+        // pop a goal
+        auto goal = _goalStack.top();
         _goalStack.pop();
-        if (dynamic_cast<Or*>(goal) == nullptr)
+
+        // Or goal?
+        if (goal->isA(Or))
+        {
+            // top CP is not for this Or?
+            auto orGoal = utl::cast<Or>(goal);
+            auto cp = _topCP;
+            if (cp->orGoal() != orGoal)
+            {
+                // push a new CP for this Or
+                cp = pushChoicePoint();
+                cp->set(orGoal, _goalStack);
+            }
+
+            // push the next alternative goal for this Or
+            auto goal = cp->nextChoice();
+            _goalStack.push(goal);
+            goal->addRef();
+
+            // orGoal was removed from _goalStack
+            orGoal->removeRef();
+        }
+        else // regular goal
         {
             try
             {
+                // execute the goal and propagate
                 goal->execute();
                 propagate();
                 goal->removeRef();
             }
             catch (FailEx& failEx)
             {
+                // backtrack (or return false to signal failure to the caller)
                 goal->removeRef();
                 if (!backtrack(failEx.label()))
                 {
                     return false;
                 }
             }
-        }
-        else
-        {
-            Or* orGoal = (Or*)goal;
-            ChoicePoint* cp = _topCP;
-            if (cp->orGoal() != orGoal)
-            {
-                cp = pushChoicePoint();
-                cp->set(orGoal, _goalStack);
-            }
-            Goal* goal = cp->getNextChoice();
-            _goalStack.push(goal);
-            goal->addRef();
-            orGoal->removeRef();
         }
     }
 
@@ -228,6 +171,74 @@ Manager::popState()
 
     // remove the choice point
     popChoicePoint();
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
+void
+Manager::add(const Constraint& ct)
+{
+    const_cast<Constraint&>(ct).mclone();
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
+bool
+Manager::add(Constraint* ct)
+{
+    if (_cts.find(ct) != _cts.end())
+    {
+        return false;
+    }
+
+    ASSERTD(!_cpStack.empty() && (_topCP == _cpStack.top()));
+    revAdd(ct);
+    ct->setManaged(true);
+    _cts.insert(ct);
+    ct->addRef();
+    try
+    {
+        ct->postExpConstraints();
+        ct->post();
+        propagate();
+    }
+    catch (FailEx&)
+    {
+        throw;
+    }
+
+    return true;
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
+void
+Manager::remove(Constraint* ct)
+{
+    ct->unpost();
+    if (_cts.erase(ct) != 0)
+    {
+        ct->removeRef();
+    }
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
+void
+Manager::add(ConstrainedVar* var)
+{
+    ASSERTD(!var->managed());
+    _vars.insert(var);
+    var->setManaged(true);
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
+void
+Manager::remove(ConstrainedVar* var)
+{
+    _vars.erase(var);
+    delete var;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -292,17 +303,16 @@ Manager::deInit()
 {
     goalStackClear();
 
-    for (ct_set_t::iterator it = _cts.begin(); it != _cts.end(); ++it)
+    for (auto ct : _cts)
     {
-        (*it)->setPosted(false);
+        ct->setPosted(false);
     }
     removeRefCont(_cts);
+
     deleteCont(_vars);
     delete _skipListDepthArray;
     delete _boundPropagator;
-
     deleteCont(_storedCPs);
-
     removeRefArray(_revCts, _revCtsPtr);
     deleteArray(_revAllocations, _revAllocationsPtr);
 
@@ -332,7 +342,7 @@ Manager::pushChoicePoint()
     {
         _storedCPs.push_back(nullptr);
     }
-    ChoicePoint* cp = _storedCPs[d];
+    auto cp = _storedCPs[d];
     if (cp == nullptr)
     {
         cp = new ChoicePoint();
@@ -418,8 +428,8 @@ Manager::revSetLongArray(size_t* array, uint_t size)
     }
 
     // copy array into _revLongArrays
-    size_t* lhs = _revLongArraysPtr;
-    size_t* rhs = array;
+    auto lhs = _revLongArraysPtr;
+    auto rhs = array;
     _revLongArraysPtr += size;
     while (lhs < _revLongArraysPtr)
     {
@@ -589,18 +599,18 @@ Manager::backtrack(uint_t label)
 
     _boundPropagator->clearPropQ();
 
-    for (uint_t depth = _cpStackSize; depth > 0; depth--)
+    for (uint_t depth = _cpStackSize; depth != 0; depth--)
     {
-        ChoicePoint* cp = _topCP;
+        auto cp = _topCP;
 
         // backtrack on the choice point
         backtrackCP(cp);
 
         // can we resume the search at this choice point?
         if (cp->hasRemainingChoice() &&
-            (!cp->isLabeled() || (label == uint_t_max) || (label == cp->label())))
+            (!cp->hasLabel() || (label == uint_t_max) || (label == cp->label())))
         {
-            Or* orGoal = cp->orGoal();
+            auto orGoal = cp->orGoal();
             _goalStack.push(orGoal);
             orGoal->addRef();
             return true;
@@ -623,156 +633,156 @@ Manager::backtrackCP(ChoicePoint* cp)
     cp->backtrack(_goalStack);
 
     // backtrack rev-long-arrays
-    size_t* revLongArraysBegin = _revLongArrays + cp->getRevLongArraysIdx();
-    while (_revLongArraysPtr > revLongArraysBegin)
+    auto revLongArraysBegin = _revLongArrays + cp->revLongArraysIdx();
+    while (_revLongArraysPtr != revLongArraysBegin)
     {
-        size_t* array = (size_t*)*(--_revLongArraysPtr);
-        size_t size = *(--_revLongArraysPtr);
+        auto array = reinterpret_cast<size_t*>(*--_revLongArraysPtr);
+        auto size = *--_revLongArraysPtr;
 
         // copy array
-        size_t* rhsLim = _revLongArraysPtr;
+        auto rhsLim = _revLongArraysPtr;
         _revLongArraysPtr -= size;
-        size_t* lhs = array;
-        size_t* rhs = _revLongArraysPtr;
-        while (rhs < rhsLim)
+        auto lhs = array;
+        auto rhs = _revLongArraysPtr;
+        while (rhs != rhsLim)
         {
             *lhs++ = *rhs++;
         }
     }
 
     // backtrack rev-longs
-    size_t* revLongsBegin = _revLongs + cp->getRevLongsIdx();
-    while (_revLongsPtr > revLongsBegin)
+    auto revLongsBegin = _revLongs + cp->revLongsIdx();
+    while (_revLongsPtr != revLongsBegin)
     {
-        size_t v = *(--_revLongsPtr);
-        size_t* i = (size_t*)*(--_revLongsPtr);
-        *i = v;
+        auto val = *--_revLongsPtr;
+        auto ptr = reinterpret_cast<size_t*>(*--_revLongsPtr);
+        *ptr = val;
     }
 
     // backtrack indirect rev-long-arrays
-    size_t* revLongArraysIndBegin = _revLongArraysInd + cp->getRevLongArraysIndIdx();
-    while (_revLongArraysIndPtr > revLongArraysIndBegin)
+    auto revLongArraysIndBegin = _revLongArraysInd + cp->revLongArraysIndIdx();
+    while (_revLongArraysIndPtr != revLongArraysIndBegin)
     {
-        size_t** arrayPtr = (size_t**)*(--_revLongArraysIndPtr);
-        size_t idx = *(--_revLongArraysIndPtr);
-        size_t size = *(--_revLongArraysIndPtr);
+        auto arrayPtr = reinterpret_cast<size_t**>(*--_revLongArraysIndPtr);
+        auto idx = *--_revLongArraysIndPtr;
+        auto size = *--_revLongArraysIndPtr;
 
         // copy array
-        size_t* rhsLim = _revLongArraysIndPtr;
+        auto rhsLim = _revLongArraysIndPtr;
         _revLongArraysIndPtr -= size;
-        size_t* lhs = *arrayPtr + idx;
-        size_t* rhs = _revLongArraysIndPtr;
-        while (rhs < rhsLim)
+        auto lhsPtr = *arrayPtr + idx;
+        auto rhsPtr = _revLongArraysIndPtr;
+        while (rhsPtr != rhsLim)
         {
-            *lhs++ = *rhs++;
+            *lhsPtr++ = *rhsPtr++;
         }
     }
 
     // backtrack indirect rev-longs
-    size_t* revLongsIndBegin = _revLongsInd + cp->getRevLongsIndIdx();
-    while (_revLongsIndPtr > revLongsIndBegin)
+    auto revLongsIndBegin = _revLongsInd + cp->revLongsIndIdx();
+    while (_revLongsIndPtr != revLongsIndBegin)
     {
-        size_t** arrayPtr = (size_t**)*(--_revLongsIndPtr);
-        size_t idx = *(--_revLongsIndPtr);
-        size_t val = *(--_revLongsIndPtr);
+        auto arrayPtr = reinterpret_cast<size_t**>(*--_revLongsIndPtr);
+        auto idx = *--_revLongsIndPtr;
+        auto val = *--_revLongsIndPtr;
         (*arrayPtr)[idx] = val;
     }
 
     // backtrack rev-int-arrays
-    size_t* revIntArraysBegin = _revIntArrays + cp->getRevIntArraysIdx();
-    while (_revIntArraysPtr > revIntArraysBegin)
+    auto revIntArraysBegin = _revIntArrays + cp->revIntArraysIdx();
+    while (_revIntArraysPtr != revIntArraysBegin)
     {
-        uint_t* array = (uint_t*)*(--_revIntArraysPtr);
-        size_t size = *(--_revIntArraysPtr);
+        auto array = reinterpret_cast<uint_t*>(*--_revIntArraysPtr);
+        auto size = *--_revIntArraysPtr;
 
         // copy array
-        size_t* rhsLim = _revIntArraysPtr;
+        auto rhsLim = _revIntArraysPtr;
         _revIntArraysPtr -= size;
-        uint_t* lhs = array;
-        size_t* rhs = _revIntArraysPtr;
-        while (rhs < rhsLim)
+        auto lhsPtr = array;
+        auto rhsPtr = _revIntArraysPtr;
+        while (rhsPtr != rhsLim)
         {
-            *lhs++ = *rhs++;
+            *lhsPtr++ = *rhsPtr++;
         }
     }
 
     // backtrack rev-ints
-    size_t* revIntsBegin = _revInts + cp->getRevIntsIdx();
-    while (_revIntsPtr > revIntsBegin)
+    auto revIntsBegin = _revInts + cp->revIntsIdx();
+    while (_revIntsPtr != revIntsBegin)
     {
-        uint_t v = *(--_revIntsPtr);
-        uint_t* i = (uint_t*)*(--_revIntsPtr);
-        *i = v;
+        auto val = static_cast<uint_t>(*--_revIntsPtr);
+        auto ptr = reinterpret_cast<uint_t*>(*--_revIntsPtr);
+        *ptr = val;
     }
 
     // backtrack indirect rev-int-arrays
-    size_t* revIntArraysIndBegin = _revIntArraysInd + cp->getRevIntArraysIndIdx();
-    while (_revIntArraysIndPtr > revIntArraysIndBegin)
+    auto revIntArraysIndBegin = _revIntArraysInd + cp->revIntArraysIndIdx();
+    while (_revIntArraysIndPtr != revIntArraysIndBegin)
     {
-        uint_t** arrayPtr = (uint_t**)*(--_revIntArraysIndPtr);
-        size_t idx = *(--_revIntArraysIndPtr);
-        size_t size = *(--_revIntArraysIndPtr);
+        auto arrayPtr = reinterpret_cast<uint_t**>(*--_revIntArraysIndPtr);
+        auto idx = *--_revIntArraysIndPtr;
+        auto size = *--_revIntArraysIndPtr;
 
         // copy array
-        size_t* rhsLim = _revIntArraysIndPtr;
+        auto rhsLim = _revIntArraysIndPtr;
         _revIntArraysIndPtr -= size;
-        uint_t* lhs = *arrayPtr + idx;
-        size_t* rhs = _revIntArraysIndPtr;
-        while (rhs < rhsLim)
+        auto lhsPtr = *arrayPtr + idx;
+        auto rhsPtr = _revIntArraysIndPtr;
+        while (rhsPtr != rhsLim)
         {
-            *lhs++ = *rhs++;
+            *lhsPtr++ = *rhsPtr++;
         }
     }
 
     // backtrack indirect rev-ints
-    size_t* revIntsIndBegin = _revIntsInd + cp->getRevIntsIndIdx();
-    while (_revIntsIndPtr > revIntsIndBegin)
+    auto revIntsIndBegin = _revIntsInd + cp->revIntsIndIdx();
+    while (_revIntsIndPtr != revIntsIndBegin)
     {
-        uint_t** arrayPtr = (uint_t**)*(--_revIntsIndPtr);
-        size_t idx = *(--_revIntsIndPtr);
-        uint_t val = *(--_revIntsIndPtr);
+        auto arrayPtr = reinterpret_cast<uint_t**>(*--_revIntsIndPtr);
+        auto idx = *--_revIntsIndPtr;
+        auto val = static_cast<uint_t>(*--_revIntsIndPtr);
         (*arrayPtr)[idx] = val;
     }
 
     // backtrack changed variables
-    ConstrainedVar** revDeltaVarsBegin = _revDeltaVars + cp->getRevDeltaVarsIdx();
-    while (_revDeltaVarsPtr > revDeltaVarsBegin)
+    auto revDeltaVarsBegin = _revDeltaVars + cp->revDeltaVarsIdx();
+    while (_revDeltaVarsPtr != revDeltaVarsBegin)
     {
-        ConstrainedVar* var = *(--_revDeltaVarsPtr);
+        auto var = *--_revDeltaVarsPtr;
         var->backtrack();
     }
 
     // toggle flags that were toggled
-    bool** revTogglesBegin = _revToggles + cp->getRevTogglesIdx();
-    while (_revTogglesPtr > revTogglesBegin)
+    auto revTogglesBegin = _revToggles + cp->revTogglesIdx();
+    while (_revTogglesPtr != revTogglesBegin)
     {
-        bool* b = *(--_revTogglesPtr);
-        *b = !*b;
+        auto flagPtr = *--_revTogglesPtr;
+        *flagPtr = !*flagPtr;
     }
 
     // remove constraints that were added
-    Constraint** revCtsBegin = _revCts + cp->getRevCtsIdx();
+    auto revCtsBegin = _revCts + cp->revCtsIdx();
     while (_revCtsPtr > revCtsBegin)
     {
-        Constraint* ct = *(--_revCtsPtr);
+        auto ct = *--_revCtsPtr;
         remove(ct);
         ct->removeRef();
     }
 
     // run backtracking actions
-    Functor** revActionsBegin = _revActions + cp->getRevActionsIdx();
-    while (_revActionsPtr > revActionsBegin)
+    auto revActionsBegin = _revActions + cp->revActionsIdx();
+    while (_revActionsPtr != revActionsBegin)
     {
-        Functor* action = *(--_revActionsPtr);
+        auto action = *--_revActionsPtr;
         action->execute();
         delete action;
     }
 
     // delete objects that were allocated
-    Object** revAllocationsBegin = _revAllocations + cp->getRevAllocationsIdx();
-    while (_revAllocationsPtr > revAllocationsBegin)
+    auto revAllocationsBegin = _revAllocations + cp->revAllocationsIdx();
+    while (_revAllocationsPtr != revAllocationsBegin)
     {
-        Object* object = *(--_revAllocationsPtr);
+        auto object = *--_revAllocationsPtr;
         delete object;
     }
 }

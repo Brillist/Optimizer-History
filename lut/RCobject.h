@@ -7,10 +7,10 @@ LUT_NS_BEGIN;
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
-   Abstract base for a reference-counted object.
+   Reference-counted object (abstract).
 
-   The object will be deleted when the last remaining reference to it is removed
-   (by calling removeRef()).
+   An RCobject keeps a count of the number of objects that hold pointers to it.  When that count
+   is reduced to 0, the RCobject is deleted.
 
    \ingroup lut
 */

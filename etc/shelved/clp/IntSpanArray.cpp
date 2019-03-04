@@ -25,7 +25,7 @@ IntSpanArray::add(int min, int max)
     }
 
     ASSERTD(min <= max);
-    uint_t* ptr = _array + (_size << 1);
+    uint_t* ptr = _array + (_size * 2);
     *ptr = min;
     *++ptr = max;
     ++_size;
@@ -45,28 +45,9 @@ void
 IntSpanArray::grow()
 {
     ASSERTD(_size == _reservedSize);
-
-    // figure out new size
-    uint_t newSize;
-    if (_size == 0)
-    {
-        newSize = 4096;
-    }
-    else
-    {
-        newSize = _size << 1;
-    }
-
-    uint_t* newArray = new uint_t[newSize << 1];
-    uint_t i;
-    for (i = 0; i < (_size << 1); ++i)
-    {
-        newArray[i] = _array[i];
-    }
-
-    delete[] _array;
-    _array = newArray;
-    _reservedSize = newSize;
+    size_t reservedSize = _reservedSize * 2;
+    utl::arrayGrow(_array, reservedSize, utl::max((size_t)4096, reservedSize + 2));
+    _reservedSize = reservedSize / 2;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////

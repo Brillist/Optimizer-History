@@ -43,9 +43,8 @@ IntExpDomainCAR::IntExpDomainCAR(Manager* mgr, const int_uint_map_t& domain)
 void
 IntExpDomainCAR::copy(const Object& rhs)
 {
-    ASSERTD(rhs.isA(IntExpDomainCAR));
-    const IntExpDomainCAR& dcar = (const IntExpDomainCAR&)rhs;
-    IntExpDomain::copy(dcar);
+    auto& dcar = utl::cast<IntExpDomainCAR>(rhs);
+    super::copy(dcar);
     _num = dcar._num;
     _bits = dcar._bits;
     _bitsLog2 = dcar._bitsLog2;
@@ -182,7 +181,7 @@ IntExpDomainCAR::getNext(int val) const
 void
 IntExpDomainCAR::_saveState()
 {
-    IntExpDomain::_saveState();
+    super::_saveState();
     _mgr->revSet(_stateDepth);
     _stateDepth = _mgr->depth();
     _mgr->revSet(_counts, _countsArray.size());

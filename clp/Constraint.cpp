@@ -21,7 +21,7 @@ void
 Constraint::copy(const Object& rhs)
 {
     auto& ct = utl::cast<Constraint>(rhs);
-    Goal::copy(ct);
+    super::copy(ct);
     _posted = false;
 }
 
@@ -31,7 +31,7 @@ Constraint*
 Constraint::mclone()
 {
     Constraint* ct;
-    if (isManaged())
+    if (this->managed())
     {
         ct = this;
         ct->mcopy();
@@ -40,11 +40,25 @@ Constraint::mclone()
     {
         ct = self.clone();
         ct->mcopy();
-        Manager* mgr = manager();
+        auto mgr = this->manager();
         ASSERTD(mgr != nullptr);
         mgr->add(ct);
     }
     return ct;
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
+void
+Constraint::mcopy()
+{
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
+void
+Constraint::postExpConstraints()
+{
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -59,7 +73,7 @@ Constraint::setPosted(bool posted)
     _posted = posted;
     if (_posted)
     {
-        Manager* mgr = manager();
+        auto mgr = this->manager();
         ASSERTD(mgr != nullptr);
         _postDepth = mgr->depth();
     }

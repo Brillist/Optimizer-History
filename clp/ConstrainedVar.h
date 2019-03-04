@@ -9,10 +9,13 @@ CLP_NS_BEGIN;
 /**
    Constrained variable.
 
-   A constrained variable has a finite domain, and may be subject to
-   domain reduction in the course of constraint propagation.
+   A constrained variable has:
 
-   \author Adam McKee
+   - a finite domain
+   - backtracking capability
+   - constraints
+
+   \ingroup clp
 */
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -28,23 +31,13 @@ public:
     virtual void backtrack() = 0;
 
     /** Is self managed? */
-    virtual bool
-    isManaged() const
-    {
-        return true;
-    }
+    virtual bool managed() const;
 
     /** Indicate whether self is managed. */
     virtual void
     setManaged(bool managed)
     {
         ABORT();
-    }
-
-    /** Post associated constraints. */
-    virtual void
-    postConstraints()
-    {
     }
 };
 

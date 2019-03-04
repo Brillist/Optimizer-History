@@ -41,8 +41,7 @@ IntSpan::IntSpan(int min, int max, uint_t v0, uint_t v1, uint_t level)
 void
 IntSpan::copy(const Object& rhs)
 {
-    ASSERTD(rhs.isA(IntSpan));
-    const IntSpan& is = (const IntSpan&)rhs;
+    auto& is = utl::cast<IntSpan>(rhs);
     _min = is._min;
     _max = is._max;
     _v0 = is._v0;
@@ -57,24 +56,7 @@ IntSpan::toString() const
     MemStream str;
     str << "[" << _min << "," << _max << "]: "
         << "(" << _v0 << "," << _v1 << ")" << '\0';
-    return String((char*)str.get());
-}
-
-////////////////////////////////////////////////////////////////////////////////////////////////////
-
-bool
-IntSpan::canMergeWith(const IntSpan* rhs) const
-{
-    return (_v0 == rhs->_v0) && (_v1 == rhs->_v1);
-}
-
-////////////////////////////////////////////////////////////////////////////////////////////////////
-
-void
-IntSpan::clearPointers()
-{
-    _prev = nullptr;
-    memset(_next, 0, CLP_INTSPAN_MAXDEPTH * sizeof(IntSpan*));
+    return String(str.takeString(), true, false);
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -83,6 +65,14 @@ uint_t
 IntSpan::capacity() const
 {
     return (_v1 - _v0);
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
+bool
+IntSpan::canMergeWith(const IntSpan* rhs) const
+{
+    return (_v0 == rhs->_v0) && (_v1 == rhs->_v1);
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////

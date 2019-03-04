@@ -40,11 +40,6 @@ ConstrainedBound::ConstrainedBound(Manager* mgr, bound_t boundType, int bound)
 const int&
 ConstrainedBound::get()
 {
-    /*if (!valid()) find();
-    if (_bound != _oldBound)
-    {
-        enQ();
-    }*/
     return _bound;
 }
 
@@ -139,9 +134,7 @@ ConstrainedBound::propagateLB()
     // failure?
     if ((_twinBound != nullptr) && (_bound > *_twinBound))
     {
-        String& str = *new String();
-        str = _name + " > upper bound";
-        throw FailEx(str);
+        throw FailEx(_name + " > upper bound");
     }
 
     saveState();
@@ -151,30 +144,18 @@ ConstrainedBound::propagateLB()
     ASSERTD(inc > 0);
 
     // update lb-cts
-    if (_lbCts.size() > 0)
+    for (auto ct : _lbCts)
     {
-        BoundCt** it = _lbCts.begin();
-        BoundCt** lim = it + _lbCts.size();
-        while (it < lim)
-        {
-            BoundCt* ct = *(it++);
-            ct->increment(inc);
-        }
+        ct->increment(inc);
     }
 
     // update ub-cts
-    if (_ubCts.size() > 0)
+    for (auto ct : _ubCts)
     {
-        BoundCt** it = _ubCts.begin();
-        BoundCt** lim = it + _ubCts.size();
-        while (it < lim)
-        {
-            BoundCt* ct = *(it++);
-            ct->decrement(inc);
-        }
+        ct->decrement(inc);
     }
 
-    // new lower bound
+    // record the new bound as the most recent calculation
     _oldBound = _bound;
 }
 
@@ -211,9 +192,7 @@ ConstrainedBound::propagateUB()
     // failure?
     if ((_twinBound != nullptr) && (_bound < *_twinBound))
     {
-        String& str = *new String();
-        str = _name + " < lower bound";
-        throw FailEx(str);
+        throw FailEx(_name + " < lower bound");
     }
 
     saveState();
@@ -223,30 +202,18 @@ ConstrainedBound::propagateUB()
     ASSERTD(dec > 0);
 
     // update lb-cts
-    if (_lbCts.size() > 0)
+    for (auto ct : _lbCts)
     {
-        BoundCt** it = _lbCts.begin();
-        BoundCt** lim = it + _lbCts.size();
-        while (it < lim)
-        {
-            BoundCt* ct = *(it++);
-            ct->increment(dec);
-        }
+        ct->increment(dec);
     }
 
     // update ub-cts
-    if (_ubCts.size() > 0)
+    for (auto ct : _ubCts)
     {
-        BoundCt** it = _ubCts.begin();
-        BoundCt** lim = it + _ubCts.size();
-        while (it < lim)
-        {
-            BoundCt* ct = *(it++);
-            ct->decrement(dec);
-        }
+        ct->decrement(dec);
     }
 
-    // new upper bound
+    // record the new bound as the most recent calculation
     _oldBound = _bound;
 }
 
@@ -255,7 +222,7 @@ ConstrainedBound::propagateUB()
 void
 ConstrainedBound::_saveState()
 {
-    Bound::_saveState();
+    super::_saveState();
     _mgr->revSet(&_cycleGroup, 2);
 }
 

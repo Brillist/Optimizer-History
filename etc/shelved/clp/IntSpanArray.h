@@ -11,9 +11,10 @@ CLP_NS_BEGIN;
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
-   Array of int-spans.
+   Array of IntSpans.
 
-   \author Adam McKee
+   \see IntSpan
+   \ingroup clp
 */
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -24,13 +25,8 @@ class IntSpanArray : public utl::Object
     UTL_CLASS_NO_COPY;
 
 public:
-    /** Clear the array. */
-    void
-    clear()
-    {
-        _size = 0;
-    }
-
+    /// \name Accessors (const)
+    //@{
     /** Get the size. */
     const uint_t&
     size() const
@@ -38,35 +34,27 @@ public:
         return _size;
     }
 
-    uint_t&
-    size()
-    {
-        return _size;
-    }
-
-    /** Set the size. */
-    void
-    setSize(uint_t size)
-    {
-        ASSERTD(size <= _size);
-        _size = size;
-    }
-
-    /** Add a range of values. */
-    void add(int min, int max);
-
-    /** Get the start pointer. */
+    /** Get head pointer. */
     const uint_t*
-    head()
+    head() const
     {
         return _array;
     }
 
-    /** Get the tail pointer. */
+    /** Get tail pointer. */
     const uint_t*
-    tail()
+    tail() const
     {
-        return (_array + (_size << 1));
+        return (_array + (_size * 2));
+    }
+
+    /** Get the span at the given index. */
+    utl::Span<int>
+    get(uint_t pos) const
+    {
+        ASSERTD(pos < _size);
+        uint_t idx = pos * 2;
+        return utl::Span<int>(_array[idx], _array[idx + 1] + 1);
     }
 
     /** Get the range at the given index. */
@@ -83,28 +71,42 @@ public:
     void
     get(uint_t* ptr, int& min, int& max) const
     {
-        ASSERTD(ptr < (_array + (_size << 1)));
+        ASSERTD(ptr >= _array);
+        ASSERTD(ptr < (_array + (_size * 2)));
         min = *(ptr++);
         max = *ptr;
-    }
-
-    /** Get the span at the given index. */
-    utl::Span<int>
-    get(uint_t pos) const
-    {
-        ASSERTD(pos < _size);
-        uint_t idx = pos * 2;
-        return utl::Span<int>(_array[idx], _array[idx + 1] + 1);
     }
 
     /** Get the range at a given index. */
     void
     getNext(uint_t*& ptr, int& min, int& max) const
     {
-        ASSERTD(ptr < (_array + (_size << 1)));
-        min = *(ptr++);
-        max = *(ptr++);
+        ASSERTD(ptr >= _array);
+        ASSERTD(ptr < (_array + (_size * 2)));
+        min = *ptr++;
+        max = *ptr++;
     }
+    //@}
+
+    /// \name Modification
+    //@{
+    /** Clear the array. */
+    void
+    clear()
+    {
+        _size = 0;
+    }
+
+    /** Set the size (an increase in size is not allowed). */
+    void
+    setSize(uint_t size)
+    {
+        ASSERTD(size <= _size);
+        _size = size;
+    }
+    /** Add a range of values. */
+    void add(int min, int max);
+    //@}
 
 private:
     void

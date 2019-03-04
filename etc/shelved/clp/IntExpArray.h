@@ -167,6 +167,8 @@ private:
     deInit()
     {
     }
+
+private:
     Manager* _mgr;
     intexp_vector_t _exps;
 };

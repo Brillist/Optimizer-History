@@ -14,13 +14,10 @@ CLP_NS_BEGIN;
    Constraint (abstract).
 
    A constraint enforces a relationship between constrained variables.  When a constraint is posted
-   (post()), it requests to be notified when domain reduction occurs in the variables it is
-   concerned with.  When the constraint executes, it looks at the domain reductions that have
-   occurred since it last ran, and may do additional domain reduction to ensure satisfaction
-   of the rule it enforces.
+   (post()), it requests to be executed when domain reduction occurs in the variables it is
+   concerned with.
 
-   \see ConstrainedVar
-   \author Adam McKee
+   \ingroup clp
 */
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -39,20 +36,14 @@ public:
 
     virtual void copy(const utl::Object& rhs);
 
-    /** Return a fully managed copy of self. */
+    /** Return a managed copy of self. */
     virtual Constraint* mclone();
 
     /** Make managed copies of unmanaged referenced objects. */
-    virtual void
-    mcopy()
-    {
-    }
+    virtual void mcopy();
 
     /** Post constraints for expressions. */
-    virtual void
-    postExpConstraints()
-    {
-    }
+    virtual void postExpConstraints();
 
     /** Post the constraint. */
     virtual void post() = 0;
@@ -60,29 +51,34 @@ public:
     /** Remove the constraint. */
     virtual void unpost() = 0;
 
+    /// \name Accessors (const)
+    //@{
     /** Get the depth of posting. */
     uint_t
-    getPostDepth() const
+    postDepth() const
     {
         return _postDepth;
     }
 
     /** Get the \b posted flag. */
     bool
-    isPosted() const
+    posted() const
     {
         return _posted;
     }
 
-    /** Set the \b posted flag. */
-    void setPosted(bool posted);
-
     /** Get the \b managed flag. */
     bool
-    isManaged() const
+    managed() const
     {
         return _managed;
     }
+    //@}
+
+    /// \name Accessors (non-const)
+    //@{
+    /** Set the \b posted flag. */
+    void setPosted(bool posted);
 
     /** Set the \b managed flag. */
     void
@@ -90,13 +86,14 @@ public:
     {
         _managed = managed;
     }
+    //@}
 
 private:
     void init();
     void
     deInit()
     {
-        ASSERTD(!isPosted());
+        ASSERTD(!posted());
     }
 
 private:

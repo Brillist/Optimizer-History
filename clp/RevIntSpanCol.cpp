@@ -32,14 +32,14 @@ RevIntSpanCol::copy(const RevIntSpanCol& isc)
 
     // copy the list
     IntSpan* prev[CLP_INTSPAN_MAXDEPTH];
-    for (uint_t i = 0; i < CLP_INTSPAN_MAXDEPTH; ++i)
+    for (uint_t i = 0; i != CLP_INTSPAN_MAXDEPTH; ++i)
     {
         prev[i] = _head;
     }
-    for (const IntSpan* span = isc.head()->next(); span != isc.tail(); span = span->next())
+    for (auto span = isc.head()->next(); span != isc.tail(); span = span->next())
     {
         // make a new span
-        IntSpan* mySpan = span->clone();
+        auto mySpan = span->clone();
         _mgr->revAllocate(mySpan);
 
         // link new span to predecessors
@@ -124,7 +124,7 @@ RevIntSpanCol::clear()
     _tail = newIntSpan(int_t_max, int_t_max, 0, 0, CLP_INTSPAN_MAXDEPTH - 1);
 
     // link head with tail
-    for (uint_t lvl = 0; lvl < CLP_INTSPAN_MAXDEPTH; ++lvl)
+    for (uint_t lvl = 0; lvl != CLP_INTSPAN_MAXDEPTH; ++lvl)
     {
         _head->setNext(lvl, _tail);
     }
@@ -134,7 +134,7 @@ RevIntSpanCol::clear()
     _head->setPrev(_head);
 
     // tail->next = tail (all levels)
-    for (uint_t lvl = 0; lvl < CLP_INTSPAN_MAXDEPTH; ++lvl)
+    for (uint_t lvl = 0; lvl != CLP_INTSPAN_MAXDEPTH; ++lvl)
     {
         _tail->setNext(lvl, _tail);
     }
@@ -208,7 +208,7 @@ RevIntSpanCol::findPrev(int val, IntSpan** prev) const
         // note: nodeNext->max() >= val
         prev[lvl] = node;
     }
-    for (lvl = _level + 1; lvl < CLP_INTSPAN_MAXDEPTH; ++lvl)
+    for (lvl = _level + 1; lvl != CLP_INTSPAN_MAXDEPTH; ++lvl)
     {
         prev[lvl] = _head;
     }
@@ -244,7 +244,7 @@ RevIntSpanCol::findNext(int val, IntSpan** next) const
             next[lvl] = nodeNext;
         }
     }
-    for (lvl = _level + 1; lvl < CLP_INTSPAN_MAXDEPTH; ++lvl)
+    for (lvl = _level + 1; lvl != CLP_INTSPAN_MAXDEPTH; ++lvl)
     {
         next[lvl] = _tail;
     }
@@ -257,7 +257,7 @@ IntSpan*
 RevIntSpanCol::findPrevForward(int val, IntSpan** prev) const
 {
     uint_t lvl;
-    for (lvl = 0; lvl < CLP_INTSPAN_MAXDEPTH; ++lvl)
+    for (lvl = 0; lvl != CLP_INTSPAN_MAXDEPTH; ++lvl)
     {
         IntSpan* node = prev[lvl];
         IntSpan* nodeNext = node->next(lvl);
@@ -282,7 +282,7 @@ IntSpan*
 RevIntSpanCol::findNextForward(int val, IntSpan** next) const
 {
     uint_t lvl;
-    for (lvl = 0; lvl < CLP_INTSPAN_MAXDEPTH; ++lvl)
+    for (lvl = 0; lvl != CLP_INTSPAN_MAXDEPTH; ++lvl)
     {
         IntSpan* node = next[lvl];
         IntSpan* nodeNext = node->next(lvl);
@@ -308,7 +308,7 @@ RevIntSpanCol::backward(IntSpan** next)
 {
     IntSpan* span = next[0]->prev();
     uint_t lvl;
-    uint_t maxLevel = span->getLevel();
+    uint_t maxLevel = span->level();
     for (lvl = 0; (lvl <= maxLevel) && (span->next(lvl) == next[lvl]); ++lvl)
     {
         next[lvl] = span;
@@ -323,11 +323,11 @@ RevIntSpanCol::eclipseNext(IntSpan** prev)
     IntSpan* span = prev[0]->next(0);
     IntSpan* next = span->next(0);
     next->saveState(_mgr);
-    next->prev() = prev[0];
-    for (uint_t i = 0; (i < CLP_INTSPAN_MAXDEPTH) && (prev[i]->next(i) == span); ++i)
+    next->setPrev(prev[0]);
+    for (uint_t i = 0; (i != CLP_INTSPAN_MAXDEPTH) && (prev[i]->next(i) == span); ++i)
     {
         prev[i]->saveState(_mgr);
-        prev[i]->next(i) = span->next(i);
+        prev[i]->setNext(i, span->next(i));
     }
 }
 
@@ -342,19 +342,19 @@ RevIntSpanCol::insertAfter(IntSpan* span, IntSpan** prevSpans)
     _level = utl::max(_level, level);
 
     // set prev pointers
-    IntSpan* prev0 = prevSpans[0];
-    IntSpan* next0 = prev0->next();
+    auto prev0 = prevSpans[0];
+    auto next0 = prev0->next();
     next0->saveState(_mgr);
-    next0->prev() = span;
-    span->prev() = prev0;
+    next0->setPrev(span);
+    span->setPrev(prev0);
 
     for (uint_t lvl = 0; lvl <= level; ++lvl)
     {
         IntSpan* prev = prevSpans[lvl];
         IntSpan* next = prevSpans[lvl]->next(lvl);
         prev->saveState(_mgr);
-        prev->next(lvl) = span;
-        span->next(lvl) = next;
+        prev->setNext(lvl, span);
+        span->setNext(lvl, next);
     }
     return level;
 }
@@ -364,13 +364,13 @@ RevIntSpanCol::insertAfter(IntSpan* span, IntSpan** prevSpans)
 void
 RevIntSpanCol::link(IntSpan** prev, IntSpan** next)
 {
-    for (uint_t lvl = 0; lvl < CLP_INTSPAN_MAXDEPTH; ++lvl)
+    for (uint_t lvl = 0; lvl != CLP_INTSPAN_MAXDEPTH; ++lvl)
     {
         prev[lvl]->saveState(_mgr);
         next[lvl]->saveState(_mgr);
-        prev[lvl]->next(lvl) = next[lvl];
+        prev[lvl]->setNext(lvl, next[lvl]);
     }
-    next[0]->prev() = prev[0];
+    next[0]->setPrev(prev[0]);
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -383,14 +383,14 @@ RevIntSpanCol::prevToNext(const IntSpan* span, IntSpan** prev, IntSpan** next)
     uint_t lvl;
     for (lvl = 0; lvl <= _level; ++lvl)
     {
-        IntSpan* span = next[lvl];
+        auto span = next[lvl];
         while (span->min() <= spanMax)
         {
             span = span->next(lvl);
         }
         next[lvl] = span;
     }
-    for (; lvl < CLP_INTSPAN_MAXDEPTH; ++lvl)
+    for (; lvl != CLP_INTSPAN_MAXDEPTH; ++lvl)
     {
         next[lvl] = _tail;
     }
@@ -446,7 +446,7 @@ RevIntSpanCol::validate(bool initialized) const
         lastSet = curSet;
         curSet = new std::unordered_set<size_t>;
     }
-    for (; lvl < CLP_INTSPAN_MAXDEPTH; ++lvl)
+    for (; lvl != CLP_INTSPAN_MAXDEPTH; ++lvl)
     {
         ASSERT(_head->next(lvl) == _tail);
     }

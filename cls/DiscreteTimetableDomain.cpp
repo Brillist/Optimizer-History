@@ -56,7 +56,7 @@ DiscreteTimetableDomain::addCapExp(uint_t cap)
     }
 
     IntExp* capExp = new IntVar(_mgr);
-    capExp->failOnEmpty() = false;
+    capExp->setFailOnEmpty(false);
     _mgr->add(capExp);
     _mgr->revSetIndirect(_capExps, cap);
     _mgr->revSetIndirect(_capExpCounts, cap);
@@ -225,32 +225,32 @@ DiscreteTimetableDomain::add(int min, int max, int v0, int v1)
                 // prev eclipses span and next
                 findNextForward(next0->max(), next);
                 link(prev, next);
-                prev0->max() = next0->max();
+                prev0->setMax(next0->max());
             }
             else if (minMerge)
             {
                 link(prev, next);
-                prev0->max() = span->max();
+                prev0->setMax(span->max());
             }
             else if (maxMerge)
             {
                 link(prev, next);
-                next0->min() = span->min();
+                next0->setMin(span->min());
             }
             else
             {
                 // don't merge on either side
-                span->v0() = newv0;
-                span->v1() = newv1;
+                span->setV0(newv0);
+                span->setV1(newv1);
             }
         }
         else if (minEdge) // && !maxEdge
         {
-            span->min() = (max + 1);
+            span->setMin(max + 1);
             if (minMerge)
             {
                 prev0->saveState(_mgr);
-                prev0->max() = max;
+                prev0->setMax(max);
             }
             else
             {
@@ -264,14 +264,14 @@ DiscreteTimetableDomain::add(int min, int max, int v0, int v1)
             if (maxMerge)
             {
                 next0->saveState(_mgr);
-                next0->min() = min;
-                span->max() = (min - 1);
+                next0->setMin(min);
+                span->setMax(min - 1);
             }
             else
             {
                 findPrevForward(span->max() + 1, prev);
-                span->max() = (min - 1);
-                IntSpan* newSpan = new IntSpan(min, max, newv0, newv1);
+                span->setMax(min - 1);
+                auto newSpan = new IntSpan(min, max, newv0, newv1);
                 _mgr->revAllocate(newSpan);
                 insertAfter(newSpan, prev);
             }
@@ -282,17 +282,17 @@ DiscreteTimetableDomain::add(int min, int max, int v0, int v1)
             uint_t sv1 = span->v1();
             int spanMin = span->min();
             int spanMax = span->max();
-            span->min() = min;
-            span->max() = max;
-            span->v0() = newminv0;
-            span->v1() = newminv1;
+            span->setMin(min);
+            span->setMax(max);
+            span->setV0(newminv0);
+            span->setV1(newminv1);
 
             // insert 2 new spans
-            IntSpan* newLHS = new IntSpan(spanMin, min - 1, sv0, sv1);
+            auto newLHS = new IntSpan(spanMin, min - 1, sv0, sv1);
             _mgr->revAllocate(newLHS);
             insertAfter(newLHS, prev);
             findPrevForward(max + 1, prev);
-            IntSpan* newRHS = new IntSpan(max + 1, spanMax, sv0, sv1);
+            auto newRHS = new IntSpan(max + 1, spanMax, sv0, sv1);
             _mgr->revAllocate(newRHS);
             insertAfter(newRHS, prev);
         }
@@ -326,7 +326,7 @@ DiscreteTimetableDomain::add(int min, int max, int v0, int v1)
         if (minMerge)
         {
             prev0->saveState(_mgr);
-            prev0->max() = minSpan->max();
+            prev0->setMax(minSpan->max());
             eclipseNext(prev);
             minSpan = minSpan->next();
         }
@@ -338,7 +338,7 @@ DiscreteTimetableDomain::add(int min, int max, int v0, int v1)
         _mgr->revAllocate(newSpan);
         findPrevForward(minSpanMax + 1, prev);
         insertAfter(newSpan, prev);
-        minSpan->max() = (min - 1);
+        minSpan->setMax(min - 1);
         minSpan = newSpan->next();
     }
 
@@ -363,7 +363,7 @@ DiscreteTimetableDomain::add(int min, int max, int v0, int v1)
         {
             findPrevForward(maxSpan->min(), prev);
             next0->saveState(_mgr);
-            next0->min() = maxSpan->min();
+            next0->setMin(maxSpan->min());
             eclipseNext(prev);
             maxSpan = maxSpan->prev();
         }
@@ -375,7 +375,7 @@ DiscreteTimetableDomain::add(int min, int max, int v0, int v1)
         _mgr->revAllocate(newSpan);
         findPrevForward(maxSpanMin, prev);
         insertAfter(newSpan, prev);
-        maxSpan->min() = (max + 1);
+        maxSpan->setMin(max + 1);
         maxSpan = newSpan->prev();
     }
 
@@ -390,8 +390,8 @@ DiscreteTimetableDomain::add(int min, int max, int v0, int v1)
         int spanV1 = (int)span->v1() + v1;
         if ((spanV1 < spanV0) && (v1 < 0))
             spanV1 = spanV0;
-        span->v0() = spanV0;
-        span->v1() = spanV1;
+        span->setV0(spanV0);
+        span->setV1(spanV1);
         if (span->v0() > span->v1())
         {
             _events |= ef_empty;

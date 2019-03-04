@@ -27,8 +27,7 @@ CLP_NS_BEGIN;
 void
 IntExpDomain::copy(const Object& rhs)
 {
-    ASSERTD(rhs.isA(IntExpDomain));
-    const IntExpDomain& ied = (const IntExpDomain&)rhs;
+    auto& ied = utl::cast<IntExpDomain>(rhs);
     _mgr = ied._mgr;
     _events = 0;
     _min = ied._min;

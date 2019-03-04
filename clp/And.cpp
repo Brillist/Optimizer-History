@@ -23,59 +23,19 @@ And::And(Goal* g0, Goal* g1)
     init();
     _goals.push_back(g0);
     _goals.push_back(g1);
-    addRefs();
-}
-
-////////////////////////////////////////////////////////////////////////////////////////////////////
-
-And::And(Goal* g0, Goal* g1, Goal* g2)
-    : Goal(g0->manager())
-{
-    init();
-    _goals.push_back(g0);
-    _goals.push_back(g1);
-    _goals.push_back(g2);
-    addRefs();
-}
-
-////////////////////////////////////////////////////////////////////////////////////////////////////
-
-And::And(Goal* g0, Goal* g1, Goal* g2, Goal* g3)
-    : Goal(g0->manager())
-{
-    init();
-    _goals.push_back(g0);
-    _goals.push_back(g1);
-    _goals.push_back(g2);
-    _goals.push_back(g3);
-    addRefs();
-}
-
-////////////////////////////////////////////////////////////////////////////////////////////////////
-
-And::And(Goal* g0, Goal* g1, Goal* g2, Goal* g3, Goal* g4)
-    : Goal(g0->manager())
-{
-    init();
-    _goals.push_back(g0);
-    _goals.push_back(g1);
-    _goals.push_back(g2);
-    _goals.push_back(g3);
-    _goals.push_back(g4);
-    addRefs();
+    addRefCont(_goals);
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
-And::copy(const Object& rhs)
+And::copy(const Object& rhs_)
 {
-    ASSERTD(dynamic_cast<const And*>(&rhs) != nullptr);
-    const And& andGoal = (const And&)rhs;
-    Goal::copy(andGoal);
+    auto& rhs = utl::cast<And>(rhs_);
+    super::copy(rhs);
     clear();
-    copyVector(_goals, andGoal._goals);
-    addRefs();
+    copyVector(_goals, rhs._goals);
+    addRefCont(_goals);
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -91,14 +51,12 @@ And::clear()
 void
 And::execute()
 {
-    Manager* mgr = manager();
-
+    auto mgr = manager();
     ASSERTD(!_goals.empty());
-
-    goal_vector_t::iterator it = _goals.end();
+    auto it = _goals.end();
     for (--it;; --it)
     {
-        Goal* goal = *it;
+        auto goal = *it;
         mgr->add(goal);
         if (it == _goals.begin())
         {
@@ -106,14 +64,6 @@ And::execute()
         }
     }
     clear();
-}
-
-////////////////////////////////////////////////////////////////////////////////////////////////////
-
-void
-And::addRefs()
-{
-    addRefCont(_goals);
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////

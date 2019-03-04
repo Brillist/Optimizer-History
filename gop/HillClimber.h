@@ -25,7 +25,7 @@ GOP_NS_BEGIN;
    {
       P = randomly selected operator
       S' = P(S)
-      if (S'.score > S.score)
+      if (score(S') > score(S))
       {
          S = S'         
       }

@@ -167,9 +167,7 @@ DiscreteTimetable::raiseEvents()
     {
         _domain.clearEvents();
         ASSERTD(_res != nullptr);
-        String& str = *new String();
-        str = "res-" + Uint(_res->id()).toString() + ": " + "capacity overallocation";
-        throw FailEx(str);
+        throw FailEx("res-" + Uint(_res->id()).toString() + ": " + "capacity overallocation");
     }
 
     // something changed...

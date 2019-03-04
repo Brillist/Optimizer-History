@@ -13,10 +13,9 @@ CLP_NS_BEGIN;
 /**
    Integer variable.
 
-   IntVar is an integer expression (IntExp) that simply stores its domain
-   instead of computing it.
+   IntVar is an integer expression (IntExp) that stores its domain instead of computing it.
 
-   \author Adam McKee
+   \ingroup clp
 */
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -29,7 +28,8 @@ class IntVar : public IntExp
 public:
     /**
        Constructor.
-       \param mgr owning manager
+       \param mgr associated Manager
+       \param domain domain implementation (default is IntExpDomainRISC)
     */
     IntVar(Manager* mgr, IntExpDomain* domain = nullptr)
         : IntExp(mgr, domain)
@@ -39,6 +39,7 @@ public:
     /**
        Constructor.
        \param mgr owning manager
+       \param val initially bound value
     */
     IntVar(Manager* mgr, int val)
         : IntExp(mgr)
@@ -56,11 +57,6 @@ public:
         : IntExp(mgr)
     {
         setRange(min, max);
-    }
-
-    virtual void
-    mcopy()
-    {
     }
 };
 

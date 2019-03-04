@@ -19,11 +19,9 @@ CLP_NS_BEGIN;
 Bound::Bound(Manager* mgr, bound_t type, int bound)
 {
     ASSERTD(mgr != nullptr);
-
     _mgr = mgr;
     _debugFlag = false;
     _type = type;
-
     _stateDepth = _mgr->depth();
     if (bound == int_t_min)
     {
@@ -33,7 +31,6 @@ Bound::Bound(Manager* mgr, bound_t type, int bound)
     {
         _bound = bound;
     }
-
     _findPoint = loosest();
 }
 

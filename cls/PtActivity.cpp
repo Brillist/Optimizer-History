@@ -23,7 +23,7 @@ PtActivity::excludePt(uint_t pt)
     _possiblePts->remove(pt);
     if (_possiblePts->isBound())
     {
-        selectPt(_possiblePts->getValue());
+        selectPt(_possiblePts->value());
     }
 }
 

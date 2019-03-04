@@ -1,6 +1,5 @@
 #include "libclp.h"
 #include <libutl/algorithms_inl.h>
-//#include <libutl/VectAlgs.h>
 #include "IntExpDomainARit.h"
 #include "IntExpDomainAR.h"
 
@@ -44,7 +43,7 @@ IntExpDomainAR::IntExpDomainAR(Manager* mgr, const int_set_t& domain, bool empty
 IntExpDomainAR::IntExpDomainAR(Manager* mgr, const uint_set_t& p_domain, bool empty)
     : IntExpDomain(mgr)
 {
-    // convert set<uint_t> => set<int>
+    // convert set<uint_t> -> set<int>
     int_set_t domain;
     uint_set_t::iterator it;
     for (it = p_domain.begin(); it != p_domain.end(); ++it)
@@ -69,9 +68,8 @@ IntExpDomainAR::IntExpDomainAR(Manager* mgr, uint_t num, int* values, bool value
 void
 IntExpDomainAR::copy(const Object& rhs)
 {
-    ASSERTD(rhs.isA(IntExpDomainAR));
-    const IntExpDomainAR& dar = (const IntExpDomainAR&)rhs;
-    IntExpDomain::copy(dar);
+    auto& dar = utl::cast<IntExpDomainAR>(rhs);
+    super::copy(dar);
     _num = dar._num;
     if (_valuesOwner)
         delete[] _values;
@@ -127,6 +125,19 @@ IntExpDomainAR::copyFlags(const IntExpDomainAR* rhs)
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 bool
+IntExpDomainAR::flagsEqual(const IntExpDomainAR* rhs) const
+{
+    ASSERTD(_flagsSize == rhs->_flagsSize);
+    if (_size != rhs->_size)
+        return false;
+    if (_flagsSize == 1)
+        return (*_flags == *rhs->_flags);
+    return (memcmp(_flags, rhs->_flags, _flagsSize * 4) == 0);
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
+bool
 IntExpDomainAR::has(int val) const
 {
     if ((val < _min) || (val > _max))
@@ -145,7 +156,7 @@ IntExpDomainAR::begin() const
 {
     if (_size == 0)
         return end();
-    IntExpDomainARit* it = new IntExpDomainARit(this, uint_t_max, int_t_min);
+    auto it = new IntExpDomainARit(this, uint_t_max, int_t_min);
     it->next();
     return it;
 }
@@ -155,7 +166,7 @@ IntExpDomainAR::begin() const
 IntExpDomainIt*
 IntExpDomainAR::end() const
 {
-    IntExpDomainARit* it = new IntExpDomainARit(this, uint_t_max, int_t_max);
+    auto it = new IntExpDomainARit(this, uint_t_max, int_t_max);
     return it;
 }
 
@@ -198,7 +209,7 @@ IntExpDomainAR::getNext(int val) const
 void
 IntExpDomainAR::_saveState()
 {
-    IntExpDomain::_saveState();
+    super::_saveState();
     _mgr->revSet(_stateDepth);
     _stateDepth = _mgr->depth();
     _mgr->revSet(_flags, _flagsSize);
@@ -359,12 +370,12 @@ IntExpDomainAR::init()
 void
 IntExpDomainAR::init(const std::set<int>& domain, bool empty)
 {
-    int* values = new int[domain.size()];
+    auto values = new int[domain.size()];
     std::set<int>::const_iterator it;
-    int* ptr = values;
-    for (it = domain.begin(); it != domain.end(); ++it)
+    auto ptr = values;
+    for (auto val : domain)
     {
-        *(ptr++) = *it;
+        *ptr++ = val;
     }
     init(domain.size(), values, true, empty);
 }
@@ -397,7 +408,7 @@ IntExpDomainAR::init(uint_t num, int* values, bool valuesOwner, bool empty)
         if (_flagsSize == 1)
             *_flags = 0;
         else
-            memset(_flags, 0x00, _flagsSize * 4);
+            memset(_flags, 0x00, _flagsSize * sizeof(uint32_t));
     }
     else
     {
@@ -407,7 +418,7 @@ IntExpDomainAR::init(uint_t num, int* values, bool valuesOwner, bool empty)
         if (_flagsSize == 1)
             *_flags = uint32_t_max;
         else
-            memset(_flags, 0xff, _flagsSize * 4);
+            memset(_flags, 0xff, _flagsSize * sizeof(uint32_t));
     }
 }
 

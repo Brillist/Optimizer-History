@@ -711,7 +711,7 @@ ClevorDataSet::modelBuildActivities_0()
                 lfBound->add(calendarBound);
             }
 
-            calendarBound->name() = String("act-" + Uint(op->id()).toString() + " calendar");
+            calendarBound->setName("act-" + Uint(op->id()).toString() + " calendar");
             _mgr->revAllocate(calendarBound);
         }
 
@@ -723,10 +723,10 @@ ClevorDataSet::modelBuildActivities_0()
 
         // name the bounds
         String prefix = "act-" + Uint(op->id()).toString() + " ";
-        es->name() = prefix + "es";
-        ef->name() = prefix + "ef";
-        ls->name() = prefix + "ls";
-        lf->name() = prefix + "lf";
+        es->setName(prefix + "es");
+        ef->setName(prefix + "ef");
+        ls->setName(prefix + "ls");
+        lf->setName(prefix + "lf");
 
         // establish twin relationships
         // .. to detect failure if (es > ls) or (ef > lf)
@@ -769,7 +769,10 @@ ClevorDataSet::modelBuildActivities_0()
         act->name() = op->name();
 
         // link es, ef, ls, lf => act
-        es->owner() = ef->owner() = ls->owner() = lf->owner() = act;
+        es->setOwner(act);
+        ef->setOwner(act);
+        ls->setOwner(act);
+        lf->setOwner(act);
 
         // link schedule => act, op <=> act
         _schedule->add(act);

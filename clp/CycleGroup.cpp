@@ -19,6 +19,8 @@ UTL_CLASS_IMPL(clp::CycleGroup);
 CLP_NS_BEGIN;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
+// CycleGroupIdOrdering ////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 bool
 CycleGroupIdOrdering::operator()(const CycleGroup* lhs, const CycleGroup* rhs) const
@@ -26,6 +28,8 @@ CycleGroupIdOrdering::operator()(const CycleGroup* lhs, const CycleGroup* rhs) c
     return (lhs->id() < rhs->id());
 }
 
+////////////////////////////////////////////////////////////////////////////////////////////////////
+// CycleGroup //////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 CycleGroup::CycleGroup(Manager* mgr)
@@ -56,9 +60,27 @@ CycleGroup::compare(const Object& rhs) const
     {
         return Object::compare(rhs);
     }
-    const CycleGroup& cg = (const CycleGroup&)rhs;
+    auto& cg = utl::cast<CycleGroup>(rhs);
     int res = utl::compare(_id, cg._id);
     return res;
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
+String
+CycleGroup::toString() const
+{
+    utl::MemStream str;
+    str << "CG:" << this->id() << "(";
+    for (auto cb : _cbs)
+    {
+        if (cb != *_cbs.begin())
+            str << ", ";
+        ASSERTD(cb->owner() != nullptr);
+        str << cb->name();
+    }
+    str << ")" << '\0';
+    return String(str.takeString(), true, false);
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -67,7 +89,7 @@ void
 CycleGroup::add(ConstrainedBound* cb)
 {
     // what cycle-group does cb belong to?
-    CycleGroup* cbCG = cb->cycleGroup();
+    auto cbCG = cb->cycleGroup();
 
     // cb already belongs to self => do nothing else
     if (cbCG == this)
@@ -89,21 +111,19 @@ void
 CycleGroup::eclipse(CycleGroup* cg)
 {
     // assume ownership of all the given CG's bounds
-    cb_revset_t::iterator cbIt, cbLim = cg->_cbs.end();
-    for (cbIt = cg->_cbs.begin(); cbIt != cbLim; ++cbIt)
+    for (auto cb : cg->_cbs)
     {
-        ConstrainedBound* cb = *cbIt;
         add(cb);
     }
 
-    // for each predecessor of cg
+    // cg's predecessors become ours
     cg_revset_t::iterator cgIt, cgNext, cgLim = cg->_predCGs.end();
     for (cgIt = cg->_predCGs.begin(); cgIt != cgLim; cgIt = cgNext)
     {
         cgNext = cgIt;
         ++cgNext;
 
-        CycleGroup* predCG = *cgIt;
+        auto predCG = *cgIt;
 
         // skip predCG if it's part of the new cycle
         if (predCG->visited())
@@ -116,17 +136,17 @@ CycleGroup::eclipse(CycleGroup* cg)
         addPred(predCG);
     }
 
-    // for each successor of cg
+    // cg's successors become ours
     cgLim = cg->_succCGs.end();
     for (cgIt = cg->_succCGs.begin(); cgIt != cgLim; cgIt = cgNext)
     {
         cgNext = cgIt;
         ++cgNext;
 
-        CycleGroup* succCG = *cgIt;
+        auto succCG = *cgIt;
 
         // skip succCG if it's part of the new cycle
-        if (succCG->visitedIdx() != uint_t_max)
+        if (succCG->visited())
             continue;
 
         // remove the (succCG => cg) link
@@ -139,6 +159,41 @@ CycleGroup::eclipse(CycleGroup* cg)
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
+cg_precedence_rel_t
+CycleGroup::relationship(const CycleGroup* cg) const
+{
+    if (precedes(cg))
+    {
+        return pr_precedes;
+    }
+    else if (succeeds(cg))
+    {
+        return pr_succeeds;
+    }
+    else
+    {
+        return pr_none;
+    }
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
+bool
+CycleGroup::precedes(const CycleGroup* cg) const
+{
+    return (cg->_allPredCGs.find(const_cast<CycleGroup*>(this)) != cg->_allPredCGs.end());
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
+bool
+CycleGroup::succeeds(const CycleGroup* cg) const
+{
+    return (_allPredCGs.find(const_cast<CycleGroup*>(cg)) != _allPredCGs.end());
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
 bool
 CycleGroup::addPred(CycleGroup* cg, bool updateIndirect)
 {
@@ -146,24 +201,24 @@ CycleGroup::addPred(CycleGroup* cg, bool updateIndirect)
     bool cycleFound = false;
 
     // no need to add it?
-    //     if ((cg == this)
-    //         || (_allPredCGs.find(cg) != _allPredCGs.end()))
-    //     {
-    //         return cycleFound;
-    //     }
     if ((cg == this) || (_predCGs.find(cg) != _predCGs.end()))
+    {
         return cycleFound;
+    }
+
+    // cg is already in all-predecessors?
     if (_allPredCGs.find(cg) != _allPredCGs.end())
     {
+        // unlink cg as a predecessor
         removePred(cg);
     }
 
     // save state and add the relationship
     saveState();
     ASSERTFNP(_predCGs.add(cg));
-    ASSERTFNP(_predCGs.has(cg));
+    ASSERTD(_predCGs.has(cg));
     ASSERTFNP(cg->_succCGs.add(this));
-    ASSERTFNP(cg->_succCGs.has(this));
+    ASSERTD(cg->_succCGs.has(this));
     if (!cg->finalized())
     {
         ++_numUnfinalizedPredCGs;
@@ -171,17 +226,20 @@ CycleGroup::addPred(CycleGroup* cg, bool updateIndirect)
     _allPredCGs.add(cg);
     cg->_allSuccCGs.add(this);
 
-    // update indirect relationships?
+    // don't update indirect relationships?
     if (!updateIndirect)
     {
         return cycleFound;
     }
 
-    // for each successor of self
-    cg_revset_t::iterator succIt, succLim = _allSuccCGs.end();
-    for (succIt = _allSuccCGs.begin(); succIt != succLim; ++succIt)
+    // update indirect relationships
+    //   NOTE: 
+    //     1. when a cycle is detected we record that
+    //     2. we don't create additional cyclical indirect links here
+
+    // cg <--indirect--> self.indirectSuccessors
+    for (auto succCG : _allSuccCGs)
     {
-        CycleGroup* succCG = *succIt;
         if (succCG == cg)
         {
             cycleFound = true;
@@ -191,12 +249,10 @@ CycleGroup::addPred(CycleGroup* cg, bool updateIndirect)
         cg->_allSuccCGs.add(succCG);
     }
 
-    // for each predecessor of cg
-    cg_revset_t::iterator predIt, predLim = cg->allPredCGs().end();
-    for (predIt = cg->allPredCGs().begin(); predIt != predLim; ++predIt)
+    // 1. cg.indirectPredecessors <--indirect--> self
+    // 2. cg.indirectPredecessors <--indirect--> self.indirectSuccessors
+    for (auto predCG : cg->_allPredCGs)
     {
-        CycleGroup* predCG = *predIt;
-
         // predCG => self
         if (predCG == this)
         {
@@ -209,10 +265,8 @@ CycleGroup::addPred(CycleGroup* cg, bool updateIndirect)
         }
 
         // for each successor of self
-        succLim = _allSuccCGs.end();
-        for (succIt = _allSuccCGs.begin(); succIt != succLim; ++succIt)
+        for (auto succCG : _allSuccCGs)
         {
-            CycleGroup* succCG = *succIt;
             if (predCG == succCG)
             {
                 cycleFound = true;
@@ -255,11 +309,11 @@ void
 CycleGroup::clearIndirectLists()
 {
     // indirect predecessors
-    cg_revset_t::iterator it = _allPredCGs.begin();
-    cg_revset_t::iterator lim = _allPredCGs.end();
+    auto it = _allPredCGs.begin();
+    auto lim = _allPredCGs.end();
     while (it != lim)
     {
-        CycleGroup* predCG = *it;
+        auto predCG = *it;
         ++it;
         _allPredCGs.remove(predCG);
         predCG->_allSuccCGs.remove(this);
@@ -270,7 +324,7 @@ CycleGroup::clearIndirectLists()
     lim = _allSuccCGs.end();
     while (it != lim)
     {
-        CycleGroup* succCG = *it;
+        auto succCG = *it;
         ++it;
         _allSuccCGs.remove(succCG);
         succCG->_allPredCGs.remove(this);
@@ -284,15 +338,12 @@ CycleGroup::initIndirectLists()
 {
     _allPredCGs.clear();
     _allSuccCGs.clear();
-    cg_revset_t::iterator it;
-    for (it = _predCGs.begin(); it != _predCGs.end(); ++it)
+    for (auto predCG : _allPredCGs)
     {
-        CycleGroup* predCG = *it;
         _allPredCGs.add(predCG);
     }
-    for (it = _succCGs.begin(); it != _succCGs.end(); ++it)
+    for (auto succCG : _allSuccCGs)
     {
-        CycleGroup* succCG = *it;
         _allSuccCGs.add(succCG);
     }
 }
@@ -303,10 +354,8 @@ void
 CycleGroup::unsuspend()
 {
     // unsuspend all member bounds
-    cb_revset_t::iterator it, itLim = _cbs.end();
-    for (it = _cbs.begin(); it != itLim; ++it)
+    for (auto cb : _cbs)
     {
-        ConstrainedBound* cb = *it;
         _bp->unsuspend(cb);
     }
 }
@@ -316,11 +365,9 @@ CycleGroup::unsuspend()
 void
 CycleGroup::finalize()
 {
-    cg_revset_t::iterator it, endIt = _succCGs.end();
-    for (it = _succCGs.begin(); it != endIt; ++it)
+    for (auto succCG : _succCGs)
     {
-        CycleGroup* cg = *it;
-        cg->finalizePred();
+        succCG->finalizePred();
     }
 }
 
@@ -356,41 +403,6 @@ CycleGroup::finalizePred()
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-cg_precedence_rel_t
-CycleGroup::relationship(const CycleGroup* cg) const
-{
-    if (precedes(cg))
-    {
-        return pr_precedes;
-    }
-    else if (succeeds(cg))
-    {
-        return pr_succeeds;
-    }
-    else
-    {
-        return pr_none;
-    }
-}
-
-////////////////////////////////////////////////////////////////////////////////////////////////////
-
-bool
-CycleGroup::precedes(const CycleGroup* cg) const
-{
-    return (cg->_allPredCGs.find(const_cast<CycleGroup*>(this)) != cg->_allPredCGs.end());
-}
-
-////////////////////////////////////////////////////////////////////////////////////////////////////
-
-bool
-CycleGroup::succeeds(const CycleGroup* cg) const
-{
-    return (_allPredCGs.find(const_cast<CycleGroup*>(cg)) != _allPredCGs.end());
-}
-
-////////////////////////////////////////////////////////////////////////////////////////////////////
-
 void
 CycleGroup::_saveState()
 {
@@ -400,23 +412,7 @@ CycleGroup::_saveState()
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-String
-CycleGroup::toString() const
-{
-    utl::MemStream str;
-    str << "CG:" << this->id() << "(";
-    cb_revset_t::iterator cbIt, cbLim = _cbs.end();
-    for (cbIt = _cbs.begin(); cbIt != cbLim; ++cbIt)
-    {
-        if (cbIt != _cbs.begin())
-            str << ", ";
-        ConstrainedBound* cb = *cbIt;
-        ASSERTD(cb->owner() != nullptr);
-        str << cb->name();
-    }
-    str << ")" << '\0';
-    return String((char*)str.get());
-}
+#ifdef DEBUG
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -425,16 +421,14 @@ CycleGroup::predCGsString() const
 {
     utl::MemStream str;
     str << "PredCGs[";
-    cg_revset_t::iterator cgIt, cgLim = _predCGs.end();
-    for (cgIt = _predCGs.begin(); cgIt != cgLim; ++cgIt)
+    for (auto cg : _predCGs)
     {
-        if (cgIt != _predCGs.begin())
+        if (cg != *_predCGs.begin())
             str << ", ";
-        CycleGroup* cg = *cgIt;
         str << cg->toString();
     }
     str << "]" << '\0';
-    return String((char*)str.get());
+    return String(str.takeString(), true, false);
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -444,16 +438,14 @@ CycleGroup::allPredCGsString() const
 {
     utl::MemStream str;
     str << "AllPredCGs[";
-    cg_revset_t::iterator cgIt, cgLim = _allPredCGs.end();
-    for (cgIt = _allPredCGs.begin(); cgIt != cgLim; ++cgIt)
-    {
-        if (cgIt != _allPredCGs.begin())
+    for (auto cg : _allPredCGs)
+    { 
+        if (cg != *_allPredCGs.begin())
             str << ", ";
-        CycleGroup* cg = *cgIt;
         str << cg->toString();
     }
     str << "]" << '\0';
-    return String((char*)str.get());
+    return String(str.takeString(), true, false);
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -463,16 +455,14 @@ CycleGroup::succCGsString() const
 {
     utl::MemStream str;
     str << "SuccCGs[";
-    cg_revset_t::iterator cgIt, cgLim = _succCGs.end();
-    for (cgIt = _succCGs.begin(); cgIt != cgLim; ++cgIt)
+    for (auto cg : _succCGs)
     {
-        if (cgIt != _succCGs.begin())
+        if (cg != *_succCGs.begin())
             str << ", ";
-        CycleGroup* cg = *cgIt;
         str << cg->toString();
     }
     str << "]" << '\0';
-    return String((char*)str.get());
+    return String(str.takeString(), true, false);
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -482,17 +472,19 @@ CycleGroup::allSuccCGsString() const
 {
     utl::MemStream str;
     str << "AllSuccCGs[";
-    cg_revset_t::iterator cgIt, cgLim = _allSuccCGs.end();
-    for (cgIt = _allSuccCGs.begin(); cgIt != cgLim; ++cgIt)
+    for (auto cg : _allSuccCGs)
     {
-        if (cgIt != _allSuccCGs.begin())
+        if (cg != *_allSuccCGs.begin())
             str << ", ";
-        CycleGroup* cg = *cgIt;
         str << cg->toString();
     }
     str << "]" << '\0';
-    return String((char*)str.get());
+    return String(str.takeString(), true, false);
 }
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
+#endif
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 

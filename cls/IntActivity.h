@@ -20,10 +20,9 @@ class CompositeResourceRequirement;
 /**
    Interruptible activity.
 
-   An interruptible activity is an activity whose execution can be
-   interrupted by insufficient resource capacity.
+   An interruptible activity's execution can be interrupted by insufficient resource capacity.
 
-   \author Adam McKee
+   \ingroup cls
 */
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -34,7 +33,7 @@ class IntActivity : public Activity
     UTL_CLASS_DECL(IntActivity, Activity);
 
 public:
-    typedef clp::RevArray<uint_t> revarray_t;
+    using revarray_t = clp::RevArray<uint_t>;
 
 public:
     /**

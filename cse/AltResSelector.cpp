@@ -199,7 +199,7 @@ AltResSelector::setSelectedResources(StringInd<uint_t>* ind, SchedulingContext* 
                 if (!ind->newString())
                     ind->createNewString();
                 gop::String<uint_t>& newStr = *(ind->newString());
-                uint_t newResId = selectedRes->getValue();
+                uint_t newResId = selectedRes->value();
                 uint_t newResIdx = uint_t_max;
                 uint_t j;
                 for (j = 0; j < resGroupReq->numCapPts(); ++j)

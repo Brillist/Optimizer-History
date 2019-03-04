@@ -1,0 +1,7 @@
+#! /bin/sh
+
+# initialize
+. $(dirname "${BASH_SOURCE[0]}")/init.sh
+
+# require admin
+. ${SCRIPT_DIR}/require-admin.sh

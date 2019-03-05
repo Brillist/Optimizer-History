@@ -83,7 +83,7 @@ Population::stdDevScore() const
 {
     double avg = averageScore();
     double sum = 0.0;
-    uint_t i, numInds = size();
+    uint_t numInds = size();
     for (auto ind : self)
     {
         double diff = ind->getScore() - avg;

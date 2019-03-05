@@ -47,6 +47,9 @@ find_package(libutl 1.0 REQUIRED)
 # users should link against libutl::libutl_static
 target_link_libraries(libcse PUBLIC libutl::libutl_static)
 
+# use no prefix on the name of the target file
+set_property(TARGET libcse PROPERTY PREFIX "")
+
 # include directories
 set(CSE_INCLUDE_DIRS "${CMAKE_SOURCE_DIR}")
 target_include_directories(libcse PUBLIC ${CSE_INCLUDE_DIRS})

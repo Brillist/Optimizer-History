@@ -2302,7 +2302,7 @@ TotalCostEvaluator::calcPeriodCost(const utl::Span<int>& p_span,
         span.setBegin(overlap.end());
         uint_t ip = sip.period();
         double cost = (costPerTS * (double)overlap.size());
-        double firstcost = (costPerTS * (double)overlap.size());
+        //double firstcost = (costPerTS * (double)overlap.size());
         double realtStep = (double)(periodS / tStep);
         if (_audit)
         {
@@ -2316,7 +2316,7 @@ TotalCostEvaluator::calcPeriodCost(const utl::Span<int>& p_span,
         {
             cost = 0.0;
             double realcostPerTS = costPerTS;
-            firstcost = (realcostPerTS * realtStep);
+            //firstcost = (realcostPerTS * realtStep);
 
             for (double i = realtStep; i <= (double)overlap.size(); i += realtStep)
             {

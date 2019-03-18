@@ -83,16 +83,15 @@ private:
     uint_t setCount(uint_t idx, uint_t count);
 
 private:
-    using int_vector_t = utl::Vector<int>;
-    using uint32_vector_t = utl::Vector<uint32_t>;
+    using uint32_vector_t = std::vector<uint32_t>;
 
 private:
     uint_t _num;
     uint_t _bits;
     uint_t _bitsLog2;
-    uint_t _countsPerWord;
-    uint_t _countsPerWordLog2;
-    uint_t _countsPerWordMask;
+    uint_t _countsPerValue;
+    uint_t _countsPerValueLog2;
+    uint_t _countsPerValueMask;
     uint32_t _mask;
     int_vector_t _valuesArray;
     uint32_vector_t _countsArray;

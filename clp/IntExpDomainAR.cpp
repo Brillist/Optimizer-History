@@ -371,7 +371,6 @@ void
 IntExpDomainAR::init(const std::set<int>& domain, bool empty)
 {
     auto values = new int[domain.size()];
-    std::set<int>::const_iterator it;
     auto ptr = values;
     for (auto val : domain)
     {
@@ -493,9 +492,9 @@ IntExpDomainAR::findBackward(uint_t idx) const
     if (_values[idx] < _min)
         return uint_t_max;
 
-    uint_t* flagsPtr = _flags + (idx >> 5);
+    uint_t* flagsPtr = _flags + (idx / 32);
     uint_t flags = *flagsPtr;
-    uint_t flagsMask = 0x80000000U >> (idx & 0x1f);
+    uint_t flagsMask = 0x80000000U >> (idx & 31);
     while ((flags & flagsMask) == 0)
     {
         --idx;

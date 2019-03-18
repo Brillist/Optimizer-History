@@ -20,7 +20,7 @@
 
 /**
    CLP package namespace.
-   \ingroup gop
+   \ingroup clp
 */
 CLP_NS_DECLARE;
 

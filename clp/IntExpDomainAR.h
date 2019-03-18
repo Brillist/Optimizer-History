@@ -16,8 +16,7 @@ CLP_NS_BEGIN;
 
    IntExpDomainAR is a domain representation for IntExp that begins with a set of values,
    and records the presence or absence of those values with a single bit.  It's an efficient
-   domain representation if the difference between the smallest and largest initial domain
-   values is not very large.
+   domain representation if the initial size of the domain is not very large.
 
    \ingroup clp
 */
@@ -28,10 +27,6 @@ class IntExpDomainAR : public IntExpDomain
 {
     friend class IntExpDomainARit;
     UTL_CLASS_DECL(IntExpDomainAR, IntExpDomain);
-
-public:
-    using int_set_t = std::set<int>;
-    using uint_set_t = std::set<uint_t>;
 
 public:
     /**

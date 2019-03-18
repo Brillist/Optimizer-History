@@ -48,14 +48,14 @@ IntExpDomainCAR::copy(const Object& rhs)
     _num = dcar._num;
     _bits = dcar._bits;
     _bitsLog2 = dcar._bitsLog2;
-    _countsPerWord = dcar._countsPerWord;
-    _countsPerWordLog2 = dcar._countsPerWordLog2;
-    _countsPerWordMask = dcar._countsPerWordMask;
+    _countsPerValue = dcar._countsPerValue;
+    _countsPerValueLog2 = dcar._countsPerValueLog2;
+    _countsPerValueMask = dcar._countsPerValueMask;
     _mask = dcar._mask;
     _valuesArray = dcar._valuesArray;
     _countsArray = dcar._countsArray;
-    _values = _valuesArray.get();
-    _counts = _countsArray.get();
+    _values = _valuesArray.data();
+    _counts = _countsArray.data();
     _stateDepth = 0;
 }
 
@@ -66,17 +66,17 @@ IntExpDomainCAR::decrement(int val, uint_t num)
 {
     ASSERTD(num > 0);
     uint_t idx =
-        utl::binarySearch(_valuesArray.get(), 0, _num, val, utl::subtract<int>(), utl::find_any);
+        utl::binarySearch(_valuesArray.data(), 0, _num, val, utl::subtract<int>(), utl::find_any);
     ASSERTD(idx != uint_t_max);
 
-    uint_t wordIdx = idx >> _countsPerWordLog2;
-    uint_t countIdx = idx & _countsPerWordMask;
+    uint_t valueIdx = idx >> _countsPerValueLog2;
+    uint_t countIdx = idx & _countsPerValueMask;
     uint_t maskShift = (countIdx << _bitsLog2);
     uint32_t mask = _mask << maskShift;
 
     // get old count
-    uint32_t& word = _counts[wordIdx];
-    uint_t count = (word & mask) >> maskShift;
+    uint32_t& value = _counts[valueIdx];
+    uint_t count = (value & mask) >> maskShift;
     ASSERTD(count >= num);
 
     // remove val from domain?
@@ -85,14 +85,16 @@ IntExpDomainCAR::decrement(int val, uint_t num)
         remove(val);
         return 0;
     }
-
-    // otherwise: (count > num) so just decrement it
-    ASSERTD(count > num);
-    word &= ~mask;
-    count -= num;
-    mask = count << maskShift;
-    word |= mask;
-    return count;
+    else
+    {
+        // otherwise: (count > num) so just decrement it
+        ASSERTD(count > num);
+        value &= ~mask;
+        count -= num;
+        mask = count << maskShift;
+        value |= mask;
+        return count;
+    }
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -101,7 +103,7 @@ bool
 IntExpDomainCAR::has(int val) const
 {
     uint_t idx =
-        utl::binarySearch(_valuesArray.get(), 0, _num, val, utl::subtract<int>(), utl::find_any);
+        utl::binarySearch(_valuesArray.data(), 0, _num, val, utl::subtract<int>(), utl::find_any);
     if (idx == uint_t_max)
     {
         return false;
@@ -146,7 +148,7 @@ IntExpDomainCAR::getPrev(int val) const
     }
 
     uint_t idx =
-        utl::binarySearch(_valuesArray.get(), 0, _num, val - 1, utl::subtract<int>(), utl::find_ip);
+        utl::binarySearch(_valuesArray.data(), 0, _num, val - 1, utl::subtract<int>(), utl::find_ip);
     if (_values[idx] >= val)
         --idx;
     while (getCount(idx) == 0)
@@ -170,7 +172,7 @@ IntExpDomainCAR::getNext(int val) const
     }
 
     uint_t idx =
-        utl::binarySearch(_valuesArray.get(), 0, _num, val + 1, utl::subtract<int>(), utl::find_ip);
+        utl::binarySearch(_valuesArray.data(), 0, _num, val + 1, utl::subtract<int>(), utl::find_ip);
     while (getCount(idx) == 0)
         ++idx;
     return _values[idx];
@@ -217,7 +219,7 @@ IntExpDomainCAR::removeRange(int min, int max)
 
     // find index of first value
     uint_t idx =
-        utl::binarySearch(_valuesArray.get(), 0, _num, min, utl::subtract<int>(), utl::find_ip);
+        utl::binarySearch(_valuesArray.data(), 0, _num, min, utl::subtract<int>(), utl::find_ip);
 
     // clear flags to remove values from the domain
     while ((_values[idx] <= max) && (idx < _num))
@@ -293,29 +295,26 @@ IntExpDomainCAR::init(const int_uint_map_t& domain)
     // use 2, 4, 8, 16, or 32 bits per count (based on maxCount)
     _bits = 2;
     _bitsLog2 = 1;
-    _countsPerWord = 16;
-    _countsPerWordLog2 = 2;
+    _countsPerValue = 16;
+    _countsPerValueLog2 = 2;
     while (maxCount > ((1U << _bits) - 1))
     {
         _bits <<= 1;
         ++_bitsLog2;
-        _countsPerWord >>= 1;
-        ++_countsPerWordLog2;
+        _countsPerValue >>= 1;
+        ++_countsPerValueLog2;
     }
-    _countsPerWordMask = (_countsPerWord - 1);
+    _countsPerValueMask = (_countsPerValue - 1);
     _mask = (1U << _bits) - 1;
 
     // determine size of counts array
     uint_t countsArraySize = utl::roundUp(_num << _bitsLog2, 32U) / 32;
 
     // set array sizes
-    _valuesArray.setIncrement(1);
-    _countsArray.setIncrement(1);
-    _valuesArray.setSize(_num);
-    _countsArray.setSize(countsArraySize);
-
-    _values = _valuesArray.get();
-    _counts = _countsArray.get();
+    _valuesArray.resize(_num);
+    _countsArray.resize(countsArraySize);
+    _values = _valuesArray.data();
+    _counts = _countsArray.data();
     _stateDepth = _mgr->depth();
 
     // copy domain into values array and set counts
@@ -345,12 +344,12 @@ IntExpDomainCAR::deInit()
 uint_t
 IntExpDomainCAR::getCount(uint_t idx) const
 {
-    uint_t wordIdx = idx >> _countsPerWordLog2;
-    uint_t countIdx = idx & _countsPerWordMask;
+    uint_t valueIdx = idx >> _countsPerValueLog2;
+    uint_t countIdx = idx & _countsPerValueMask;
     uint_t maskShift = (countIdx << _bitsLog2);
     uint32_t mask = _mask << maskShift;
-    uint32_t& word = _counts[wordIdx];
-    uint_t count = (word & mask) >> maskShift;
+    uint32_t& value = _counts[valueIdx];
+    uint_t count = (value & mask) >> maskShift;
     return count;
 }
 
@@ -360,20 +359,20 @@ uint_t
 IntExpDomainCAR::setCount(uint_t idx, uint_t count)
 {
     ASSERTD(count <= _mask);
-    uint_t wordIdx = idx >> _countsPerWordLog2;
-    uint_t countIdx = idx & _countsPerWordMask;
+    uint_t valueIdx = idx >> _countsPerValueLog2;
+    uint_t countIdx = idx & _countsPerValueMask;
     uint_t maskShift = (countIdx << _bitsLog2);
     uint32_t mask = _mask << maskShift;
-    uint32_t& word = _counts[wordIdx];
+    uint32_t& value = _counts[valueIdx];
 
     // clear old count
-    uint_t oldCount = (word & mask) >> maskShift;
-    word &= ~mask;
+    uint_t oldCount = (value & mask) >> maskShift;
+    value &= ~mask;
 
     // set new count
     mask = count;
     mask <<= maskShift;
-    word |= mask;
+    value |= mask;
 
     return oldCount;
 }

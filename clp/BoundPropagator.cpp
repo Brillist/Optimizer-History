@@ -172,11 +172,14 @@ BoundPropagator::unsuspend(ConstrainedBound* cb)
 void
 BoundPropagator::finalize(ConstrainedBound* cb)
 {
+    // all bounds in this cb's cycle-group are finalized?
     auto cg = cb->cycleGroup();
     if (cg->finalized())
     {
+        // do nothing
         return;
     }
+    // 
     cb->queueFind();
     cg->finalizeMember();
 }

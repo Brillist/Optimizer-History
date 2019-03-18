@@ -25,7 +25,6 @@ LUT_NS_BEGIN;
    SkipListDepthArray will generate the following list of 7 node levels: [0,1,0,2,0,1,0].
    
    \ingroup lut
-   \author Adam McKee
 */
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////

@@ -220,10 +220,7 @@ public:
     void
     propagate()
     {
-        if (_type == bound_lb)
-            propagateLB();
-        else
-            propagateUB();
+        (_type == bound_lb) ? propagateLB() : propagateUB();
     }
     //@}
 protected:

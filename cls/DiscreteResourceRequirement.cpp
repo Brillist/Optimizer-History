@@ -61,12 +61,11 @@ DiscreteResourceRequirement::DiscreteResourceRequirement(BrkActivity* act,
 int
 DiscreteResourceRequirement::compare(const Object& rhs) const
 {
-    ASSERTD(rhs.isA(DiscreteResourceRequirement));
-    const DiscreteResourceRequirement& dr = (const DiscreteResourceRequirement&)rhs;
-    int res = utl::compare(_act->id(), dr._act->id());
+    auto& drr = utl::cast<DiscreteResourceRequirement>(rhs);
+    int res = utl::compare(_act->id(), drr._act->id());
     if (res != 0)
         return res;
-    res = _rcpsArray.compare(dr._rcpsArray);
+    res = _rcpsArray.compare(drr._rcpsArray);
     return res;
 }
 
@@ -76,15 +75,31 @@ void
 DiscreteResourceRequirement::initialize(BrkActivity* act)
 {
     // initialize all ResourceCapPts
-    Hashtable::iterator it;
-    for (it = _rcps.begin(); it != _rcps.end(); ++it)
+    for (auto rcp_ : _rcps)
     {
-        ResourceCapPts* rcp = (ResourceCapPts*)*it;
-        rcp->initialize((Activity*)act);
-        rcp->drr() = this;
+        auto rcp = utl::cast<ResourceCapPts>(rcp_);
+        rcp->initialize(utl::cast<Activity>(act));
+        rcp->setDRR(this);
     }
 
     checkAllSelected();
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
+Manager*
+DiscreteResourceRequirement::manager() const
+{
+    return _act->manager();
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
+const ResourceCapPts*
+DiscreteResourceRequirement::resCapPts() const
+{
+    ASSERTD(_rcps.size() == 1);
+    return utl::cast<ResourceCapPts>(_rcps.first());
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -127,23 +142,6 @@ DiscreteResourceRequirement::excludeResource(uint_t resId)
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-Manager*
-DiscreteResourceRequirement::manager() const
-{
-    return _act->manager();
-}
-
-////////////////////////////////////////////////////////////////////////////////////////////////////
-
-const ResourceCapPts*
-DiscreteResourceRequirement::resCapPts() const
-{
-    ASSERTD(_rcps.size() == 1);
-    return (const ResourceCapPts*)_rcps.first();
-}
-
-////////////////////////////////////////////////////////////////////////////////////////////////////
-
 void
 DiscreteResourceRequirement::init(BrkActivity* act,
                                   const Collection& rcps,
@@ -157,15 +155,13 @@ DiscreteResourceRequirement::init(BrkActivity* act,
     _rcpsArray.sort();
     _allSelected = false;
 
-    Manager* mgr = manager();
+    auto mgr = manager();
     uint_set_t allResIds;
     getAllResIds(allResIds);
 
     _numRequired = new IntVar(mgr, new IntExpDomainAR(mgr, numRequiredDomain));
-
     _possibleResources = new IntVar(mgr, new IntExpDomainAR(mgr, allResIds));
     _possibleResources->setFailOnEmpty(false);
-
     _selectedResources = new IntVar(mgr, new IntExpDomainAR(mgr, allResIds, true));
 }
 
@@ -189,8 +185,8 @@ DiscreteResourceRequirement::getSelectedCalendarIds(uint_set_t& calendarIds)
     for (itPtr = it = _selectedResources->begin(); !it->atEnd(); it->next())
     {
         int resId = **it;
-        ResourceCapPts* resCapPts = this->resCapPts(resId);
-        DiscreteResource* res = (DiscreteResource*)resCapPts->resource();
+        auto resCapPts = this->resCapPts(resId);
+        auto res = utl::cast<DiscreteResource>(resCapPts->resource());
         ASSERTD(res != nullptr);
         ASSERTD(res->calendar() != nullptr);
         calendarIds.insert(res->calendar()->id());
@@ -210,7 +206,7 @@ DiscreteResourceRequirement::selectPt(uint_t pt)
     for (itPtr = it = _possibleResources->begin(); !it->atEnd() && !_allSelected; it->next())
     {
         resId = **it;
-        ResourceCapPts* resCapPts = this->resCapPts(resId);
+        auto resCapPts = this->resCapPts(resId);
         if (resCapPts->findPt(pt) == nullptr)
         {
             excludeResource(resId);
@@ -221,7 +217,7 @@ DiscreteResourceRequirement::selectPt(uint_t pt)
     for (itPtr = it = _selectedResources->begin(); !it->atEnd(); it->next())
     {
         resId = **it;
-        ResourceCapPts* resCapPts = this->resCapPts(resId);
+        auto resCapPts = this->resCapPts(resId);
         resCapPts->selectPt(pt);
     }
 }
@@ -231,6 +227,7 @@ DiscreteResourceRequirement::selectPt(uint_t pt)
 void
 DiscreteResourceRequirement::checkAllSelected()
 {
+    // we already did this or numRequired
     if (_allSelected || !_numRequired->isBound())
     {
         return;
@@ -260,7 +257,7 @@ DiscreteResourceRequirement::checkAllSelected()
                          Uint(numPossible).toString() + " possible");
         }
 
-        // requirements are known
+        // required resources are known
         ASSERTD(numPossible == numRequired);
         IntExpDomainIt* it;
         AutoPtr<IntExpDomainIt> itPtr;
@@ -283,15 +280,23 @@ DiscreteResourceRequirement::checkAllSelected()
 bool
 DiscreteResourceRequirement::_selectResource(uint_t resId)
 {
+    // try to remove resId from _possibleResources
     if (!_possibleResources->remove(resId))
     {
+        // resId was already present -> do nothing
         return false;
     }
-    ASSERTD(resCapPts(resId) != nullptr);
+
+    // add resId to _selectedResources
     _selectedResources->add(resId);
-    const IntVar& possiblePts = _act->possiblePts();
-    ResourceCapPts* resCapPts = this->resCapPts(resId);
+
+    // notify resCapPts(resId) that it has been selected
+    auto resCapPts = this->resCapPts(resId);
+    ASSERTD(resCapPts != nullptr);
     resCapPts->select();
+
+    // if the processing time is known, select it
+    auto& possiblePts = _act->possiblePts();
     if (possiblePts.isBound())
     {
         uint_t pt = possiblePts.value();
@@ -314,8 +319,8 @@ DiscreteResourceRequirement::addTimetableBounds()
     for (itPtr = it = _selectedResources->begin(); !it->atEnd(); it->next())
     {
         int resId = **it;
-        ResourceCapPts* rcp = resCapPts(resId);
-        const CapPt* capPt = rcp->findPt(pt);
+        auto rcp = resCapPts(resId);
+        auto capPt = rcp->findPt(pt);
         if (capPt == nullptr)
         {
             throw FailEx("act-" + Uint(_act->id()).toString() + ": " +
@@ -323,22 +328,22 @@ DiscreteResourceRequirement::addTimetableBounds()
         }
         if (forward)
         {
-            ESbound* esb = (ESbound&)_act->esBound();
-            ESboundTimetable* ttBound = (ESboundTimetable*)capPt->object();
+            auto& esb = utl::cast<ESbound>(_act->esBound());
+            auto ttBound = utl::cast<ESboundTimetable>(capPt->object());
             ASSERTD(ttBound != nullptr);
-            esb->add(ttBound);
-            if (!esb->suspended())
+            esb.add(ttBound);
+            if (!esb.suspended())
             {
                 ttBound->registerEvents(esb);
             }
         }
         else
         {
-            LFbound* lfb = (LFbound&)_act->lfBound();
-            LFboundTimetable* ttBound = (LFboundTimetable*)capPt->object();
+            auto& lfb = utl::cast<LFbound>(_act->lfBound());
+            auto ttBound = utl::cast<LFboundTimetable>(capPt->object());
             ASSERTD(ttBound != nullptr);
-            lfb->add(ttBound);
-            if (!lfb->suspended())
+            lfb.add(ttBound);
+            if (!lfb.suspended())
             {
                 ttBound->registerEvents(lfb);
             }

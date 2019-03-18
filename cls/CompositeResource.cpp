@@ -28,32 +28,29 @@ void
 CompositeResource::initialize()
 {
     // initialize timetable
-    Schedule* sched = schedule();
+    auto sched = schedule();
     uint_set_t resIds;
-    dres_vector_t::iterator resIt;
-    for (resIt = _resources.begin(); resIt != _resources.end(); ++resIt)
+    for (auto res : _resources)
     {
-        DiscreteResource* res = *resIt;
         resIds.insert(res->serialId());
     }
     _timetable.initialize(this, sched, resIds);
 
-    // add capacity from each resource
-    for (resIt = _resources.begin(); resIt != _resources.end(); ++resIt)
+    // add capacity from each resource (also minding the resource's calendar)
+    for (auto res : _resources)
     {
-        DiscreteResource* res = *resIt;
         uint_t resId = res->serialId();
-        const ResourceCalendar& cal = *res->calendar();
-        const DiscreteTimetable& tt = res->timetable();
-        ResourceCalendar::iterator calIt = cal.begin();
-        ResourceCalendar::iterator calendarEnd = cal.end();
-        const IntSpan* ttSpan = tt.head();
+        auto& cal = *res->calendar();
+        const auto& tt = res->timetable();
+        auto calIt = cal.begin();
+        auto calendarEnd = cal.end();
+        auto ttSpan = tt.head();
 
         int spanMin = int_t_max;
         int spanMax = int_t_max;
         while ((calIt != calendarEnd) && !ttSpan->isTail())
         {
-            const ResourceCalendarSpan* calSpan = (ResourceCalendarSpan*)*calIt;
+            auto calSpan = utl::cast<ResourceCalendarSpan>(*calIt);
 
             // skip calSpan if not available
             if (calSpan->status() != rcss_available)

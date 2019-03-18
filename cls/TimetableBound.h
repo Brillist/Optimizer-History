@@ -14,9 +14,16 @@ CLS_NS_BEGIN;
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
-   An activity's execution cannot overlap with a period of insufficient resource capacity.
+   Earliest (or latest) time when a DiscreteResource has sufficient capacity (abstract).
 
-   \author Adam McKee
+   ESboundTimetable and LFboundTimetable are concrete specializations of this class for the
+   lower- and upper-bound cases, respectively.
+
+   \see ESbound
+   \see ESboundTimetable
+   \see LFbound
+   \see LFboundTimetable
+   \ingroup cls
 */
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -26,26 +33,39 @@ class TimetableBound : public clp::Bound
     UTL_CLASS_DECL_ABC(TimetableBound, clp::Bound);
 
 public:
-    /** Constructor. */
+    /** 
+       Constructor.
+       \param act activity this bound is computed for
+       \param rcp all of the resource's `[capacity,processing-time]` pairings
+       \param capPt `[capacity,processing-time]` pair this bound is computed for
+       \param type bound type (lower or upper)
+       \param bound initial bound value
+    */
     TimetableBound(
-        BrkActivity* act, ResourceCapPts* rcp, const CapPt* capPt, clp::bound_t type, int lb);
+        BrkActivity* act, ResourceCapPts* rcp, const CapPt* capPt, clp::bound_t type, int bound);
 
+    /** Exclude this `[capacity,processing-time]` pair. */
+    void exclude();
+
+    /// \name Capacity Allocation
+    //@{
     /** Allocate capacity. */
     virtual void allocateCapacity() = 0;
 
     /** Deallocate capacity. */
     virtual void deallocateCapacity() = 0;
+    //@}
 
-    /** Exclude this capacity. */
-    void exclude();
-
-    /** Register for events. */
+    /// \name Events
+    //@{
+    /** Register the provided bound for events. */
     void registerEvents(clp::ConstrainedBound* bound);
 
-    /** Deregister for events. */
+    /** Deregister the provided bound for events. */
     void deregisterEvents(clp::ConstrainedBound* bound);
+    //@}
 
-    /// \name Accessors
+    /// \name Accessors (const)
     //@{
     /** Possible? */
     bool

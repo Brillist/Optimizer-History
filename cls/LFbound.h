@@ -14,9 +14,13 @@ CLS_NS_BEGIN;
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
-   Latest valid time for an activity to end execution.
+   Latest valid time for a BrkActivity to begin execution.
 
-   \author Adam McKee
+   LFbound is a mirror of the ESbound class for backward scheduling.
+
+   \see LFboundTimetable
+   \see LFboundCalendar
+   \ingroup cls
 */
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -27,38 +31,44 @@ class LFbound : public SchedulableBound
     UTL_CLASS_DECL(LFbound, SchedulableBound);
 
 public:
-    typedef clp::RevArray<clp::Bound*> bound_array_t;
+    using bound_array_t = clp::RevArray<clp::Bound*>;
 
 public:
-    /** Constructor. */
+    /**
+       Constructor.
+       \param mgr related Manager
+       \param ub initial upper bound
+    */
     LFbound(clp::Manager* mgr, int ub);
+
+    /** Add a lower-bound. */
+    void add(Bound* bound);
 
     /** Register for events. */
     virtual void registerEvents();
 
+    /// \name Capacity Allocation
+    //@{
     /** Allocate capacity. */
     virtual void allocateCapacity();
 
     /** Deallocate capacity. */
     virtual void deallocateCapacity();
-
-    /** Add a lower-bound. */
-    void add(Bound* bound);
+    //@}
 
     /// \name Accessors
     //@{
-    /** Get the ls-bound. */
+    /** Get the latest-start bound. */
     const LSbound*
     lsBound() const
     {
         return _lsBound;
     }
 
-    /** Get the ls-bound. */
-    LSbound*&
-    lsBound()
+    /** Set the latest-start bound. */
+    void setLSbound(LSbound* lsBound)
     {
-        return _lsBound;
+        _lsBound = lsBound;
     }
     //@}
 protected:

@@ -37,12 +37,11 @@ CompositeResourceRequirement::CompositeResourceRequirement(IntActivity* act,
 int
 CompositeResourceRequirement::compare(const Object& rhs) const
 {
-    ASSERTD(rhs.isA(CompositeResourceRequirement));
-    const CompositeResourceRequirement& cr = (const CompositeResourceRequirement&)rhs;
-    int res = utl::compare(_res->serialId(), cr._res->serialId());
+    auto& crr = utl::cast<CompositeResourceRequirement>(rhs);
+    int res = utl::compare(_res->serialId(), crr._res->serialId());
     if (res != 0)
         return res;
-    res = utl::compare((void*)_res, (void*)cr._res);
+    res = utl::compare((void*)_res, (void*)crr._res);
     return res;
 }
 

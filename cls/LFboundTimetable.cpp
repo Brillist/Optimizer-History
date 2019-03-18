@@ -55,7 +55,7 @@ int
 LFboundTimetable::find()
 {
     // get calendar and pt-exp
-    const ResourceCalendar* cal = _act->calendar();
+    auto cal = _act->calendar();
     const IntExp* ptExp = _act->possiblePts();
 
     int ls = _act->ls();
@@ -75,7 +75,7 @@ LFboundTimetable::find()
         goto succeed;
     }
 
-    // note: lf,ls are valid for the calendar b/c LFboundCalendar ran first
+    // note: lf is valid for the calendar b/c LFboundCalendar ran first
     span = _tt->find(_bound);
     while (!span->isHead())
     {

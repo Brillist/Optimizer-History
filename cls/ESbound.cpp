@@ -30,6 +30,29 @@ ESbound::ESbound(clp::Manager* mgr, int lb)
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
+ESbound::add(Bound* bound)
+{
+    _bounds.add(bound);
+    invalidate();
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
+void
+ESbound::setLB(int lb)
+{
+    if (lb <= _bound)
+        return;
+    if (_act->allocated())
+    {
+        setAllocatedLB(_bound, lb);
+    }
+    super::setLB(lb);
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
+void
 ESbound::registerEvents()
 {
     // register for timetable events
@@ -65,23 +88,6 @@ ESbound::allocateCapacity()
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
-ESbound::allocateCapacity(int t1, int t2)
-{
-    // allocate resource capacity
-    for (auto bound : _bounds)
-    {
-        if (!bound->isA(ESboundTimetable))
-        {
-            continue;
-        }
-        auto ttb = utl::cast<ESboundTimetable>(bound);
-        ttb->allocateCapacity(t1, t2);
-    }
-}
-
-////////////////////////////////////////////////////////////////////////////////////////////////////
-
-void
 ESbound::deallocateCapacity()
 {
     // deallocate resource capacity
@@ -93,6 +99,23 @@ ESbound::deallocateCapacity()
         }
         auto ttb = utl::cast<ESboundTimetable>(bound);
         ttb->deallocateCapacity();
+    }
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
+void
+ESbound::allocateCapacity(int t1, int t2)
+{
+    // allocate resource capacity
+    for (auto bound : _bounds)
+    {
+        if (!bound->isA(ESboundTimetable))
+        {
+            continue;
+        }
+        auto ttb = utl::cast<ESboundTimetable>(bound);
+        ttb->allocateCapacity(t1, t2);
     }
 }
 
@@ -115,22 +138,12 @@ ESbound::deallocateCapacity(int t1, int t2)
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-void
-ESbound::add(Bound* bound)
-{
-    _bounds.add(bound);
-    invalidate();
-}
-
-////////////////////////////////////////////////////////////////////////////////////////////////////
-
 int
 ESbound::find()
 {
     saveState();
 
-    // find the activity
-    ASSERTD(_owner->isA(BrkActivity));
+    // reference the activity
     auto act = utl::cast<BrkActivity>(_owner);
 
     // so we can determine whether _bound moved later
@@ -149,7 +162,7 @@ ESbound::find()
                 break;
             }
 
-            // reconcile _bound with bound (_bound -> bound, then bound -> _bound)
+            // reconcile _bound with bound (_bound -> bound, bound -> _bound)
             bound->invalidate();
             bound->setLB(_bound);
             _bound = bound->get();
@@ -160,12 +173,13 @@ ESbound::find()
                 throw FailEx(_name + ": no workable bound");
             }
 
-            // update _findPoint only for the first iteration (the calendar)
+            // first bound we processed?
             if (first)
             {
+                // update _findPoint
                 first = false;
                 _findPoint = _bound;
-                // bound is already finalized -> only check calendar (resources are already allocated)
+                // bound is already finalized -> don't run the loop for 2nd and later bounds
                 if (act->allocated())
                 {
                     break;
@@ -188,25 +202,12 @@ ESbound::find()
 void
 ESbound::setAllocatedLB(int oldBound, int newBound)
 {
+    // deallocate capacity before moving a previously scheduled activity
     ASSERTD(_act->allocated());
     ASSERTD(oldBound < newBound);
     utl::cout << "WARNING: moving a scheduled activity:" << _act->id() << ", es:" << oldBound
-              << "->" << newBound << utl::endlf;
+        << "->" << newBound << utl::endlf;
     deallocateCapacity(oldBound, min(newBound - 1, _efBound->get()));
-}
-
-////////////////////////////////////////////////////////////////////////////////////////////////////
-
-void
-ESbound::setLB(int lb)
-{
-    if (lb <= _bound)
-        return;
-    if (_act->allocated())
-    {
-        setAllocatedLB(_bound, lb);
-    }
-    ConstrainedBound::setLB(lb);
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////

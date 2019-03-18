@@ -27,6 +27,22 @@ EFbound::EFbound(ESbound* esBound, int lb)
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
+void
+EFbound::setLB(int lb)
+{
+    if (lb <= _bound)
+        return;
+    if (_esBound->activity()->allocated())
+    {
+        utl::cout << "WARNING: moving a scheduled activity:" << _esBound->activity()->id()
+            << ", ef:" << _bound << "->" << lb << utl::endlf;
+        _esBound->allocateCapacity(max(_esBound->get(), _bound + 1), lb);
+    }
+    super::setLB(lb);
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
 int
 EFbound::find()
 {
@@ -34,22 +50,6 @@ EFbound::find()
     _findPoint = tightest();
     _esBound->queueFind();
     return _bound;
-}
-
-////////////////////////////////////////////////////////////////////////////////////////////////////
-
-void
-EFbound::setLB(int lb)
-{
-    if (lb <= _bound)
-        return;
-    if (_esBound->act()->allocated())
-    {
-        utl::cout << "WARNING: moving a scheduled activity:" << _esBound->act()->id()
-                  << ", ef:" << _bound << "->" << lb << utl::endlf;
-        _esBound->allocateCapacity(max(_esBound->get(), _bound + 1), lb);
-    }
-    ConstrainedBound::setLB(lb);
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////

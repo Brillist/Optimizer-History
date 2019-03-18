@@ -24,18 +24,32 @@ class IntActivity;
 // CapPt ///////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
+/**
+   A `[capacity,processing-time]` pair.
+
+   \ingroup cls
+*/
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
 class CapPt : public utl::Object
 {
     UTL_CLASS_DECL(CapPt, utl::Object);
 
 public:
-    /** Constructor. */
+    /**
+       Constructor.
+       \param cap capacity
+       \param pt processing time
+    */
     CapPt(uint_t cap, uint_t pt);
 
     virtual void copy(const utl::Object& rhs);
 
     virtual int compare(const utl::Object& rhs) const;
 
+    /// \name Accessors (const)
+    //@{
     /** Get the capacity. */
     uint_t
     capacity() const
@@ -49,12 +63,15 @@ public:
     {
         return _pt;
     }
+    //@}
 
-    /** Get the processing-time. */
-    uint_t&
-    processingTime()
+    /// \name Accessors (non-const)
+    //@{
+    /** Set the processing-time. */
+    void
+    setProcessingTime(uint_t pt)
     {
-        return _pt;
+        _pt = pt;
     }
 
     /** Get the object. */
@@ -89,7 +106,7 @@ private:
 /**
    Capacity/processing-time pairs for execution of an activity on a resource.
 
-   \author Adam McKee
+   \ingroup clps
 */
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -99,28 +116,26 @@ class ResourceCapPts : public utl::Object
     UTL_CLASS_DECL(ResourceCapPts, utl::Object);
 
 public:
-    typedef utl::Vector<uint_t> uint_vector_t;
     typedef utl::RBtree::iterator iterator;
 
 public:
-    /** Copy another instance. */
     virtual void copy(const Object& rhs);
 
-    /** Get the key. */
-    virtual const Object&
-    getKey() const
-    {
-        return _resId;
-    }
+    virtual const Object& getKey() const;
 
     virtual void serialize(utl::Stream& stream, uint_t io, uint_t mode = utl::ser_default);
 
-    /** Perform initialization (after cap/pts list is complete). */
+    /**
+       Perform initialization (after cap/pts list is complete).
+       \param act related Activity
+    */
     void initialize(Activity* act);
 
     /** Clear contents. */
     void clear();
 
+    /// \name Accessors (const)
+    //@{
     /** Get the manager. */
     clp::Manager*
     manager() const
@@ -133,13 +148,6 @@ public:
     /** Get the resource-id. */
     uint_t
     resourceId() const
-    {
-        return _resId;
-    }
-
-    /** Get the resource-id. */
-    utl::Uint&
-    resourceId()
     {
         return _resId;
     }
@@ -159,26 +167,36 @@ public:
         return _res;
     }
 
-    /** Get the resource. */
-    Resource*&
-    resource()
-    {
-        return _res;
-    }
-
     /** Get the res-req. */
     DiscreteResourceRequirement*
     drr() const
     {
         return _drr;
     }
+    //@}
 
-    /** Get the res-req. */
-    DiscreteResourceRequirement*&
-    drr()
+    /// \name Accessors (non-const)
+    //@{
+    /** Get the resource-id. */
+    utl::Uint&
+    resourceId()
     {
-        return _drr;
+        return _resId;
     }
+
+    /** Set the Resource. */
+    void
+    setResource(Resource* res)
+    {
+        _res = res;
+    }
+
+    /** Set the DiscreteResourceRequirement. */
+    void setDRR(DiscreteResourceRequirement* drr)
+    {
+        _drr = drr;
+    }
+    //@}
 
     /// \name Cap/Pt List
     //@{
@@ -208,6 +226,9 @@ public:
     {
         return _capPts.size();
     }
+
+    /** Has non-zero cap/pt? */
+    bool hasNonZeroCapPt() const;
 
     /** Get a capacity/processing-time pair (by index). */
     void
@@ -277,9 +298,6 @@ public:
         return _selectedCapPt->processingTime();
     }
     //@}
-
-    /** Has non-zero cap/pt? */
-    bool hasNonZeroCapPt() const;
 
 private:
     void init();

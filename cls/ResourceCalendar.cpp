@@ -31,8 +31,7 @@ ResourceCalendarSpec::ResourceCalendarSpec(rescal_t type, const uint_set_t& calI
 void
 ResourceCalendarSpec::copy(const Object& rhs)
 {
-    ASSERTD(rhs.isA(ResourceCalendarSpec));
-    const ResourceCalendarSpec& rcs = (const ResourceCalendarSpec&)rhs;
+    auto& rcs = utl::cast<ResourceCalendarSpec>(rhs);
     _type = rcs._type;
     _calIds = rcs._calIds;
 }
@@ -56,9 +55,8 @@ ResourceCalendarSpec::operator<(const ResourceCalendarSpec& rhs) const
 int
 ResourceCalendar::compare(const Object& rhs) const
 {
-    ASSERTD(rhs.isA(ResourceCalendar));
-    const ResourceCalendar& cal = (const ResourceCalendar&)rhs;
-    return SpanCol<int>::compare(cal);
+    auto& cal = utl::cast<ResourceCalendar>(rhs);
+    return super::compare(cal);
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -66,7 +64,7 @@ ResourceCalendar::compare(const Object& rhs) const
 void
 ResourceCalendar::serialize(Stream& stream, uint_t io, uint_t mode)
 {
-    SpanCol<int>::serialize(stream, io, mode);
+    super::serialize(stream, io, mode);
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -74,10 +72,8 @@ ResourceCalendar::serialize(Stream& stream, uint_t io, uint_t mode)
 bool
 ResourceCalendar::isMergeable(const Object& lhs, const Object& rhs) const
 {
-    ASSERTD(lhs.isA(ResourceCalendarSpan));
-    ASSERTD(rhs.isA(ResourceCalendarSpan));
-    const ResourceCalendarSpan& lhsRCS = (const ResourceCalendarSpan&)lhs;
-    const ResourceCalendarSpan& rhsRCS = (const ResourceCalendarSpan&)rhs;
+    auto& lhsRCS = utl::cast<ResourceCalendarSpan>(lhs);
+    auto& rhsRCS = utl::cast<ResourceCalendarSpan>(rhs);
     return (lhsRCS.status() == rhsRCS.status()) && (lhsRCS.capacity() == rhsRCS.capacity());
 }
 
@@ -95,30 +91,11 @@ ResourceCalendar::dump(Stream& os, time_t originTime, uint_t timeStep)
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-uint_t
-ResourceCalendar::id() const
-{
-    ASSERTD(_spec.type() == rc_simple);
-    ASSERTD(_spec.calIds().size() == 1);
-    return *(_spec.calIds().begin());
-}
-
-////////////////////////////////////////////////////////////////////////////////////////////////////
-
 void
 ResourceCalendar::addBreak(int begin, int end)
 {
-    ResourceCalendarSpan* breakSpan =
-        new ResourceCalendarSpan(begin, end, rcs_exception, rcss_onBreak);
+    auto breakSpan = new ResourceCalendarSpan(begin, end, rcs_exception, rcss_onBreak);
     add(breakSpan);
-}
-
-////////////////////////////////////////////////////////////////////////////////////////////////////
-
-void
-ResourceCalendar::compile(int horizonTS)
-{
-    makeSpansArray(horizonTS);
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -130,11 +107,10 @@ ResourceCalendar::makeBreakList(Manager* mgr)
     _breakList = new IntVar(mgr);
     _breakList->setFailOnEmpty(false);
     _breakList->remove(int_t_min, -1);
-    ResourceCalendarSpan** it;
     int horizonTS = int_t_min;
-    for (it = _spans; it != _spansLim; ++it)
+    for (auto it = _spans; it != _spansLim; ++it)
     {
-        ResourceCalendarSpan* rcs = *it;
+        auto rcs = *it;
         if (rcs->status() == rcss_available)
         {
             horizonTS = rcs->end();
@@ -145,6 +121,137 @@ ResourceCalendar::makeBreakList(Manager* mgr)
         }
     }
     _breakList->remove(horizonTS, int_t_max);
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
+void
+ResourceCalendar::compile(int horizonTS)
+{
+    ResourceCalendarSpan* lastRSS = nullptr;
+    uint_t pt = 0;
+    int ts = 0;
+    _minBreakTime = int_t_max;
+    _maxBreakTime = int_t_min;
+    _minNonBreakTime = int_t_max;
+    _maxNonBreakTime = int_t_min;
+    iterator it;
+    for (it = begin(); it != end();)
+    {
+        auto rss = utl::cast<ResourceCalendarSpan>(*it);
+
+        // delete rss if it is not a break
+        if (rss->status() != rcss_onBreak)
+        {
+            removeIt(it);
+            continue;
+        }
+        ++it;
+
+        int rssBegin = rss->begin();
+        int rssEnd = rss->end();
+
+        // update minBreakTime, maxBreakTime
+        _minBreakTime = utl::min(_minBreakTime, rssBegin);
+        _maxBreakTime = utl::max(_maxBreakTime, rssEnd - 1);
+
+        // fill gap before current break with a working span
+        if (ts < rssBegin)
+        {
+            auto workingSpan =
+                new ResourceCalendarSpan(ts, rssBegin, rcs_exception, rcss_available);
+            _minNonBreakTime = utl::min(_minNonBreakTime, workingSpan->begin());
+            _maxNonBreakTime = utl::max(_maxNonBreakTime, workingSpan->end() - 1);
+            if (lastRSS != nullptr)
+            {
+                lastRSS->setNext(workingSpan);
+                workingSpan->setPrev(lastRSS);
+            }
+            lastRSS = workingSpan;
+            add(workingSpan);
+
+            pt += workingSpan->size();
+            ts = rssBegin;
+            workingSpan->setCumPt(pt);
+        }
+
+        // set next, prev ptrs
+        if (lastRSS != nullptr)
+        {
+            lastRSS->setNext(rss);
+            rss->setPrev(lastRSS);
+        }
+        lastRSS = rss;
+
+        // break adds no processing-time
+        rss->setCumPt(pt);
+        ts = rssEnd;
+    }
+
+    // handle working time until horizon
+    if (ts < horizonTS)
+    {
+        auto workingSpan =
+            new ResourceCalendarSpan(ts, horizonTS, rcs_exception, rcss_available);
+        _minNonBreakTime = utl::min(_minNonBreakTime, workingSpan->begin());
+        _maxNonBreakTime = utl::max(_maxNonBreakTime, workingSpan->end() - 1);
+        if (lastRSS != nullptr)
+        {
+            lastRSS->setNext(workingSpan);
+            workingSpan->setPrev(lastRSS);
+        }
+        add(workingSpan);
+
+        // increment pt, ts
+        pt += workingSpan->size();
+        ts = horizonTS;
+        workingSpan->setCumPt(pt);
+    }
+
+    // note: ts = horizonTS
+    _maxPT = pt;
+    _maxTS = ts - 1;
+
+    // put spans from _spanCol into _spans array
+    _spans = new ResourceCalendarSpan*[size()];
+    _spansLim = _spans + size();
+    auto ptr = _spans;
+    for (it = begin(); it != end(); ++it)
+    {
+        auto rss = utl::cast<ResourceCalendarSpan>(*it);
+        rss->setCapacity(uint_t_max);
+        *(ptr++) = rss;
+    }
+    ASSERTD(ptr == _spansLim);
+
+    // forget spanCol
+    setOwner(false);
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
+void
+ResourceCalendar::addCompiledSpansTo(ResourceCalendar* cal, rcs_status_t status) const
+{
+    for (auto it = _spans; it != _spansLim; ++it)
+    {
+        auto span = *it;
+        if (span->status() != status)
+            continue;
+        auto spanCopy = span->clone();
+        spanCopy->setCapacity(uint_t_max);
+        cal->add(spanCopy);
+    }
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
+uint_t
+ResourceCalendar::id() const
+{
+    ASSERTD(_spec.type() == rc_simple);
+    ASSERTD(_spec.calIds().size() == 1);
+    return *(_spec.calIds().begin());
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -169,7 +276,7 @@ ResourceCalendar::findForward(int& es, int& ef, uint_t pt) const
     }
 
     // note: _minNonBreakTime <= es <= _maxNonBreakTime
-    const ResourceCalendarSpan* rcs = findSpanByTime(es);
+    auto rcs = findSpanByTime(es);
     if (rcs->status() == rcss_onBreak)
     {
         rcs = rcs->next(); // next span must be working
@@ -211,7 +318,7 @@ ResourceCalendar::findBackward(int& lf, int& ls, uint_t pt) const
     }
 
     // note: _minNonBreakTime <= lf <= _maxNonBreakTime
-    const ResourceCalendarSpan* rcs = findSpanByTime(lf);
+    auto rcs = findSpanByTime(lf);
     if (rcs->status() == rcss_onBreak)
     {
         rcs = rcs->prev(); // prev span must be working
@@ -233,23 +340,6 @@ ResourceCalendar::findBackward(int& lf, int& ls, uint_t pt) const
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-void
-ResourceCalendar::addCompiledSpansTo(ResourceCalendar* cal, rcs_status_t status) const
-{
-    const ResourceCalendarSpan* const* it;
-    for (it = _spans; it != _spansLim; ++it)
-    {
-        const ResourceCalendarSpan* span = *it;
-        if (span->status() != status)
-            continue;
-        ResourceCalendarSpan* spanCopy = span->clone();
-        spanCopy->capacity() = uint_t_max;
-        cal->add(spanCopy);
-    }
-}
-
-////////////////////////////////////////////////////////////////////////////////////////////////////
-
 uint_t
 ResourceCalendar::getBreakTime(int begin, int end) const
 {
@@ -266,7 +356,7 @@ ResourceCalendar::getBreakTime(int begin, int end) const
     uint_t bt = (end - begin + 1);
 
     // find first non-break time >= begin
-    const ResourceCalendarSpan* rcsBegin = findSpanByTime(begin);
+    auto rcsBegin = findSpanByTime(begin);
     if (rcsBegin->status() == rcss_onBreak)
     {
         rcsBegin = rcsBegin->next();
@@ -297,7 +387,7 @@ ResourceCalendar::getBreakTimePrev(int t) const
         return int_t_min;
     if (t > _maxBreakTime)
         return _maxBreakTime;
-    const ResourceCalendarSpan* rcs = findSpanByTime(--t);
+    auto rcs = findSpanByTime(--t);
     if (rcs->status() == rcss_available)
         return (rcs->prev()->end() - 1);
     return t;
@@ -312,7 +402,7 @@ ResourceCalendar::getBreakTimeNext(int t) const
         return _minBreakTime;
     if (t >= _maxBreakTime)
         return int_t_max;
-    const ResourceCalendarSpan* rcs = findSpanByTime(++t);
+    auto rcs = findSpanByTime(++t);
     if (rcs->status() == rcss_available)
         return rcs->next()->begin();
     return t;
@@ -327,7 +417,7 @@ ResourceCalendar::getNonBreakTimePrev(int t) const
         return int_t_min;
     if (t > _maxNonBreakTime)
         return _maxNonBreakTime;
-    const ResourceCalendarSpan* rcs = findSpanByTime(--t);
+    auto rcs = findSpanByTime(--t);
     if (rcs->status() == rcss_onBreak)
         return (rcs->prev()->end() - 1);
     return t;
@@ -342,7 +432,7 @@ ResourceCalendar::getNonBreakTimeNext(int t) const
         return _minNonBreakTime;
     if (t >= _maxNonBreakTime)
         return int_t_max;
-    const ResourceCalendarSpan* rcs = findSpanByTime(++t);
+    auto rcs = findSpanByTime(++t);
     if (rcs->status() == rcss_onBreak)
         return rcs->next()->begin();
     return t;
@@ -410,112 +500,6 @@ ResourceCalendar::deInit()
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
-ResourceCalendar::makeSpansArray(int horizonTS)
-{
-    ResourceCalendarSpan* lastRSS = nullptr;
-    uint_t pt = 0;
-    int ts = 0;
-    _minBreakTime = int_t_max;
-    _maxBreakTime = int_t_min;
-    _minNonBreakTime = int_t_max;
-    _maxNonBreakTime = int_t_min;
-    iterator it;
-    for (it = begin(); it != end();)
-    {
-        ResourceCalendarSpan* rss = (ResourceCalendarSpan*)*it;
-
-        // delete rss if it is not a break
-        if (rss->status() != rcss_onBreak)
-        {
-            removeIt(it);
-            continue;
-        }
-        ++it;
-
-        int rssBegin = rss->begin();
-        int rssEnd = rss->end();
-
-        // update minBreakTime, maxBreakTime
-        _minBreakTime = utl::min(_minBreakTime, rssBegin);
-        _maxBreakTime = utl::max(_maxBreakTime, rssEnd - 1);
-
-        // fill gap before current break with a working span
-        if (ts < rssBegin)
-        {
-            ResourceCalendarSpan* workingSpan =
-                new ResourceCalendarSpan(ts, rssBegin, rcs_exception, rcss_available);
-            _minNonBreakTime = utl::min(_minNonBreakTime, workingSpan->begin());
-            _maxNonBreakTime = utl::max(_maxNonBreakTime, workingSpan->end() - 1);
-            if (lastRSS != nullptr)
-            {
-                lastRSS->next() = workingSpan;
-                workingSpan->prev() = lastRSS;
-            }
-            lastRSS = workingSpan;
-            add(workingSpan);
-
-            pt += workingSpan->size();
-            ts = rssBegin;
-            workingSpan->cumPt() = pt;
-        }
-
-        // set next, prev ptrs
-        if (lastRSS != nullptr)
-        {
-            lastRSS->next() = rss;
-            rss->prev() = lastRSS;
-        }
-        lastRSS = rss;
-
-        // break adds no processing-time
-        rss->cumPt() = pt;
-        ts = rssEnd;
-    }
-
-    // handle working time until horizon
-    if (ts < horizonTS)
-    {
-        ResourceCalendarSpan* workingSpan =
-            new ResourceCalendarSpan(ts, horizonTS, rcs_exception, rcss_available);
-        _minNonBreakTime = utl::min(_minNonBreakTime, workingSpan->begin());
-        _maxNonBreakTime = utl::max(_maxNonBreakTime, workingSpan->end() - 1);
-        if (lastRSS != nullptr)
-        {
-            lastRSS->next() = workingSpan;
-            workingSpan->prev() = lastRSS;
-        }
-        add(workingSpan);
-
-        // increment pt, ts
-        pt += workingSpan->size();
-        ts = horizonTS;
-        workingSpan->cumPt() = pt;
-    }
-
-    // note: ts = horizonTS
-    _maxPT = pt;
-    _maxTS = ts - 1;
-
-    // put spans from _spanCol into _spans array
-    _spans = new ResourceCalendarSpan*[size()];
-    _spansLim = _spans + size();
-    ResourceCalendarSpan** ptr = _spans;
-    for (it = begin(); it != end(); ++it)
-    {
-        ResourceCalendarSpan* rss = (ResourceCalendarSpan*)*it;
-        rss->capacity() = uint_t_max;
-        *(ptr++) = rss;
-    }
-    ASSERTD(ptr == _spansLim);
-
-    // forget spanCol
-    setOwner(false);
-    //clear();
-}
-
-////////////////////////////////////////////////////////////////////////////////////////////////////
-
-void
 ResourceCalendar::check(const iterator* testIt)
 {
     BinTreeNode* testNode;
@@ -523,17 +507,17 @@ ResourceCalendar::check(const iterator* testIt)
         testNode = nullptr;
     else
         testNode = testIt->node();
-    iterator endIt = end();
-    BinTreeNode* endNode = endIt.node();
+    auto endIt = end();
+    auto endNode = endIt.node();
     ASSERT(endNode->get()->isA(MaxObject));
     bool testNodeFound = false;
-    for (iterator it = begin();; ++it)
+    for (auto it = begin();; ++it)
     {
         if (it.node() == testNode)
             testNodeFound = true;
         if (it == end())
             break;
-        Object* object = *it;
+        auto object = *it;
         ASSERT(object != nullptr);
         ASSERT(object->isA(ResourceCalendarSpan));
     }
@@ -545,7 +529,7 @@ ResourceCalendar::check(const iterator* testIt)
 uint_t
 ResourceCalendar::tsPT(int ts) const
 {
-    const ResourceCalendarSpan* span = findSpanByTime(ts);
+    auto span = findSpanByTime(ts);
     uint_t pt = span->cumPt();
     if (span->status() == rcss_onBreak)
         return pt;
@@ -558,7 +542,7 @@ ResourceCalendar::tsPT(int ts) const
 int
 ResourceCalendar::ptTS(uint_t pt) const
 {
-    const ResourceCalendarSpan* span = findSpanByPt(pt);
+    auto span = findSpanByPt(pt);
     uint_t beginPt = span->cumPt() - span->size() + 1;
     int ts = span->begin() + (pt - beginPt);
     return ts;
@@ -570,10 +554,10 @@ const ResourceCalendarSpan*
 ResourceCalendar::findSpanByTime(int ts) const
 {
     _searchSpan.setEnd(ts + 1);
-    ResourceCalendarSpan** it =
+    auto it =
         std::lower_bound(_spans, _spansLim, &_searchSpan, ResourceCalendarSpanEndOrdering());
     ASSERTD(it != _spansLim);
-    const ResourceCalendarSpan* span = *it;
+    auto span = *it;
     return span;
 }
 
@@ -582,11 +566,11 @@ ResourceCalendar::findSpanByTime(int ts) const
 const ResourceCalendarSpan*
 ResourceCalendar::findSpanByPt(int pt) const
 {
-    _searchSpan.cumPt() = pt;
-    ResourceCalendarSpan** it =
+    _searchSpan.setCumPt(pt);
+    auto it =
         std::lower_bound(_spans, _spansLim, &_searchSpan, ResourceCalendarSpanCumPtOrdering());
     ASSERTD(it != _spansLim);
-    const ResourceCalendarSpan* span = *it;
+    auto span = *it;
     return span;
 }
 

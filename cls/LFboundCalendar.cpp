@@ -31,7 +31,7 @@ int
 LFboundCalendar::find()
 {
     // get calendar and pt-exp
-    const ResourceCalendar* cal = _act->calendar();
+    auto cal = _act->calendar();
     const IntExp* ptExp = _act->possiblePts();
 
     int ls;

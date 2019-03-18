@@ -36,7 +36,7 @@ BrkActivity::add(DiscreteResourceRequirement* drr)
 void
 BrkActivity::initRequirements()
 {
-    Manager* mgr = manager();
+    auto mgr = manager();
     uint_set_t possiblePtsDomain;
     uint_set_t selectedResourcesDomain;
 
@@ -185,16 +185,16 @@ BrkActivity::selectResource(uint_t resId, DiscreteResourceRequirement* p_rr)
     // mark the resource as selected
     _selectedResources->add(resId);
 
-    // processing-time must be appropriate for the selected resource
-    ResourceCapPts* resCapPts = p_rr->resCapPts(resId);
+    // exclude (from _possiblePts) processing times that aren't possible for the resource
+    auto resCapPts = p_rr->resCapPts(resId);
     ASSERTD(resCapPts != nullptr);
-    const Array& capPtsArray = resCapPts->capPtsArray();
+    auto& capPtsArray = resCapPts->capPtsArray();
     uint_t numCapPts = capPtsArray.size();
     int last = int_t_min;
-    for (uint_t i = 0; i < numCapPts; ++i)
+    for (uint_t i = 0; i != numCapPts; ++i)
     {
-        CapPt* capPt = (CapPt*)capPtsArray[i];
-        TimetableBound* ttb = (TimetableBound*)capPt->object();
+        auto capPt = utl::cast<CapPt>(capPtsArray[i]);
+        auto ttb = utl::cast<TimetableBound>(capPt->object());
         if ((ttb == nullptr) || !ttb->possible())
             continue;
         int pt = capPt->processingTime();
@@ -236,17 +236,17 @@ BrkActivity::addTimetableBounds()
     }
 
     // set up calendar
-    ResourceCalendarMgr* calendarMgr = schedule()->calendarMgr();
-    std::set<uint_t> selectedCalendarIds;
+    auto calendarMgr = schedule()->calendarMgr();
+    uint_set_t selectedCalendarIds;
     for (auto rr_ : _discreteReqs)
     {
         auto rr = utl::cast<DiscreteResourceRequirement>(rr_);
         rr->getSelectedCalendarIds(selectedCalendarIds);
     }
     ResourceCalendarSpec calendarSpec(rc_allAvailable, selectedCalendarIds);
-    Manager* mgr = manager();
+    auto mgr = manager();
     mgr->revSet(_calendar);
-    _calendar = calendarMgr->add(calendarSpec);
+    _calendar = schedule()->calendarMgr()->add(calendarSpec);
 
     // add timetable bounds to ES or LF bound
     for (auto rr_ : _discreteReqs)
@@ -256,7 +256,7 @@ BrkActivity::addTimetableBounds()
     }
 
     // remember that we did this
-    manager()->revToggle(_addedTimetableBounds);
+    mgr->revToggle(_addedTimetableBounds);
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////

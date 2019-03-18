@@ -15,9 +15,10 @@ CLS_NS_BEGIN;
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
-   ES bound for interruptible activity.
+   Earliest valid time for an IntActivity to begin execution.
 
-   \author Adam McKee
+   \see IntActivity
+   \ingroup cls
 */
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -34,6 +35,8 @@ public:
     /** Initialize. */
     void initialize();
 
+    /// \name Capacity Allocation
+    //@{
     /** Register for events. */
     virtual void registerEvents();
 
@@ -42,7 +45,10 @@ public:
 
     /** Deallocate capacity. */
     virtual void deallocateCapacity();
+    //@}
 
+    /// \name Accessors (const)
+    //@{
     /** Get minimum capacity multiple. */
     uint_t
     minMultiple() const
@@ -57,9 +63,6 @@ public:
         return _maxMultiple;
     }
 
-    /** Set maximum capacity multiple. */
-    void setMaxMultiple(uint_t maxMultiple);
-
     /** Get activity. */
     IntActivity*
     activity() const
@@ -73,13 +76,20 @@ public:
     {
         return _efBound;
     }
+    //@}
 
-    /** Get ef-bound. */
-    EFboundInt*&
-    efBound()
+    /// \name Accessors (non-const)
+    //@{
+    /** Set maximum capacity multiple. */
+    void setMaxMultiple(uint_t maxMultiple);
+
+    /** Set ef-bound. */
+    void
+    setEFbound(EFboundInt* efBound)
     {
-        return _efBound;
+        _efBound = efBound;
     }
+    //@}
 
 protected:
     virtual int find();
@@ -105,7 +115,7 @@ private:
     uint_t* _caps;
     CompositeResource** _resources;
     const PreferredResources** _prs;
-    CompositeSpan** _cspans;
+    const CompositeSpan** _cspans;
     DiscreteResource** _visited;
     uint_t _numVisited;
     EFboundInt* _efBound;

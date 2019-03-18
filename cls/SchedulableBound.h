@@ -13,9 +13,17 @@ CLS_NS_BEGIN;
 /**
    Schedulable bound.
 
-   A 
+   In forward scheduling, a SchedulableBound is a ConstrainedBound that finds the earliest valid
+   time for an Activity to begin execution.  A SchedulableBound watches for events that can
+   invalidate the last computation it did (\ref registerEvents), and when the Activity is scheduled
+   it can allocate resource capacity (\ref allocateCapacity), which may cause other
+   SchedulableBound%s to be notified and recalculate their own values.
 
-   \author Adam McKee
+   \see ESbound
+   \see LFbound
+   \see ESboundInt
+   \see LFboundInt
+   \ingroup cls
 */
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -29,7 +37,12 @@ public:
     using bound_array_t = clp::RevArray<clp::Bound*>;
 
 public:
-    /** Constructor. */
+    /**
+       Constructor.
+       \param mgr related Manager
+       \param type bound type (lower or upper)
+       \param bound initial value
+    */
     SchedulableBound(clp::Manager* mgr, clp::bound_t type, int bound)
         : ConstrainedBound(mgr, type, bound)
     {

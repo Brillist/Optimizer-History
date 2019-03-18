@@ -14,8 +14,23 @@ CLS_NS_BEGIN;
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
-   Earliest valid time for an activity to begin execution.
+   Earliest valid time for a BrkActivity to begin execution.
 
+   ESbound reconciles one or more provided Bound%s to determine the earliest valid starting time
+   for a BrkActivity.  When an ESbound moves, it pushes its corresponding EFbound forward.
+   
+   Two types of bounds are normally tracked:
+
+   - ESboundCalendar : to find the next time slot when a required resource is available for work
+     (according to its calendar)
+   - ESboundTimetable : to find the next time slot when a resource has the required available
+     capacity (according to its timetable)
+
+   ESbound overrides SchedulableBound::allocateCapacity to allocate capacity in the timetables
+   of required DiscreteResource%s.
+
+   \see ESboundCalendar
+   \see ESboundTimetable
    \ingroup cls
 */
 
@@ -27,69 +42,77 @@ class ESbound : public SchedulableBound
     UTL_CLASS_DECL(ESbound, SchedulableBound);
 
 public:
-    typedef clp::RevArray<clp::Bound*> bound_array_t;
+    using bound_array_t = clp::RevArray<clp::Bound*>;
 
 public:
-    /** Constructor. */
+    /**
+       Constructor.
+       \param mgr related Manager
+       \param lb initial lower bound
+    */
     ESbound(clp::Manager* mgr, int lb);
-
-    /** Register for events. */
-    virtual void registerEvents();
-
-    /** Allocate capacity. */
-    virtual void allocateCapacity();
-
-    /** Allocate capacity from time t1 to t2. */
-    virtual void allocateCapacity(int t1, int t2);
-
-    /** Deallocate capacity. */
-    virtual void deallocateCapacity();
-
-    /** Deallocate capacity from time t1 to t2. */
-    virtual void deallocateCapacity(int t1, int t2);
 
     /** Add a lower-bound. */
     void add(Bound* bound);
 
-    /// \name Accessors
+    /** Set new bound. */
+    virtual void setLB(int lb);
+
+    /** Register for events  */
+    virtual void registerEvents();
+
+    /// \name Capacity Allocation
+    //@{
+    /** Allocate capacity. */
+    virtual void allocateCapacity();
+
+    /** Deallocate capacity. */
+    virtual void deallocateCapacity();
+
+    /** Allocate capacity from time t1 to t2. */
+    virtual void allocateCapacity(int t1, int t2);
+
+    /** Deallocate capacity from time t1 to t2. */
+    virtual void deallocateCapacity(int t1, int t2);
+    //@}
+
+    /// \name Accessors (const)
     //@{
     /** Get the activity. */
     const BrkActivity*
-    act() const
+    activity() const
     {
         return _act;
     }
 
-    /** Get the activity. */
-    BrkActivity*&
-    act()
-    {
-        return _act;
-    }
-
-    /** Get the ef-bound. */
+    /** Get the earliest-finish bound. */
     const EFbound*
     efBound() const
     {
         return _efBound;
     }
+    //@}
 
-    /** Get the ef-bound. */
-    EFbound*&
-    efBound()
+    /// \name Accessors (non-const)
+    //@{
+    /** Set the activity. */
+    void
+    setActivity(BrkActivity* act)
     {
-        return _efBound;
+        _act = act;
+    }
+
+    /** Set the earliest-finish bound. */
+    void
+    setEFbound(EFbound* efBound)
+    {
+        _efBound = efBound;
     }
     //@}
 
-    /** Do something special for allocated bound. */
-    virtual void setAllocatedLB(int oldBound, int newBound);
-
-    /** Set new bound. */
-    virtual void setLB(int lb);
-
 protected:
     virtual int find();
+    virtual void setAllocatedLB(int oldBound, int newBound);
 
 private:
     void

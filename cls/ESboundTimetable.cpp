@@ -36,17 +36,6 @@ ESboundTimetable::allocateCapacity()
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
-ESboundTimetable::allocateCapacity(int t1, int t2)
-{
-    uint_t cap = capacity();
-    // _act is only useful for composite resource, so it will be ignored later anyway
-    _res->allocate(t1, t2, cap, _act);
-    // no need to update _res->actsByStartTime (this function is only for shifting ef)
-}
-
-////////////////////////////////////////////////////////////////////////////////////////////////////
-
-void
 ESboundTimetable::deallocateCapacity()
 {
     int es = _act->es();
@@ -63,14 +52,22 @@ ESboundTimetable::deallocateCapacity()
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
+ESboundTimetable::allocateCapacity(int t1, int t2)
+{
+    uint_t cap = capacity();
+    // _act is only useful for composite resource, so it will be ignored later anyway
+    _res->allocate(t1, t2, cap, _act);
+    // no need to update _res->actsByStartTime (this function is only for shifting ef)
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
+void
 ESboundTimetable::deallocateCapacity(int t1, int t2)
 {
     uint_t cap = capacity();
     _res->deallocate(t1, t2, cap, _act);
-    // update _res->actsByStartTime (this function is for shifting es)
-    // to erase _act from and re-insert it into
-    // _res->actsByStartTime() is necessary, because
-    // this function is used for shifting es
+    // re-insert _act in _res->actsByStartTime
     if (_res->isUnary() && ((cap == 0) || (cap == 100)))
     {
         _res->actsByStartTime().erase(_act);
@@ -86,7 +83,7 @@ ESboundTimetable::find()
     saveState();
 
     // get calendar and pt-exp
-    const ResourceCalendar* cal = _act->calendar();
+    auto cal = _act->calendar();
     const IntExp* ptExp = _act->possiblePts();
 
     int ef = _act->ef();
@@ -106,7 +103,7 @@ ESboundTimetable::find()
         goto succeed;
     }
 
-    // note: es,ef are valid for the calendar b/c ESboundCalendar ran first
+    // note: es is valid for the calendar b/c ESboundCalendar ran first
     span = _tt->find(_bound);
     while (!span->isTail())
     {

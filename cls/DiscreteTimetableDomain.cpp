@@ -35,75 +35,6 @@ DiscreteTimetableDomain::initialize(Manager* mgr)
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-IntExp*
-DiscreteTimetableDomain::addCapExp(uint_t cap)
-{
-    if ((cap < _capExpsSize) && (_capExps[cap] != nullptr))
-    {
-        _mgr->revSetIndirect(_capExpCounts, cap);
-        ++_capExpCounts[cap];
-        return _capExps[cap];
-    }
-
-    if (_capExpsSize <= cap)
-    {
-        IntExp* nullIntExpPtr = nullptr;
-        uint_t zero = 0;
-        utl::arrayGrow(_capExps, _capExpsSize, utl::max(utl::KB(1), ((size_t)cap + 1)),
-                       utl::KB(1024), &nullIntExpPtr);
-        utl::arrayGrow(_capExpCounts, _capExpCountsSize, utl::max(utl::KB(1), ((size_t)cap + 1)),
-                       utl::KB(1024), &zero);
-    }
-
-    IntExp* capExp = new IntVar(_mgr);
-    capExp->setFailOnEmpty(false);
-    _mgr->add(capExp);
-    _mgr->revSetIndirect(_capExps, cap);
-    _mgr->revSetIndirect(_capExpCounts, cap);
-    _capExps[cap] = capExp;
-    _capExpCounts[cap] = 1;
-
-    int removeBegin = int_t_min;
-    int removeEnd = int_t_min;
-    IntSpan* span;
-    for (span = _head->next(); span != _tail; span = span->next())
-    {
-        if (span->capacity() < cap)
-        {
-            if (span->min() == (removeEnd + 1))
-            {
-                removeEnd = span->max();
-            }
-            else
-            {
-                capExp->remove(removeBegin, removeEnd);
-                removeBegin = span->min();
-                removeEnd = span->max();
-            }
-        }
-    }
-    capExp->remove(removeBegin, removeEnd);
-
-    return capExp;
-}
-
-////////////////////////////////////////////////////////////////////////////////////////////////////
-
-void
-DiscreteTimetableDomain::remCapExp(uint_t cap)
-{
-    ASSERTD(_capExpsSize > cap);
-    uint_t* capExpCounts = (uint_t*)_capExpCounts;
-    _mgr->revSetIndirect(capExpCounts, cap);
-    if (--_capExpCounts[cap] == 0)
-    {
-        _mgr->revSetIndirect(_capExps, cap);
-        _capExps[cap] = nullptr;
-    }
-}
-
-////////////////////////////////////////////////////////////////////////////////////////////////////
-
 uint_t
 DiscreteTimetableDomain::add(int min, int max, int v0, int v1)
 {
@@ -421,6 +352,82 @@ DiscreteTimetableDomain::add(int min, int max, int v0, int v1)
 #endif
 
     return minCap;
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
+IntExp*
+DiscreteTimetableDomain::addCapExp(uint_t cap)
+{
+    // requested CapExp already exists?
+    if ((cap < _capExpsSize) && (_capExps[cap] != nullptr))
+    {
+        // increment its use count and return it
+        _mgr->revSetIndirect(_capExpCounts, cap);
+        ++_capExpCounts[cap];
+        return _capExps[cap];
+    }
+
+    // grow _capExpsSize if necessary
+    if (_capExpsSize <= cap)
+    {
+        IntExp* nullIntExpPtr = nullptr;
+        uint_t zero = 0;
+        utl::arrayGrow(_capExps, _capExpsSize, utl::max(utl::KB(1), ((size_t)cap + 1)),
+                       utl::KB(1024), &nullIntExpPtr);
+        utl::arrayGrow(_capExpCounts, _capExpCountsSize, utl::max(utl::KB(1), ((size_t)cap + 1)),
+                       utl::KB(1024), &zero);
+    }
+
+    // create a new CapExp
+    IntExp* capExp = new IntVar(_mgr);
+    capExp->setFailOnEmpty(false);
+    _mgr->add(capExp);
+
+    // record the new CapExp in _capExps[] and initialize its count to 1 in _capExpCounts[]
+    _mgr->revSetIndirect(_capExps, cap);
+    _mgr->revSetIndirect(_capExpCounts, cap);
+    _capExps[cap] = capExp;
+    _capExpCounts[cap] = 1;
+
+    // scan the timetable's domain to initialize capExp's domain
+    int removeBegin = int_t_min;
+    int removeEnd = int_t_min;
+    for (auto span = _head->next(); span != _tail; span = span->next())
+    {
+        if (span->capacity() < cap)
+        {
+            if (span->min() == (removeEnd + 1))
+            {
+                removeEnd = span->max();
+            }
+            else
+            {
+                capExp->remove(removeBegin, removeEnd);
+                removeBegin = span->min();
+                removeEnd = span->max();
+            }
+        }
+    }
+    capExp->remove(removeBegin, removeEnd);
+
+    return capExp;
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
+void
+DiscreteTimetableDomain::remCapExp(uint_t cap)
+{
+    // decrement the use count for the CapExp, remove it if no users remain
+    ASSERTD(_capExpsSize > cap);
+    uint_t* capExpCounts = _capExpCounts;
+    _mgr->revSetIndirect(capExpCounts, cap);
+    if (--_capExpCounts[cap] == 0)
+    {
+        _mgr->revSetIndirect(_capExps, cap);
+        _capExps[cap] = nullptr;
+    }
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////

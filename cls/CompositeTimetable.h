@@ -18,11 +18,12 @@ class CompositeResource;
 /**
    Composite resource timetable.
 
-   For each point in time, a composite resource's timetable specifies
-   the minimal and maximal provided capacity, as well as the list of
-   available resources.
+   For each point in time, a composite resource's timetable specifies the minimal and maximal
+   provided capacity, as well as the list of available resources.
 
-   \author Adam McKee
+   \see CompositeSpan
+   \see CompositeTimetableDomain
+   \ingroup cls
 */
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -33,17 +34,27 @@ class CompositeTimetable : public utl::Object
     UTL_CLASS_NO_COPY;
 
 public:
-    typedef std::set<uint_t> uint_set_t;
-
-public:
-    /** Constructor. */
+    /**
+       Constructor.
+       \param res related CompositeResource
+       \param schedule related Schedule
+       \param resIds ids of DiscreteResource%s belonging to the CompositeResource
+    */
     CompositeTimetable(CompositeResource* res, Schedule* schedule, const uint_set_t& resIds)
     {
         init();
         initialize(res, schedule, resIds);
     }
 
-    /// \name Accessors
+    /**
+       Initialize.
+       \param res related CompositeResource
+       \param schedule related Schedule
+       \param resIds ids of DiscreteResource%s belonging to the CompositeResource
+    */
+    void initialize(CompositeResource* res, Schedule* schedule, const uint_set_t& resIds);
+
+    /// \name Accessors (const)
     //@{
     /** Get the manager. */
     clp::Manager*
@@ -51,9 +62,6 @@ public:
     {
         return _mgr;
     }
-
-    /** Set the manager. */
-    void initialize(CompositeResource* res, Schedule* schedule, const uint_set_t& resIds);
 
     /** Get the range of all spans. */
     utl::Span<int> range() const;
@@ -78,7 +86,10 @@ public:
     {
         return _domain.tail();
     }
+    //@}
 
+    /// \name Capacity Expressions
+    //@{
     /** Add capacity-expression. */
     clp::IntExp*
     addCapExp(uint_t cap)
@@ -105,10 +116,28 @@ public:
 
     /// \name Domain Modification
     //@{
-    /** Add provided capacity. */
+    /**
+       Add provided capacity.
+       \param min start of capacity provision span
+       \param max end of capacity provision span
+       \param resId id of DiscreteResource providing capacity
+    */
     void add(int min, int max, uint_t resId);
 
-    /** Allocate capacity. */
+    /**
+       Allocate capacity.
+       \param min start of allocation span
+       \param max end of allocation span
+       \param cap allocated capacity
+       \param act responsible Activity
+       \param pr preferred resources
+       \param breakList break list to be observed (default: use the activity's breakList
+       \param resId id of DiscreteResource to allocate from (default: use PreferredResources)
+       \param updateDiscrete also allocate capacity in DiscreteResource%s? (default: true)
+       \see Activity::breakList
+       \see CompositeResource::allocate
+       \see CompositeTimetableDomain::allocate
+    */
     void allocate(int min,
                   int max,
                   uint_t cap,
@@ -145,7 +174,7 @@ private:
     void raiseEvents();
 
 private:
-    typedef clp::RevSet<clp::ConstrainedBound> cb_set_t;
+    using cb_set_t = clp::RevSet<clp::ConstrainedBound>;
 
 private:
     const CompositeResource* _res;

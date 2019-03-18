@@ -18,12 +18,17 @@ class DiscreteResource;
 /**
    Discrete resource timetable.
 
-   A discrete resource's timetable specifies minimal required and
-   maximal provided capacity at each point in time.  The domain
-   is represented by an instance of RevIntSpanCol - see the documentation
-   of that class for more information.
+   A discrete resource's timetable records minimal required and maximal provided capacity at
+   each point in time.
 
-   \author Adam McKee
+   A DiscreteTimetable can create "capacity expressions" which are IntVar objects whose domains
+   track the availability of various required capacities.  Capacity expressions simplify the
+   task of finding times when an activity can execute.
+
+   \see ESboundTimetable
+   \see LFboundTimetable
+   \see DiscreteTimetableDomain
+   \ingroup cls
 */
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -41,18 +46,11 @@ public:
         setManager(mgr);
     }
 
-    /// \name Accessors
+    /// \name Accessors (const)
     //@{
     /** Get the resource. */
     const DiscreteResource*
-    res() const
-    {
-        return _res;
-    }
-
-    /** Get the resource. */
-    const DiscreteResource*&
-    res()
+    resource() const
     {
         return _res;
     }
@@ -63,12 +61,6 @@ public:
     {
         return _mgr;
     }
-
-    /** Set the manager. */
-    void setManager(clp::Manager* mgr);
-
-    /** Get the range of all spans. */
-    utl::Span<int> range() const;
 
     /** Get the domain. */
     const DiscreteTimetableDomain*
@@ -90,7 +82,22 @@ public:
     {
         return _domain.tail();
     }
+    //@}
 
+    /// \name Accessors (non-const)
+    //@{
+    /** Get the resource. */
+    void setResource(const DiscreteResource* res)
+    {
+        _res = res;
+    }
+
+    /** Set the manager. */
+    void setManager(clp::Manager* mgr);
+    //@}
+
+    /// \name Capacity Expressions
+    //@{
     /** Add capacity-expression. */
     clp::IntExp*
     addCapExp(uint_t cap)
@@ -106,34 +113,35 @@ public:
     }
     //@}
 
-    /// \name Energy
+    /// \name Query
     //@{
     /** Get the required and provided energy. */
     void energy(uint_t& required, uint_t& provided) const;
 
     /** Get the required and provided energy over the given span. */
     void energy(const utl::Span<int>& span, uint_t& required, uint_t& provided) const;
-    //@}
 
-    /// \name Query
-    //@{
     /** Get the maximal capacity at the given time. */
     uint_t max(int t) const;
 
     /** Find the span that overlaps the given value. */
     const clp::IntSpan* find(int val) const;
 
-    /** Find the first span that overlaps the given span. */
+    /** Find the span that overlaps the given value. */
     clp::IntSpan* find(int val);
     //@}
 
     /// \name Domain Modification
     //@{
-    /** Add required,provided capacity in the given span. */
-    uint_t add(int min, int max, int minReq, int maxPrv);
-
-    /** Subtract required,provided capacity in the given span. */
-    uint_t subtract(int min, int max, int minReq, int maxPrv);
+    /**
+       Add required and/or provided capacity over a time span.
+       \param min start of affected span
+       \param max end of affected span
+       \param reqCap addition to required capacity (may be negative)
+       \param prvCap addition to provided capacity (may be negative)
+       \return minimum available capacity in the time span
+    */
+    uint_t add(int min, int max, int reqCap, int prvCap);
     //@}
 
     /// \name Events

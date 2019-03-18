@@ -20,10 +20,15 @@ class PtActivity;
 /**
    Discrete resource.
 
-   The availability of a discrete resource is described by a time-table.
+   A DiscreteResource has:
 
+   - a ResourceCalendar that specifies whether it's working or on break in each time slot
+   - a DiscreteTimetable that tracks the required and provided capacity in each time slot
+
+   \see BrkActivity
    \see DiscreteTimetable
-   \author Adam McKee
+   \see ResourceCalendar
+   \ingroup cls
 */
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -31,10 +36,11 @@ class PtActivity;
 class DiscreteResource : public Resource
 {
     UTL_CLASS_DECL(DiscreteResource, Resource);
-    /* public: */
-    /*     typedef std::vector<uint_t> uint_vector_t; */
 public:
-    /** Constructor. */
+    /**
+       Constructor.
+       \param schedule related Schedule
+    */
     DiscreteResource(Schedule* schedule)
         : Resource(schedule)
     {
@@ -45,6 +51,22 @@ public:
     /** Initialize. */
     void initialize();
 
+    /** Add a timetable bound. */
+    void
+    addTimetableBound(utl::Object* bound)
+    {
+        _timetableBounds += bound;
+    }
+
+    /** Add a composite-resource-id. */
+    void
+    addCRid(uint_t crId)
+    {
+        _crIds.push_back(crId);
+    }
+
+    /// \name Accessors (const)
+    //@{
     /** Unary resource? */
     bool
     isUnary() const
@@ -59,13 +81,6 @@ public:
         return _timetable;
     }
 
-    /** Get the timetable. */
-    DiscreteTimetable&
-    timetable()
-    {
-        return _timetable;
-    }
-
     /** Get activities sorted by start-time. */
     const act_set_es_t&
     actsByStartTime() const
@@ -73,35 +88,9 @@ public:
         return _actsByStartTime;
     }
 
-    /** Get activities sorted by start-time. */
-    act_set_es_t&
-    actsByStartTime()
-    {
-        return _actsByStartTime;
-    }
-
-    /** Add provided capacity. */
-    void addProvidedCapacity(int startTime, int endTime, uint_t cap);
-
-    /** Allocate capacity. */
-    void allocate(int min, int max, uint_t cap, PtActivity* act, bool updateComposite = true);
-
-    /** Deallocate capacity. */
-    void deallocate(int min, int max, uint_t cap, bool updateComposite = true);
-
-    /** Set resource's capacity to the given cap. */
-    void selectCapacity(uint_t cap, uint_t maxCap);
-
     /** Get min required capacity */
     uint_t
     minReqCap() const
-    {
-        return _minReqCap;
-    }
-
-    /** Get min required capacity. */
-    uint_t&
-    minReqCap()
     {
         return _minReqCap;
     }
@@ -113,42 +102,88 @@ public:
         return _maxReqCap;
     }
 
-    /** Get max required capacity. */
-    uint_t&
-    maxReqCap()
-    {
-        return _maxReqCap;
-    }
-
-    /** Add a timetable bound. */
-    void
-    addTimetableBound(utl::Object* bound)
-    {
-        _timetableBounds += bound;
-    }
-
-    /// \name Composite Resource Ids
-    //@{
     /** Get list of composite-resource-ids. */
-    const lut::uint_vect_t&
+    const uint_vector_t&
     crIds() const
     {
         return _crIds;
     }
+    //@}
+
+    /// \name Accessors (non-const)
+    //@{
+    /** Get the timetable. */
+    DiscreteTimetable&
+    timetable()
+    {
+        return _timetable;
+    }
+
+    /** Get activities sorted by start-time. */
+    act_set_es_t&
+    actsByStartTime()
+    {
+        return _actsByStartTime;
+    }
+
+    /** Set minimum required capacity. */
+    void
+    setMinReqCap(uint_t minReqCap)
+    {
+        _minReqCap = minReqCap;
+    }
+
+    /** Get maximum required capacity. */
+    void
+    setMaxReqCap(uint_t maxReqCap)
+    {
+        _maxReqCap = maxReqCap;
+    }
 
     /** Get list of composite-resource-ids. */
-    lut::uint_vect_t&
+    uint_vector_t&
     crIds()
     {
         return _crIds;
     }
+    //@}
 
-    /** Add a composite-resource-id. */
-    void
-    addCRid(uint_t crId)
-    {
-        _crIds.push_back(crId);
-    }
+    /// Timetable
+    //@{
+    /** Add provided capacity. */
+    void addProvidedCapacity(int startTime, int endTime, uint_t cap);
+
+    /**
+       Allocate capacity.
+       \param min start of allocation span
+       \param max end of allocation span
+       \param cap allocated capacity
+       \param act responsible Activity
+       \param updateComposite also allocate capacity in CompositeResource%s? (default: true)
+       \see CompositeResource::allocate
+       \see DiscreteTimetable::allocate
+    */
+    void allocate(int min, int max, uint_t cap, PtActivity* act, bool updateComposite = true);
+
+    /**
+       Deallocate capacity.
+       \param min start of deallocation span
+       \param max end of deallocation span
+       \param cap deallocated capacity
+       \param updateComposite also allocate capacity in CompositeResource%s? (default: true)
+       \see CompositeResource::add
+       \see DiscreteTimetable::add
+    */
+    void deallocate(int min, int max, uint_t cap, bool updateComposite = true);
+
+    /** Set resource's capacity to the given cap. */
+    void selectCapacity(uint_t cap, uint_t maxCap);
+
+    /** Double provided capacity for every span. */
+    void doubleProvidedCap();
+
+    /** Halve provided capacity for every span. */
+    void halveProvidedCap();
     //@}
 
     /// \name Calendar
@@ -238,13 +273,6 @@ public:
     }
     //@}
 
-    /** Double and halve provided capacity for every span.
-        this two functions are added for shifting scheduled 
-        operations at the end of scheduling, because of moving
-        time and cost. */
-    void doubleProvidedCap();
-    void halveProvidedCap();
-
 protected:
     bool _unary;
     DiscreteTimetable _timetable;
@@ -253,10 +281,7 @@ protected:
     uint_t _maxReqCap;
     utl::RBtree _timetableBounds;
     ResourceCalendar* _calendar;
-    lut::uint_vect_t _crIds;
-
-private:
-    typedef std::set<uint_t> uint_set_t;
+    uint_vector_t _crIds;
 
 private:
     void init();

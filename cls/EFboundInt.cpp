@@ -32,7 +32,6 @@ EFboundInt::find()
     saveState();
     _findPoint = tightest();
     _esBound->queueFind();
-    //_esBound->find();
     return _bound;
 }
 

@@ -15,9 +15,9 @@ class ESboundInt;
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
-   EF bound for interruptible activity.
+   Earliest valid time for an IntActivity to end execution on a resource.
 
-   \author Adam McKee
+   \ingroup cls
 */
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -31,11 +31,21 @@ public:
     /** Constructor. */
     EFboundInt(ESboundInt* esBound, int lb);
 
-    /** Get the es-bound. */
-    cls::ESboundInt*&
-    esBound()
+    /// \name Accessors (const)
+    //@{
+    /** Get the related ESboundInt. */
+    const cls::ESboundInt* esBound()
     {
         return _esBound;
+    }
+    //@}
+
+    /// \name Accessors (non-const)
+    //@{
+    /** Set the related ESboundInt. */
+    void setESbound(ESboundInt* esBound)
+    {
+        _esBound = esBound;
     }
 
     /** Set the find-point. */
@@ -44,6 +54,7 @@ public:
     {
         _findPoint = findPoint;
     }
+    //@}
 
 protected:
     virtual int find();

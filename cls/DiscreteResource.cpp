@@ -38,10 +38,8 @@ public:
 int
 TimetableBoundOrderingDecCap::cmp(const Object* lhs, const Object* rhs) const
 {
-    ASSERTD(lhs->isA(TimetableBound));
-    ASSERTD(rhs->isA(TimetableBound));
-    uint_t lhsCap = ((TimetableBound*)lhs)->capacity();
-    uint_t rhsCap = ((TimetableBound*)rhs)->capacity();
+    uint_t lhsCap = utl::cast<TimetableBound>(lhs)->capacity();
+    uint_t rhsCap = utl::cast<TimetableBound>(rhs)->capacity();
     if (lhsCap == rhsCap)
         return lhs->compare(*rhs);
     return utl::compare(rhsCap, lhsCap);
@@ -55,13 +53,13 @@ void
 DiscreteResource::initialize()
 {
     // init timetable's reference to self
-    _timetable.res() = this;
+    _timetable.setResource(this);
 
     // scan the timetable
     int horizonTS = int_t_min;
     uint_t maxCap = 0;
     const IntSpan* span;
-    const IntSpan* tail = _timetable.tail();
+    auto tail = _timetable.tail();
     for (span = _timetable.head()->next(); span != tail; span = span->next())
     {
         uint_t cap = span->v1();
@@ -120,20 +118,15 @@ DiscreteResource::allocate(int min, int max, uint_t cap, PtActivity* act, bool u
     }
 #endif
 
-    if (!updateComposite)
+    // update composite resource timetables?
+    if (updateComposite)
     {
-        return;
-    }
-
-    // update composite resource timetables
-    Resource** resourcesArray = schedule()->resourcesArray();
-    uint_vect_t::iterator it, lim = _crIds.end();
-    for (it = _crIds.begin(); it != lim; ++it)
-    {
-        uint_t resId = *it;
-        ASSERTD(resourcesArray[resId]->isA(CompositeResource));
-        CompositeResource* res = (CompositeResource*)resourcesArray[resId];
-        res->allocate(min, max, 1, act, nullptr, nullptr, this->serialId(), false);
+        auto resourcesArray = schedule()->resourcesArray();
+        for (auto resSid : _crIds)
+        {
+            auto cres = utl::cast<CompositeResource>(resourcesArray[resSid]);
+            cres->allocate(min, max, 1, act, nullptr, nullptr, this->serialId(), false);
+        }
     }
 }
 
@@ -150,13 +143,10 @@ DiscreteResource::deallocate(int min, int max, uint_t cap, bool updateComposite)
     }
 
     // update composite resource timetables
-    Resource** resourcesArray = schedule()->resourcesArray();
-    uint_vect_t::iterator it, lim = _crIds.end();
-    for (it = _crIds.begin(); it != lim; ++it)
+    auto resourcesArray = schedule()->resourcesArray();
+    for (auto resSid : _crIds)
     {
-        uint_t resId = *it;
-        ASSERTD(resourcesArray[resId]->isA(CompositeResource));
-        CompositeResource* cres = (CompositeResource*)resourcesArray[resId];
+        auto cres = utl::cast<CompositeResource>(resourcesArray[resSid]);
         cres->add(min, max, this->serialId());
     }
 }
@@ -177,7 +167,7 @@ DiscreteResource::selectCapacity(uint_t cap, uint_t maxCap)
     // find horizon (this works but it's not ideal...)
     int horizonTS = int_t_min;
     const IntSpan* span;
-    const IntSpan* last = _timetable.tail()->prev();
+    auto last = _timetable.tail()->prev();
     for (span = last; span != nullptr; span = span->prev())
     {
         if (span->v1() > 0)
@@ -203,14 +193,10 @@ DiscreteResource::selectCapacity(uint_t cap, uint_t maxCap)
     // update composite resource timetables
     int originTS = getNonBreakTimeNext(-1);
     horizonTS = getNonBreakTimePrev(horizonTS + 1);
-    Resource** resourcesArray = schedule()->resourcesArray();
-    uint_vect_t::iterator it, lim = _crIds.end();
-    ASSERTD(_calendar != nullptr);
-    for (it = _crIds.begin(); it != lim; ++it)
+    auto resourcesArray = schedule()->resourcesArray();
+    for (auto resId : _crIds)
     {
-        uint_t resId = *it;
-        ASSERTD(resourcesArray[resId]->isA(CompositeResource));
-        CompositeResource* res = (CompositeResource*)resourcesArray[resId];
+        auto res = utl::cast<CompositeResource>(resourcesArray[resId]);
         res->allocate(originTS, horizonTS, 1, nullptr, nullptr, _calendar->breakList(),
                       this->serialId(), false);
     }
@@ -222,7 +208,7 @@ void
 DiscreteResource::doubleProvidedCap()
 {
     IntSpan* span;
-    const IntSpan* tail = _timetable.tail();
+    auto tail = _timetable.tail();
     for (span = _timetable.head()->next(); span != tail; span = span->next())
     {
         uint_t cap = span->v1();
@@ -238,7 +224,7 @@ void
 DiscreteResource::halveProvidedCap()
 {
     IntSpan* span;
-    const IntSpan* tail = _timetable.tail();
+    auto tail = _timetable.tail();
     for (span = _timetable.head()->next(); span != tail; span = span->next())
     {
         uint_t cap = span->v1();

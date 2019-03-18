@@ -17,9 +17,11 @@ class CompositeResource;
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
-   Resource requirement.
+   An IntActivity's requirement for a CompositeResource's capacity.
 
-   \author Adam McKee
+   \see IntActivity
+   \see CompositeResource
+   \ingroup cls
 */
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -31,10 +33,13 @@ class CompositeResourceRequirement : public utl::Object
     UTL_CLASS_NO_COPY;
 
 public:
-    typedef std::set<uint_t> uint_set_t;
-
-public:
-    /** Constructor. */
+    /**
+       Constructor.
+       \param act IntActivity that has the requirement
+       \param res the required CompositeResource
+       \param minCap minimum required resource capacity
+       \param maxCap maximum required resource capacity
+    */
     CompositeResourceRequirement(IntActivity* act,
                                  CompositeResource* res,
                                  uint_t minCap,
@@ -42,6 +47,8 @@ public:
 
     virtual int compare(const utl::Object& rhs) const;
 
+    /// \name Accessors (const)
+    //@{
     /** Get the manager. */
     clp::Manager* manager() const;
 
@@ -59,23 +66,9 @@ public:
         return _res;
     }
 
-    /** Get the resource. */
-    CompositeResource*&
-    resource()
-    {
-        return _res;
-    }
-
     /** Get the minimum capacity. */
     uint_t
     minCapacity() const
-    {
-        return _minCap;
-    }
-
-    /** Get the minimum capacity. */
-    uint_t&
-    minCapacity()
     {
         return _minCap;
     }
@@ -87,18 +80,32 @@ public:
         return _maxCap;
     }
 
-    /** Get the maximum capacity. */
-    uint_t&
-    maxCapacity()
-    {
-        return _maxCap;
-    }
-
     /** Get preferred-resources list. */
     const PreferredResources*
     preferredResources() const
     {
         return _preferredResources;
+    }
+    //@}
+
+    /// \name Accessors (non-const)
+    //@{
+    /** Set the resource. */
+    void setResource(CompositeResource* res)
+    {
+        _res = res;
+    }
+
+    /** Set the minimum capacity. */
+    void setMinCapacity(uint_t minCap)
+    {
+        _minCap = minCap;
+    }
+
+    /** Set the maximum capacity. */
+    void setMaxCapacity(uint_t maxCap)
+    {
+        _maxCap = maxCap;
     }
 
     /** Set preferred-resources list. */
@@ -108,6 +115,7 @@ public:
         delete _preferredResources;
         _preferredResources = pr;
     }
+    //@}
 
 private:
     void init();

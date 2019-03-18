@@ -3,7 +3,6 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 #include <libutl/SpanCol.h>
-#include <clp/Manager.h>
 #include <clp/IntVar.h>
 #include <cls/ResourceCalendarSpan.h>
 
@@ -13,6 +12,7 @@ CLS_NS_BEGIN;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
+/** Resource calendar type. */
 enum rescal_t
 {
     rc_simple,       /**< simple resource calendar */
@@ -23,15 +23,25 @@ enum rescal_t
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
+/**
+   Resource calendar specification.
+
+   \see ResourceCalendar
+   \see ResourceCalendarMgr
+*/
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
 class ResourceCalendarSpec : public utl::Object
 {
     UTL_CLASS_DECL(ResourceCalendarSpec, utl::Object);
 
 public:
-    typedef std::set<uint_t> uint_set_t;
-
-public:
-    /** Constructor. */
+    /**
+       Constructor.
+       \param type calendar type
+       \param calIds calendar ids
+    */
     ResourceCalendarSpec(rescal_t type, const uint_set_t& calIds);
 
     /** Copy another instance. */
@@ -75,10 +85,9 @@ private:
 /**
    Resource calendar.
 
-   Store a resource's calendar, and provide efficient implementations of
-   common calendar-related queries.
-
-   \author Adam McKee
+   \see ResourceCalendarMgr
+   \see ResourceCalendarSpec
+   \ingroup cls
 */
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -96,16 +105,23 @@ public:
 
     void dump(utl::Stream& os, time_t originTime, uint_t timeStep);
 
-    /** Get spec. */
+    /** Add a break. */
+    void addBreak(int begin, int end);
+
+    /** Create the break-list. */
+    void makeBreakList(clp::Manager* mgr);
+
+    /** Store spans in an array for efficient lookup using `std::lower_bound`. */
+    void compile(int horizonTS);
+
+    /** Add compiled spans with matching status to another calendar. */
+    void addCompiledSpansTo(ResourceCalendar* cal, rcs_status_t status) const;
+
+    /// \name Accessors (const)
+    //@{
+    /** Get specification. */
     const ResourceCalendarSpec&
     spec() const
-    {
-        return _spec;
-    }
-
-    /** Get spec. */
-    ResourceCalendarSpec&
-    spec()
     {
         return _spec;
     }
@@ -117,24 +133,8 @@ public:
         return _serialId;
     }
 
-    /** Get serial id. */
-    uint_t&
-    serialId()
-    {
-        return _serialId;
-    }
-
     /** Get unique id. */
     uint_t id() const;
-
-    /** Add a break. */
-    void addBreak(int begin, int end);
-
-    /** Compile the list to allow efficient access. */
-    void compile(int horizonTS);
-
-    /** Create a break-list. */
-    void makeBreakList(clp::Manager* mgr);
 
     /** Get break-list. */
     clp::IntVar*
@@ -142,15 +142,32 @@ public:
     {
         return _breakList;
     }
+    //@}
 
-    /** Find a valid es,ef pair. */
+    /// \name Accessors (non-const)
+    //@{
+    /** Get serial id. */
+    uint_t&
+    serialId()
+    {
+        return _serialId;
+    }
+
+    /** Get spec. */
+    ResourceCalendarSpec&
+    spec()
+    {
+        return _spec;
+    }
+    //@}
+
+    /// \name Queries
+    //@{
+    /** Find a valid `[es,ef]` pair. */
     void findForward(int& es, int& ef, uint_t pt) const;
 
-    /** Find a valid es,ef pair. */
+    /** Find a valid `[es,ef]` pair. */
     void findBackward(int& lf, int& ls, uint_t pt) const;
-
-    /** Add compiled spans to another calendar. */
-    void addCompiledSpansTo(ResourceCalendar* cal, rcs_status_t status) const;
 
     /** Get non-break time in the given time span. */
     uint_t
@@ -179,11 +196,11 @@ public:
 
     /** Get end-time corresponding to a start time. */
     int getEndTimeForStartTime(int startTime, uint_t pt) const;
+    //@}
 
 private:
     void init();
     void deInit();
-    void makeSpansArray(int horizonTS);
     void check(const iterator* testIt = nullptr);
     uint_t tsPT(int ts) const;
     int ptTS(uint_t pt) const;
@@ -220,7 +237,7 @@ private:
 /**
    Order ResourceCalendar objects by comparing their spans.
 
-   \author Adam McKee
+   \ingroup cls
 */
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -239,7 +256,7 @@ struct ResourceCalendarOrdering
 /**
    Order ResourceCalendar objects by specification.
 
-   \author Adam McKee
+   \ingroup cls
 */
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////

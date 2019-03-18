@@ -36,17 +36,15 @@ CompositeTimetableDomain::initialize(Schedule* schedule, const uint_set_t& resId
 {
     ASSERTD(_head->next() == _tail);
     _schedule = schedule;
-    Manager* mgr = schedule->manager();
+    auto mgr = schedule->manager();
     RevIntSpanCol::setManager(mgr);
 
     // _values[]
     _numValues = resIds.size();
     _values = new int[_numValues];
     int* ptr = _values;
-    uint_set_t::const_iterator it;
-    for (it = resIds.begin(); it != resIds.end(); ++it)
+    for (auto resId : resIds)
     {
-        uint_t resId = *it;
         *ptr++ = resId;
     }
 
@@ -81,7 +79,7 @@ CompositeTimetableDomain::addCapExp(uint_t cap)
                        size_t_max, &zero);
     }
 
-    IntExp* capExp = new IntVar(_mgr);
+    auto capExp = new IntVar(_mgr);
     capExp->setFailOnEmpty(false);
     _mgr->add(capExp);
     _mgr->revSetIndirect(_capExps, cap);
@@ -118,7 +116,7 @@ void
 CompositeTimetableDomain::remCapExp(uint_t cap)
 {
     ASSERTD(_capExpsSize > cap);
-    uint_t* capExpCounts = (uint_t*)_capExpCounts;
+    uint_t* capExpCounts = _capExpCounts;
     _mgr->revSetIndirect(capExpCounts, cap);
     if (--_capExpCounts[cap] == 0)
     {
@@ -126,149 +124,6 @@ CompositeTimetableDomain::remCapExp(uint_t cap)
         _capExps[cap] = nullptr;
     }
 }
-
-////////////////////////////////////////////////////////////////////////////////////////////////////
-
-/*void
-CompositeTimetableDomain::add(int min, int max, uint_t resId)
-{
-    ASSERTD(_mgr != nullptr);
-
-    min = utl::max(min, int_t_min + 1);
-    max = utl::min(max, int_t_max - 1);
-
-    if (min > max)
-    {
-        return;
-    }
-
-    // --- initialize ---------------------------------------------------------
-
-#ifdef DEBUG_UNIT
-    validate();
-#endif
-
-    saveState();
-
-    // find minSpan, maxSpan
-    IntSpan* prev[CLP_INTSPAN_MAXDEPTH];
-    IntSpan* next[CLP_INTSPAN_MAXDEPTH];
-    CompositeSpan* minSpan = (CompositeSpan*)findPrev(min, prev);
-    CompositeSpan* maxSpan;
-    if (minSpan->max() >= max)
-    {
-        maxSpan = minSpan;
-        prevToNext(minSpan, prev, next);
-    }
-    else
-    {
-        maxSpan = (CompositeSpan*)findNext(max, next);
-    }
-
-    // determine minEdge,maxEdge
-    bool minEdge = (min == minSpan->min());
-    bool maxEdge = (max == maxSpan->max());
-
-    _events |= ef_range;
-
-    // --- minSpan == maxSpan -------------------------------------------------
-
-    if (minSpan == maxSpan)
-    {
-        CompositeSpan* span = minSpan;
-
-        if (minEdge && maxEdge)
-        {
-            span->resIds()->add(resId);
-        }
-        else if (minEdge) // && !maxEdge
-        {
-            span->saveState(_mgr);
-            span->min() = (max + 1);
-            CompositeSpan* newSpan = newCS(min, max);
-            newSpan->copyFlags(span);
-            newSpan->resIds()->add(resId);
-            insertAfter(newSpan, prev);
-        }
-        else if (maxEdge) // && !minEdge
-        {
-            findPrevForward(span->max() + 1, prev);
-            span->saveState(_mgr);
-            span->max() = (min - 1);
-            CompositeSpan* newSpan = newCS(min, max);
-            newSpan->copyFlags(span);
-            newSpan->resIds()->add(resId);
-            insertAfter(newSpan, prev);
-        }
-        else // !minEdge && !maxEdge => bisect
-        {
-            // create new spans
-            CompositeSpan* newLHS = newCS(span->min(), min - 1);
-            newLHS->copyFlags(span);
-            CompositeSpan* newRHS = newCS(max + 1, span->max());
-            newRHS->copyFlags(span);
-
-            // modify extant span
-            span->saveState(_mgr);
-            span->min() = min;
-            span->max() = max;
-            span->resIds()->add(resId);
-
-            // add a new span on each side
-            insertAfter(newLHS, prev);
-            findPrevForward(max + 1, prev);
-            insertAfter(newRHS, prev);
-        }
-#ifdef DEBUG_UNIT
-        validate();
-#endif
-        return;
-    }
-
-    // --- minSpan != maxSpan -------------------------------------------------
-
-    // left side
-    if (!minEdge)
-    {
-        int minSpanMax = minSpan->max();
-        CompositeSpan* newSpan = newCS(min, minSpanMax);
-        newSpan->copyFlags(minSpan);
-
-        findPrevForward(minSpanMax + 1, prev);
-        insertAfter(newSpan, prev);
-        minSpan->saveState(_mgr);
-        minSpan->max() = (min - 1);
-        minSpan = newSpan;
-    }
-
-    // right side
-    if (!maxEdge)
-    {
-        int maxSpanMin = maxSpan->min();
-        CompositeSpan* newSpan = newCS(maxSpanMin, max);
-        newSpan->copyFlags(maxSpan);
-        newSpan->resIds()->add(resId);
-
-        findPrevForward(maxSpanMin, prev);
-        insertAfter(newSpan, prev);
-        maxSpan->saveState(_mgr);
-        maxSpan->min() = (max + 1);
-        maxSpan = (CompositeSpan*)newSpan->prev();
-    }
-
-    // add to intermediate spans
-    CompositeSpan* span = minSpan;
-    for (;;)
-    {
-        span->resIds()->add(resId);
-        if (span == maxSpan) break;
-        span = (CompositeSpan*)span->next();
-    }
-
-#ifdef DEBUG_UNIT
-    validate();
-#endif
-}*/
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -298,7 +153,7 @@ CompositeTimetableDomain::add(int min, int max, uint_t resId)
 
     // ttSpan iterator
     IntSpan* prev[CLP_INTSPAN_MAXDEPTH];
-    CompositeSpan* ttSpan = (CompositeSpan*)findPrev(min, prev);
+    auto ttSpan = utl::cast<CompositeSpan>(findPrev(min, prev));
 
     // add capacity ...
     int t = min;
@@ -310,7 +165,7 @@ CompositeTimetableDomain::add(int min, int max, uint_t resId)
 
         bool minEdge = (t == ttSpan->min());
         bool maxEdge = (e == ttSpan->max());
-        IntExpDomainAR* resIds = ttSpan->resIds()->clone();
+        auto resIds = ttSpan->resIds()->clone();
 
         // add resId during overlap
         resIds->add(resId);
@@ -326,7 +181,7 @@ CompositeTimetableDomain::add(int min, int max, uint_t resId)
             ttSpan->saveState(_mgr);
             ttSpan->setMin(e + 1);
             _mgr->revAllocate(resIds);
-            CompositeSpan* newSpan = newCS(t, e, resIds);
+            auto newSpan = newCS(t, e, resIds);
             insertAfter(newSpan, prev);
         }
         else if (maxEdge)
@@ -335,7 +190,7 @@ CompositeTimetableDomain::add(int min, int max, uint_t resId)
             ttSpan->saveState(_mgr);
             ttSpan->setMax(t - 1);
             _mgr->revAllocate(resIds);
-            CompositeSpan* newSpan = newCS(t, e, resIds);
+            auto newSpan = newCS(t, e, resIds);
             insertAfter(newSpan, prev);
         }
         else
@@ -348,8 +203,8 @@ CompositeTimetableDomain::add(int min, int max, uint_t resId)
             ttSpan->setMax(e);
 
             // create resIds for (left, right) spans
-            IntExpDomainAR* lhsResIds = ttSpan->resIds();
-            IntExpDomainAR* rhsResIds = lhsResIds->clone();
+            auto lhsResIds = ttSpan->resIds();
+            auto rhsResIds = lhsResIds->clone();
             _mgr->revAllocate(rhsResIds);
 
             // middle
@@ -357,12 +212,12 @@ CompositeTimetableDomain::add(int min, int max, uint_t resId)
             ttSpan->setResIds(resIds);
 
             // left
-            CompositeSpan* newLHS = newCS(spanMin, t - 1, lhsResIds);
+            auto newLHS = newCS(spanMin, t - 1, lhsResIds);
             insertAfter(newLHS, prev);
 
             // right
             findPrevForward(e + 1, prev);
-            CompositeSpan* newRHS = newCS(e + 1, spanMax, rhsResIds);
+            auto newRHS = newCS(e + 1, spanMax, rhsResIds);
             insertAfter(newRHS, prev);
         }
 
@@ -375,11 +230,11 @@ CompositeTimetableDomain::add(int min, int max, uint_t resId)
 
         // adjust ttSpan
         t = e + 1;
-        ttSpan = (CompositeSpan*)findPrevForward(t, prev);
+        ttSpan = utl::cast<CompositeSpan>(findPrevForward(t, prev));
         // need to back up?
         if (t < ttSpan->min())
         {
-            ttSpan = (CompositeSpan*)findPrev(t, prev);
+            ttSpan = utl::cast<CompositeSpan>(findPrev(t, prev));
         }
     }
 
@@ -428,11 +283,11 @@ CompositeTimetableDomain::allocate(int min,
         breakList = act->breakList();
     }
     if ((act != nullptr) && act->isA(IntActivity))
-        intact = (IntActivity*)act;
+        intact = utl::cast<IntActivity>(act);
 
     // ttSpan iterator
     IntSpan* prev[CLP_INTSPAN_MAXDEPTH];
-    CompositeSpan* ttSpan = (CompositeSpan*)findPrev(min, prev);
+    auto ttSpan = utl::cast<CompositeSpan>(findPrev(min, prev));
 
     // blSpan iterator
     const IntSpan* blSpan =
@@ -456,7 +311,7 @@ CompositeTimetableDomain::allocate(int min,
 
         bool minEdge = (t == ttSpan->min());
         bool maxEdge = (e == ttSpan->max());
-        IntExpDomainAR* resIds = ttSpan->resIds();
+        auto resIds = ttSpan->resIds();
         resIds = resIds->clone();
 
         // allocate overlap
@@ -475,7 +330,7 @@ CompositeTimetableDomain::allocate(int min,
                 ttSpan->saveState(_mgr);
                 ttSpan->setMin(e + 1);
                 _mgr->revAllocate(resIds);
-                CompositeSpan* newSpan = newCS(t, e, resIds);
+                auto newSpan = newCS(t, e, resIds);
                 insertAfter(newSpan, prev);
             }
             else if (maxEdge)
@@ -484,7 +339,7 @@ CompositeTimetableDomain::allocate(int min,
                 ttSpan->saveState(_mgr);
                 ttSpan->setMax(t - 1);
                 _mgr->revAllocate(resIds);
-                CompositeSpan* newSpan = newCS(t, e, resIds);
+                auto newSpan = newCS(t, e, resIds);
                 insertAfter(newSpan, prev);
             }
             else
@@ -497,8 +352,8 @@ CompositeTimetableDomain::allocate(int min,
                 ttSpan->setMax(e);
 
                 // create resIds for (left, right) spans
-                IntExpDomainAR* lhsResIds = ttSpan->resIds();
-                IntExpDomainAR* rhsResIds = lhsResIds->clone();
+                auto lhsResIds = ttSpan->resIds();
+                auto rhsResIds = lhsResIds->clone();
                 _mgr->revAllocate(rhsResIds);
 
                 // middle
@@ -506,12 +361,12 @@ CompositeTimetableDomain::allocate(int min,
                 ttSpan->setResIds(resIds);
 
                 // left
-                CompositeSpan* newLHS = newCS(spanMin, t - 1, lhsResIds);
+                auto newLHS = newCS(spanMin, t - 1, lhsResIds);
                 insertAfter(newLHS, prev);
 
                 // right
                 findPrevForward(e + 1, prev);
-                CompositeSpan* newRHS = newCS(e + 1, spanMax, rhsResIds);
+                auto newRHS = newCS(e + 1, spanMax, rhsResIds);
                 insertAfter(newRHS, prev);
             }
         }
@@ -545,11 +400,11 @@ CompositeTimetableDomain::allocate(int min,
         t = utl::max(t, blSpan->min());
 
         // adjust ttSpan
-        ttSpan = (CompositeSpan*)findPrevForward(t, prev);
+        ttSpan = utl::cast<CompositeSpan>(findPrevForward(t, prev));
         // need to back up?
         if (t < ttSpan->min())
         {
-            ttSpan = (CompositeSpan*)findPrev(t, prev);
+            ttSpan = utl::cast<CompositeSpan>(findPrev(t, prev));
         }
     }
 
@@ -647,14 +502,10 @@ CompositeTimetableDomain::allocate(IntExpDomainAR* resIds,
                                    uint_t resId,
                                    bool updateDiscrete)
 {
-    ASSERTD(cap > 0);
-
     // sanity check params
-#ifdef DEBUG
-    ASSERT((min == int_t_max) == (max == int_t_max));
-    if (resId != uint_t_max)
-        ASSERT(cap == 1);
-#endif
+    ASSERTD(cap > 0);
+    ASSERTD((min == int_t_max) == (max == int_t_max));
+    ASSERTD((resId == uint_t_max) || (cap == 1));
 
     // can't perform the allocation?
     if ((resIds->size() < cap) || (((resId != uint_t_max) && !resIds->has(resId))))
@@ -663,7 +514,7 @@ CompositeTimetableDomain::allocate(IntExpDomainAR* resIds,
     }
 
     // preferred resources iterator
-    std::vector<uint_t>::const_iterator prIt, prLim;
+    uint_vector_t::const_iterator prIt, prLim;
     if (pr != nullptr)
     {
         prIt = pr->resIds().begin();
@@ -671,7 +522,7 @@ CompositeTimetableDomain::allocate(IntExpDomainAR* resIds,
     }
 
     uint_t oldCap = resIds->size();
-    Resource** resourcesArray = _schedule->resourcesArray();
+    auto resourcesArray = _schedule->resourcesArray();
     while (cap-- > 0)
     {
         // choose a preferred resource?
@@ -703,9 +554,8 @@ CompositeTimetableDomain::allocate(IntExpDomainAR* resIds,
         act->addAllocation(curResId, min, max);
 
         // reference discrete resource
-        Resource* res = resourcesArray[curResId];
-        ASSERTD(res->isA(DiscreteResource));
-        DiscreteResource* dres = (DiscreteResource*)res;
+        auto res = resourcesArray[curResId];
+        auto dres = utl::cast<DiscreteResource>(res);
 
         // allocate capacity from discrete resource timetable
         // (to prevent overallocation and for purpose of costing)
@@ -715,17 +565,13 @@ CompositeTimetableDomain::allocate(IntExpDomainAR* resIds,
         }
 
         // remove cur-res from other composite timetables
-        const uint_vector_t& crIds = dres->crIds();
+        const auto& crIds = dres->crIds();
         ASSERTD(crIds.size() >= 1);
         if (crIds.size() == 1)
             continue;
-        uint_vector_t::const_iterator it;
-        for (it = crIds.begin(); it != crIds.end(); ++it)
+        for (auto crId : crIds)
         {
-            uint_t crId = *it;
-            Resource* res = resourcesArray[crId];
-            ASSERTD(res->isA(CompositeResource));
-            CompositeResource* cres = (CompositeResource*)res;
+            auto cres = utl::cast<CompositeResource>(resourcesArray[crId]);
             // skip over self...
             if (cres->timetable().domain() == this)
                 continue;
@@ -744,7 +590,7 @@ CompositeTimetableDomain::allocate(IntExpDomainAR* resIds,
         uint_t lim = utl::min(oldCap, (uint_t)_capExpsSize - 1);
         for (uint_t cap = newCap + 1; cap <= lim; ++cap)
         {
-            IntExp* capExp = _capExps[cap];
+            auto capExp = _capExps[cap];
             if (capExp == nullptr)
                 continue;
             capExp->remove(min, max);

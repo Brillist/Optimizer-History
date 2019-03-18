@@ -17,9 +17,20 @@ class ResourceCalendarMgr;
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
-   Manage activities, resources, resource constraints.
+   Central management of scheduling objects.
 
-   \author Adam McKee
+   A Schedule is a central store for:
+   
+   - the set of activities being scheduled
+   - the set of resources the activities require (or *may* require) to execute
+   - a single CapExpMgr instance
+   - a single ResourceCalendarMgr instance
+
+   \see Activity
+   \see Resource
+   \see CapExpMgr
+   \see ResourceCalendarMgr
+   \ingroup cls
 */
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -30,32 +41,20 @@ class Schedule : public utl::Object
     UTL_CLASS_NO_COPY;
 
 public:
-    typedef std::set<Activity*, ActIdOrdering> act_set_t;
-    typedef act_set_t::iterator act_iterator;
-    typedef act_set_t::const_iterator act_const_iterator;
-
-    typedef std::set<Resource*, ResIdOrdering> res_set_t;
-    typedef res_set_t::iterator res_iterator;
-    typedef res_set_t::const_iterator res_const_iterator;
+    using act_set_t = std::set<Activity*, ActIdOrdering>;
+    using act_iterator = act_set_t::const_iterator;
+    using res_set_t = std::set<Resource*, ResIdOrdering>;
+    using res_iterator = res_set_t::const_iterator;
 
 public:
-    /** Constructor. */
+    /**
+       Constructor.
+       \param mgr related Manager
+    */
     Schedule(clp::Manager* mgr);
 
-    /** Get the manager. */
-    clp::Manager*
-    manager() const
-    {
-        return _mgr;
-    }
-
-    /** Get the manager. */
-    clp::Manager*&
-    manager()
-    {
-        return _mgr;
-    }
-
+    /// \name Modification
+    //@{
     /** Add the given activity. */
     bool add(Activity* act);
 
@@ -64,120 +63,96 @@ public:
 
     /** Set serial-ids for resources. */
     void serializeResources();
+    //@}
 
-    /// \name Accessors
+    /// \name Accessors (const)
     //@{
-    /** Get the capacity-expression manager. */
+    /** Get the manager. */
+    clp::Manager*
+    manager() const
+    {
+        return _mgr;
+    }
+
+    /** Get the capacity expression manager. */
     CapExpMgr*
-    capExpMgr()
+    capExpMgr() const
     {
         return _capExpMgr;
     }
 
     /** Get the calendar manager. */
     ResourceCalendarMgr*
-    calendarMgr()
+    calendarMgr() const
     {
         return _calendarMgr;
     }
 
     /** Get the activities array. */
-    Activity**
+    Activity* const*
     activitiesArray() const
     {
         return _activitiesArray;
     }
 
     /** Get the resources array. */
-    Resource**
+    Resource* const*
     resourcesArray() const
     {
         return _resourcesArray;
     }
-    //@}
 
-    /// \name Iterators
-    //@{
     /**
        Get an iterator pointing to the beginning of
        the list of managed activities.
     */
-    act_const_iterator
+    act_iterator
     activitiesBegin() const
     {
         return _activities.begin();
     }
 
     /**
-       Get an iterator pointing to the beginning of
-       the list of managed activities.
-    */
-    act_iterator
-    activitiesBegin()
-    {
-        return _activities.begin();
-    }
-
-    /**
        Get an iterator pointing to the end of
        the list of managed activities.
     */
-    act_const_iterator
+    act_iterator
     activitiesEnd() const
     {
         return _activities.end();
     }
 
     /**
-       Get an iterator pointing to the end of
-       the list of managed activities.
-    */
-    act_iterator
-    activitiesEnd()
-    {
-        return _activities.end();
-    }
-
-    /**
        Get an iterator pointing to the beginning of
        the list of managed resources.
     */
-    res_const_iterator
+    res_iterator
     resourcesBegin() const
     {
         return _resources.begin();
     }
 
     /**
-       Get an iterator pointing to the beginning of
-       the list of managed resources.
-    */
-    res_iterator
-    resourcesBegin()
-    {
-        return _resources.begin();
-    }
-
-    /**
        Get an iterator pointing to the end of
        the list of managed resources.
     */
-    res_const_iterator
+    res_iterator
     resourcesEnd() const
     {
         return _resources.end();
     }
+    //@}
 
-    /**
-       Get an iterator pointing to the end of
-       the list of managed resources.
-    */
-    res_iterator
-    resourcesEnd()
+    /// \name Accessors (non-const)
+    //@{
+    /** Set the manager. */
+    void
+    setManager(clp::Manager* mgr)
     {
-        return _resources.end();
+        _mgr = mgr;
     }
     //@}
+
 private:
     void init();
     void deInit();

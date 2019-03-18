@@ -13,8 +13,10 @@ CLS_NS_BEGIN;
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
-   An activity cannot start or end execution during a break in resource availability.
+   Earliest time when a BrkActivity's required DiscreteResource%s are all available for work.
 
+   \see BrkActivity::calendar
+   \see ESbound
    \ingroup cls
 */
 
@@ -25,7 +27,12 @@ class ESboundCalendar : public clp::Bound
     UTL_CLASS_DECL(ESboundCalendar, clp::Bound);
 
 public:
-    /** Constructor. */
+    /**
+       Constructor.
+       \param act related BrkActivity
+       \param lb initial lower bound
+       \param efBound related EFbound
+    */
     ESboundCalendar(BrkActivity* act, int lb, EFbound* efBound);
 
     /** Get activity. */

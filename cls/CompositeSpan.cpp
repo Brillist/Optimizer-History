@@ -28,10 +28,9 @@ CompositeSpan::CompositeSpan(int min, int max, IntExpDomainAR* resIds, uint_t le
 void
 CompositeSpan::copy(const Object& rhs)
 {
-    ASSERTD(rhs.isA(CompositeSpan));
-    const CompositeSpan& cs = (const CompositeSpan&)rhs;
+    auto& cs = utl::cast<CompositeSpan>(rhs);
     delete resIds();
-    IntSpan::copy(cs);
+    super::copy(cs);
     setResIds(utl::clone(cs.resIds()));
 }
 
@@ -59,8 +58,7 @@ CompositeSpan::toString() const
 bool
 CompositeSpan::canMergeWith(const clp::IntSpan* rhs) const
 {
-    ASSERTD(rhs->isA(CompositeSpan));
-    const CompositeSpan* cs = (const CompositeSpan*)rhs;
+    auto cs = utl::cast<CompositeSpan>(rhs);
     ASSERTD((resIds() != nullptr) && (cs->resIds() != nullptr));
     return resIds()->flagsEqual(cs->resIds());
 }
@@ -70,7 +68,7 @@ CompositeSpan::canMergeWith(const clp::IntSpan* rhs) const
 uint_t
 CompositeSpan::capacity() const
 {
-    const IntExpDomainAR* resIds = this->resIds();
+    auto resIds = this->resIds();
     ASSERTD(resIds != nullptr);
     return resIds->size();
 }

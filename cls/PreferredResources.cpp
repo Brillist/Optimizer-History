@@ -19,8 +19,7 @@ CLS_NS_BEGIN;
 void
 PreferredResources::copy(const Object& rhs)
 {
-    ASSERTD(rhs.isA(PreferredResources));
-    const PreferredResources& pr = (const PreferredResources&)rhs;
+    auto& pr = utl::cast<PreferredResources>(rhs);
     _resIds = pr._resIds;
 }
 

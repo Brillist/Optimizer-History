@@ -20,9 +20,8 @@ CLS_NS_BEGIN;
 void
 ResourceCalendarSpan::copy(const Object& rhs)
 {
-    ASSERTD(rhs.isA(ResourceCalendarSpan));
-    const ResourceCalendarSpan& rcs = (const ResourceCalendarSpan&)rhs;
-    Span<int>::copy(rcs);
+    auto& rcs = utl::cast<ResourceCalendarSpan>(rhs);
+    super::copy(rcs);
     _type = rcs._type;
     _status = rcs._status;
     _cap = rcs._cap;
@@ -41,7 +40,7 @@ ResourceCalendarSpan::compare(const Object& rhs) const
         return res;
     }
 
-    const ResourceCalendarSpan& rcs = (const ResourceCalendarSpan&)rhs;
+    auto& rcs = utl::cast<ResourceCalendarSpan>(rhs);
     res = utl::compare(_status, rcs._status);
     if (res != 0)
         return res;
@@ -54,7 +53,7 @@ ResourceCalendarSpan::compare(const Object& rhs) const
 void
 ResourceCalendarSpan::serialize(utl::Stream& stream, uint_t io, uint_t)
 {
-    Span<int>::serialize(stream, io);
+    super::serialize(stream, io);
     utl::serialize((uint_t&)_type, stream, io);
     utl::serialize((uint_t&)_status, stream, io);
     utl::serialize(_cap, stream, io);

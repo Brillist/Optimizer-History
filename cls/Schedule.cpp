@@ -20,7 +20,7 @@ UTL_CLASS_IMPL(cls::Schedule);
 CLS_NS_BEGIN;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-/// SerializeResourcesOrdering /////////////////////////////////////////////////////////////////////
+/// ResourceSerialOrdering /////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 struct ResourceSerialOrdering
@@ -39,14 +39,12 @@ struct ResourceSerialOrdering
         }
         else
         {
-            ASSERTD(lhs->isA(DiscreteResource));
+            auto lhsDres = utl::cast<DiscreteResource>(lhs);
             if (rhs->isA(CompositeResource))
             {
                 return false;
             }
-            ASSERTD(rhs->isA(DiscreteResource));
-            DiscreteResource* lhsDres = (DiscreteResource*)lhs;
-            DiscreteResource* rhsDres = (DiscreteResource*)rhs;
+            auto rhsDres = utl::cast<DiscreteResource>(rhs);
             uint_t lhsNumCRids = lhsDres->crIds().size();
             uint_t rhsNumCRids = rhsDres->crIds().size();
             if (lhsNumCRids == rhsNumCRids)
@@ -77,10 +75,10 @@ Schedule::add(Activity* act)
     }
 
     utl::arrayGrow(_activitiesArray, _activitiesArraySize, (size_t)_activities.size() + 1);
-    act->serialId() = _activities.size();
+    act->setSerialId(_activities.size());
     _activitiesArray[act->serialId()] = act;
     _activities.insert(act);
-    act->schedule() = this;
+    act->setSchedule(this);
     return true;
 }
 
@@ -97,7 +95,7 @@ Schedule::add(Resource* res)
     utl::arrayGrow(_resourcesArray, _resourcesArraySize, _resources.size() + 1);
     _resourcesArray[_resources.size()] = res;
     _resources.insert(res);
-    res->schedule() = this;
+    res->setSchedule(this);
     return true;
 }
 
@@ -106,13 +104,13 @@ Schedule::add(Resource* res)
 void
 Schedule::serializeResources()
 {
-    Resource** lim = _resourcesArray + _resources.size();
+    auto lim = _resourcesArray + _resources.size();
     std::sort(_resourcesArray, lim, ResourceSerialOrdering());
     uint_t serialId = 0;
-    for (Resource** it = _resourcesArray; it != lim; ++it)
+    for (auto it = _resourcesArray; it != lim; ++it)
     {
-        Resource* res = *it;
-        res->serialId() = serialId++;
+        auto res = *it;
+        res->setSerialId(serialId++);
     }
 }
 

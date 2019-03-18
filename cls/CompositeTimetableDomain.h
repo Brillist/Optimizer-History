@@ -17,7 +17,7 @@ CLS_NS_BEGIN;
 /**
    Timetable representation for composite resources.
 
-   \author Adam McKee
+   \ingroup cls
 */
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -28,29 +28,56 @@ class CompositeTimetableDomain : public utl::Object, public clp::RevIntSpanCol
     UTL_CLASS_NO_COPY;
 
 public:
-    typedef std::set<uint_t> uint_set_t;
-
-public:
-    /** Constructor. */
+    /**
+       Constructor.
+       \param schedule related Schedule
+       \param resIds ids of DiscreteResource%s belonging to the CompositeResource
+    */
     CompositeTimetableDomain(Schedule* schedule, const uint_set_t& resIds)
     {
         init();
         initialize(schedule, resIds);
     }
 
-    /** Set the manager. */
+    /**
+       Initialize.
+       \param schedule related Schedule
+       \param resIds ids of DiscreteResource%s belonging to the CompositeResource
+    */
     void initialize(Schedule* schedule, const uint_set_t& resIds);
 
+    /// \name Capacity Expressions
+    //@{
     /** Add capacity-expression. */
     clp::IntExp* addCapExp(uint_t cap);
 
     /** Remove capacity-expression. */
     void remCapExp(uint_t cap);
+    //@}
 
-    /** Add provided capacity over a given interval. */
+    /// \name Capacity Provision and Allocation
+    //@{
+    /**
+       Add capacity.
+       \param min start of capacity provision span
+       \param max end of capacity provision span
+       \param resId id of DiscreteResource providing capacity
+    */
     void add(int min, int max, uint_t resId);
 
-    /** Allocate capacity. */
+    /**
+       Allocate capacity.
+       \param min start of allocation span
+       \param max end of allocation span
+       \param cap allocated capacity
+       \param act responsible Activity
+       \param pr preferred resources
+       \param breakList break list to be observed (default: use the activity's breakList)
+       \param resId id of DiscreteResource to allocate from (default: use PreferredResources)
+       \param updateDiscrete also allocate capacity in DiscreteResource%s? (default: true)
+       \see Activity::breakList
+       \see CompositeTimetable::allocate
+    */
     void allocate(int min,
                   int max,
                   uint_t cap,
@@ -59,6 +86,7 @@ public:
                   const clp::IntExp* breakList = nullptr,
                   uint_t resId = uint_t_max,
                   bool updateDiscrete = true);
+    //@}
 
     /// \name Events
     //@{
@@ -116,9 +144,6 @@ private:
                   int max = utl::int_t_max,
                   uint_t resId = uint_t_max,
                   bool updateDiscrete = true);
-
-private:
-    typedef std::vector<uint_t> uint_vector_t;
 
 private:
     clp::IntSpan* _dummyIntSpan;

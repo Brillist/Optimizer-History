@@ -12,11 +12,28 @@ CLS_NS_BEGIN;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
+/**
+   Available DiscreteResource%s during a time period.
+
+   CompositeTimetableDomain stores CompositeSpan objects in a skip-list.
+
+   \see CompositeTimetableDomain
+   \ingroup clp
+*/
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
 class CompositeSpan : public clp::IntSpan
 {
     UTL_CLASS_DECL(CompositeSpan, clp::IntSpan);
 
 public:
+    /**
+       \param min start of time span
+       \param max end of time span
+       \param resIds available resource ids (default: null)
+       \param level (level within skip-list).
+    */
     CompositeSpan(int min,
                   int max,
                   clp::IntExpDomainAR* resIds = nullptr,
@@ -30,30 +47,32 @@ public:
 
     virtual uint_t capacity() const;
 
+    /// \name Accessors (const)
+    //@{
+    /** Get resource ids. */
     const clp::IntExpDomainAR*
     resIds() const
     {
         return *reinterpret_cast<const clp::IntExpDomainAR* const*>(&_v0);
     }
+    //@}
 
+    /// \name Accessors (non-const)
+    //@{
+    /** Get resource ids. */
     clp::IntExpDomainAR*
     resIds()
     {
         return *reinterpret_cast<clp::IntExpDomainAR**>(&_v0);
     }
 
+    /** Set resource ids. */
     void
     setResIds(clp::IntExpDomainAR* resIds)
     {
         *reinterpret_cast<clp::IntExpDomainAR**>(&_v0) = resIds;
     }
-
-    void
-    copyFlags(const CompositeSpan* rhs)
-    {
-        ASSERTD(resIds() != nullptr);
-        resIds()->copyFlags(rhs->resIds());
-    }
+    //@}
 
 private:
     void init();

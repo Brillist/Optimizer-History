@@ -29,18 +29,25 @@ LFbound::LFbound(clp::Manager* mgr, int ub)
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
+LFbound::add(Bound* bound)
+{
+    _bounds.add(bound);
+    invalidate();
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
+void
 LFbound::registerEvents()
 {
     // register for timetable events
-    bound_array_t::iterator it, endIt = _bounds.end();
-    for (it = _bounds.begin(); it != endIt; ++it)
+    for (auto bound : _bounds)
     {
-        Bound* bound = *it;
         if (!bound->isA(LFboundTimetable))
         {
             continue;
         }
-        LFboundTimetable* ttb = (LFboundTimetable*)bound;
+        auto ttb = utl::cast<LFboundTimetable>(bound);
         ttb->registerEvents(this);
     }
 }
@@ -51,15 +58,13 @@ void
 LFbound::allocateCapacity()
 {
     // allocate resource capacity
-    bound_array_t::iterator it, endIt = _bounds.end();
-    for (it = _bounds.begin(); it != endIt; ++it)
+    for (auto bound : _bounds)
     {
-        Bound* bound = *it;
         if (!bound->isA(LFboundTimetable))
         {
             continue;
         }
-        LFboundTimetable* ttb = (LFboundTimetable*)bound;
+        auto ttb = utl::cast<LFboundTimetable>(bound);
         ttb->deregisterEvents(this);
         ttb->allocateCapacity();
     }
@@ -70,27 +75,16 @@ LFbound::allocateCapacity()
 void
 LFbound::deallocateCapacity()
 {
-    // allocate resource capacity
-    bound_array_t::iterator it, endIt = _bounds.end();
-    for (it = _bounds.begin(); it != endIt; ++it)
+    // deallocate resource capacity
+    for (auto bound : _bounds)
     {
-        Bound* bound = *it;
         if (!bound->isA(LFboundTimetable))
         {
             continue;
         }
-        LFboundTimetable* ttb = (LFboundTimetable*)bound;
+        auto ttb = utl::cast<LFboundTimetable>(bound);
         ttb->deallocateCapacity();
     }
-}
-
-////////////////////////////////////////////////////////////////////////////////////////////////////
-
-void
-LFbound::add(Bound* bound)
-{
-    _bounds.add(bound);
-    invalidate();
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -98,44 +92,56 @@ LFbound::add(Bound* bound)
 int
 LFbound::find()
 {
-    // find the activity
-    ASSERTD(_owner->isA(BrkActivity));
-    BrkActivity* act = (BrkActivity*)_owner;
+    // reference the activity
+    auto act = utl::cast<BrkActivity>(_owner);
 
+    // already allocated?
     if (act->allocated())
     {
+        // deallocate
         deallocateCapacity();
     }
 
+    // reconcile with _bounds until _bound stabilizes
     do
     {
         _findPoint = int_t_min;
         bool first = true;
-        bound_array_t::iterator it;
-        bound_array_t::iterator endIt = _bounds.end();
-        for (it = _bounds.begin(); (it != endIt) && (_bound >= _findPoint); ++it)
+        for (auto bound : _bounds)
         {
-            Bound* itBound = *it;
-            itBound->invalidate();
-            itBound->setUB(_bound);
-            _bound = itBound->get();
+            // don't pass _findPoint
+            if (_bound < _findPoint)
+            {
+                break;
+            }
+
+            // reconcile with bound (_bound -> bound, bound -> _bound)
+            bound->invalidate();
+            bound->setUB(_bound);
+            _bound = bound->get();
+
+            // can't find a workable value?
             if (_bound == int_t_min)
             {
                 throw FailEx(_name + ": no workable bound");
             }
 
-            // first iter?
+            // first bound we processed?
             if (first)
             {
+                // update _findPoint
                 first = false;
                 _findPoint = _bound;
-                // only track calendar if bound is already finalized
+                // bound is already finalized -> don't run the loop for 2nd and later bounds
                 if (act->allocated())
+                {
                     break;
+                }
             }
         }
     } while (_bound < _findPoint);
 
+    // moving a scheduled activity?
     if (act->allocated())
     {
         allocateCapacity();

@@ -15,9 +15,9 @@ class ESbound;
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
-   Earliest valid time for an activity to end execution on a resource.
+   Earliest valid time for a BrkActivity to complete execution on a resource.
 
-   \author Adam McKee
+   \ingroup cls
 */
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -28,14 +28,31 @@ class EFbound : public clp::ConstrainedBound
     UTL_CLASS_DEFID;
 
 public:
-    /** Constructor. */
+    /**
+       Constructor.
+       \param esBound related ESbound
+       \param lb initial value
+    */
     EFbound(ESbound* esBound, int lb);
 
-    /** Get the es-bound. */
-    cls::ESbound*&
-    esBound()
+    /** Set new bound.*/
+    virtual void setLB(int lb);
+
+    /// \name Accessors (const)
+    //@{
+    /** Get the ESbound. */
+    const ESbound* esBound() const
     {
         return _esBound;
+    }
+    //@}
+
+    /// \name Accessors (non-const)
+    //@{
+    /** Set the ESbound. */
+    void setESbound(ESbound* esBound)
+    {
+        _esBound = esBound;
     }
 
     /** Set the find-point. */
@@ -44,9 +61,7 @@ public:
     {
         _findPoint = findPoint;
     }
-
-    /** Set new bound.*/
-    virtual void setLB(int lb);
+    //@}
 
 protected:
     virtual int find();

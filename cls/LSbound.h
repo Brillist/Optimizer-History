@@ -17,7 +17,7 @@ class LFbound;
 /**
    Earliest valid time for an activity to end execution on a resource.
 
-   \author Adam McKee
+   \ingroup cls
 */
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////

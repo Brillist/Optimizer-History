@@ -10,7 +10,10 @@ CLS_NS_BEGIN;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-/** Resource calendar span type. */
+/**
+   Resource calendar span type.
+   \ingroup cls
+*/
 enum rcs_t
 {
     rcs_dayOfWeek, /**< default */
@@ -20,7 +23,10 @@ enum rcs_t
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-/** Resource calendar span status. */
+/**
+   Resource calendar span status.
+   \ingroup cls
+*/
 enum rcs_status_t
 {
     rcss_available, /**< available */
@@ -33,16 +39,20 @@ enum rcs_status_t
 /**
    Resource schedule span.
 
+   A ResourceCalendarSpan specifies the working status of a resource during a time period.
+
    A resource is always in one of the following states:
 
       - working
       - on break
 
-   A break in availability represents a period of time where a resource is
-   unavailable for work -- any work that the resource is performing when the
-   break commences will be suspended and resumed when the break is over.
+   A break in availability represents a period of time where a resource is unavailable for work.
+   Execution of an activity is paused while one or more of its required DiscreteResource%s is
+   on break.
 
-   \author Adam McKee
+   \see IntActivity
+   \see BrkActivity
+   \ingroup cls
 */
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -52,7 +62,14 @@ class ResourceCalendarSpan : public utl::Span<int>
     UTL_CLASS_DECL(ResourceCalendarSpan, utl::Span<int>);
 
 public:
-    /** Constructor. */
+    /**
+       Constructor.
+       \param begin first time slot of span
+       \param end last time slot of span
+       \param type span type (cls::rcs_dayOfWeek or cls::rcs_exception)
+       \param status working status (cls::rcss_available or cls::rcss_onBreak)
+       \param cap available capacity
+    */
     ResourceCalendarSpan(
         int begin, int end, rcs_t type, rcs_status_t status, uint_t cap = uint_t_max)
         : utl::Span<int>(begin, end)
@@ -60,20 +77,19 @@ public:
         init(type, status, cap);
     }
 
-    /** Copy another instance. */
     virtual void copy(const utl::Object& rhs);
 
-    /** Compare with another instance. */
     virtual int compare(const utl::Object& rhs) const;
 
     virtual void serialize(utl::Stream& stream, uint_t io, uint_t mode = utl::ser_default);
 
-    /** Get a human-readable string representation. */
     virtual String toString() const;
 
     /** Get a human-readable string representation. */
     String toString(time_t originTime, uint_t timeStep) const;
 
+    /// \name Accessors (const)
+    //@{
     /** Get the type. */
     rcs_t
     type() const
@@ -95,13 +111,6 @@ public:
         return _cap;
     }
 
-    /** Get the capacity. */
-    uint_t&
-    capacity()
-    {
-        return _cap;
-    }
-
     /** Get the cumulative processing-time. */
     const uint_t&
     cumPt() const
@@ -109,23 +118,9 @@ public:
         return _cumPt;
     }
 
-    /** Get the cumulative processing-time. */
-    uint_t&
-    cumPt()
-    {
-        return _cumPt;
-    }
-
-    /** Get the prev ptr. */
+    /** Get the prev pointer. */
     ResourceCalendarSpan*
     prev() const
-    {
-        return _prev;
-    }
-
-    /** Get the prev ptr. */
-    ResourceCalendarSpan*&
-    prev()
     {
         return _prev;
     }
@@ -136,13 +131,38 @@ public:
     {
         return _next;
     }
+    //@}
 
-    /** Get the next ptr. */
-    ResourceCalendarSpan*&
-    next()
+    /// \name Accessors (non-const)
+    //@{
+    /** Set capacity. */
+    void
+    setCapacity(uint_t cap)
     {
-        return _next;
+        _cap = cap;
     }
+
+    /** Set cumulative processing-time. */
+    void
+    setCumPt(uint_t cumPt)
+    {
+        _cumPt = cumPt;
+    }
+
+    /** Set the prev pointer. */
+    void
+    setPrev(ResourceCalendarSpan* prev)
+    {
+        _prev = prev;
+    }
+
+    /** Get the next pointer. */
+    void
+    setNext(ResourceCalendarSpan* next)
+    {
+        _next = next;
+    }
+    //@}
 
 private:
     void init(rcs_t type = rcs_undefined, rcs_status_t = rcss_undefined, uint_t cap = 0);
@@ -166,7 +186,7 @@ private:
 /**
    Order ResourceCalendarSpan objects by end time.
 
-   \author Adam McKee
+   \ingroup cls
 */
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -185,7 +205,7 @@ struct ResourceCalendarSpanEndOrdering
 /**
    Order ResourceCalendarSpan objects by cumulative processing-time.
 
-   \author Adam McKee
+   \ingroup cls
 */
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////

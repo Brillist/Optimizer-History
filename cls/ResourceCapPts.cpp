@@ -232,8 +232,7 @@ CapPtHashPt::hash(const Object* object, size_t size) const
 void
 ResourceCapPts::copy(const Object& rhs)
 {
-    ASSERTD(rhs.isA(ResourceCapPts));
-    const ResourceCapPts& rcp = (const ResourceCapPts&)rhs;
+    auto& rcp = utl::cast<ResourceCapPts>(rhs);
     _resId = rcp._resId;
     _res = nullptr;
     _capPts = rcp._capPts;
@@ -254,14 +253,22 @@ ResourceCapPts::copy(const Object& rhs)
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
+const Object&
+ResourceCapPts::getKey() const
+{
+    return _resId;
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
 void
 ResourceCapPts::serialize(Stream& stream, uint_t io, uint_t)
 {
     _resId.serialize(stream, io);
 
     // to maintain compatibility... maybe change it later (or not)
-    std::vector<uint_t> caps;
-    std::vector<uint_t> pts;
+    uint_vector_t caps;
+    uint_vector_t pts;
     if (io == io_wr)
     {
         for (auto capPt_ : _capPts)
@@ -328,20 +335,30 @@ ResourceCapPts::clear()
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 bool
+ResourceCapPts::hasNonZeroCapPt() const
+{
+    for (auto capPt_ : _capPts)
+    {
+        auto capPt = utl::cast<CapPt>(capPt_);
+        if ((capPt->capacity() != 0) && (capPt->processingTime() != 0))
+        {
+            return true;
+        }
+    }
+    return false;
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
+bool
 ResourceCapPts::addCapPt(uint_t cap, uint_t pt)
 {
-    // only reject the add if the pt already exists
-    // this change is for PCL
+    // reject the add if the pt already exists
     if (findPt(pt) != nullptr)
     {
         return false;
     }
-
-    //     utl::cout << "   res:" << _resId
-    //               << ", cap:" << cap
-    //               << ", pt:" << pt
-    //               << utl::endlf;
-    CapPt* capPt = new CapPt(cap, pt);
+    auto capPt = new CapPt(cap, pt);
     _capPts += capPt;
     _capPtsHTcap += capPt;
     _capPtsHTpt += capPt;
@@ -358,7 +375,7 @@ ResourceCapPts::dividePtsBy(uint_t divisor)
     for (auto capPt_ : _capPts)
     {
         auto capPt = utl::cast<CapPt>(capPt_);
-        capPt->processingTime() /= divisor;
+        capPt->setProcessingTime(capPt->processingTime() / divisor);
         _capPtsHTcap += capPt;
         _capPtsHTpt += capPt;
     }
@@ -369,15 +386,20 @@ ResourceCapPts::dividePtsBy(uint_t divisor)
 const CapPt*
 ResourceCapPts::selectPt(uint_t pt) const
 {
+    // already selected a CapPt?
     if (_selectedCapPt != nullptr)
     {
+        // ensure selected CapPt has matching processing time and return it
         ASSERTD(_selectedCapPt->processingTime() == pt);
         return _selectedCapPt;
     }
 
-    Manager* mgr = _res->manager();
-    const CapPt* capPt = findPt(pt);
+    // find the CapPt for pt (it must exist)
+    auto mgr = _res->manager();
+    auto capPt = findPt(pt);
     ASSERTD(capPt != nullptr);
+
+    // remember the matching CapPt as _selectedCapPt
     mgr->revSet(_selectedCapPt);
     _selectedCapPt = capPt;
     return _selectedCapPt;
@@ -413,22 +435,6 @@ ResourceCapPts::findPt(uint_t pt) const
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-bool
-ResourceCapPts::hasNonZeroCapPt() const
-{
-    for (auto capPt_ : _capPts)
-    {
-        auto capPt = utl::cast<CapPt>(capPt_);
-        if ((capPt->capacity() != 0) && (capPt->processingTime() != 0))
-        {
-            return true;
-        }
-    }
-    return false;
-}
-
-////////////////////////////////////////////////////////////////////////////////////////////////////
-
 void
 ResourceCapPts::init()
 {
@@ -455,7 +461,7 @@ ResourceCapPts::initialize(BrkActivity* act)
     // create ESboundTimetable objects for all cap/pt pairs
     // and init _capPtsArray
     bool forward = act->forward();
-    const IntExp& possiblePts = act->possiblePts();
+    auto& possiblePts = act->possiblePts();
     uint_t maxCap = 0;
     for (auto capPt_ : _capPts)
     {
@@ -487,7 +493,7 @@ ResourceCapPts::initialize(BrkActivity* act)
     }
 
     auto dres = utl::cast<DiscreteResource>(_res);
-    dres->maxReqCap() += maxCap;
+    dres->setMaxReqCap(dres->maxReqCap() + maxCap);
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////

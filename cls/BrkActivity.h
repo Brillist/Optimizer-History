@@ -21,24 +21,26 @@ class ESbound;
 /**
    Breakable activity.
 
-   A breakable activity is an activity whose execution can be
-   interrupted by \b breaks in resource availability
-   (see Resource::addBreak()).
-
-   The duration of a breakable activity is divided between processing time
-   (when the activity is actually being executed) and break time (when
-   the activity's execution is on hold due to a break in a required
-   resource's availability).
-
-   The following statements sum up the situation:
+   A breakable activity executes on its required resources when all of them are available and
+   have the required capacity (based on the selected processing time).  The total duration of a
+   breakable activity is divided between processing time (when the activity is actually being
+   executed) and break time (when the activity's execution is on hold due to a break in at least
+   one required resource's availability). Unlike an IntActivity, a BrkActivity's execution cannot
+   be interrupted by any period of insufficient capacity for any selected resource.
+      
+   An activity's start and end times relate this way:
 
    \code
    duration = processingTime + breakTime
    startTime + duration = endTime
-   startTime + processingTime + breakTime = endTime
    \endcode
 
-   \author Adam McKee
+   \see DiscreteResource
+   \see DiscreteResourceRequirement
+   \see ESbound
+   \see ResourceCalendar
+   \see ResourceCalendarMgr
+   \ingroup cls
 */
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -49,12 +51,9 @@ class BrkActivity : public PtActivity
     UTL_CLASS_DECL(BrkActivity, PtActivity);
 
 public:
-    typedef std::set<uint_t> uint_set_t;
-
-public:
     /**
        Constructor.
-       \param schedule owning schedule
+       \param schedule parent schedule
     */
     BrkActivity(Schedule* schedule)
         : PtActivity(schedule)
@@ -62,23 +61,20 @@ public:
         init();
     }
 
-    /** Add a requirement. */
+    virtual bool selectResource(uint_t resId);
+
+    virtual void selectPt(uint_t pt);
+
+    /** Add a resource requirement. */
     void add(DiscreteResourceRequirement* drr);
 
     /** Initialize requirements. */
     void initRequirements();
 
-    /**
-       Select a resource.
-       DEPRECATED: what if two requirements share the same resource?
-    */
-    bool selectResource(uint_t resId);
-
+    /// \name Accessors (const)
+    //@{
     /** Get the break-list. */
     virtual clp::IntExp* breakList() const;
-
-    /** Select the given processing-time. */
-    virtual void selectPt(uint_t pt);
 
     /** Forward scheduling? */
     bool forward() const;
@@ -90,29 +86,31 @@ public:
         return !forward();
     }
 
-    /** Get calendar. */
+    /** 
+       Get this activity's ResourceCalendar.
+       \see ResourceCalendarMgr::add
+    */
     const ResourceCalendar*
     calendar() const
     {
         return _calendar;
     }
 
-    /** Get calendar. */
-    const ResourceCalendar*&
-    calendar()
-    {
-        return _calendar;
-    }
-
-    /** Get the list of all resource-ids. */
-    /*     const uint_set_t& allResIds() const */
-    /*     { return _allResIds; } */
-
-    /** Get resource-requirement ownership flag. */
+    /** Get ownership flag for resource requirements. */
     bool
     resReqOwner() const
     {
         return _discreteReqs.isOwner();
+    }
+    //@}
+
+    /// \name Accessors (non-const)
+    //@{
+    /** Set resource calendar. */
+    void
+    setCalendar(ResourceCalendar* calendar)
+    {
+        _calendar = calendar;
     }
 
     /** Get resource-requirement ownership flag. */
@@ -121,6 +119,7 @@ public:
     {
         _discreteReqs.setOwner(owner);
     }
+    //@}
 
 private:
     void init();
@@ -134,7 +133,6 @@ private:
 
 private:
     const ResourceCalendar* _calendar;
-    /*     uint_set_t _allResIds; */
     clp::IntVar* _selectedResources;
     uint_t _numUnknownReqs;
     utl::Array _discreteReqs;

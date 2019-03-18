@@ -24,14 +24,14 @@ TimetableBound::TimetableBound(
 {
     _possible = true;
     _act = act;
-    _res = (DiscreteResource*)rcp->resource();
+    _res = utl::cast<DiscreteResource>(rcp->resource());
     _timetable = _res->timetable();
     _rcp = rcp;
     _capPt = capPt;
 
     uint_t cap = capacity();
 
-    // unary is an efficient special case: use timetable domain directly
+    // unary resource: use timetable domain directly (efficient special case)
     if (_res->isUnary() && (cap == 100))
     {
         _capExp = nullptr;
@@ -39,7 +39,7 @@ TimetableBound::TimetableBound(
         _ttv0 = 0;
         _ttv1 = 100;
     }
-    else // otherwise use a cap-exp
+    else // non-unary resource: use a capacity expression
     {
         _capExp = _timetable->addCapExp(cap);
         _tt = _capExp->domainRISC();
@@ -49,9 +49,9 @@ TimetableBound::TimetableBound(
 
     // resource book-keeping
     if (_res->minReqCap() == 0)
-        _res->minReqCap() = cap;
+        _res->setMinReqCap(cap);
     else
-        _res->minReqCap() = utl::min(_res->minReqCap(), cap);
+        _res->setMinReqCap(utl::min(_res->minReqCap(), cap));
     _res->addTimetableBound(this);
 }
 
@@ -66,24 +66,15 @@ TimetableBound::exclude()
         return;
     }
 
-    // exclude this processing-time
-    Manager* mgr = manager();
+    // set _possible = false to note this exclusion
+    auto mgr = manager();
     mgr->revToggle(_possible);
 
     // decrement number of possible cap/pt pairs
     _rcp->decNumPossible();
 
-    // Commented the if-condition, because
-    // in optimization run, resCapMutate and ResCapSelector are called
-    // before AltResSelector. the _rcp is NOT selected yet at that time.
-    // If we don't exclude that pt, it might be selected later.
-    // Joe Zhou. January 15, 2008
-    // if the resource is selected,
-    // then the processing-time is not possible for the activity
-    //     if (_rcp->selected())
-    //     {
+    // exclude this processing time for the activity
     _act->excludePt(_capPt->processingTime());
-    //     }
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////

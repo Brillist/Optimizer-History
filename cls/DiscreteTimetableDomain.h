@@ -12,9 +12,12 @@ CLS_NS_BEGIN;
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
-   DiscreteTimetable representation for discrete resources.
+   DiscreteTimetable domain.
 
-   \author Adam McKee
+   DiscreteTimetableDomain specializes RevIntSpanCol to record required and provided capacity
+   in each time slot.
+
+   \ingroup cls
 */
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -25,24 +28,40 @@ class DiscreteTimetableDomain : public utl::Object, public clp::RevIntSpanCol
     UTL_CLASS_NO_COPY;
 
 public:
-    /** Constructor. */
+    /**
+       Constructor.
+       \param mgr related Manager
+    */
     DiscreteTimetableDomain(clp::Manager* mgr)
     {
         init();
         initialize(mgr);
     }
 
-    /** Set the manager. */
+    /**
+       Initialize.
+       \param mgr related Manager
+    */
     void initialize(clp::Manager* mgr);
 
+    /**
+       Add required and/or provided capacity over a time span.
+       \param min start of affected span
+       \param max end of affected span
+       \param reqCap addition to required capacity (may be negative)
+       \param prvCap addition to provided capacity (may be negative)
+       \return minimum available capacity in the time span
+    */
+    uint_t add(int min, int max, int reqCap, int prvCap);
+
+    /// \name Capacity Expressions
+    //@{
     /** Add capacity-expression. */
     clp::IntExp* addCapExp(uint_t cap);
 
     /** Remove capacity-expression. */
     void remCapExp(uint_t cap);
-
-    /** Add required/provided capacity over a given interval. */
-    uint_t add(int min, int max, int reqCap, int prvCap);
+    //@}
 
     /// \name Events
     //@{

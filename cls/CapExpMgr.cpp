@@ -11,10 +11,6 @@ CLP_NS_USE;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-typedef std::vector<uint_t> uint_vector_t;
-
-////////////////////////////////////////////////////////////////////////////////////////////////////
-
 UTL_CLASS_IMPL(cls::CapExp);
 UTL_CLASS_IMPL(cls::CapExpMgr);
 
@@ -33,12 +29,12 @@ CapExp::compare(const Object& rhs) const
     {
         return Object::compare(rhs);
     }
-    const CapExp& capExp = (const CapExp&)rhs;
+    auto& capExp = utl::cast<CapExp>(rhs);
     int res = utl::compare(_resCaps.size(), capExp._resCaps.size());
     if (res != 0)
         return res;
     uint_t size = _resCaps.size();
-    for (uint_t i = 0; i < size; ++i)
+    for (uint_t i = 0; i != size; ++i)
     {
         res = utl::compare(_resCaps[i], capExp._resCaps[i]);
         if (res != 0)
@@ -53,15 +49,14 @@ void
 CapExp::initExp(const Schedule* schedule)
 {
     ASSERTD(_capExp == nullptr);
-    Manager* mgr = schedule->manager();
+    auto mgr = schedule->manager();
     _capExp = new IntVar(mgr);
-    Resource** resourcesArray = schedule->resourcesArray();
-    for (uint_t idx = 0; idx < _resCaps.size(); idx += 2)
+    auto resourcesArray = schedule->resourcesArray();
+    for (uint_t idx = 0; idx != _resCaps.size(); idx += 2)
     {
-        uint_t resId = _resCaps[idx];
+        uint_t resSid = _resCaps[idx];
         uint_t cap = _resCaps[idx + 1];
-        Resource* res = resourcesArray[resId];
-        ASSERTD(res->isA(CompositeResource));
+        auto res = resourcesArray[resSid];
         auto cres = utl::cast<CompositeResource>(res);
         auto& timetable = cres->timetable();
         auto resCapExp = timetable.addCapExp(cap);
@@ -75,22 +70,21 @@ IntExp*
 CapExp::get(const Schedule* schedule) const
 {
     ASSERTD(_capExp != nullptr);
-    Resource** resourcesArray = schedule->resourcesArray();
 
     // first use: set up propagation
     if (_useCount == 0)
     {
-        Manager* mgr = schedule->manager();
+        auto mgr = schedule->manager();
         mgr->revSet(_useCount);
-        for (uint_t idx = 0; idx < _resCaps.size(); idx += 2)
+        auto resourcesArray = schedule->resourcesArray();
+        for (uint_t idx = 0; idx != _resCaps.size(); idx += 2)
         {
-            uint_t resId = _resCaps[idx];
+            uint_t resSid = _resCaps[idx];
             uint_t cap = _resCaps[idx + 1];
-            Resource* res = resourcesArray[resId];
-            ASSERTD(res->isA(CompositeResource));
-            CompositeResource* cres = (CompositeResource*)res;
-            CompositeTimetable& timetable = cres->timetable();
-            IntExp* resCapExp = timetable.addCapExp(cap);
+            auto res = resourcesArray[resSid];
+            auto cres = utl::cast<CompositeResource>(res);
+            auto& timetable = cres->timetable();
+            auto resCapExp = timetable.addCapExp(cap);
             resCapExp->addIntersectExp(_capExp);
         }
     }
@@ -113,7 +107,7 @@ CapExp::deInit()
 void
 CapExpMgr::add(const uint_vector_t& resCaps)
 {
-    CapExp* capExp = new CapExp(resCaps);
+    auto capExp = new CapExp(resCaps);
 
     // already have it?
     if (_capExps.has(*capExp))
@@ -132,9 +126,8 @@ CapExpMgr::add(const uint_vector_t& resCaps)
 IntExp*
 CapExpMgr::find(const uint_vector_t& resCaps) const
 {
-    CapExp* capExp = (CapExp*)_capExps.find(CapExp(resCaps));
-    ASSERTD(capExp != nullptr);
-    IntExp* intExp = capExp->get(_schedule);
+    auto capExp = utl::cast<CapExp>(_capExps.find(CapExp(resCaps)));
+    auto intExp = capExp->get(_schedule);
     return intExp;
 }
 

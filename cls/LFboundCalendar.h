@@ -13,10 +13,13 @@ CLS_NS_BEGIN;
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
-   An activity cannot start or end execution during a break
-   in resource availability.
+   Latest time when a BrkActivity's required DiscreteResource%s are all available for work.
 
-   \author Adam McKee
+   LFboundCalendar is a mirror of the ESboundCalendar class for backward scheduling.
+
+   \see BrkActivity::calendar
+   \see LFbound
+   \ingroup cls
 */
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -26,7 +29,11 @@ class LFboundCalendar : public clp::Bound
     UTL_CLASS_DECL(LFboundCalendar, clp::Bound);
 
 public:
-    /** Constructor. */
+    /**
+       Constructor.
+       \param act related BrkActivity
+       \param ub initial upper bound
+    */
     LFboundCalendar(BrkActivity* act, int ub);
 
     /** Get activity. */

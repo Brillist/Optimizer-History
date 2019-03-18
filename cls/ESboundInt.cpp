@@ -15,7 +15,8 @@
 // #define DEBUG_UNIT
 #endif
 
-//////////////////////////////////////////////////////////////////////////////f
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
 UTL_NS_USE;
 LUT_NS_USE;
 CLP_NS_USE;
@@ -65,7 +66,7 @@ ESboundInt::initialize()
     _caps = new uint_t[_numResources];
     _resources = new CompositeResource*[_numResources];
     _prs = new const PreferredResources*[_numResources];
-    _cspans = new CompositeSpan*[_numResources];
+    _cspans = new const CompositeSpan*[_numResources];
 
     // fill in _caps[], _resources[], and init _visited[]
     _numVisited = 0;
@@ -123,19 +124,17 @@ ESboundInt::allocateCapacity()
         return;
     }
 
-    breakList->setDeferRemoves(true);
-
     // find forward (with allocation)
     int ef;
+    breakList->setDeferRemoves(true);
     findForward(_bound, ef, true);
+    breakList->setDeferRemoves(false);
 
     // allocation failed?!
     if (_bound == int_t_max)
     {
         throw FailEx(_name + ": allocation failed");
     }
-
-    breakList->setDeferRemoves(false);
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -190,7 +189,7 @@ ESboundInt::find()
         {
             // adjust es,ef so that es = (ef + 1) and es not in break
             _bound = ef + 1;
-            const IntSpan* span = domain->find(_bound);
+            auto span = domain->find(_bound);
             if (span->v0() == 0)
                 span = span->next();
             if (span->v0() == 0)
@@ -204,18 +203,6 @@ ESboundInt::find()
         }
         goto succeed;
     }
-
-    // undo previous allocation?
-    /*if (_act->allocated())
-    {
-#ifdef DEBUG
-        utl::cerr
-            << "moving a previously scheduled activity: "
-            << _act->id() <<
-            utl::endlf;
-#endif
-        deallocateCapacity();
-    }*/
 
     // given es, find ef
     findForward(_bound, ef);
@@ -249,11 +236,6 @@ ESboundInt::find()
 #endif
     }
 
-    // re-allocate?
-    /*if (_act->allocated())
-    {
-        allocateCapacity();
-    }*/
 succeed:
     _findPoint = _bound;
     _efBound->setFindPoint(ef);
@@ -293,28 +275,31 @@ ESboundInt::initMinMaxMultiple()
     {
         // initially, gcd = minimum of the minimum capacities
         uint_t gcd = uint_t_max;
-        for (idx = 0; idx < _numResources; ++idx)
+        for (idx = 0; idx != _numResources; ++idx)
         {
             gcd = utl::min(gcd, _caps[idx]);
         }
 
-        // gcd = largest value that is a common divisor for _caps[]
+        // gcd = largest value that is a common divisor for the minimum capacities
         for (; gcd > 1; --gcd)
         {
-            for (idx = 0; idx < _numResources; ++idx)
+            // for each resource
+            for (idx = 0; idx != _numResources; ++idx)
             {
+                // not evenly divisible by gcd -> break
                 if ((_caps[idx] % gcd) != 0)
                 {
                     break;
                 }
             }
+            // all minimum resource capacities divisible by gcd -> gcd has been found
             if (idx == _numResources)
                 break;
         }
 
-        // use gcd as _minMultiple, and normalize _caps[]
+        // _minMultiple = gcd, normalize _caps[] for _minMultiple
         _minMultiple = gcd;
-        for (idx = 0; idx < _numResources; ++idx)
+        for (idx = 0; idx != _numResources; ++idx)
         {
             _caps[idx] /= gcd;
         }
@@ -342,7 +327,7 @@ ESboundInt::initMinMaxMultiple()
     uint_t multiple;
     for (multiple = _minMultiple + 1;; ++multiple)
     {
-        for (idx = 0; idx < _numResources; ++idx)
+        for (idx = 0; idx != _numResources; ++idx)
         {
             if ((_caps[idx] * multiple) > maxCaps[idx])
             {
@@ -370,18 +355,17 @@ ESboundInt::findForward(int& es, int& ef, bool allocate)
 {
     bool firstExecution = true;
     double remainingWork = _act->processingTime();
-    Resource** resourcesArray = _act->schedule()->resourcesArray();
-
+    auto resourcesArray = _act->schedule()->resourcesArray();
     int t;
 
     // reference break-list
-    const IntExp* breakList = _act->breakList();
+    auto breakList = _act->breakList();
     ASSERTD(breakList != nullptr);
     ASSERTD(breakList->size() > 0);
-    const IntExpDomainRISC* domain = breakList->domainRISC();
+    auto domain = breakList->domainRISC();
 
     // find breakList span
-    const IntSpan* span = domain->find(es);
+    auto span = domain->find(es);
     if (span->v0() == 0)
         span = span->next();
     if (span->v0() == 0)
@@ -390,13 +374,11 @@ ESboundInt::findForward(int& es, int& ef, bool allocate)
 
     // initialize _cspans[]
     uint_t i, j;
-    for (i = 0; i < _numResources; ++i)
+    for (i = 0; i != _numResources; ++i)
     {
-        Resource* res = _resources[i];
-        ASSERTD(res->isA(CompositeResource));
-        CompositeResource* cres = (CompositeResource*)res;
-        const CompositeTimetableDomain* ttd = cres->timetable().domain();
-        _cspans[i] = (CompositeSpan*)ttd->find(es);
+        auto cres = _resources[i];
+        auto ttd = cres->timetable().domain();
+        _cspans[i] = utl::cast<CompositeSpan>(ttd->find(es));
     }
 
 #ifdef DEBUG_UNIT
@@ -417,14 +399,13 @@ ESboundInt::findForward(int& es, int& ef, bool allocate)
         }
 #endif
 
-        // find end of overlap: current time window is defined by
-        //     [t,overlapMax]
+        // find end of overlap: current time window is [t,overlapMax]
         // also, determine capacity multiplier
         int overlapMax = span->max();
         uint_t multiple = _maxMultiple;
-        for (i = 0; i < _numResources; ++i)
+        for (i = 0; i != _numResources; ++i)
         {
-            CompositeSpan* cspan = _cspans[i];
+            auto cspan = _cspans[i];
 
 #ifdef DEBUG_UNIT
             if (_act->id() == 472)
@@ -443,9 +424,8 @@ ESboundInt::findForward(int& es, int& ef, bool allocate)
             for (it = cspan->resIds()->begin(); !it->atEnd(); it->next())
             {
                 int resId = it->get();
-                Resource* res = resourcesArray[resId];
-                ASSERTD(res->isA(DiscreteResource));
-                DiscreteResource* dres = (DiscreteResource*)res;
+                auto res = resourcesArray[resId];
+                auto dres = utl::cast<DiscreteResource>(res);
 
                 // already visited?
                 if (dres->visited())
@@ -453,7 +433,7 @@ ESboundInt::findForward(int& es, int& ef, bool allocate)
                     continue;
                 }
 
-                dres->visited() = true;
+                dres->setVisited(true);
                 _visited[_numVisited++] = dres;
 
                 // reached the maximum?
@@ -467,10 +447,10 @@ ESboundInt::findForward(int& es, int& ef, bool allocate)
             multiple = utl::min(multiple, remCap / _caps[i]);
         }
 
-        // clear _visited[]
-        for (j = 0; j < _numVisited; ++j)
+        // reset visited flag for each visited resource
+        for (j = 0; j != _numVisited; ++j)
         {
-            _visited[j]->visited() = false;
+            _visited[j]->setVisited(false);
         }
         _numVisited = 0;
 
@@ -527,7 +507,7 @@ ESboundInt::findForward(int& es, int& ef, bool allocate)
             // allocate (if requested)
             if (allocate && (work > 0.0))
             {
-                for (i = 0; i < _numResources; ++i)
+                for (i = 0; i != _numResources; ++i)
                 {
                     // move cspans[i] out of the way
                     _cspans[i] = (CompositeSpan*)_cspans[i]->prev()->prev();
@@ -562,9 +542,9 @@ ESboundInt::findForward(int& es, int& ef, bool allocate)
         }
 
         // bump _cspans[]
-        for (i = 0; i < _numResources; ++i)
+        for (i = 0; i != _numResources; ++i)
         {
-            CompositeSpan* cspan = _cspans[i];
+            auto cspan = _cspans[i];
             while (t > cspan->max())
             {
                 cspan = (CompositeSpan*)cspan->next();
@@ -586,18 +566,17 @@ ESboundInt::findBackward(int& es, int& ef, bool allocate)
 {
     bool firstExecution = true;
     double remainingWork = _act->processingTime();
-    Resource** resourcesArray = _act->schedule()->resourcesArray();
-
+    auto resourcesArray = _act->schedule()->resourcesArray();
     int t;
 
     // reference break-list
-    const IntExp* breakList = _act->breakList();
+    auto breakList = _act->breakList();
     ASSERTD(breakList != nullptr);
     ASSERTD(breakList->size() > 0);
-    const IntExpDomainRISC* domain = breakList->domainRISC();
+    auto domain = breakList->domainRISC();
 
     // find breakList span
-    const IntSpan* span = domain->find(ef);
+    auto span = domain->find(ef);
     if (span->v0() == 0)
         span = span->next();
     if (span->v0() == 0)
@@ -606,13 +585,11 @@ ESboundInt::findBackward(int& es, int& ef, bool allocate)
 
     // initialize _cspans[]
     uint_t i, j;
-    for (i = 0; i < _numResources; ++i)
+    for (i = 0; i != _numResources; ++i)
     {
-        Resource* res = _resources[i];
-        ASSERTD(res->isA(CompositeResource));
-        CompositeResource* cres = (CompositeResource*)res;
-        const CompositeTimetableDomain* ttd = cres->timetable().domain();
-        _cspans[i] = (CompositeSpan*)ttd->find(ef);
+        auto cres = _resources[i];
+        auto ttd = cres->timetable().domain();
+        _cspans[i] = utl::cast<CompositeSpan>(ttd->find(ef));
     }
 
 #ifdef DEBUG_UNIT
@@ -633,14 +610,13 @@ ESboundInt::findBackward(int& es, int& ef, bool allocate)
         }
 #endif
 
-        // find end of overlap: current time window is defined by
-        //     [overlapMin,t]
+        // find end of overlap: current time window is [overlapMin,t]
         // also, determine capacity multiplier
         int overlapMin = span->min();
         uint_t multiple = _maxMultiple;
-        for (i = 0; i < _numResources; ++i)
+        for (i = 0; i != _numResources; ++i)
         {
-            CompositeSpan* cspan = _cspans[i];
+            auto cspan = _cspans[i];
 
 #ifdef DEBUG_UNIT
             if (_act->id() == 472)
@@ -659,9 +635,8 @@ ESboundInt::findBackward(int& es, int& ef, bool allocate)
             for (it = cspan->resIds()->begin(); !it->atEnd(); it->next())
             {
                 int resId = it->get();
-                Resource* res = resourcesArray[resId];
-                ASSERTD(res->isA(DiscreteResource));
-                DiscreteResource* dres = (DiscreteResource*)res;
+                auto res = resourcesArray[resId];
+                auto dres = utl::cast<DiscreteResource>(res);
 
                 // already visited?
                 if (dres->visited())
@@ -669,7 +644,7 @@ ESboundInt::findBackward(int& es, int& ef, bool allocate)
                     continue;
                 }
 
-                dres->visited() = true;
+                dres->setVisited(true);
                 _visited[_numVisited++] = dres;
 
                 // reached the maximum?
@@ -684,9 +659,9 @@ ESboundInt::findBackward(int& es, int& ef, bool allocate)
         }
 
         // clear _visited[]
-        for (j = 0; j < _numVisited; ++j)
+        for (j = 0; j != _numVisited; ++j)
         {
-            _visited[j]->visited() = false;
+            _visited[j]->setVisited(false);
         }
         _numVisited = 0;
 
@@ -741,10 +716,10 @@ ESboundInt::findBackward(int& es, int& ef, bool allocate)
             // allocate (if requested)
             if (allocate && (work > 0.0))
             {
-                for (i = 0; i < _numResources; ++i)
+                for (i = 0; i != _numResources; ++i)
                 {
                     // move cspans[i] out of the way
-                    _cspans[i] = (CompositeSpan*)_cspans[i]->next()->next();
+                    _cspans[i] = utl::cast<CompositeSpan>(_cspans[i]->next()->next());
                     _resources[i]->allocate(overlapMin, t, multiple * _caps[i], _act, _prs[i]);
                 }
             }
@@ -776,12 +751,12 @@ ESboundInt::findBackward(int& es, int& ef, bool allocate)
         }
 
         // bump _cspans[]
-        for (i = 0; i < _numResources; ++i)
+        for (i = 0; i != _numResources; ++i)
         {
-            CompositeSpan* cspan = _cspans[i];
+            auto cspan = _cspans[i];
             while (t < cspan->min())
             {
-                cspan = (CompositeSpan*)cspan->prev();
+                cspan = utl::cast<CompositeSpan>(cspan->prev());
             }
             _cspans[i] = cspan;
         }

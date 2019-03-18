@@ -24,7 +24,7 @@ ResourceCalendarMgr::find(uint_t id) const
     uint_set_t calIds;
     calIds.insert(id);
     ResourceCalendarSpec spec(rc_simple, calIds);
-    rescal_map_t::const_iterator it = _specCalendars.find(spec);
+    auto it = _specCalendars.find(spec);
     if (it == _specCalendars.end())
         return nullptr;
     return (*it).second;
@@ -39,7 +39,7 @@ ResourceCalendarMgr::add(ResourceCalendar* cal)
 
     // compile the calendar and find a match
     cal->compile(_horizonTS);
-    rescal_set_t::iterator it = _calendars.find(cal);
+    auto it = _calendars.find(cal);
 
     // not found => add it
     if (it == _calendars.end())
@@ -74,9 +74,9 @@ ResourceCalendar*
 ResourceCalendarMgr::add(const ResourceCalendarSpec& spec)
 {
     ASSERTD(_horizonTS != uint_t_max);
-    rescal_map_t::iterator it = _specCalendars.find(spec);
+    auto it = _specCalendars.find(spec);
 
-    // not found => add it
+    // not found -> add it
     ResourceCalendar* cal;
     if (it == _specCalendars.end())
     {
@@ -115,19 +115,17 @@ ResourceCalendarMgr::build(const ResourceCalendarSpec& spec)
 {
     // only support all-available currently
     ASSERTD(spec.type() == rc_allAvailable);
-    const uint_set_t& calIds = spec.calIds();
+    auto& calIds = spec.calIds();
 
     // make new calendar
-    ResourceCalendar* cal = new ResourceCalendar();
+    auto cal = new ResourceCalendar();
     cal->spec() = spec;
 
     // add break spans from all calendars
     // (on break when _any_ resource is on break)
-    uint_set_t::const_iterator it;
-    for (it = calIds.begin(); it != calIds.end(); ++it)
+    for (auto calId : calIds)
     {
-        uint_t calId = *it;
-        const ResourceCalendar* idCal = find(calId);
+        auto idCal = find(calId);
         ASSERTD(idCal != nullptr);
         idCal->addCompiledSpansTo(cal, rcss_onBreak);
     }

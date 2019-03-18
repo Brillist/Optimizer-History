@@ -48,7 +48,7 @@ CompositeTimetable::find(int val) const
 CompositeSpan*
 CompositeTimetable::find(int val)
 {
-    CompositeSpan* ts = (CompositeSpan*)_domain.find(val);
+    auto ts = utl::cast<CompositeSpan>(_domain.find(val));
     ASSERTD(ts->span().contains(val));
     return ts;
 }

@@ -14,7 +14,8 @@ CLS_NS_BEGIN;
 /**
    Activity with processing-time.
 
-   \author Adam McKee
+   \see Activity
+   \ingroup cls
 */
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -34,26 +35,20 @@ public:
         init();
     }
 
+    /// \name Processing-time selection/exclusion
+    //@{
     /** Select a processing-time. */
-    virtual void
-    selectPt(uint_t pt)
-    {
-        ABORT();
-    }
+    virtual void selectPt(uint_t pt) = 0;
 
     /** Exclude a processing-time. */
     void excludePt(uint_t pt);
+    //@}
 
-    /** Get frozen-pt. */
+    /// \name Accessors (const)
+    //@{
+    /** Get frozen processing-time. */
     uint_t
     frozenPt() const
-    {
-        return _frozenPt;
-    }
-
-    /** Get frozen-pt. */
-    uint_t&
-    frozenPt()
     {
         return _frozenPt;
     }
@@ -64,6 +59,17 @@ public:
     {
         return *_possiblePts;
     }
+    //@}
+
+    /// \name Accessors (non-const)
+    //@{
+    /** Set frozen processing-time. */
+    void
+    setFrozenPt(uint_t frozenPt)
+    {
+        _frozenPt = frozenPt;
+    }
+    //@}
 
 protected:
     uint_t _frozenPt;

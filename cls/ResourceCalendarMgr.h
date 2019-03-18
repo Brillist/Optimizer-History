@@ -15,9 +15,17 @@ class Schedule;
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
-   Resource calendar manager.
+   ResourceCalendar manager.
 
-   \author Adam McKee
+   ResourceCalendarMgr provides central management of ResourceCalendar%s.
+
+   There are two types of ResourceCalendar:
+
+   - **simple**: applying only to a single resource
+   - **composite**: intersecting calendars for multiple resources
+     (recording a break in availability when *any* of the resources is on break)
+
+   \ingroup cls
 */
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -35,10 +43,17 @@ public:
     }
 
     /** Get horizon time-slot. */
-    uint_t&
-    horizonTS()
+    uint_t
+    horizonTS() const
     {
         return _horizonTS;
+    }
+
+    /** Set horizon time-slot. */
+    void
+    setHorizonTS(uint_t horizonTS)
+    {
+        _horizonTS = horizonTS;
     }
 
     /** Find a calendar by unique id. */
@@ -47,7 +62,7 @@ public:
     /** Add the given simple calendar. */
     ResourceCalendar* add(ResourceCalendar* cal);
 
-    /** Add the given composite calendar. */
+    /** Add (or find) a composite calendar for the given specification. */
     ResourceCalendar* add(const ResourceCalendarSpec& spec);
 
 private:
@@ -56,8 +71,8 @@ private:
     ResourceCalendar* build(const ResourceCalendarSpec& spec);
 
 private:
-    typedef std::set<ResourceCalendar*, ResourceCalendarOrdering> rescal_set_t;
-    typedef std::map<ResourceCalendarSpec, ResourceCalendar*> rescal_map_t;
+    using rescal_set_t = std::set<ResourceCalendar*, ResourceCalendarOrdering>;
+    using rescal_map_t = std::map<ResourceCalendarSpec, ResourceCalendar*>;
 
 private:
     Schedule* _schedule;

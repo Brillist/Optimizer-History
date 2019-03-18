@@ -19,17 +19,9 @@ class Schedule;
 /**
    Resource (abstract).
 
-   Resource is an abstract base for all resource classes.  When all
-   resource constraints involving a resource are known, the resource should
-   be closed (with close()) to enable constraint propagation.
-
-   <b>Attributes:</b>
-
-   \arg breaks : During break times (see addBreak()), the resource is
-        unavailable for execution of activities.  The execution of breakable
-        activities (BrkActivity) can be interrupted by resource breaks.
-
-   \author Adam McKee
+   \see CompositeResource
+   \see DiscreteResource
+   \ingroup cls
 */
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -40,26 +32,24 @@ class Resource : public utl::Object
     UTL_CLASS_NO_COPY;
 
 public:
-    /** Constructor. */
+    /**
+       Constructor.
+       \param schedule related Schedule
+    */
     Resource(Schedule* schedule)
     {
         init();
         _schedule = schedule;
     }
 
+    /// \name Accessors (const)
+    //@{
     /** Get the manager. */
     clp::Manager* manager() const;
 
     /** Get the schedule. */
     Schedule*
     schedule() const
-    {
-        return _schedule;
-    }
-
-    /** Get the schedule. */
-    Schedule*&
-    schedule()
     {
         return _schedule;
     }
@@ -71,23 +61,9 @@ public:
         return _id;
     }
 
-    /** Get the id. */
-    uint_t&
-    id()
-    {
-        return _id;
-    }
-
     /** Get the serial-id. */
     uint_t
     serialId() const
-    {
-        return _serialId;
-    }
-
-    /** Get the serial-id. */
-    uint_t&
-    serialId()
     {
         return _serialId;
     }
@@ -99,23 +75,9 @@ public:
         return _name;
     }
 
-    /** Get the name. */
-    std::string&
-    name()
-    {
-        return _name;
-    }
-
     /** Get the associated object. */
     void*
     object() const
-    {
-        return _object;
-    }
-
-    /** Get the associated object. */
-    void*&
-    object()
     {
         return _object;
     }
@@ -126,13 +88,52 @@ public:
     {
         return _visited;
     }
+    //@}
+
+    /// \name Accessors (non-const)
+    //@{
+    /** Set the schedule. */
+    void
+    setSchedule(Schedule* schedule)
+    {
+        _schedule = schedule;
+    }
+
+    /** Set the id. */
+    void
+    setId(uint_t id)
+    {
+        _id = id;
+    }
+
+    /** Set the serial-id. */
+    void
+    setSerialId(uint_t serialId)
+    {
+        _serialId = serialId;
+    }
+
+    /** Set the name. */
+    void
+    setName(const std::string& name)
+    {
+        _name = name;
+    }
+
+    /** Get the associated object. */
+    void
+    setObject(void* object)
+    {
+        _object = object;
+    }
 
     /** Get visited flag. */
-    bool&
-    visited()
+    void
+    setVisited(bool visited)
     {
-        return _visited;
+        _visited = visited;
     }
+    //@}
 
 private:
     void init();
@@ -140,7 +141,7 @@ private:
 
 private:
     uint_t _id;
-    uint_t _serialId; // position of the resource in cls::Schedule::_resourcesArray
+    uint_t _serialId; // position within cls::Schedule::_resourcesArray[]
     Schedule* _schedule;
     std::string _name;
     void* _object;
@@ -150,9 +151,9 @@ private:
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
-   Order resources by id.
+   Order Resource%s by id.
 
-   \author Adam McKee
+   \ingroup cls
 */
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////

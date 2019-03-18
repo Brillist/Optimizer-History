@@ -7,9 +7,10 @@ CLS_NS_BEGIN;
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
-   List of preferred resources.
+   Preferred resources in a CompositeResourceRequirement.
 
-   \author Adam McKee
+   \see CompositeResourceRequirement
+   \ingroup cls
 */
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -20,10 +21,6 @@ class PreferredResources : public utl::Object
     UTL_CLASS_DEFID;
 
 public:
-    typedef std::vector<uint_t> uint_vector_t;
-
-public:
-    /** Copy another instance. */
     virtual void copy(const utl::Object& rhs);
 
     virtual void serialize(utl::Stream& stream, uint_t io, uint_t mode = utl::ser_default);

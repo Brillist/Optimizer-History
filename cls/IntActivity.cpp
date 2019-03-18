@@ -24,6 +24,15 @@ CLS_NS_BEGIN;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
+bool
+IntActivity::selectResource(uint_t resId)
+{
+    // no action required here until IntActivity can have a DiscreteResourceRequirement
+    return false;
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
 void
 IntActivity::add(CompositeResourceRequirement* crr)
 {
@@ -43,15 +52,14 @@ IntActivity::initRequirements()
     else if (_compositeReqs.size() == 1)
     {
         auto crr = utl::cast<CompositeResourceRequirement>(_compositeReqs.first());
-        CompositeResource* cres = crr->resource();
+        auto cres = crr->resource();
         ASSERTD(cres != nullptr);
         _breakList = cres->timetable().addCapExp(crr->minCapacity());
     }
     else
     {
-        CapExpMgr* capExpMgr = schedule()->capExpMgr();
+        auto capExpMgr = schedule()->capExpMgr();
         uint_vector_t resCaps;
-        uint_set_t::iterator it;
         for (auto crr_ : _compositeReqs)
         {
             auto crr = utl::cast<CompositeResourceRequirement>(crr_);
@@ -71,7 +79,7 @@ IntActivity::initRequirements()
         auto cres = crr->resource();
         for (auto dres : *cres)
         {
-            dres->maxReqCap() += 100;
+            dres->setMaxReqCap(dres->maxReqCap() + 100);
             allResIds().insert(dres->id());
         }
     }
@@ -79,33 +87,12 @@ IntActivity::initRequirements()
     // initialize ES-bound (or LF-bound)
     if (forward())
     {
-        ((ESboundInt&)esBound()).initialize();
+        utl::cast<ESboundInt>(esBound()).initialize();
     }
     else
     {
         ABORT();
     }
-}
-
-////////////////////////////////////////////////////////////////////////////////////////////////////
-
-IntExp*
-IntActivity::breakList() const
-{
-    return _breakList;
-}
-
-////////////////////////////////////////////////////////////////////////////////////////////////////
-
-bool
-IntActivity::selectResource(uint_t resId)
-{
-    // since current IntActivity allows only CompositeResReq
-    // and the selection of unary resource in a composite resource
-    // is decided by a heuristic, nothing is needed to be done here
-    // for now until DiscreteResReq is allowed for IntActivity.
-    // Joe, Sept 14, 2005
-    return false;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -116,15 +103,15 @@ IntActivity::addAllocation(uint_t resId, uint_t min, uint_t max)
     // grow array if necessary
     if (resId >= _allocationsSize)
     {
-        revarray_t* nullPtr = nullptr;
+        revarray_uint_t* nullPtr = nullptr;
         utl::arrayGrow(_allocations, _allocationsSize, resId + 1, 16, &nullPtr);
     }
 
     // reference RevArray for resId
-    revarray_t* allocs;
+    revarray_uint_t* allocs;
     if (_allocations[resId] == nullptr)
     {
-        _allocations[resId] = new revarray_t(manager());
+        _allocations[resId] = new revarray_uint_t(manager());
     }
     allocs = _allocations[resId];
 
@@ -146,15 +133,14 @@ IntActivity::addAllocation(uint_t resId, uint_t min, uint_t max)
 void
 IntActivity::deallocate()
 {
-    Resource** resourcesArray = schedule()->resourcesArray();
-    for (uint_t i = 0; i < _allocationsSize; ++i)
+    auto resourcesArray = schedule()->resourcesArray();
+    for (uint_t i = 0; i != _allocationsSize; ++i)
     {
-        revarray_t* allocs = _allocations[i];
+        auto allocs = _allocations[i];
         if (allocs == nullptr)
             continue;
-        Resource* res = resourcesArray[i];
-        ASSERTD(res->isA(DiscreteResource));
-        DiscreteResource* dres = (DiscreteResource*)res;
+        auto res = resourcesArray[i];
+        auto dres = utl::cast<DiscreteResource>(res);
 
         // deallocate
         uint_t lim = allocs->size();
@@ -185,6 +171,14 @@ IntActivity::forward() const
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
+IntExp*
+IntActivity::breakList() const
+{
+    return _breakList;
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
 void
 IntActivity::init()
 {
@@ -192,7 +186,7 @@ IntActivity::init()
     _breakList = nullptr;
     _allocationsSize = 0;
     _allocations = nullptr;
-    revarray_t* nullPtr = nullptr;
+    revarray_uint_t* nullPtr = nullptr;
     utl::arrayGrow(_allocations, _allocationsSize, 256, 256, &nullPtr);
 }
 

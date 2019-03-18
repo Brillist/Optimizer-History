@@ -48,10 +48,10 @@ DiscreteTimetable::energy(const Span<int>& span, uint_t& required, uint_t& provi
 
     uint_t totRequired = 0;
     uint_t totProvided = 0;
-    const IntSpan* ts = _domain.find(span.begin());
+    auto ts = _domain.find(span.begin());
     while (ts != tail())
     {
-        Span<int> tsSpan = ts->span();
+        auto tsSpan = ts->span();
         uint_t overlapSize = tsSpan.overlapSize(span);
         if (overlapSize == 0)
         {
@@ -83,7 +83,7 @@ DiscreteTimetable::setManager(Manager* mgr)
 uint_t
 DiscreteTimetable::max(int t) const
 {
-    const IntSpan* ts = _domain.find(t);
+    auto ts = _domain.find(t);
     ASSERTD(ts->min() <= t);
     if (ts->min() > t)
     {
@@ -97,7 +97,7 @@ DiscreteTimetable::max(int t) const
 const IntSpan*
 DiscreteTimetable::find(int val) const
 {
-    const IntSpan* ts = _domain.find(val);
+    auto ts = _domain.find(val);
     ASSERTD(ts->span().contains(val));
     return ts;
 }
@@ -107,7 +107,7 @@ DiscreteTimetable::find(int val) const
 IntSpan*
 DiscreteTimetable::find(int val)
 {
-    IntSpan* ts = _domain.find(val);
+    auto ts = _domain.find(val);
     ASSERTD(ts->span().contains(val));
     return ts;
 }
@@ -115,21 +115,9 @@ DiscreteTimetable::find(int val)
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 uint_t
-DiscreteTimetable::add(int min, int max, int minReq, int maxPrv)
+DiscreteTimetable::add(int min, int max, int reqCap, int prvCap)
 {
-    uint_t minCap = _domain.add(min, max, minReq, maxPrv);
-    if (_domain.anyEvent())
-        raiseEvents();
-    return minCap;
-}
-
-////////////////////////////////////////////////////////////////////////////////////////////////////
-
-uint_t
-DiscreteTimetable::subtract(int min, int max, int minReq, int maxPrv)
-{
-    uint_t minCap = _domain.add(min, max, minReq, maxPrv);
-    _domain.add(min, max, -minReq, -maxPrv);
+    uint_t minCap = _domain.add(min, max, reqCap, prvCap);
     if (_domain.anyEvent())
         raiseEvents();
     return minCap;
@@ -173,10 +161,8 @@ DiscreteTimetable::raiseEvents()
     // something changed...
     ASSERTD(_domain.rangeEvent());
     _domain.clearEvents();
-    cb_set_t::iterator it, endIt = _rangeBounds.end();
-    for (it = _rangeBounds.begin(); it != endIt; ++it)
+    for (auto cb : _rangeBounds)
     {
-        ConstrainedBound* cb = *it;
         cb->invalidate();
     }
 }

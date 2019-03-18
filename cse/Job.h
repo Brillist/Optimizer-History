@@ -165,14 +165,14 @@ public:
     }
 
     /** Get a set of workorder ids. */
-    lut::uint_set_t
+    uint_set_t
     workOrderIds() const
     {
         return _workOrderIds;
     }
 
     /** Get a set of workorder ids. */
-    lut::uint_set_t&
+    uint_set_t&
     workOrderIds()
     {
         return _workOrderIds;
@@ -562,7 +562,7 @@ protected:
     bool _active;       //indicate the selected job from alt jobs
     std::string _name;
     uint_t _groupId;
-    lut::uint_set_t _workOrderIds; //ids of mrp::workorders
+    uint_set_t _workOrderIds; //ids of mrp::workorders
     jobop_set_id_t _ops;
     jobop_set_id_t _allSops;   // a static list of schedulable ops
     SummaryOp* _rootSummaryOp; //at least MRP uses it.

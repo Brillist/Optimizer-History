@@ -15,7 +15,7 @@ CSE_NS_BEGIN;
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
-   Change the capacity selection for an resource.
+   Change the capacity selection for a resource.
 
    \see ResCapSelector
 */
@@ -41,7 +41,6 @@ public:
     virtual bool execute(gop::Ind* ind = nullptr,
                          gop::IndBuilderContext* context = nullptr,
                          bool singleStep = false);
-    //       const gop::Population* pop = nullptr);
 
     virtual void accept();
 
@@ -49,7 +48,6 @@ public:
 
 private:
     typedef std::vector<cse::Resource*> res_vector_t;
-    typedef std::vector<uint_t> uint_vector_t;
 
 private:
     void init();

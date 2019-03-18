@@ -44,7 +44,6 @@ public:
     virtual void setAltJobGroups(const ClevorDataSet* dataSet);
 
 private:
-    typedef std::vector<uint_t> uint_vector_t;
     typedef std::vector<uint_vector_t*> uint_vector_vector_t;
 
 private:

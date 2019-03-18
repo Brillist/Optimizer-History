@@ -357,17 +357,17 @@ SchedulingContext::store()
         }
 
         // record resource requirements for interruptible activity
-        cls::Resource** resourcesArray = _schedule->resourcesArray();
+        auto resourcesArray = _schedule->resourcesArray();
         if (intact != nullptr)
         {
-            IntActivity::revarray_t** allocations;
+            IntActivity::revarray_uint_t** allocations;
             uint_t numAllocations;
             intact->getAllocations(allocations, numAllocations);
             for (uint_t j = 0; j < numAllocations; ++j)
             {
                 if (allocations[j] == nullptr)
                     continue;
-                IntActivity::revarray_t& allocs = *allocations[j];
+                IntActivity::revarray_uint_t& allocs = *allocations[j];
                 uint_t resId = resourcesArray[j]->id();
                 uint_t numSpans = allocs.size() / 2;
                 uint_t idx = 0;

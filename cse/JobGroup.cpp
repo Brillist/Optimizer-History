@@ -49,7 +49,7 @@ JobGroup::serialize(Stream& stream, uint_t io, uint_t)
 {
     utl::serialize(_id, stream, io);
     lut::serialize(_name, stream, io);
-    uint_vect_t jobIds;
+    uint_vector_t jobIds;
     uint_t activeJobId;
     if (io == io_rd)
     {
@@ -61,7 +61,7 @@ JobGroup::serialize(Stream& stream, uint_t io, uint_t)
         //         ASSERTD(jobIds.size() > 1);
         //         ASSERTD(activeJobId != uint_t_max);
         _jobsOwner = true;
-        uint_vect_t::iterator it;
+        uint_vector_t::iterator it;
         for (it = jobIds.begin(); it != jobIds.end(); it++)
         {
             Job* job = new Job();

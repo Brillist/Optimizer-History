@@ -47,9 +47,6 @@ public:
     virtual JobOp* selectActiveSwapOp(const jobop_vector_t* opVect);
 
 private:
-    typedef std::vector<uint_t> uint_vector_t;
-    typedef std::set<uint_t> uint_set_t;
-    /*    typedef std::vector<JobOp*> jobop_vector_t; */
     typedef std::vector<jobop_vector_t*> jobop_vector_vector_t;
     typedef std::vector<uint_set_t*> uint_vector_set_t;
     typedef std::map<JobOp*, jobop_vector_t*, JobOpIdOrdering> jobop_jobopvector_map_t;

@@ -34,9 +34,6 @@ public:
     virtual void run(gop::Ind* ind, gop::IndBuilderContext* context) const;
 
 private:
-    typedef std::vector<uint_t> uint_vector_t;
-
-private:
     void setSelectedResources(JobOp* op, const uint_vector_t& altResIdx) const;
 };
 

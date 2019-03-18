@@ -68,7 +68,6 @@ public:
     }
 
 private:
-    typedef std::vector<uint_t> uint_vector_t;
     typedef std::map<Job*, jobop_vector_t*, JobIdOrdering> job_jobopvector_map_t;
 
 private:

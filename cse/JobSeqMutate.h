@@ -46,7 +46,6 @@ public:
     virtual Job* selectActiveSwapJob(const job_vector_t& swapJobs);
 
 private:
-    typedef std::vector<uint_t> uint_vector_t;
     typedef std::vector<uint_vector_t*> uint_vector_vector_t;
     typedef std::vector<job_vector_t*> job_vector_vector_t;
     typedef std::set<Job*> job_set_t;

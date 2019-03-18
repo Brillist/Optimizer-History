@@ -497,7 +497,7 @@ public:
     void removeResCapPtsAdj(uint_t resId);
 
     /** Get resource-ids for all (possibly) required resources. */
-    void getAllResIds(std::set<uint_t>& resIds) const;
+    void getAllResIds(uint_set_t& resIds) const;
     //@}
 
     /// \name Item requirement
@@ -657,10 +657,6 @@ public:
     }
 
     String toString() const;
-
-private:
-    /*     typedef std::vector<UnaryCt*> unaryct_vector_t; */
-    typedef std::set<uint_t> uint_set_t;
 
 private:
     void init();

@@ -12,9 +12,9 @@ CSE_NS_BEGIN;
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
-   Unary constraint.
+   Propagator.
 
-   \author Adam McKee
+   \ingroup cse
 */
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -30,8 +30,6 @@ public:
         _context = context;
     }
 
-    // unsuspend() and finalize() are for overriding
-    // the corresponding methods in clp::BoundPropagator
     virtual void unsuspend(clp::ConstrainedBound* cb);
 
     virtual void finalize(clp::ConstrainedBound* cb);

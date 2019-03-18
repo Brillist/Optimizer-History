@@ -49,8 +49,8 @@ ResourceGroupRequirement::hasNonZeroCapPt(const JobOp* op, const ResourceGroup* 
     if ((_capacity != 0) && (_capacity != uint_t_max))
         return true;
 
-    const std::set<uint_t>& resIds = resGroup->resIds();
-    std::set<uint_t>::const_iterator it;
+    const uint_set_t& resIds = resGroup->resIds();
+    uint_set_t::const_iterator it;
     for (it = resIds.begin(); it != resIds.end(); ++it)
     {
         uint_t resId = *it;

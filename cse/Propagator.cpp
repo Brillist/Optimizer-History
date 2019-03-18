@@ -63,21 +63,21 @@ Propagator::finalize(ConstrainedBound* cb)
     // not schedulable => just let superclass do its finalize()
     if (!cb->isA(SchedulableBound))
     {
-        BoundPropagator::finalize(cb);
+        super::finalize(cb);
         return;
     }
 
     // reference sb/job/op/act
-    SchedulableBound* sb = (SchedulableBound*)cb;
-    Activity* act = (Activity*)sb->owner();
-    JobOp* op = (JobOp*)act->owner();
-    Job* job = op->job();
+    auto sb = utl::cast<SchedulableBound>(cb);
+    auto act = utl::cast<Activity>(sb->owner());
+    auto op = utl::cast<JobOp>(act->owner());
+    auto job = op->job();
 
     // let superclass do its finalize()
-    BoundPropagator::finalize(cb);
+    super::finalize(cb);
 
     // propagate to calculate bound
-    _mgr->propagate();
+    super::propagate();
 
     // SchedulableBound but non-schedulable op => do nothing else
     if (!op->schedulable())

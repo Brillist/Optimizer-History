@@ -52,7 +52,7 @@ private:
 private:
     uint_t _numRlsTimeChoices;
     cls::act_vect_t _acts; // root op's act only
-    lut::uint_vect_t _minRlsTimes;
+    uint_vector_t _minRlsTimes;
     uint_t _changeStep;
 
     gop::StringInd<uint_t>* _moveSchedule;

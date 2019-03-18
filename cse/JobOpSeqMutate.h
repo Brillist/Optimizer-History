@@ -41,7 +41,7 @@ public:
 private:
     typedef std::vector<JobOp*> jobop_vector_t;
     typedef std::vector<jobop_vector_t*> jobop_vector_vector_t;
-    typedef std::vector<lut::uint_set_t*> uint_vector_set_t;
+    typedef std::vector<uint_set_t*> uint_vector_set_t;
 
 private:
     void init();

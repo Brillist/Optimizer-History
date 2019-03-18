@@ -77,14 +77,14 @@ public:
     }
 
     /** Get the set of resource ids. */
-    const lut::uint_set_t&
+    const uint_set_t&
     resIds() const
     {
         return _resIds;
     }
 
     /** Get the set of resoruce ids. */
-    lut::uint_set_t&
+    uint_set_t&
     resIds()
     {
         return _resIds;
@@ -99,7 +99,7 @@ private:
 
     uint_t _id;
     std::string _name;
-    lut::uint_set_t _resIds;
+    uint_set_t _resIds;
 };
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////

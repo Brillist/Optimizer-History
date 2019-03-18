@@ -638,10 +638,10 @@ ClevorDataSet::modelBuildActivities_0()
         else if (op->type() == op_interruptible)
         {
             act = intact = new IntActivity(_schedule);
-            intact->processingTime() = _config->durationToTimeSlot(op->processingTime());
+            intact->setProcessingTime(_config->durationToTimeSlot(op->processingTime()));
             if (intact->processingTime() == uint_t_max)
             {
-                intact->processingTime() = 0;
+                intact->setProcessingTime(0);
             }
 
             if (_config->forward())
@@ -653,7 +653,7 @@ ClevorDataSet::modelBuildActivities_0()
                 // EF
                 EFboundInt* efBound = new EFboundInt(esBound, efb);
                 ef = efBound;
-                esBound->efBound() = efBound;
+                esBound->setEFbound(efBound);
 
                 // LS,LF
                 ls = new ConstrainedBound(_mgr, bound_ub, lsb);
@@ -676,12 +676,12 @@ ClevorDataSet::modelBuildActivities_0()
                 // ES
                 ESbound* esBound = new ESbound(_mgr, esb);
                 es = esBound;
-                esBound->act() = brkact;
+                esBound->setActivity(brkact);
 
                 // EF
                 EFbound* efBound = new EFbound(esBound, efb);
                 ef = efBound;
-                esBound->efBound() = efBound;
+                esBound->setEFbound(efBound);
 
                 // LS,LF
                 ls = new ConstrainedBound(_mgr, bound_ub, lsb);
@@ -700,7 +700,7 @@ ClevorDataSet::modelBuildActivities_0()
                 // LS
                 LSbound* lsBound = new LSbound(lfBound, lsb);
                 ls = lsBound;
-                lfBound->lsBound() = lsBound;
+                lfBound->setLSbound(lsBound);
 
                 // ES,EF
                 es = new ConstrainedBound(_mgr, bound_lb, esb);
@@ -765,8 +765,8 @@ ClevorDataSet::modelBuildActivities_0()
         actEnd.set(ef, lf);
 
         // set id, name
-        act->id() = op->id();
-        act->name() = op->name();
+        act->setId(op->id());
+        act->setName(op->name());
 
         // link es, ef, ls, lf => act
         es->setOwner(act);
@@ -777,7 +777,7 @@ ClevorDataSet::modelBuildActivities_0()
         // link schedule => act, op <=> act
         _schedule->add(act);
         op->activity() = act;
-        act->owner() = op;
+        act->setOwner(op);
     }
 }
 
@@ -994,7 +994,7 @@ ClevorDataSet::modelBuildActivities_1()
         if (op->interruptible())
         {
             IntActivity* act = op->intact();
-            act->processingTime() = pt;
+            act->setProcessingTime(pt);
         }
         else
         {
@@ -1002,7 +1002,7 @@ ClevorDataSet::modelBuildActivities_1()
             // and contains only an Activity (see modelBuildActivity_0)?
             // Oct 10, 2006
             PtActivity* act = op->brkact();
-            act->frozenPt() = pt;
+            act->setFrozenPt(pt);
         }
     }
 }
@@ -1172,9 +1172,9 @@ ClevorDataSet::modelBuildDiscreteResources()
 
         // make cls::DiscreteResource
         cls::DiscreteResource* clsDres = new cls::DiscreteResource(_schedule);
-        clsDres->id() = cseDres->id();
-        clsDres->name() = cseDres->name();
-        clsDres->object() = (void*)cseDres->cost();
+        clsDres->setId(cseDres->id());
+        clsDres->setName(cseDres->name());
+        clsDres->setObject((void*)cseDres->cost());
         cseDres->clsResource() = clsDres;
         _schedule->add(clsDres);
     }
@@ -1187,7 +1187,7 @@ void
 ClevorDataSet::modelBuildDiscreteResourceCalendars()
 {
     ResourceCalendarMgr* calMgr = _schedule->calendarMgr();
-    calMgr->horizonTS() = _horizonTS;
+    calMgr->setHorizonTS(_horizonTS);
 
     res_set_id_t::const_iterator it;
     for (it = _resources.begin(); it != _resources.end(); ++it)
@@ -1200,12 +1200,6 @@ ClevorDataSet::modelBuildDiscreteResourceCalendars()
         const cse::DiscreteResource* cseDres = (DiscreteResource*)cseRes;
         cls::DiscreteResource* clsDres = cseDres->clsResource();
         ResourceCalendar* resCal = cseDres->makeCurrentCalendar(_config);
-        //         if (cseDres->id() == 15 | cseDres->id() == 16)
-        //         {
-        //             utl::cout << "res:" << cseDres->id() << utl::endlf;
-        //             resCal->dump(utl::cout, _config->originTime(), _config->timeStep());
-        //             utl::cout << utl::endlf;
-        //         }
 
         // add provided capacity
         ResourceCalendar::iterator spanIt;
@@ -1241,14 +1235,14 @@ ClevorDataSet::modelBuildCompositeResources()
 
         // make cls::CompositeResource
         cls::CompositeResource* clsCres = new cls::CompositeResource(_schedule);
-        clsCres->id() = cseCres->id();
-        clsCres->name() = cseCres->name();
+        clsCres->setId(cseCres->id());
+        clsCres->setName(cseCres->name());
 
         // add resources to cls::CompositeResource
         const ResourceGroup* resGroup = findResourceGroup(resGroupId);
         ASSERTD(resGroup != nullptr);
-        const std::set<uint_t>& resIds = resGroup->resIds();
-        std::set<uint_t>::const_iterator resIdIt;
+        const uint_set_t& resIds = resGroup->resIds();
+        uint_set_t::const_iterator resIdIt;
         for (resIdIt = resIds.begin(); resIdIt != resIds.end(); ++resIdIt)
         {
             uint_t resId = *resIdIt;
@@ -1276,8 +1270,8 @@ ClevorDataSet::modelBuildCompositeResources()
         if (!cseRes->isA(cse::DiscreteResource))
             continue;
         cls::DiscreteResource* clsDres = (cls::DiscreteResource*)cseRes->clsResource();
-        std::vector<uint_t>& crIds = clsDres->crIds();
-        std::vector<uint_t>::iterator it;
+        uint_vector_t& crIds = clsDres->crIds();
+        uint_vector_t::iterator it;
         for (it = crIds.begin(); it != crIds.end(); ++it)
         {
             uint_t id = *it;
@@ -1386,7 +1380,6 @@ ClevorDataSet::modelBuildDiscreteResourceCts()
                 pt = op->processingTime();
                 if (pt != uint_t_max)
                     pt = _config->durationToTimeSlot(pt);
-                //                 pt /= _config->timeStep();
             }
             else // frozen
             {
@@ -1403,7 +1396,7 @@ ClevorDataSet::modelBuildDiscreteResourceCts()
                 resCapPts->resourceId() = resId;
                 op->resCapPtsAdj() += resCapPts;
             }
-            resCapPts->resource() = clsDres;
+            resCapPts->setResource(clsDres);
             if ((cap != uint_t_max) && (pt != uint_t_max))
             {
                 resCapPts->addCapPt(cap, pt);
@@ -1449,8 +1442,8 @@ ClevorDataSet::modelBuildResourceGroupCts()
             utl::RBtree rcps(false);
 
             // iterate over all resources in the group
-            const std::set<uint_t>& resIds = resGroup->resIds();
-            std::set<uint_t>::const_iterator residIt;
+            const uint_set_t& resIds = resGroup->resIds();
+            uint_set_t::const_iterator residIt;
             for (residIt = resIds.begin(); residIt != resIds.end(); ++residIt)
             {
                 uint_t resId = *residIt;
@@ -1474,10 +1467,9 @@ ClevorDataSet::modelBuildResourceGroupCts()
                     resCapPts->resourceId() = resId;
                     resCapPts->addCapPt(cseResGroupReq->capacity(),
                                         _config->durationToTimeSlot(op->processingTime()));
-                    //                         op->processingTime() / _config->timeStep());
                     op->resCapPtsAdj() += resCapPts;
                 }
-                resCapPts->resource() = dres->clsResource();
+                resCapPts->setResource(dres->clsResource());
                 rcps += resCapPts;
             }
 
@@ -1539,8 +1531,8 @@ ClevorDataSet::modelBuildCompositeResourceCts()
             PreferredResources* pr = utl::clone(cseResReq->preferredResources());
             if (pr != nullptr)
             {
-                std::vector<uint_t>& resIds = pr->resIds();
-                std::vector<uint_t>::iterator it;
+                uint_vector_t& resIds = pr->resIds();
+                uint_vector_t::iterator it;
                 for (it = resIds.begin(); it != resIds.end(); ++it)
                 {
                     uint_t id = *it;

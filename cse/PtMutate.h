@@ -44,7 +44,6 @@ public:
 
 private:
     typedef std::vector<cls::DiscreteResourceRequirement*> rr_vector_t;
-    typedef std::vector<uint_t> uint_vector_t;
     typedef std::vector<cls::PtActivity*> act_vector_t;
     typedef std::vector<uint_vector_t*> uint_vector_vector_t;
 

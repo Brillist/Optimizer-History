@@ -236,7 +236,6 @@ BrkActivity::addTimetableBounds()
     }
 
     // set up calendar
-    auto calendarMgr = schedule()->calendarMgr();
     uint_set_t selectedCalendarIds;
     for (auto rr_ : _discreteReqs)
     {

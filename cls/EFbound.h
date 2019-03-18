@@ -41,7 +41,8 @@ public:
     /// \name Accessors (const)
     //@{
     /** Get the ESbound. */
-    const ESbound* esBound() const
+    const ESbound*
+    esBound() const
     {
         return _esBound;
     }
@@ -50,7 +51,8 @@ public:
     /// \name Accessors (non-const)
     //@{
     /** Set the ESbound. */
-    void setESbound(ESbound* esBound)
+    void
+    setESbound(ESbound* esBound)
     {
         _esBound = esBound;
     }

@@ -147,8 +147,8 @@ IntExpDomainCAR::getPrev(int val) const
         return _max;
     }
 
-    uint_t idx =
-        utl::binarySearch(_valuesArray.data(), 0, _num, val - 1, utl::subtract<int>(), utl::find_ip);
+    uint_t idx = utl::binarySearch(_valuesArray.data(), 0, _num, val - 1, utl::subtract<int>(),
+                                   utl::find_ip);
     if (_values[idx] >= val)
         --idx;
     while (getCount(idx) == 0)
@@ -171,8 +171,8 @@ IntExpDomainCAR::getNext(int val) const
         return int_t_max;
     }
 
-    uint_t idx =
-        utl::binarySearch(_valuesArray.data(), 0, _num, val + 1, utl::subtract<int>(), utl::find_ip);
+    uint_t idx = utl::binarySearch(_valuesArray.data(), 0, _num, val + 1, utl::subtract<int>(),
+                                   utl::find_ip);
     while (getCount(idx) == 0)
         ++idx;
     return _values[idx];

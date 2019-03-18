@@ -74,4 +74,3 @@ using int_vector_t = std::vector<int>;
    \ingroup lut
 */
 using utl::String;
-

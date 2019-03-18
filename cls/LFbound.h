@@ -66,7 +66,8 @@ public:
     }
 
     /** Set the latest-start bound. */
-    void setLSbound(LSbound* lsBound)
+    void
+    setLSbound(LSbound* lsBound)
     {
         _lsBound = lsBound;
     }

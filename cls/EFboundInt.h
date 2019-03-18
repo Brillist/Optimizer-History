@@ -34,7 +34,8 @@ public:
     /// \name Accessors (const)
     //@{
     /** Get the related ESboundInt. */
-    const cls::ESboundInt* esBound()
+    const cls::ESboundInt*
+    esBound()
     {
         return _esBound;
     }
@@ -43,7 +44,8 @@ public:
     /// \name Accessors (non-const)
     //@{
     /** Set the related ESboundInt. */
-    void setESbound(ESboundInt* esBound)
+    void
+    setESbound(ESboundInt* esBound)
     {
         _esBound = esBound;
     }

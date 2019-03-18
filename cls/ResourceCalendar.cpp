@@ -191,8 +191,7 @@ ResourceCalendar::compile(int horizonTS)
     // handle working time until horizon
     if (ts < horizonTS)
     {
-        auto workingSpan =
-            new ResourceCalendarSpan(ts, horizonTS, rcs_exception, rcss_available);
+        auto workingSpan = new ResourceCalendarSpan(ts, horizonTS, rcs_exception, rcss_available);
         _minNonBreakTime = utl::min(_minNonBreakTime, workingSpan->begin());
         _maxNonBreakTime = utl::max(_maxNonBreakTime, workingSpan->end() - 1);
         if (lastRSS != nullptr)
@@ -554,8 +553,7 @@ const ResourceCalendarSpan*
 ResourceCalendar::findSpanByTime(int ts) const
 {
     _searchSpan.setEnd(ts + 1);
-    auto it =
-        std::lower_bound(_spans, _spansLim, &_searchSpan, ResourceCalendarSpanEndOrdering());
+    auto it = std::lower_bound(_spans, _spansLim, &_searchSpan, ResourceCalendarSpanEndOrdering());
     ASSERTD(it != _spansLim);
     auto span = *it;
     return span;

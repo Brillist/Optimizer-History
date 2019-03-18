@@ -192,7 +192,8 @@ public:
     }
 
     /** Set the DiscreteResourceRequirement. */
-    void setDRR(DiscreteResourceRequirement* drr)
+    void
+    setDRR(DiscreteResourceRequirement* drr)
     {
         _drr = drr;
     }

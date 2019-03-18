@@ -179,7 +179,7 @@ BoundPropagator::finalize(ConstrainedBound* cb)
         // do nothing
         return;
     }
-    // 
+    //
     cb->queueFind();
     cg->finalizeMember();
 }

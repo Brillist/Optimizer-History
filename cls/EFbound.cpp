@@ -35,7 +35,7 @@ EFbound::setLB(int lb)
     if (_esBound->activity()->allocated())
     {
         utl::cout << "WARNING: moving a scheduled activity:" << _esBound->activity()->id()
-            << ", ef:" << _bound << "->" << lb << utl::endlf;
+                  << ", ef:" << _bound << "->" << lb << utl::endlf;
         _esBound->allocateCapacity(max(_esBound->get(), _bound + 1), lb);
     }
     super::setLB(lb);

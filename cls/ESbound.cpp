@@ -206,7 +206,7 @@ ESbound::setAllocatedLB(int oldBound, int newBound)
     ASSERTD(_act->allocated());
     ASSERTD(oldBound < newBound);
     utl::cout << "WARNING: moving a scheduled activity:" << _act->id() << ", es:" << oldBound
-        << "->" << newBound << utl::endlf;
+              << "->" << newBound << utl::endlf;
     deallocateCapacity(oldBound, min(newBound - 1, _efBound->get()));
 }
 

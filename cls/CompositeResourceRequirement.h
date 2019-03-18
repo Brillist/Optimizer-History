@@ -91,19 +91,22 @@ public:
     /// \name Accessors (non-const)
     //@{
     /** Set the resource. */
-    void setResource(CompositeResource* res)
+    void
+    setResource(CompositeResource* res)
     {
         _res = res;
     }
 
     /** Set the minimum capacity. */
-    void setMinCapacity(uint_t minCap)
+    void
+    setMinCapacity(uint_t minCap)
     {
         _minCap = minCap;
     }
 
     /** Set the maximum capacity. */
-    void setMaxCapacity(uint_t maxCap)
+    void
+    setMaxCapacity(uint_t maxCap)
     {
         _maxCap = maxCap;
     }

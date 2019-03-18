@@ -36,6 +36,7 @@ class PtActivity;
 class DiscreteResource : public Resource
 {
     UTL_CLASS_DECL(DiscreteResource, Resource);
+
 public:
     /**
        Constructor.

@@ -87,7 +87,8 @@ public:
     /// \name Accessors (non-const)
     //@{
     /** Get the resource. */
-    void setResource(const DiscreteResource* res)
+    void
+    setResource(const DiscreteResource* res)
     {
         _res = res;
     }

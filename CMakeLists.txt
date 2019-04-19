@@ -1,5 +1,7 @@
 cmake_minimum_required(VERSION 3.12)
 
+set(CMAKE_VERBOSE_MAKEFILE ON)
+
 #### clevor_se ###################################################################################
 
 project(
@@ -38,13 +40,13 @@ endfunction()
 
 #### libcse ######################################################################################
 
-# TARGET: libcse (shared library)
+# TARGET: libcse
 add_library(libcse STATIC)
 
 # find libUTL++
 find_package(libutl 1.0 REQUIRED)
 
-# users should link against libutl::libutl_static
+# users should link against libutl
 target_link_libraries(libcse PUBLIC libutl::libutl_static)
 
 # use no prefix on the name of the target file
@@ -76,10 +78,13 @@ set(CSE_CPPS_AND_HDRS ${CSE_CPPS} ${CSE_HDRS})
 target_sources(libcse PRIVATE ${CSE_CPPS_AND_HDRS})
 sourceGroups("${CSE_CPPS_AND_HDRS}") # groupings for Visual Studio
 
-# MSVC-only: downstream must link with /WHOLEARCHIVE
+# downstream must link in the whole archive
 if (MSVC)
   target_link_options(libcse INTERFACE
                       -WHOLEARCHIVE:$<TARGET_LINKER_FILE_NAME:libcse>)
+else()
+  target_link_options(libcse INTERFACE
+                      -Wl,--whole-archive,$<TARGET_LINKER_FILE:libcse>,--no-whole-archive)
 endif()
 
 #### clevor_se ###################################################################################

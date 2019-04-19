@@ -39,21 +39,13 @@ endfunction()
 #### libcse ######################################################################################
 
 # TARGET: libcse
-if (MSVC)
-  add_library(libcse STATIC)
-else()
-  add_library(libcse SHARED)
-endif()
+add_library(libcse STATIC)
 
 # find libUTL++
 find_package(libutl 1.0 REQUIRED)
 
 # users should link against libutl
-if (MSVC)
-  target_link_libraries(libcse PUBLIC libutl::libutl_static)
-else()
-  target_link_libraries(libcse PUBLIC libutl::libutl_shared)
-endif()
+target_link_libraries(libcse PUBLIC libutl::libutl_static)
 
 # use no prefix on the name of the target file
 set_property(TARGET libcse PROPERTY PREFIX "")

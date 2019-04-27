@@ -329,14 +329,14 @@ Optimizer::chooseSuccessOp() const
         }
     }
 
-    // we found an op?
-    if (opIdx != uint_t_max)
+    // we found an operator?
+    if (bestNumChoices != 0)
     {
-        // direct the chosen op to select a variable
+        // direct the chosen operator to select a variable
         auto op = _ops[opIdx];
         op->selectVar();
 
-        // return the chosen op
+        // return the chosen operator
         return op;
     }
 
@@ -349,23 +349,29 @@ Optimizer::chooseSuccessOp() const
 Operator*
 Optimizer::chooseRandomOp() const
 {
+    // count total choices
     uint_t totalChoices = 0;
     for (auto op : _ops)
     {
         totalChoices += op->numChoices();
     }
-    ASSERTD(totalChoices != 0);
-    uint_t randomNum = _rng->uniform((uint_t)0, totalChoices - 1);
-    uint_t cumNum = 0;
-    for (auto op : _ops)
+
+    // at least one choice available -> choose an operator
+    if (totalChoices != 0)
     {
-        cumNum += op->numChoices();
-        if (randomNum < cumNum)
+        uint_t randomNum = _rng->uniform((uint_t)0, totalChoices - 1);
+        uint_t cumNum = 0;
+        for (auto op : _ops)
         {
-            op->selectVar();
-            return op;
+            cumNum += op->numChoices();
+            if (randomNum < cumNum)
+            {
+                op->selectVar();
+                return op;
+            }
         }
     }
+
     std::cout << "WARNING: This problem has no optimization opportunity!" << std::endl;
     return nullptr;
 }
@@ -375,22 +381,30 @@ Optimizer::chooseRandomOp() const
 Operator*
 Optimizer::chooseRandomStepOp() const
 {
+    // count total vars
     uint_t totalSteps = 0;
     for (auto op : _ops)
     {
         totalSteps += op->numVars();
     }
-    uint_t randomNum = _rng->uniform((uint_t)0, totalSteps - 1);
-    uint_t cumNum = 0;
-    for (auto op : _ops)
+
+    // randomly choose an operator (giving each one a chance based on its number of vars)
+    if (totalSteps != 0)
     {
-        cumNum += op->numVars();
-        if (randomNum < cumNum)
+        uint_t randomNum = _rng->uniform((uint_t)0, totalSteps - 1);
+        uint_t cumNum = 0;
+        for (auto op : _ops)
         {
-            op->selectVar();
-            return op;
+            uint_t opNumVars = op->numVars();
+            cumNum += opNumVars;
+            if (randomNum < cumNum)
+            {
+                op->selectVar();
+                return op;
+            }
         }
     }
+
     std::cout << "WARNING: This problem has no optimization opportunity!" << std::endl;
     return nullptr;
 }

@@ -77,9 +77,6 @@ JobOp::copy(const Object& rhs)
     _resCapPts = op._resCapPts;
     _resCapPtsAdj = op._resCapPtsAdj;
 
-    // item-requirements
-    _itemReqs = op._itemReqs;
-
     // schedulable-ops index
     _schedulableOpsIdx = uint_t_max;
 
@@ -128,29 +125,6 @@ JobOp::serialize(Stream& stream, uint_t io, uint_t)
 
     // res-cap-pts
     _resCapPts.serialize(stream, io);
-
-    // item-requirements (uncommment it when we do inventory system)
-    //     if (io == io_rd)
-    //     {
-    //         deleteCont(_itemReqs);
-    //         Array array;
-    //         array.serializeIn(stream);
-    //         for (auto itemReq_ : array)
-    //         {
-    //             auto itemReq = utl::cast<ItemRequirement>(itemReq_);
-    //             addItemReq(itemReq);
-    //         }
-    //         array.setOwner(false);
-    //     }
-    //     else
-    //     {
-    //         Array array(false);
-    //         for (auto itemReq : _itemReqs)
-    //         {
-    //             array += itemReq;
-    //         }
-    //         array.serializeOut(stream);
-    //     }
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -206,7 +180,7 @@ JobOp::processUnaryCts()
     _minEndTime = int_t_min;
     _maxEndTime = int_t_max;
 
-    unaryct_vect_t::iterator it;
+    unaryct_vector_t::iterator it;
     for (it = _unaryCts.begin(); it != _unaryCts.end(); ++it)
     {
         UnaryCt* uct = *it;
@@ -571,7 +545,6 @@ JobOp::deInit()
 {
     deleteCont(_unaryCts);
     clearResReqs();
-    deleteCont(_itemReqs);
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////

@@ -193,10 +193,10 @@ ReleaseTimeMutate::setActs(const ClevorDataSet* dataSet)
 #ifdef DEBUG_UNIT
         utl::cout << op->toString() << utl::endlf;
 #endif
-        const unaryct_vect_t& unaryCts = op->unaryCts();
+        const unaryct_vector_t& unaryCts = op->unaryCts();
         if (unaryCts.size() == 0)
             continue;
-        unaryct_vect_t::const_iterator it;
+        unaryct_vector_t::const_iterator it;
         bool hasRlsTime = false;
         uint_t rlsTime = uint_t_max;
         for (it = unaryCts.begin(); it != unaryCts.end(); it++)

@@ -30,7 +30,7 @@ public:
 
        The initial success rate (\see p) of the operator is (successIter / totalIter).
 
-       \param idx index of this variable (corresponding to a value the Operator can change).
+       \param idx index of this variable (corresponding to a value the Operator can change)
        \param active pointer to active status flag
        \param successIter initial success iterations
        \param totalIter initial total iterations

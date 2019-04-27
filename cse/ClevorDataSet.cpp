@@ -555,8 +555,6 @@ ClevorDataSet::createViews_1()
             {
                 _sops.insert(op);
             }
-            //             if (!op->schedulable()) continue;
-            //             _sops.insert(op);
         }
     }
 }
@@ -583,9 +581,6 @@ ClevorDataSet::setRSLs()
         }
         const ResourceSequenceList* rsl = findResourceSequenceList(id);
         dres->sequenceList() = rsl;
-        //         utl::cout << "res:" << dres->id()
-        //                   << ", rsl:" << rsl->id()
-        //                   << utl::endlf;
     }
 }
 
@@ -1174,8 +1169,8 @@ ClevorDataSet::modelBuildDiscreteResources()
         cls::DiscreteResource* clsDres = new cls::DiscreteResource(_schedule);
         clsDres->setId(cseDres->id());
         clsDres->setName(cseDres->name());
-        clsDres->setObject((void*)cseDres->cost());
-        cseDres->clsResource() = clsDres;
+        clsDres->setObject(cseDres->cost());
+        cseDres->setCLSresource(clsDres);
         _schedule->add(clsDres);
     }
     modelBuildDiscreteResourceCalendars();

@@ -21,8 +21,7 @@ CSE_NS_BEGIN;
 void
 SchedulerConfiguration::copy(const Object& rhs)
 {
-    ASSERTD(dynamic_cast<const SchedulerConfiguration*>(&rhs) != nullptr);
-    const SchedulerConfiguration& cf = (const SchedulerConfiguration&)rhs;
+    auto& cf = utl::cast<SchedulerConfiguration>(rhs);
     _originTime = cf._originTime;
     _horizonTime = cf._horizonTime;
     _timeStep = cf._timeStep;
@@ -59,8 +58,6 @@ SchedulerConfiguration::serialize(Stream& stream, uint_t io, uint_t)
 #endif
             _horizonTime = timeSlotToTime(ts);
         }
-        //         _originTime = Time(_originTime).roundDown(tm_day);
-        //         _horizonTime = Time(_horizonTime).roundUp(tm_day);
         if (_schedulingOriginTime == -1)
         {
             if (_backward)
@@ -88,13 +85,14 @@ SchedulerConfiguration::timeSlotToTime(int ts) const
 int
 SchedulerConfiguration::timeToTimeSlot(time_t t) const
 {
-    // at or before origin => origin
+    // at or before origin -> origin
     if (t <= _originTime)
+    {
         return 0;
+    }
 
-    // at or after horizon => horizon
+    // at or after horizon -> horizon
     t = utl::min(t, _horizonTime);
-    //     t = ult::min(t, _horizonTime - 1);
 
     // note: _originTime < t < _horizonTime
     int ts = (t - _originTime) / _timeStep;
@@ -110,6 +108,7 @@ SchedulerConfiguration::timeToTimeSlot(time_t t) const
                   << utl::endlf;
     }
 #endif
+
     return ts;
 }
 
@@ -151,6 +150,7 @@ SchedulerConfiguration::durationToTimeSlot(int d) const
                   << utl::endlf;
     }
 #endif
+
     return ts;
 }
 

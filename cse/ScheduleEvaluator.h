@@ -17,7 +17,7 @@ CSE_NS_BEGIN;
 
    ScheduleEvaluator provides a standard interface for different schedule evaluation strategies.
 
-   \author Adam McKee
+   \ingroup cse
 */
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -37,11 +37,6 @@ public:
 
     virtual double calcScore(const gop::IndBuilderContext* context) const = 0;
 
-    /*     virtual double bestFailScore( */
-    /*         const gop::IndBuilderContext* context) const; */
-
-    /*     virtual double failScore( */
-    /*         const gop::IndBuilderContext* context) const; */
 protected:
     SchedulerConfiguration* _schedulerConfig;
 

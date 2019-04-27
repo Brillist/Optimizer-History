@@ -53,74 +53,107 @@ public:
 
     virtual String toString() const;
 
+    /** Get the capacity (v1 - v0). */
+    virtual uint_t capacity() const;
+
+    /** Span contains the provided value? */
+    bool
+    contains(int val) const
+    {
+        return (_min <= val) && (val <= _max);
+    }
+
+    /**
+       Can this IntSpan merge with the provided IntSpan?  Two IntSpan%s can merge if they're
+       equivalent (apart from their start and end points which are not considered here).
+       \return true iff merging is permitted
+       \param rhs proposed IntSpan for merging
+    */
+    virtual bool canMergeWith(const IntSpan* rhs) const;
+
+    /** Set the level in the skip-list. */
+    void setLevel(uint_t level);
+
     /// \name Accessors (const)
     //@{
+    /** Get the level within the skip-list. */
     uint_t
     level() const
     {
         return _level;
     }
 
+    /** Get the size of the span. */
     uint_t
     size() const
     {
         return (_max - _min + 1);
     }
 
+    /** Get minimum value (beginning point) of span. */
     int
     min() const
     {
         return _min;
     }
 
+    /** Get maximum value (end point) of span. */
     int
     max() const
     {
         return _max;
     }
 
+    /** Convert to utl::Span<int>. */
     utl::Span<int>
     span() const
     {
         return utl::Span<int>(_min, _max + 1);
     }
 
+    /** Get first mapped value. */
     uint_t
     v0() const
     {
         return _v0;
     }
 
+    /** Get second mapped value. */
     uint_t
     v1() const
     {
         return _v1;
     }
 
+    /** At head of skip-list? */
     bool
     isHead() const
     {
         return (_prev == this);
     }
 
+    /** At tail of skip-list? */
     bool
     isTail() const
     {
         return (_next[0] == this);
     }
 
+    /** Get previous IntSpan in skip-list. */
     IntSpan*
     prev() const
     {
         return _prev;
     }
 
+    /** Get next IntSpan in skip-list. */
     IntSpan*
     next() const
     {
         return _next[0];
     }
 
+    /** Get next IntSpan in skip-list (at specified level). */
     IntSpan*
     next(uint_t idx) const
     {
@@ -184,6 +217,7 @@ public:
 
     /// \name Backtracking
     //@{
+    /** Get the state depth. */
     uint_t
     stateDepth() const
     {
@@ -196,6 +230,7 @@ public:
         _stateDepth = stateDepth;
     }
 
+    /** Save backtrackable state. */
     void
     saveState(Manager* mgr)
     {
@@ -205,18 +240,6 @@ public:
 
     void _saveState(Manager* mgr);
     //@}
-
-    virtual uint_t capacity() const;
-
-    bool
-    contains(int val) const
-    {
-        return (_min <= val) && (val <= _max);
-    }
-
-    virtual bool canMergeWith(const IntSpan* rhs) const;
-
-    void setLevel(uint_t level);
 
 protected:
 #ifdef DEBUG

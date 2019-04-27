@@ -9,7 +9,11 @@ CSE_NS_BEGIN;
 /**
    Time Slot (for serializing timetable).
 
-   \author Adam McKee
+   This class is used when a client invokes the `getTimetable` command to retrieve a
+   DiscreteResource's timetable.
+
+   \see Server
+   \ingroup cse
 */
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -35,7 +39,6 @@ public:
         _prvCap = prvCap;
     }
 
-    /** Copy another instance. */
     virtual void copy(const utl::Object& rhs);
 
     virtual void serialize(utl::Stream& stream, uint_t io, uint_t mode = utl::ser_default);

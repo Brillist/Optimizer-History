@@ -76,7 +76,7 @@ public:
     }
 
     /** Get the associated object. */
-    void*
+    utl::Object*
     object() const
     {
         return _object;
@@ -122,7 +122,7 @@ public:
 
     /** Get the associated object. */
     void
-    setObject(void* object)
+    setObject(utl::Object* object)
     {
         _object = object;
     }
@@ -144,7 +144,7 @@ private:
     uint_t _serialId; // position within cls::Schedule::_resourcesArray[]
     Schedule* _schedule;
     std::string _name;
-    void* _object;
+    utl::Object* _object;
     bool _visited;
 };
 

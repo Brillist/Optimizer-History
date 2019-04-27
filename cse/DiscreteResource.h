@@ -66,7 +66,7 @@ private:
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-typedef std::vector<ResourceSequenceRuleApplication> rsra_vector_t;
+using rsra_vector_t = std::vector<ResourceSequenceRuleApplication>;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 // DiscreteResource ////////////////////////////////////////////////////////////////////////////////
@@ -75,7 +75,7 @@ typedef std::vector<ResourceSequenceRuleApplication> rsra_vector_t;
 /**
    Discrete resource.
 
-   \author Adam McKee
+   \ingroup cls
 */
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -210,7 +210,7 @@ public:
     }
 
     /** Get cost record. */
-    const ResourceCost*
+    ResourceCost*
     cost() const
     {
         return _cost;
@@ -264,11 +264,10 @@ public:
         return utl::cast<cls::DiscreteResource>(_clsResource);
     }
 
-    /** Get the cls-resource. */
-    cls::Resource*&
-    clsResource()
+    /** Set the cls-resource. */
+    void setCLSresource(cls::Resource* clsResource)
     {
-        return _clsResource;
+        _clsResource = clsResource;
     }
 
 protected:
@@ -300,8 +299,8 @@ private:
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-typedef std::vector<DiscreteResource*> dres_vector_t;
-typedef std::set<DiscreteResource*, ResourceIdOrdering> dres_set_id_t;
+using dres_vector_t = std::vector<DiscreteResource*>;
+using dres_set_id_t = std::set<DiscreteResource*, ResourceIdOrdering>;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 

@@ -21,7 +21,7 @@ class ClevorDataSet;
    A scheduler is an algorithm that builds a schedule from previously made plans which are stored
    in the Schedule object itself.
 
-   \author Adam McKee
+   \ingroup cse
 */
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////

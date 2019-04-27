@@ -20,7 +20,7 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 #ifdef DEBUG
-// #define DEBUG_UNIT
+//#define DEBUG_UNIT
 #endif
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -46,8 +46,9 @@ SchedulingContext::initialize(ClevorDataSet* dataSet)
 {
     // forget old dataSet, remember new one
     if (_dataSetOwner)
+    {
         delete _dataSet;
-    ;
+    }
     _dataSet = dataSet;
 
     // create the schedule and manager
@@ -78,14 +79,14 @@ SchedulingContext::initialize(ClevorDataSet* dataSet)
     // build the model (phase 1)
     _dataSet->modelBuild_1();
 
-    // unsuspend CGs with no predecessors
+    // unsuspend CGs with no predecessors, propagate
     _bp->unsuspendInitial();
     propagate();
 
     // schedule frozen ops
     scheduleFrozenOps();
 
-    _afterInitialization = true;
+    _initialized = true;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -93,7 +94,7 @@ SchedulingContext::initialize(ClevorDataSet* dataSet)
 void
 SchedulingContext::clear()
 {
-    IndBuilderContext::clear();
+    super::clear();
 
     // backtrack to root choice-point and make new choice-point
     ASSERTD(_mgr->depth() <= 2);
@@ -114,53 +115,59 @@ SchedulingContext::clear()
     _numScheduledOps = 0;
 
     // restore jobs / ops
-    const job_set_id_t& jobs = _dataSet->jobs();
-    job_set_id_t::const_iterator jobIt;
-    for (jobIt = jobs.begin(); jobIt != jobs.end(); ++jobIt)
+    auto& jobs = _dataSet->jobs();
+    for (auto job : jobs)
     {
-        Job* job = *jobIt;
         job->scheduleClear();
         _mgr->revSet(job->schedulableJobsIdx());
-        jobop_set_id_t::const_iterator opIt;
-        jobop_set_id_t::const_iterator opsEnd = job->end();
-        for (opIt = job->begin(); opIt != opsEnd; ++opIt)
+        for (auto op : *job)
         {
-            JobOp* op = *opIt;
             _mgr->revSet(op->schedulableOpsIdx());
 #ifdef DEBUG
-            Activity* act = op->activity();
-            if (act == nullptr)
-                continue;
-            ConstrainedBound* cb = act->esBound();
-            ASSERTD(!cb->queued());
+            auto act = op->activity();
+            if (act != nullptr)
+            {
+                auto& cb = act->esBound();
+                ASSERT(!cb.queued());
+            }
 #endif
         }
     }
 
-    // clear list of scheduled ops for each unary resource
-    const res_set_id_t& resources = _dataSet->resources();
-    res_set_id_t::const_iterator resIt;
-    for (resIt = resources.begin(); resIt != resources.end(); ++resIt)
+    // iterate over DiscreteResources
+    auto& resources = _dataSet->resources();
+    for (auto res_ : resources)
     {
-        DiscreteResource* res = dynamic_cast<DiscreteResource*>(*resIt);
+        // not a DiscreteResource -> skip
+        auto res = dynamic_cast<DiscreteResource*>(res_);
         if (res == nullptr)
+        {
             continue;
+        }
+
+        // clear res's ResourceSequenceRuleApplications
         res->sequenceRuleApplications().clear();
-        cls::DiscreteResource* clsRes = (cls::DiscreteResource*)res->clsResource();
-        if (clsRes == nullptr || clsRes->actsByStartTime().size() == 0)
+
+        // res has no scheduled activities -> skip
+        auto clsRes = res->clsResource();
+        if ((clsRes == nullptr) || (clsRes->actsByStartTime().size() == 0))
+        {
             continue;
-        act_set_es_t::iterator it = clsRes->actsByStartTime().begin();
+        }
+
+        // remove non-frozen activities from res's activities-by-start-time
+        auto it = clsRes->actsByStartTime().begin();
         while (it != clsRes->actsByStartTime().end())
         {
-            Activity* act = *it;
-            JobOp* op = (JobOp*)act->owner();
-            if (!op->frozen())
+            auto act = *it;
+            auto op = utl::cast<JobOp>(act->owner());
+            if (op->frozen())
             {
-                clsRes->actsByStartTime().erase(it++);
+                ++it;
             }
             else
             {
-                it++;
+                it = clsRes->actsByStartTime().erase(it);
             }
         }
     }
@@ -173,6 +180,7 @@ SchedulingContext::schedule(JobOp* op)
 {
     ASSERTD(op->schedulable());
 
+    // act = op's activity (it MUST exist)
     auto act = op->activity();
     ASSERTD(act != nullptr);
 
@@ -181,13 +189,11 @@ SchedulingContext::schedule(JobOp* op)
     {
         _bp->finalize(act->esBound());
         _mgr->propagate();
-        //         _makespan = utl::max(_makespan, act->ef() + 1);
     }
     else
     {
         _bp->finalize(act->lfBound());
         _mgr->propagate();
-        //         _makespan = utl::max(_makespan, act->lf() + 1);
     }
 
 #ifdef DEBUG_UNIT
@@ -204,87 +210,66 @@ SchedulingContext::schedule(JobOp* op)
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
-SchedulingContext::sjobsAdd(Job* job)
-{
-    //     utl::cout << "SchedulingContext::sjobsAdd:" << job->id()
-    //               << utl::endl;
-    ASSERTD(job->schedulableJobsIdx() == uint_t_max);
-    job->schedulableJobsIdx() = _sjobs.size();
-    _sjobs.add(job);
-}
-
-////////////////////////////////////////////////////////////////////////////////////////////////////
-
-void
-SchedulingContext::sjobsRemove(Job* job)
-{
-    //     utl::cout << "SchedulingContext::sjobsRemove:" << job->id()
-    //               << utl::endl;
-    ASSERTD(job->schedulableJobsIdx() != uint_t_max);
-    uint_t idx = job->schedulableJobsIdx();
-    uint_t endIdx = _sjobs.size() - 1;
-    _sjobs.remove(idx);
-    job->schedulableJobsIdx() = uint_t_max;
-    if (idx < endIdx)
-    {
-        _sjobs[idx]->schedulableJobsIdx() = idx;
-    }
-}
-
-////////////////////////////////////////////////////////////////////////////////////////////////////
-
-void
 SchedulingContext::store()
 {
     ASSERT(complete());
 
-    // re-set job status based job->active()
-    const job_set_id_t& jobs = _dataSet->jobs();
-    job_set_id_t::const_iterator jobIt;
-    for (jobIt = jobs.begin(); jobIt != jobs.end(); ++jobIt)
+    // set job status
+    auto& jobs = _dataSet->jobs();
+    for (auto job : jobs)
     {
-        Job* job = *jobIt;
+        // job is active?
         if (job->active())
         {
+            // status is inactive or undefined -> set to planned
             if ((job->status() == jobstatus_inactive) || (job->status() == jobstatus_undefined))
             {
                 job->status() = jobstatus_planned;
             }
         }
-        else
+        else // inactive
         {
+            // set job status to inactive
             job->status() = jobstatus_inactive;
         }
     }
 
-    const jobop_set_id_t& ops = _dataSet->ops();
-    jobop_set_id_t::const_iterator it;
-    for (it = ops.begin(); it != ops.end(); ++it)
+    // iterate over ops
+    auto& ops = _dataSet->ops();
+    for (auto op : ops)
     {
-        JobOp* op = *it;
-
+        // op's job is not active -> skip
         if (!op->job()->active())
+        {
             continue;
-        // ignore summary op
+        }
+
+        // op is summary -> skip
         if (op->type() == op_summary)
+        {
             continue;
+        }
 
-        // ignore ignorable op
+        // op is ignorable -> skip
         if (op->ignorable())
+        {
             continue;
+        }
 
-        // ignore op that has no activity
-        Activity* act = op->activity();
+        // op has no activity -> skip
+        auto act = op->activity();
         if (act == nullptr)
+        {
             continue;
+        }
 
         ASSERT(act->ef() >= (act->es() - 1));
 
         // reference activity subtype
-        BrkActivity* brkact = op->breakable() ? op->brkact() : nullptr;
-        IntActivity* intact = op->interruptible() ? op->intact() : nullptr;
+        auto brkact = op->breakable() ? op->brkact() : nullptr;
+        auto intact = op->interruptible() ? op->intact() : nullptr;
 
-        // scheduling agent, start-time
+        // set scheduling agent, scheduled-start-time, scheduled-resume-time
         op->scheduledBy() = sa_clevor;
         if (op->status() == opstatus_started)
         {
@@ -299,20 +284,24 @@ SchedulingContext::store()
         // end-time
         op->scheduledEndTime() = timeSlotToTime(_config->forward() ? act->ef() + 1 : act->lf() + 1);
 
-        //if (!op->schedulable()) continue;
-
-        // processing-time
+        // pt = activity's processing-time
         uint_t pt = uint_t_max;
         if (brkact != nullptr)
         {
-            if (&(brkact->possiblePts()) == nullptr)
+            // breakable activity
+            if (&brkact->possiblePts() == nullptr)
             {
                 throw FailEx("scheduling error detected for op " + Uint(op->id()).toString());
             }
             pt = brkact->possiblePts().value();
         }
-        if (intact != nullptr)
+        else if (intact != nullptr)
+        {
+            // interruptible activity
             pt = intact->processingTime();
+        }
+
+        // set op's scheduled-processing-time or scheduled-remaining-pt
         if (pt == uint_t_max)
         {
             op->scheduledProcessingTime() = (op->scheduledEndTime() - op->scheduledStartTime());
@@ -330,7 +319,7 @@ SchedulingContext::store()
             }
         }
 
-        // remove res-reqs created by system (for non-frozen or interruptible)
+        // non-frozen and non-interruptible op -> remove resource requirements created by system
         if (!op->frozen() || (intact != nullptr))
         {
             op->removeSystemResReqs();
@@ -338,21 +327,23 @@ SchedulingContext::store()
 
         // record scheduled-capacity for discrete-res-reqs
         uint_t numResReqs = op->numResReqs();
-        uint_t i;
-        for (i = 0; i < numResReqs; ++i)
+        for (uint_t resReqIdx = 0; resReqIdx != numResReqs; ++resReqIdx)
         {
-            cse::ResourceRequirement* cseResReq = op->getResReq(i);
-            Object* clsResReq = cseResReq->clsResReq();
-            if (clsResReq == nullptr)
-                continue;
-            if (!clsResReq->isA(cls::DiscreteResourceRequirement))
-                continue;
-            cls::DiscreteResourceRequirement* clsDRR = (cls::DiscreteResourceRequirement*)clsResReq;
+            auto cseResReq = op->getResReq(resReqIdx);
+
+            // not DiscreteResourceRequirement -> skip
+            auto clsDRR = dynamic_cast<cls::DiscreteResourceRequirement*>(cseResReq->clsResReq());
             if (clsDRR == nullptr)
+            {
                 continue;
-            const ResourceCapPts* resCapPts = clsDRR->resCapPts();
+            }
+
+            // select the processing time in ResourceCapPts
+            auto resCapPts = clsDRR->resCapPts();
             ASSERT(pt != uint_t_max);
             resCapPts->selectPt(pt);
+
+            // record the scheduled capacity in cseResReq
             cseResReq->scheduledCapacity() = resCapPts->selectedCap();
         }
 
@@ -360,22 +351,24 @@ SchedulingContext::store()
         auto resourcesArray = _schedule->resourcesArray();
         if (intact != nullptr)
         {
-            IntActivity::revarray_uint_t** allocations;
             uint_t numAllocations;
+            IntActivity::revarray_uint_t** allocations;
             intact->getAllocations(allocations, numAllocations);
-            for (uint_t j = 0; j < numAllocations; ++j)
+            for (uint_t allocIdx = 0; allocIdx != numAllocations; ++allocIdx)
             {
-                if (allocations[j] == nullptr)
+                if (allocations[allocIdx] == nullptr)
+                {
                     continue;
-                IntActivity::revarray_uint_t& allocs = *allocations[j];
-                uint_t resId = resourcesArray[j]->id();
+                }
+                auto& allocs = *allocations[allocIdx];
+                uint_t resId = resourcesArray[allocIdx]->id();
                 uint_t numSpans = allocs.size() / 2;
                 uint_t idx = 0;
-                for (uint_t k = 0; k < numSpans; ++k)
+                for (uint_t spanIdx = 0; spanIdx != numSpans; ++spanIdx)
                 {
                     time_t beginTime = timeSlotToTime(allocs[idx++]);
                     time_t endTime = timeSlotToTime(allocs[idx++] + 1);
-                    cse::ResourceRequirement* resReq = new ResourceRequirement();
+                    auto resReq = new ResourceRequirement();
                     resReq->resourceId() = resId;
                     resReq->capacity() = 100;
                     resReq->scheduledCapacity() = 100;
@@ -389,25 +382,32 @@ SchedulingContext::store()
 
         // do nothing else if op is frozen
         if (op->frozen())
-            continue;
-
-        // record resource selections for res-group-reqs
-        uint_t numResGroupReqs = op->numResGroupReqs();
-        for (i = 0; i < numResGroupReqs; ++i)
         {
-            cse::ResourceGroupRequirement* cseResGroupReq = op->getResGroupReq(i);
-            cls::DiscreteResourceRequirement* clsResReq = cseResGroupReq->clsResReq();
+            continue;
+        }
+
+        // resource-group-requirements: record resource selections
+        uint_t numResGroupReqs = op->numResGroupReqs();
+        for (uint_t resGroupReqIdx = 0; resGroupReqIdx != numResGroupReqs; ++resGroupReqIdx)
+        {
+            // reference this ResourceGroupRequirement's cls::ResourceRequirement
+            auto cseResGroupReq = op->getResGroupReq(resGroupReqIdx);
+            auto clsResReq = cseResGroupReq->clsResReq();
             if (clsResReq == nullptr)
+            {
                 continue;
-            const clp::IntVar& selectedResources = clsResReq->selectedResources();
+            }
+
+            // 
+            auto& selectedResources = clsResReq->selectedResources();
             uint_t resId = selectedResources.value();
-            const ResourceCapPts* resCapPts = clsResReq->resCapPts(resId);
+            auto resCapPts = clsResReq->resCapPts(resId);
             resCapPts->selectPt(pt);
             cseResGroupReq->scheduledResourceId() = resCapPts->resourceId();
             cseResGroupReq->scheduledCapacity() = resCapPts->selectedCap();
 
             // add res-req
-            cse::ResourceRequirement* resReq = new ResourceRequirement();
+            auto resReq = new ResourceRequirement();
             resReq->resourceId() = cseResGroupReq->scheduledResourceId();
             resReq->capacity() = cseResGroupReq->scheduledCapacity();
             resReq->scheduledCapacity() = cseResGroupReq->scheduledCapacity();
@@ -417,35 +417,34 @@ SchedulingContext::store()
     }
 
     // handle summary ops separately
-    const TRBtree<JobOp>& summaryOpsIncSD = _dataSet->summaryOpsIncSD();
-    TRBtreeIt<JobOp> incIt;
-    for (incIt = summaryOpsIncSD.begin(); incIt != summaryOpsIncSD.end(); ++incIt)
+    auto& summaryOpsIncSD = _dataSet->summaryOpsIncSD();
+    for (auto op_ : summaryOpsIncSD)
     {
-        SummaryOp* op = (SummaryOp*)*incIt;
+        auto op = utl::cast<SummaryOp>(op_);
+
+        // unschedule the summary op
         op->unschedule();
 
         // set start-time and end-time based on child ops
-        jobop_set_id_t::const_iterator succIt;
-        for (succIt = op->childOps().begin(); succIt != op->childOps().end(); ++succIt)
+        for (auto succOp : op->childOps())
         {
-            JobOp* succOp = *succIt;
-
             // ignore unscheduled child
             if (!succOp->isScheduled())
             {
                 continue;
             }
 
+            // set scheduling agent
             op->scheduledBy() = sa_clevor;
 
-            // summary.start = min(summary.start, child.start)
+            // summary.scheduledStart = min(summary.start, child.start)
             if ((op->scheduledStartTime() == -1) ||
                 (succOp->scheduledStartTime() < op->scheduledStartTime()))
             {
                 op->scheduledStartTime() = succOp->scheduledStartTime();
             }
 
-            // summary.end = max(summary.end, child.end)
+            // summary.scheduledEnd = max(summary.end, child.end)
             if ((op->scheduledEndTime() == -1) ||
                 (succOp->scheduledEndTime() > op->scheduledEndTime()))
             {
@@ -465,19 +464,58 @@ SchedulingContext::store()
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
+SchedulingContext::setComplete(bool complete)
+{
+    _complete = complete;
+    if (_complete & _initialized)
+    {
+        onComplete();
+    }
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
+void
+SchedulingContext::sjobsAdd(Job* job)
+{
+    ASSERTD(job->schedulableJobsIdx() == uint_t_max);
+    job->schedulableJobsIdx() = _sjobs.size();
+    _sjobs.add(job);
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
+void
+SchedulingContext::sjobsRemove(Job* job)
+{
+    ASSERTD(job->schedulableJobsIdx() != uint_t_max);
+    uint_t idx = job->schedulableJobsIdx();
+    uint_t endIdx = _sjobs.size() - 1;
+    _sjobs.remove(idx);
+    job->schedulableJobsIdx() = uint_t_max;
+    if (idx < endIdx)
+    {
+        _sjobs[idx]->schedulableJobsIdx() = idx;
+    }
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
+void
 SchedulingContext::init()
 {
     _dataSet = nullptr;
     _mgr = nullptr;
+    _bp = nullptr;
     _schedule = nullptr;
+    _dataSetOwner = true;
+    _initialized = false;
     _complete = false;
-    _afterInitialization = false;
     _config = nullptr;
     _makespan = 0;
     _frozenMakespan = 0;
     _hardCtScore = 0;
     _numScheduledOps = 0;
-    _dataSetOwner = true;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -486,7 +524,9 @@ void
 SchedulingContext::deInit()
 {
     if (_dataSetOwner)
+    {
         delete _dataSet;
+    }
     delete _schedule;
     delete _mgr;
 }
@@ -496,11 +536,9 @@ SchedulingContext::deInit()
 void
 SchedulingContext::setResCapPtsAdj()
 {
-    const jobop_set_id_t& ops = _dataSet->ops();
-    jobop_set_id_t::const_iterator it;
-    for (it = ops.begin(); it != ops.end(); ++it)
+    auto& ops = _dataSet->ops();
+    for (auto op : ops)
     {
-        JobOp* op = *it;
         op->setResCapPtsAdj(_config->timeStep());
     }
 }
@@ -510,26 +548,29 @@ SchedulingContext::setResCapPtsAdj()
 void
 SchedulingContext::initSummaryOps()
 {
-    const pct_vector_t& pcts = _dataSet->precedenceCts();
-    pct_vector_t::const_iterator pctIt;
-    for (pctIt = pcts.begin(); pctIt != pcts.end(); ++pctIt)
+    auto& pcts = _dataSet->precedenceCts();
+    for (auto pct : pcts)
     {
-        PrecedenceCt* pct = *pctIt;
-        JobOp* lhsOp = _dataSet->findOp(pct->lhsOpId());
-        JobOp* rhsOp = _dataSet->findOp(pct->rhsOpId());
+        auto lhsOp = _dataSet->findOp(pct->lhsOpId());
+        auto rhsOp = _dataSet->findOp(pct->rhsOpId());
         ASSERTD(lhsOp != nullptr);
         ASSERTD(rhsOp != nullptr);
 
-        // lhsOp must be summary op
+        // lhsOp is not summary -> skip
         if (lhsOp->type() != op_summary)
+        {
             continue;
-        SummaryOp* lhsSummary = (SummaryOp*)lhsOp;
+        }
+        auto lhsSummary = utl::cast<SummaryOp>(lhsOp);
 
+        // not S-S constraint -> skip
         if (pct->type() != pct_ss)
+        {
             continue;
+        }
 
-        // lhsOp is parent of rhsOp
-        lhsSummary->childOps().insert(rhsOp);
+        // lhsOp (summary) is parent of rhsOp
+        lhsSummary->addChildOp(rhsOp);
     }
 }
 
@@ -540,16 +581,12 @@ SchedulingContext::setCompletionStatus()
 {
     const jobop_set_id_t& ops = _dataSet->ops();
     const TRBtree<JobOp>& opsDecSD = _dataSet->opsDecSD();
-    TRBtreeIt<JobOp> opsDecSDend = opsDecSD.end();
 
     // initially:
-    //     o mark precedence-lag as complete
-    //     o mark summary as unstarted
-    jobop_set_id_t::const_iterator it;
-    for (it = ops.begin(); it != ops.end(); ++it)
+    //   mark precedence-lag as complete
+    //   mark summary as unstarted
+    for (auto op : ops)
     {
-        JobOp* op = *it;
-
         // unschedule op that is improperly scheduled
         if (!op->isScheduled() || (op->type() == op_precedenceLag))
         {
@@ -569,35 +606,30 @@ SchedulingContext::setCompletionStatus()
     }
 
     // successors of incomplete ops are unstarted
-    TRBtreeIt<JobOp> dsdIt;
-    for (dsdIt = opsDecSD.begin(); dsdIt != opsDecSDend; ++dsdIt)
+    for (auto op : opsDecSD)
     {
-        JobOp* op = *dsdIt;
-
-        // skip summary op
+        // summary or complete op -> skip
         if ((op->type() == op_summary) || (op->status() == opstatus_complete))
         {
             continue;
         }
 
-        CycleGroup* cg = op->esCG();
-        const cg_revset_t& succCGs = cg->allSuccCGs();
-        cg_revset_t::iterator cgIt;
-        for (cgIt = succCGs.begin(); cgIt != succCGs.end(); ++cgIt)
+        // mark successors as unstarted
+        auto cg = op->esCG();
+        auto& succCGs = cg->allSuccCGs();
+        for (auto succCG : succCGs)
         {
-            CycleGroup* succCG = *cgIt;
-            CycleGroup::iterator cbIt;
-            for (cbIt = succCG->begin(); cbIt != succCG->end(); ++cbIt)
+            for (auto cb : *succCG)
             {
-                ConstrainedBound* cb = *cbIt;
-                Activity* succAct = (Activity*)cb->owner();
-                if (succAct == nullptr)
+                // reference successor activity and op
+                auto succAct = utl::cast<Activity>(cb->owner());
+                auto succOp = utl::cast<JobOp>(succAct->owner());
+                if ((succAct == nullptr) || (succOp == nullptr))
+                {
                     continue;
-                JobOp* succOp = (JobOp*)succAct->owner();
-                if (succOp == nullptr)
-                    continue;
+                }
 
-                // mark as unstarted
+                // mark non-precedenceLag succOp as unstarted
                 if ((succOp->status() != opstatus_unstarted) &&
                     (succOp->type() != op_precedenceLag))
                 {
@@ -610,49 +642,39 @@ SchedulingContext::setCompletionStatus()
         }
     }
 
-    /////////////////////////////////////////////////////////////////////////////////////////////////
-    // note: summary ops were all marked as unstarted
-    //
     // for each summary op:
-    //     - mark it as complete if all its children are complete
-    //     - mark it as started if at least one of its children has started
-    /////////////////////////////////////////////////////////////////////////////////////////////////
-
-    // iterate over summary ops in order of increasing summary depth
-    TRBtreeIt<JobOp> incIt;
-    const TRBtree<JobOp>& summaryOpsIncSD = _dataSet->summaryOpsIncSD();
-    for (incIt = summaryOpsIncSD.begin(); incIt != summaryOpsIncSD.end(); ++incIt)
+    //   mark it as complete if all its children are complete
+    //   mark it as started if at least one of its children has started
+    auto& summaryOpsIncSD = _dataSet->summaryOpsIncSD();
+    for (auto op_ : summaryOpsIncSD)
     {
-        SummaryOp* op = (SummaryOp*)*incIt;
-
-        bool allComplete = true;
-        bool anyStarted = false;
+        auto op = utl::cast<SummaryOp>(op_);
 
         // iterate over successors
-        jobop_set_id_t::const_iterator succIt;
-        for (succIt = op->childOps().begin(); succIt != op->childOps().end(); ++succIt)
+        bool allComplete = true;
+        bool anyStarted = false;
+        for (auto childOp : op->childOps())
         {
-            JobOp* childOp = *succIt;
-
             allComplete = allComplete && (childOp->status() == opstatus_complete);
-
             anyStarted = anyStarted || (childOp->status() == opstatus_started);
         }
 
+        // all child ops complete -> mark summary op as complete
         if (allComplete)
+        {
             op->status() = opstatus_complete;
-        else if (anyStarted)
+        }
+        else if (anyStarted) // at least one child op started
+        {
+            // mark summary op as started
             op->status() = opstatus_started;
+        }
     }
 
-    //
     // for each completed precedenceLag op:
-    //     o if its successor is started, post a unary-ct for it
-    //
-    for (it = ops.begin(); it != ops.end(); ++it)
+    //   if its successor is started, post a unary-ct for it
+    for (auto op : ops)
     {
-        JobOp* op = *it;
-
         // skip op that is not precedenceLag type
         if ((op->type() != op_precedenceLag) || (op->status() != opstatus_complete))
         {
@@ -661,13 +683,13 @@ SchedulingContext::setCompletionStatus()
 
         // find the precedence-ct linking to successor
         JobOp* succOp = nullptr;
-        const pct_vector_t& precedenceCts = _dataSet->precedenceCts();
-        pct_vector_t::const_iterator it;
-        for (it = precedenceCts.begin(); it != precedenceCts.end(); ++it)
+        auto& precedenceCts = _dataSet->precedenceCts();
+        for (auto pct : precedenceCts)
         {
-            PrecedenceCt* pct = *it;
             if (pct->lhsOpId() != op->id())
+            {
                 continue;
+            }
             succOp = _dataSet->findOp(pct->rhsOpId());
             break;
         }
@@ -678,12 +700,11 @@ SchedulingContext::setCompletionStatus()
             continue;
         }
 
-        // if successor is started, then post unary-ct
+        // successor is started -> post unary-ct
         if (succOp->status() == opstatus_started)
         {
             ASSERTD(succOp->scheduledStartTime() != -1);
-            UnaryCt* unaryCt = new UnaryCt(uct_startNoSoonerThan, succOp->scheduledStartTime());
-            succOp->add(unaryCt);
+            succOp->add(new UnaryCt(uct_startNoSoonerThan, succOp->scheduledStartTime()));
         }
     }
 }
@@ -693,39 +714,35 @@ SchedulingContext::setCompletionStatus()
 void
 SchedulingContext::setFrozenStatus()
 {
-    const jobop_set_id_t& ops = _dataSet->ops();
-    const TRBtree<JobOp>& opsDecSD = _dataSet->opsDecSD();
-    TRBtreeIt<JobOp> opsDecSDend = opsDecSD.end();
+    auto& ops = _dataSet->ops();
+    auto& opsDecSD = _dataSet->opsDecSD();
+    auto opsDecSDend = opsDecSD.end();
     time_t originTime = _config->originTime();
     time_t autoFreezeTime = originTime + _config->autoFreezeDuration();
 
     // predecessors of frozen ops are frozen (initially)
-    TRBtreeIt<JobOp> dsdIt;
-    for (dsdIt = opsDecSD.begin(); dsdIt != opsDecSDend; ++dsdIt)
+    for (auto op : opsDecSD)
     {
-        JobOp* op = *dsdIt;
-
         // manually frozen?
         op->frozen() = op->frozen() || op->manuallyFrozen();
 
-        // skip summary op
+        // skip summary or non-frozen op
         if ((op->type() == op_summary) || !op->frozen())
-            continue;
-
-        // not frozen => successors not frozen
-        CycleGroup* cg = op->esCG();
-        const cg_revset_t& predCGs = cg->allPredCGs();
-        cg_revset_t::iterator cgIt;
-        for (cgIt = predCGs.begin(); cgIt != predCGs.end(); ++cgIt)
         {
-            CycleGroup* predCG = *cgIt;
-            CycleGroup::iterator cbIt;
-            for (cbIt = predCG->begin(); cbIt != predCG->end(); ++cbIt)
+            continue;
+        }
+
+        // non-frozen ops can't have frozen successors
+        // .. so mark predecessors of frozen op as frozen
+        auto cg = op->esCG();
+        auto& predCGs = cg->allPredCGs();
+        for (auto predCG : predCGs)
+        {
+            for (auto cb : *predCG)
             {
-                ConstrainedBound* cb = *cbIt;
-                Activity* predAct = (Activity*)cb->owner();
+                auto predAct = utl::cast<Activity>(cb->owner());
+                auto predOp = utl::cast<JobOp>(predAct->owner());
                 ASSERTD(predAct != nullptr);
-                JobOp* predOp = (JobOp*)predAct->owner();
                 ASSERTD(predOp != nullptr);
                 predOp->frozen() = true;
             }
@@ -733,49 +750,48 @@ SchedulingContext::setFrozenStatus()
     }
 
     // set frozen status of ops
-    jobop_set_id_t::const_iterator it;
-    for (it = ops.begin(); it != ops.end(); ++it)
+    for (auto op : ops)
     {
-        JobOp* op = *it;
-
         time_t sst = op->scheduledStartTime();
 
-        // no frozen ops when backward scheduling
+        // backward scheduling -> don't freeze
         if (_config->backward())
         {
             goto nofreeze;
         }
 
-        // summary op is not frozen
+        // summary op -> don't freeze
         if (op->type() == op_summary)
         {
             goto nofreeze;
         }
 
-        // useInitialAsSeed?
+        // useInitialAsSeed -> freeze
         if (_config->useInitialAsSeed())
         {
             goto freeze;
         }
 
-        // unscheduled op is not frozen (except precedence-lag)
+        // unscheduled (and not precedence-lag op) -> don't freeze
         if (!op->isScheduled() && (op->type() != op_precedenceLag))
         {
             goto nofreeze;
         }
 
-        // frozen?
+        // frozen -> freeze
         if (op->frozen())
         {
             goto freeze;
         }
 
-        // started or completed?
+        // started or completed -> freeze
         if ((op->status() == opstatus_started) || (op->status() == opstatus_complete))
         {
             goto freeze;
         }
-        else if (op->status() == opstatus_unstarted)
+
+        // unstarted -> don't freeze
+        if (op->status() == opstatus_unstarted)
         {
             // op must start within [origin,autoFreezeTime)
             if ((autoFreezeTime == originTime) || (sst >= autoFreezeTime))
@@ -791,29 +807,25 @@ SchedulingContext::setFrozenStatus()
         op->unschedule();
     }
 
-    // successors of unfrozen ops are unfrozen
-    for (dsdIt = opsDecSD.begin(); dsdIt != opsDecSDend; ++dsdIt)
+    // successors of non-frozen ops are non-frozen
+    for (auto op : opsDecSD)
     {
-        JobOp* op = *dsdIt;
-
-        // skip summary op
+        // summary op frozen op -> skip
         if ((op->type() == op_summary) || op->frozen())
-            continue;
-
-        // not frozen => successors not frozen
-        CycleGroup* cg = op->esCG();
-        const cg_revset_t& succCGs = cg->allSuccCGs();
-        cg_revset_t::iterator cgIt;
-        for (cgIt = succCGs.begin(); cgIt != succCGs.end(); ++cgIt)
         {
-            CycleGroup* succCG = *cgIt;
-            CycleGroup::iterator cbIt;
-            for (cbIt = succCG->begin(); cbIt != succCG->end(); ++cbIt)
+            continue;
+        }
+
+        // mark successors of non-frozen op non-frozen
+        auto cg = op->esCG();
+        auto& succCGs = cg->allSuccCGs();
+        for (auto succCG : succCGs)
+        {
+            for (auto cb : *succCG)
             {
-                ConstrainedBound* cb = *cbIt;
-                Activity* succAct = (Activity*)cb->owner();
+                auto succAct = utl::cast<Activity>(cb->owner());
+                auto succOp = utl::cast<JobOp>(succAct->owner());
                 ASSERTD(succAct != nullptr);
-                JobOp* succOp = (JobOp*)succAct->owner();
                 ASSERTD(succOp != nullptr);
                 succOp->frozen() = false;
             }
@@ -821,22 +833,13 @@ SchedulingContext::setFrozenStatus()
     }
 
     // post-conditions
-    for (it = ops.begin(); it != ops.end(); ++it)
+    for (auto op : ops)
     {
-        JobOp* op = *it;
-
-        // skip summary op
+        // summary op -> skip
         if (op->type() == op_summary)
+        {
             continue;
-
-#ifdef DEBUG_UNIT
-//         if (op->frozen() && op->status() != opstatus_complete)
-//         {
-//             utl::cout << "frozen_op id:" << op->id()
-//                       << ",name:" << op->name().c_str()
-//                       << ",status " << op->status() << utl::endlf;
-//         }
-#endif
+        }
 
         switch (op->status())
         {
@@ -891,15 +894,6 @@ SchedulingContext::scheduleFrozenOps()
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
-SchedulingContext::setComplete(bool complete)
-{
-    _complete = complete;
-    if (_complete & _afterInitialization)
-        onComplete();
-}
-////////////////////////////////////////////////////////////////////////////////////////////////////
-
-void
 SchedulingContext::onComplete()
 {
     ASSERTD(_sjobs.size() == 0);
@@ -908,18 +902,18 @@ SchedulingContext::onComplete()
 #endif
     _hardCtScore = _dataSet->hardCtScore();
 
+    // data-set has ResourceSequenceLists?
     if (!_dataSet->resourceSequenceLists().empty())
     {
+        // add BoundCts for activities scheduled on unary resources
         postUnaryResourceFS();
+
+        // find ResourceSequenceRule applications, post delays for them
         findResourceSequenceRuleApplications();
-        // Note: postResourceSequenceDelays has design fault. It can cause resource
-        //       over-allocation. However, it MAY still work for datasets which ONLY
-        //       use unary resources. So for datasets which have multiple capacity
-        //       resources, you have to set all delays to zero in order to avoid
-        //       resource over-allocation.
-        // Joe, Dec 3, 2009
         postResourceSequenceDelays();
     }
+
+    // calculate makespan and frozen-makespan
     calculateMakespan();
 }
 
@@ -928,15 +922,20 @@ SchedulingContext::onComplete()
 void
 SchedulingContext::calculateMakespan()
 {
-    const job_set_id_t& jobs = _dataSet->jobs();
-    job_set_id_t::const_iterator jobIt;
     bool forward = _config->forward();
-    for (jobIt = jobs.begin(); jobIt != jobs.end(); ++jobIt)
+    auto& jobs = _dataSet->jobs();
+    for (auto job : jobs)
     {
-        Job* job = *jobIt;
+        // skip job with id 0
         if (job->id() == 0)
+        {
             continue;
+        }
+
+        // calculate job's makespan
         job->calculateMakespan(forward);
+
+        // adjust overall makespan & frozen-makespan
         _makespan = utl::max(_makespan, job->makespan());
         _frozenMakespan = utl::max(_frozenMakespan, job->frozenMakespan());
     }
@@ -948,27 +947,29 @@ void
 SchedulingContext::postUnaryResourceFS()
 {
     // iterate over unary resources
-    const res_set_id_t& resources = _dataSet->resources();
-    res_set_id_t::const_iterator resIt;
-    for (resIt = resources.begin(); resIt != resources.end(); ++resIt)
+    auto& resources = _dataSet->resources();
+    for (auto res_ : resources)
     {
-        // find resource and its sequence-list
-        DiscreteResource* res = dynamic_cast<DiscreteResource*>(*resIt);
+        // not a DiscreteResource -> skip
+        auto res = dynamic_cast<DiscreteResource*>(res_);
         if (res == nullptr)
+        {
             continue;
-        cls::DiscreteResource* clsRes = (cls::DiscreteResource*)res->clsResource();
-        if ((clsRes == nullptr) || !clsRes->isUnary())
-            continue;
+        }
 
-        // iterate over activities scheduled on unary resource
-        // add F-S relationship for all activities
+        // not a unary resource -> skip
+        auto clsRes = res->clsResource();
+        if ((clsRes == nullptr) || !clsRes->isUnary())
+        {
+            continue;
+        }
+
+        // add F-S relationship for activities scheduled on the resource
         Activity* lhsAct = nullptr;
         const act_set_es_t& acts = clsRes->actsByStartTime();
-        act_set_es_t::const_iterator actIt;
-        for (actIt = acts.begin(); actIt != acts.end(); ++actIt)
+        for (auto rhsAct : acts)
         {
-            Activity* rhsAct = *actIt;
-
+            // first iteration -> only set lhsAct
             if (lhsAct == nullptr)
             {
                 lhsAct = rhsAct;
@@ -994,6 +995,8 @@ SchedulingContext::postUnaryResourceFS()
             }
         }
     }
+
+    // propagate
     _mgr->propagate();
 }
 
@@ -1003,78 +1006,78 @@ void
 SchedulingContext::findResourceSequenceRuleApplications()
 {
     // iterate over unary resources
-    const res_set_id_t& resources = _dataSet->resources();
-    res_set_id_t::const_iterator resIt;
-    for (resIt = resources.begin(); resIt != resources.end(); ++resIt)
+    auto& resources = _dataSet->resources();
+    for (auto res_ : resources)
     {
-        // find resource and its sequence-list
-        DiscreteResource* res = dynamic_cast<DiscreteResource*>(*resIt);
+        // not a DiscreteResource -> skip
+        auto res = dynamic_cast<DiscreteResource*>(res_);
         if (res == nullptr)
+        {
             continue;
-        const ResourceSequenceList* rsl = res->sequenceList();
+        }
+
+        // res has no ResourceSequenceList -> skip
+        auto rsl = res->sequenceList();
         if (rsl == nullptr)
+        {
             continue;
-        cls::DiscreteResource* clsRes = (cls::DiscreteResource*)res->clsResource();
+        }
+
+        // not a unary resource -> skip
+        auto clsRes = res->clsResource();
         if ((clsRes == nullptr) || !clsRes->isUnary())
+        {
             continue;
+        }
 
 #ifdef DEBUG_UNIT
         // show activities scheduled on the resource
         utl::cout << utl::endlf << "SchedulingContext::findResourceSequenceRuleApplications()"
                   << utl::endlf;
-        const act_set_es_t& debug_acts = clsRes->actsByStartTime();
-        act_set_es_t::const_iterator debug_it;
-        for (debug_it = debug_acts.begin(); debug_it != debug_acts.end(); ++debug_it)
+        auto& debug_acts = clsRes->actsByStartTime();
+        for (auto act : debug_acts)
         {
-            Activity* act = *debug_it;
-            JobOp* op = (JobOp*)act->owner();
+            auto op = utl::cast<JobOp>(act->owner());
             utl::cout << "res:" << res->id() << ", act:" << act->id()
                       << ", seqId:" << op->sequenceId() << ", es=" << act->es()
                       << ", ef=" << act->ef() << utl::endl;
         }
 #endif
 
-        // iterate over activities scheduled on unary resource
-        // assessing delays based on rules in sequence-list
+        // impose delays based on rules in sequence-list
         Activity* lhsAct = nullptr;
-        const act_set_es_t& acts = clsRes->actsByStartTime();
-        act_set_es_t::const_iterator actIt;
-        for (actIt = acts.begin(); actIt != acts.end(); ++actIt)
+        auto& acts = clsRes->actsByStartTime();
+        for (auto rhsAct : acts)
         {
-            Activity* rhsAct = *actIt;
-
+            // first iteration -> only set lhsAct
             if (lhsAct == nullptr)
             {
                 lhsAct = rhsAct;
                 continue;
             }
 
-            JobOp* lhsOp = (JobOp*)lhsAct->owner();
-            JobOp* rhsOp = (JobOp*)rhsAct->owner();
+            auto lhsOp = utl::cast<JobOp>(lhsAct->owner());
+            auto rhsOp = utl::cast<JobOp>(rhsAct->owner());
 
-            // do nothing if ops have same sequence-id AND same jobIds
-            // Joe added the same jobIds check, because it's needed by
-            // the Bioriginal dataset. this check can be removed when we
-            // rewrite code for moving time/cost in the future.
-            // Dec 1, 2009
-            uint_t lhsosid = lhsOp->sequenceId();
-            uint_t rhsosid = rhsOp->sequenceId();
-            if (lhsosid == rhsosid && lhsOp->job()->id() == rhsOp->job()->id())
+            // do nothing if ops have same sequenceId AND same jobId
+            // (this check can be removed when we rewrite code for moving time/cost)
+            uint_t lhsOpSeqId = lhsOp->sequenceId();
+            uint_t rhsOpSeqId = rhsOp->sequenceId();
+            if ((lhsOpSeqId == rhsOpSeqId) && (lhsOp->job()->id() == rhsOp->job()->id()))
             {
                 lhsAct = rhsAct;
                 continue;
             }
 
             // find the most specific matching rule
-            const ResourceSequenceRule* rule = rsl->findRule(lhsosid, rhsosid);
-            if (rule == nullptr)
+            auto rule = rsl->findRule(lhsOpSeqId, rhsOpSeqId);
+            if (rule != nullptr)
             {
-                lhsAct = rhsAct;
-                continue;
+                res->sequenceRuleApplications().push_back(
+                    ResourceSequenceRuleApplication(lhsOp, rhsOp, rule));
             }
-            res->sequenceRuleApplications().push_back(
-                ResourceSequenceRuleApplication(lhsOp, rhsOp, rule));
 
+            // rhsAct becomes lhsAct for next iteration
             lhsAct = rhsAct;
         }
     }
@@ -1088,40 +1091,49 @@ SchedulingContext::postResourceSequenceDelays()
     // iterate over discrete resources
     bool delayImposed = false;
     std::vector<cls::DiscreteResource*> clsResources;
-    const res_set_id_t& resources = _dataSet->resources();
-    res_set_id_t::const_iterator resIt;
-    for (resIt = resources.begin(); resIt != resources.end(); ++resIt)
+    auto& resources = _dataSet->resources();
+    for (auto res_ : resources)
     {
-        // iterate over sequence-rule-applications for the resource
-        DiscreteResource* res = dynamic_cast<DiscreteResource*>(*resIt);
+        // not a DiscreteResource -> skip
+        auto res = dynamic_cast<DiscreteResource*>(res_);
         if (res == nullptr)
+        {
             continue;
-        cls::DiscreteResource* clsRes = (cls::DiscreteResource*)res->clsResource();
-        if ((clsRes == nullptr) || !clsRes->isUnary())
-            continue;
-        const rsra_vector_t& rsras = res->sequenceRuleApplications();
+        }
 
-        // add an extra capcity for every relevant unary resource
+        // not a unary resource -> skip
+        auto clsRes = res->clsResource();
+        if ((clsRes == nullptr) || !clsRes->isUnary())
+        {
+            continue;
+        }
+
+        // reference res's ResourceSequenceRuleApplications
+        auto& rsras = res->sequenceRuleApplications();
+
+        // double res's provided capacity
         if (rsras.size() > 0)
         {
             clsResources.push_back(clsRes);
             clsRes->doubleProvidedCap();
         }
 
-        rsra_vector_t::const_iterator raIt;
-        for (raIt = rsras.begin(); raIt != rsras.end(); ++raIt)
+        // iterate over this resource's ResourceSequenceRuleApplications
+        for (auto& app : rsras)
         {
-            const ResourceSequenceRuleApplication& app = *raIt;
-            const ResourceSequenceRule* rule = app.rule();
+            auto rule = app.rule();
             uint_t delay = _config->durationToTimeSlot(rule->delay());
-            //             uint_t delay = rule->delay() / _config->timeStep();
             if (delay == 0)
+            {
                 continue;
+            }
             ++delay;
-            cls::Activity* lhsAct = app.lhsOp()->activity();
-            cls::Activity* rhsAct = app.rhsOp()->activity();
+            auto lhsAct = app.lhsOp()->activity();
+            auto rhsAct = app.rhsOp()->activity();
             if ((lhsAct == nullptr) || (rhsAct == nullptr))
+            {
                 continue;
+            }
 #ifdef DEBUG_UNIT
             utl::cout << utl::endlf << "SchedulingContext::postResourceSequenceDelays()"
                       << utl::endlf;
@@ -1148,11 +1160,10 @@ SchedulingContext::postResourceSequenceDelays()
         _mgr->propagate();
     }
 
-    // take the added extra capacity away
-    for (uint_t i = 0; i < clsResources.size(); i++)
+    // restore res's original capacity
+    for (uint_t i = 0; i != clsResources.size(); ++i)
     {
-        cls::DiscreteResource* res = clsResources[i];
-        res->halveProvidedCap();
+        clsResources[i]->halveProvidedCap();
     }
 }
 

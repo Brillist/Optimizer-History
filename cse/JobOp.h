@@ -10,7 +10,6 @@
 #include <cse/ResourceRequirement.h>
 #include <cse/ResourceGroupRequirement.h>
 #include <cse/UnaryCt.h>
-#include <cse/ItemRequirement.h>
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -24,7 +23,10 @@ class JobOp;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-/** Scheduling agent. */
+/**
+   Scheduling agent.
+   \ingroup cse
+*/
 enum scheduling_agent_t
 {
     sa_clevor = 0,   /**< Clevor scheduler */
@@ -34,7 +36,10 @@ enum scheduling_agent_t
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-/** Operation type. */
+/**
+   Operation type.
+   \ingroup cse
+*/
 enum operation_t
 {
     op_normal = 0,        /**< normal op */
@@ -47,7 +52,10 @@ enum operation_t
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-/** Operation status. */
+/**
+   Operation status.
+   \ingroup cse
+*/
 enum operation_status_t
 {
     opstatus_unstarted = 0, /**< not started */
@@ -61,7 +69,7 @@ enum operation_status_t
 /**
    Operation belonging to a Job.
 
-   \author Adam McKee
+   \ingroup cse
 */
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -344,7 +352,7 @@ public:
     }
 
     /** Get unaryCts. */
-    const unaryct_vect_t&
+    const unaryct_vector_t&
     unaryCts() const
     {
         return _unaryCts;
@@ -498,23 +506,6 @@ public:
 
     /** Get resource-ids for all (possibly) required resources. */
     void getAllResIds(uint_set_t& resIds) const;
-    //@}
-
-    /// \name Item requirement
-    //@{
-    /** Get item requirements. */
-    itemreq_vector_t&
-    itemReqs()
-    {
-        return _itemReqs;
-    }
-
-    /** Add a item requirement. */
-    void
-    addItemReq(ItemRequirement* itemReq)
-    {
-        _itemReqs.push_back(itemReq);
-    }
     //@}
 
     /// \name Predecence relationships
@@ -697,7 +688,7 @@ private:
     time_t _scheduledResumeTime;
 
     // unary constraints
-    unaryct_vect_t _unaryCts;
+    unaryct_vector_t _unaryCts;
     time_t _minStartTime;
     time_t _maxStartTime;
     time_t _minEndTime;
@@ -709,9 +700,6 @@ private:
     resGroupReq_vector_t _resGroupReqs;
     cls::resCapPts_set_t _resCapPts;
     mutable cls::resCapPts_set_t _resCapPtsAdj;
-
-    // item requirements (for MRP)
-    itemreq_vector_t _itemReqs;
 
     // schedulable-ops list index
     uint_t _schedulableOpsIdx;

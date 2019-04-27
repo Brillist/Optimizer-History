@@ -6,15 +6,18 @@ CSE_NS_BEGIN;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-/** Unary constraint type. */
+/**
+   Unary constraint type.
+   \ingroup cse
+*/
 enum unary_ct_t
 {
-    uct_startAt = 0,       /**< start = t */
-    uct_startNoSoonerThan, /**< start >= t */
-    uct_startNoLaterThan,  /**< start <= t */
-    uct_endAt,             /**< end = t */
-    uct_endNoSoonerThan,   /**< end >= t */
-    uct_endNoLaterThan,    /**< end <= t */
+    uct_startAt = 0,       /**< start time = t */
+    uct_startNoSoonerThan, /**< start time >= t */
+    uct_startNoLaterThan,  /**< start time <= t */
+    uct_endAt,             /**< end time = t */
+    uct_endNoSoonerThan,   /**< end time >= t */
+    uct_endNoLaterThan,    /**< end time <= t */
     uct_undefined          /**< undefined/null */
 };
 
@@ -23,7 +26,10 @@ enum unary_ct_t
 /**
    Unary constraint.
 
-   \author Adam McKee
+   A UnaryCt requires a JobOp's start or end time to relate to a specified time in a specified way.
+
+   \see unary_ct_t
+   \ingroup cse
 */
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -36,7 +42,7 @@ public:
     /**
       Constructor.
       \param type constraint type
-      \param time associated time
+      \param time specified time
    */
     UnaryCt(unary_ct_t type, time_t time)
     {
@@ -44,21 +50,15 @@ public:
         _time = time;
     }
 
-    /** Copy another instance. */
     virtual void copy(const utl::Object& rhs);
 
     virtual void serialize(utl::Stream& stream, uint_t io, uint_t mode = utl::ser_default);
 
+    /// \name Accessors (const)
+    //@{
     /** Get type. */
     unary_ct_t
     type() const
-    {
-        return _type;
-    }
-
-    /** Get type. */
-    unary_ct_t&
-    type()
     {
         return _type;
     }
@@ -69,13 +69,24 @@ public:
     {
         return _time;
     }
+    //@}
 
-    /** Get time. */
-    time_t&
-    time()
+    /// \name Accessors (non-const)
+    //@{
+    /** Set type. */
+    void
+    setType(unary_ct_t type)
     {
-        return _time;
+        _type = type;
     }
+
+    /** Set time. */
+    void
+    setTime(time_t time)
+    {
+        _time = time;
+    }
+    //@}
 
 private:
     void init();
@@ -91,7 +102,7 @@ private:
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-typedef std::vector<UnaryCt*> unaryct_vect_t;
+using unaryct_vector_t = std::vector<UnaryCt*>;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 

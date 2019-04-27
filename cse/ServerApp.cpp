@@ -27,6 +27,7 @@ ServerApp::run(int argc, char** argv)
 {
     CmdLineArgs args(argc, argv);
 
+    // print usage and exit?
     if (args.isSet("h"))
     {
         usage();
@@ -54,14 +55,14 @@ ServerApp::run(int argc, char** argv)
     // record commands?
     bool recording = args.isSet("r");
 
-    // errors?
+    // incorrect/unknown arguments -> print usage and exit (status code 1)
     if (args.printErrors(utl::cerr))
     {
         usage();
         return 1;
     }
 
-    // set serialization mode
+    // use human-readable serialization mode
     setSerializeMode(ser_readable);
 
     // set up logging
@@ -70,7 +71,8 @@ ServerApp::run(int argc, char** argv)
     logMgr.setLevel(0, uint_t_max);
 #endif
 
-    Server* server = new Server(2, recording);
+    // create the Server
+    auto server = new Server(2, recording);
     TCPserverSocket* serverSocket = nullptr;
 
     // add server socket for network interface
@@ -115,7 +117,7 @@ ServerApp::run(int argc, char** argv)
 void
 ServerApp::usage()
 {
-    utl::cout << "usage: clevor_se [-d] [-m] [-r] [-p <port>]" << endl;
+    utl::cout << "usage: clevor_se [-d] [-p <port>] [-r]" << endl;
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////

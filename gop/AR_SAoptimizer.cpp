@@ -86,7 +86,7 @@ AR_SAoptimizer::AR_SAinitTempString()
     utl::MemStream str;
     str << "iter:" << _iteration << ", improvIter:" << _improvementIteration
         << ", initTemp:" << Float(_initTemp).toString(2)
-        << ", AcceptanceRatio:" << Float(100.0 * _acceptanceRatio).toString(2) << "%"
+        << ", acceptanceRatio:" << Float(100.0 * _acceptanceRatio).toString(2) << "%"
         << ", idleIterGap:" << _idleIterGap
         << ", totalScoreDiff:" << Float(_totalScoreDiff).toString(2)
         << ", totalScoreDiffiter:" << _totalScoreDiffIter;
@@ -106,6 +106,7 @@ AR_SAoptimizer::init()
     _idleIterGap = 200;
     _gapIncRate = 1.1;
 }
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 GOP_NS_END;

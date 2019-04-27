@@ -78,6 +78,21 @@ IntSpan::canMergeWith(const IntSpan* rhs) const
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
+IntSpan::setLevel(uint_t level)
+{
+    if (_next != nullptr)
+    {
+        delete[] _next;
+    }
+    _level = level;
+    uint_t num = level + 1;
+    _next = new IntSpan*[num];
+    memset(_next, 0, num * sizeof(IntSpan*));
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
+void
 IntSpan::_saveState(Manager* mgr)
 {
     mgr->revSet(&_stateDepth, 5);
@@ -91,21 +106,6 @@ IntSpan::_saveState(Manager* mgr)
         mgr->revSet((size_t*)_next, _level + 1);
     }
     _stateDepth = mgr->depth();
-}
-
-////////////////////////////////////////////////////////////////////////////////////////////////////
-
-void
-IntSpan::setLevel(uint_t level)
-{
-    if (_next != nullptr)
-    {
-        delete[] _next;
-    }
-    _level = level;
-    uint_t num = level + 1;
-    _next = new IntSpan*[num];
-    memset(_next, 0, num * sizeof(IntSpan*));
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////

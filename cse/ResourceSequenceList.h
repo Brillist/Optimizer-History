@@ -11,7 +11,7 @@ CSE_NS_BEGIN;
 /**
    Associate delay/cost with sequence of operations.
 
-   \author Adam McKee
+   \ingroup cse
 */
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -95,7 +95,7 @@ typedef std::set<ResourceSequenceRule*, lut::ObjectOrdering> rsr_set_t;
 /**
    Delays/costs that depend on sequence of operations scheduled on a resource.
 
-   \author Adam McKee
+   \ingroup cse
 */
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////

@@ -92,6 +92,130 @@ Server::addHandler(const char* cmd, hfn handler)
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////
 
+bool
+Server::allAre(const Object* object, const RunTimeClass* rtc) const
+{
+    if (!object->isA(Collection))
+        return false;
+    auto& col = utl::cast<Collection>(*object);
+    for (auto obj : col)
+    {
+        if (!obj->_isA(rtc))
+            return false;
+    }
+    return true;
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+
+void
+Server::finishCmd(SEclient* client)
+{
+    utl::String("___END_RESPONSE___").serializeOut(client->socket());
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+
+void
+Server::initObjectives(SchedulerConfiguration* schedulerConfig,
+    const objective_vector_t& objectives,
+    Array& evalConfigs)
+{
+    uint_t objIdx = 0;
+    for (auto evalConfig_ : evalConfigs)
+    {
+        auto evalConfig = utl::cast<ScheduleEvaluatorConfiguration>(evalConfig_);
+        evalConfig->setSchedulerConfig(schedulerConfig->clone());
+        auto objective = objectives[objIdx++];
+        objective->indEvaluator()->initialize(evalConfig);
+    }
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+
+void
+Server::initClevorDataSet(SchedulerConfiguration* schedulerConfig,
+    Array& jobs,
+    Array& jobGroups,
+    Array& precedenceCts,
+    Array& resources,
+    Array& resourceGroups,
+    Array& resourceSequenceLists,
+    ClevorDataSet& dataSet)
+{
+    dataSet.set(schedulerConfig->clone());
+
+    // so that we don't have to make copies
+    jobs.setOwner(false);
+    jobGroups.setOwner(false);
+    precedenceCts.setOwner(false);
+    resources.setOwner(false);
+    resourceGroups.setOwner(false);
+    resourceSequenceLists.setOwner(false);
+
+    // jobs
+    for (auto job : jobs)
+    {
+        dataSet.add(utl::cast<Job>(job));
+    }
+
+    // job groups
+    for (auto jobGroup : jobGroups)
+    {
+        dataSet.add(utl::cast<JobGroup>(jobGroup));
+    }
+
+    // precedence-cts
+    for (auto pct : precedenceCts)
+    {
+        dataSet.add(utl::cast<PrecedenceCt>(pct));
+    }
+
+    // resources
+    for (auto resource : resources)
+    {
+        dataSet.add(utl::cast<Resource>(resource));
+    }
+
+    // resource groups
+    for (auto resourceGroup : resourceGroups)
+    {
+        dataSet.add(utl::cast<ResourceGroup>(resourceGroup));
+    }
+
+    // resource sequence lists
+    for (auto rsl : resourceSequenceLists)
+    {
+        dataSet.add(utl::cast<ResourceSequenceList>(rsl));
+    }
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+
+void
+Server::init(bool recording)
+{
+    _exit = false;
+    _recording = recording;
+    addHandler("authorizeClient", &Server::handle_authorizeClient);
+    addHandler("exit", &Server::handle_exit);
+    addHandler("initSimpleRun", &Server::handle_initSimpleRun);
+    addHandler("initOptimizerRun", &Server::handle_initOptimizerRun);
+    addHandler("run", &Server::handle_run);
+    addHandler("getRunStatus", &Server::handle_getRunStatus);
+    addHandler("getBestScore", &Server::handle_getBestScore);
+    addHandler("getBestScoreAudit", &Server::handle_getBestScoreAudit);
+    addHandler("getBestScoreAuditReport", &Server::handle_getBestScoreAuditReport);
+    addHandler("getBestScoreComponent", &Server::handle_getBestScoreComponent);
+    addHandler("getBestSchedule", &Server::handle_getBestSchedule);
+    addHandler("getMakespan", &Server::handle_getMakespan);
+    addHandler("getTimetable", &Server::handle_getTimetable);
+    addHandler("NOP", &Server::handle_NOP);
+    addHandler("stop", &Server::handle_stop);
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+
 void
 Server::handleCmd(NetServerClient* client, const Array& cmd)
 {
@@ -149,7 +273,7 @@ Server::handle_authorizeClient(SEclient* client, const utl::Array& cmd)
     auto& response = utl::cast<Uint>(cmd(1));
     if (response == client->response())
     {
-        client->authorized() = true;
+        client->setAuthorized(true);
         finishCmd(client);
     }
     else
@@ -183,11 +307,6 @@ Server::handle_initSimpleRun(SEclient* client, const Array& cmd)
         !allAre(cmd(9), CLASS(ResourceGroup)) || !cmd(10).isA(Array) ||
         !allAre(cmd(10), CLASS(ResourceSequenceList)))
     {
-        Bool(false).serializeOut(client->socket());
-        utl::String str = "initSimpleRun error: wrong cmd.";
-        str = str + Uint(cmd.size()).toString();
-        str.serializeOut(client->socket());
-        finishCmd(client);
         clientDisconnect(client);
         return;
     }
@@ -394,7 +513,7 @@ Server::handle_getRunStatus(SEclient* client, const utl::Array& cmd)
         clientDisconnect(client);
         return;
     }
-    gop::Optimizer* optimizer = client->run()->optimizer();
+    auto optimizer = client->run()->optimizer();
     if (optimizer == nullptr)
     {
         Score* bestScore = client->run()->bestScore(0);
@@ -415,7 +534,9 @@ Server::handle_getRunStatus(SEclient* client, const utl::Array& cmd)
         Uint(bestIter).serializeOut(client->socket());
         Score(*bestScore).serializeOut(client->socket());
         if (complete)
+        {
             client->deleteRunningThread();
+        }
     }
     finishCmd(client);
 }
@@ -439,8 +560,7 @@ Server::handle_getBestScore(SEclient* client, const utl::Array& cmd)
         auto& objectiveIdx = utl::cast<Uint>(cmd(1));
         bestScore = client->run()->bestScore(objectiveIdx);
     }
-    // objective name
-    else
+    else // objective name
     {
         if (!cmd(1).isA(utl::String))
         {
@@ -541,60 +661,73 @@ Server::handle_getBestSchedule(SEclient* client, const utl::Array& cmd)
     uint_t resId;
     double resCost;
     auto& resources = dataSet->resources();
-    res_set_id_t::const_iterator resIt;
-    for (resIt = resources.begin(); resIt != resources.end(); ++resIt)
+    for (auto res : resources)
     {
-        auto res = *resIt;
+        // not DiscreteResource -> skip
         if (!res->isA(cse::DiscreteResource))
         {
             continue;
         }
         auto dres = utl::cast<cse::DiscreteResource>(res);
+
+        // no ResourceCost object -> skip
         if (dres->cost() == nullptr)
         {
             continue;
         }
+
+        // write the resource's id and cost
         resId = dres->id();
         resCost = dres->cost()->cost();
         utl::serialize(resId, socket, io_wr);
         utl::serialize(resCost, socket, io_wr);
     }
+
+    // write end marker for resource costs: resId = uint_t_max, resCost = -1.0 
     resId = uint_t_max;
     resCost = -1.0;
     utl::serialize(resId, socket, io_wr);
     utl::serialize(resCost, socket, io_wr);
 
+    // write JobOps
     auto& ops = dataSet->ops();
-    jobop_set_id_t::const_iterator opIt;
     uint_t numOps = ops.size();
     utl::serialize(numOps, socket, io_wr);
-    for (opIt = ops.begin(); opIt != ops.end(); ++opIt)
+    for (auto op : ops)
     {
-        auto op = *opIt;
-
         // op id
         utl::serialize(op->id(), socket, io_wr);
 
-        // scheduled?
+        // write scheduled flag
         bool scheduled = !op->ignorable() && op->isScheduled() && (op->scheduledBy() == sa_clevor);
         utl::serialize(scheduled, socket, io_wr);
-        if (!scheduled)
-            continue;
 
-        // scheduling details
-        utl::serialize((uint_t&)op->scheduledBy(), socket, io_wr);
-        utl::serialize(op->frozen(), socket, io_wr);
-        utl::serialize(op->scheduledProcessingTime(), socket, io_wr);
-        utl::serialize(op->scheduledRemainingPt(), socket, io_wr);
-        utl::serialize(op->scheduledStartTime(), socket, io_wr);
-        utl::serialize(op->scheduledEndTime(), socket, io_wr);
-        utl::serialize(op->scheduledResumeTime(), socket, io_wr);
+        // op is not scheduled -> skip
+        if (!scheduled)
+        {
+            continue;
+        }
+
+        // write this JobOp's scheduling details
+        uint_t scheduledBy = op->scheduledBy();
+        bool frozen = op->frozen();
+        uint_t scheduledPT = op->scheduledProcessingTime();
+        uint_t scheduledRemainingPT = op->scheduledRemainingPt();
+        time_t scheduledStartTime = op->scheduledStartTime();
+        time_t scheduledEndTime = op->scheduledEndTime();
+        time_t scheduledResumeTime = op->scheduledResumeTime();
+        utl::serialize(scheduledBy, socket, io_wr);
+        utl::serialize(frozen, socket, io_wr);
+        utl::serialize(scheduledPT, socket, io_wr);
+        utl::serialize(scheduledRemainingPT, socket, io_wr);
+        utl::serialize(scheduledStartTime, socket, io_wr);
+        utl::serialize(scheduledEndTime, socket, io_wr);
+        utl::serialize(scheduledResumeTime, socket, io_wr);
 
         // resource requirements
         Array resReqs(false);
         uint_t numResReqs = op->numResReqs();
-        uint_t i;
-        for (i = 0; i < numResReqs; ++i)
+        for (uint_t i = 0; i != numResReqs; ++i)
         {
             resReqs += op->getResReq(i);
         }
@@ -602,13 +735,14 @@ Server::handle_getBestSchedule(SEclient* client, const utl::Array& cmd)
 
         // resource group requirements
         uint_t numResGroupReqs = op->numResGroupReqs();
-        for (i = 0; i < numResGroupReqs; ++i)
+        for (uint_t i = 0; i != numResGroupReqs; ++i)
         {
             auto rgr = op->getResGroupReq(i);
             utl::serialize(rgr->scheduledResourceId(), socket, io_wr);
             utl::serialize(rgr->scheduledCapacity(), socket, io_wr);
         }
     }
+
     finishCmd(client);
 }
 
@@ -668,8 +802,8 @@ Server::handle_getTimetable(SEclient* client, const utl::Array& cmd)
         int endTS = ts->max() + 1;
         uint_t reqCap = ts->v0();
         uint_t prvCap = ts->v1();
-        TimeSlot* timeSlot = new TimeSlot(context->timeSlotToTime(beginTS),
-                                          context->timeSlotToTime(endTS), reqCap, prvCap);
+        auto timeSlot = new TimeSlot(context->timeSlotToTime(beginTS),
+                                     context->timeSlotToTime(endTS), reqCap, prvCap);
         timeSlots += timeSlot;
     }
 
@@ -707,130 +841,6 @@ Server::handle_stop(SEclient* client, const utl::Array& cmd)
         client->run()->stop();
     }
     finishCmd(client);
-}
-
-/////////////////////////////////////////////////////////////////////////////////////////////////////
-
-void
-Server::finishCmd(SEclient* client)
-{
-    utl::String("___END_RESPONSE___").serializeOut(client->socket());
-}
-
-/////////////////////////////////////////////////////////////////////////////////////////////////////
-
-bool
-Server::allAre(const Object* object, const RunTimeClass* rtc) const
-{
-    if (!object->isA(Collection))
-        return false;
-    auto& col = utl::cast<Collection>(*object);
-    for (auto obj : col)
-    {
-        if (!obj->_isA(rtc))
-            return false;
-    }
-    return true;
-}
-
-/////////////////////////////////////////////////////////////////////////////////////////////////////
-
-void
-Server::initClevorDataSet(SchedulerConfiguration* schedulerConfig,
-                          Array& jobs,
-                          Array& jobGroups,
-                          Array& precedenceCts,
-                          Array& resources,
-                          Array& resourceGroups,
-                          Array& resourceSequenceLists,
-                          ClevorDataSet& dataSet)
-{
-    dataSet.set(schedulerConfig->clone());
-
-    // so that we don't have to make copies
-    jobs.setOwner(false);
-    jobGroups.setOwner(false);
-    precedenceCts.setOwner(false);
-    resources.setOwner(false);
-    resourceGroups.setOwner(false);
-    resourceSequenceLists.setOwner(false);
-
-    // jobs
-    for (auto job : jobs)
-    {
-        dataSet.add(utl::cast<Job>(job));
-    }
-
-    // job groups
-    for (auto jobGroup : jobGroups)
-    {
-        dataSet.add(utl::cast<JobGroup>(jobGroup));
-    }
-
-    // precedence-cts
-    for (auto pct : precedenceCts)
-    {
-        dataSet.add(utl::cast<PrecedenceCt>(pct));
-    }
-
-    // resources
-    for (auto resource : resources)
-    {
-        dataSet.add(utl::cast<Resource>(resource));
-    }
-
-    // resource groups
-    for (auto resourceGroup : resourceGroups)
-    {
-        dataSet.add(utl::cast<ResourceGroup>(resourceGroup));
-    }
-
-    // resource sequence lists
-    for (auto rsl : resourceSequenceLists)
-    {
-        dataSet.add(utl::cast<ResourceSequenceList>(rsl));
-    }
-}
-
-/////////////////////////////////////////////////////////////////////////////////////////////////////
-
-void
-Server::initObjectives(SchedulerConfiguration* schedulerConfig,
-                       const objective_vector_t& objectives,
-                       Array& evalConfigs)
-{
-    uint_t objIdx = 0;
-    for (auto evalConfig_ : evalConfigs)
-    {
-        auto evalConfig = utl::cast<ScheduleEvaluatorConfiguration>(evalConfig_);
-        evalConfig->setSchedulerConfig(schedulerConfig->clone());
-        auto objective = objectives[objIdx++];
-        objective->indEvaluator()->initialize(evalConfig);
-    }
-}
-
-/////////////////////////////////////////////////////////////////////////////////////////////////////
-
-void
-Server::init(bool recording)
-{
-    _exit = false;
-    _recording = recording;
-    addHandler("authorizeClient", &Server::handle_authorizeClient);
-    addHandler("exit", &Server::handle_exit);
-    addHandler("initSimpleRun", &Server::handle_initSimpleRun);
-    addHandler("initOptimizerRun", &Server::handle_initOptimizerRun);
-    addHandler("run", &Server::handle_run);
-    addHandler("getRunStatus", &Server::handle_getRunStatus);
-    addHandler("getBestScore", &Server::handle_getBestScore);
-    addHandler("getBestScoreAudit", &Server::handle_getBestScoreAudit);
-    addHandler("getBestScoreAuditReport", &Server::handle_getBestScoreAuditReport);
-    addHandler("getBestScoreComponent", &Server::handle_getBestScoreComponent);
-    addHandler("getBestSchedule", &Server::handle_getBestSchedule);
-    addHandler("getMakespan", &Server::handle_getMakespan);
-    addHandler("getTimetable", &Server::handle_getTimetable);
-    addHandler("NOP", &Server::handle_NOP);
-    addHandler("stop", &Server::handle_stop);
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////

@@ -22,9 +22,8 @@ CSE_NS_BEGIN;
 void
 SummaryOp::copy(const Object& rhs)
 {
-    ASSERTD(rhs.isA(SummaryOp));
-    const SummaryOp& so = (const SummaryOp&)rhs;
-    JobOp::copy(so);
+    auto& so = utl::cast<SummaryOp>(rhs);
+    super::copy(so);
     _childOps.clear();
 }
 
@@ -35,15 +34,17 @@ SummaryOp::toString() const
 {
     MemStream str;
     str << "summaryOp:" << id() << ", job:" << job()->id() << ", childOps:";
-    jobop_set_id_t::const_iterator it;
-    for (it = _childOps.begin(); it != _childOps.end(); it++)
+    bool first = true;
+    for (auto childOp : _childOps)
     {
-        if (it != _childOps.begin())
+        if (!first)
+        {
             str << ", ";
-        str << (*it)->id();
+        }
+        str << childOp->id();
+        first = false;
     }
-    str << '\0';
-    return String((char*)str.get());
+    return String(str.takeString(), true, false);
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////

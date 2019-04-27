@@ -19,8 +19,7 @@ CSE_NS_BEGIN;
 void
 UnaryCt::copy(const Object& rhs)
 {
-    ASSERTD(rhs.isA(UnaryCt));
-    const UnaryCt& uct = (const UnaryCt&)rhs;
+    auto& uct = utl::cast<UnaryCt>(rhs);
     _type = uct._type;
     _time = uct._time;
 }

@@ -20,22 +20,20 @@ class ClevorDataSet;
 /** Job status. */
 enum job_status_t
 {
-    jobstatus_inactive = 0,  /**< not active / selected */
-    jobstatus_planned = 1,   /**< active / selected */
+    jobstatus_inactive = 0,  /**< not active/selected */
+    jobstatus_planned = 1,   /**< active/selected */
     jobstatus_confirmed = 2, /**< confirmed */
-    jobstatus_started = 3,   /** < started */
-    jobstatus_complete = 4,  /** < complete */
+    jobstatus_started = 3,   /**< started */
+    jobstatus_complete = 4,  /**< complete */
     jobstatus_undefined,     /**< undefined/null */
 };
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
-   Job within a Schedule.
+   A grouping of operations (JobOp%s) in a Schedule.
 
-   A job is a grouping of operations (instances of JobOp).
-
-   \author Adam McKee
+   \ingroup cse
 */
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -45,9 +43,8 @@ class Job : public utl::Object
     UTL_CLASS_DECL(Job, utl::Object);
 
 public:
-    // typedefs
-    typedef jobop_set_id_t::iterator iterator;
-    typedef jobop_set_id_t::const_iterator const_iterator;
+    using iterator = jobop_set_id_t::iterator;
+    using const_iterator = jobop_set_id_t::const_iterator;
 
 public:
     virtual void copy(const utl::Object& rhs);
@@ -367,7 +364,6 @@ public:
         return _latenessCost;
     }
 
-    /** November 21, 2013 (Elisa)*/
     /** Get the lateness cost increment. */
     double
     latenessIncrement() const
@@ -375,8 +371,7 @@ public:
         return _latenessIncrement;
     }
 
-    /** November 21, 2013 (Elisa) */
-    /*  Get the lateness cost increment. */
+    /** Get the lateness cost increment. */
     double&
     latenessIncrement()
     {
@@ -666,10 +661,10 @@ struct JobLatenessCostDecOrdering
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-typedef std::vector<Job*> job_vector_t;
-typedef std::set<Job*, JobIdOrdering> job_set_id_t;
-typedef std::set<Job*, JobSerialIdOrdering> job_set_sid_t;
-typedef std::set<Job*, JobPreferenceOrdering> job_set_pref_t;
+using job_vector_t = std::vector<Job*>;
+using job_set_id_t = std::set<Job*, JobIdOrdering>;
+using job_set_sid_t = std::set<Job*, JobSerialIdOrdering>;
+using job_set_pref_t = std::set<Job*, JobPreferenceOrdering>;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 

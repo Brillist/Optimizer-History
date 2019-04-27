@@ -68,7 +68,7 @@ SchedulingRun::initialize(ClevorDataSet* dataSet,
     delete _optimizer;
     _optimizer = optimizer;
 
-    // initialize context
+    // initialize context and optimizer
     _context->initialize(dataSet);
     _optimizer->initialize(optimizerConfig);
 }
@@ -91,14 +91,14 @@ SchedulingRun::run()
         if (res)
         {
             uint_t numObjectives = this->numObjectives();
-            for (uint_t i = 0; i < numObjectives; ++i)
+            for (uint_t i = 0; i != numObjectives; ++i)
             {
-                Objective* obj = _objectives[i];
+                auto obj = _objectives[i];
                 obj->indEvaluator()->auditNext();
                 score = obj->eval(_context);
                 obj->setBestScore(score);
             }
-            // there should be only one objective.
+            // there should be only one objective
             utl::cout << "Forward, ";
             if (score != nullptr)
             {
@@ -140,7 +140,9 @@ void
 SchedulingRun::stop()
 {
     if (_optimizer)
+    {
         _optimizer->stop();
+    }
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -201,9 +203,9 @@ SchedulingRun::bestScore(const std::string& objectiveName) const
 {
     if (_optimizer == nullptr)
     {
-        for (uint_t i = 0; i < _objectives.size(); ++i)
+        for (uint_t i = 0; i != _objectives.size(); ++i)
         {
-            Objective* objective = _objectives[i];
+            auto objective = _objectives[i];
             if (objective->name() == objectiveName)
             {
                 return objective->getBestScore();
@@ -225,9 +227,9 @@ SchedulingRun::bestScoreComponent(const std::string& objectiveName,
 {
     if (_optimizer == nullptr)
     {
-        for (uint_t i = 0; i < _objectives.size(); ++i)
+        for (uint_t i = 0; i != _objectives.size(); ++i)
         {
-            Objective* objective = _objectives[i];
+            auto objective = _objectives[i];
             if (objective->name() == objectiveName)
             {
                 return objective->getBestScoreComponent(componentName);
@@ -248,13 +250,13 @@ SchedulingRun::bestScoreAudit() const
 {
     if (_optimizer == nullptr)
     {
-        Objective* objective = _objectives[0];
-        const std::string& auditText = objective->indEvaluator()->auditText();
+        auto objective = _objectives[0];
+        auto& auditText = objective->indEvaluator()->auditText();
         return auditText;
     }
     else
     {
-        const std::string& auditText = _optimizer->bestScoreAudit();
+        auto& auditText = _optimizer->bestScoreAudit();
         return auditText;
     }
 }
@@ -264,7 +266,6 @@ SchedulingRun::bestScoreAudit() const
 const AuditReport*
 SchedulingRun::bestScoreAuditReport() const
 {
-    AuditReport* report = nullptr;
     gop::Objective* objective = nullptr;
     if (_optimizer == nullptr)
     {
@@ -274,13 +275,14 @@ SchedulingRun::bestScoreAuditReport() const
     {
         objective = _optimizer->objectives()[0];
     }
-    const TotalCostEvaluator* eval =
-        dynamic_cast<const TotalCostEvaluator*>(objective->indEvaluator());
-    if (eval != nullptr)
+
+    auto evaluator = objective->indEvaluator();
+    if (evaluator->isA(TotalCostEvaluator))
     {
-        report = eval->auditReport();
+        auto tce = utl::cast<TotalCostEvaluator>(evaluator);
+        return tce->auditReport();
     }
-    return report;
+    return nullptr;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////

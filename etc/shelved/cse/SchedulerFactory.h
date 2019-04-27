@@ -17,7 +17,7 @@ CSE_NS_BEGIN;
    SchedulerFactory can make instances of named Scheduler-derived classes.
 
    \see Scheduler
-   \author Adam McKee
+   \ingroup cse
 */
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -29,9 +29,9 @@ class SchedulerFactory : public lut::Factory<Scheduler>
 
 public:
     /**
-      Make an instance of the named scheduler class.
-      \return newly created object (nullptr if invalid name given)
-   */
+       Make an instance of the named scheduler class.
+       \return newly created object (nullptr if invalid name given)
+    */
     virtual Scheduler* make(void* param = nullptr, void* param1 = nullptr) const;
 };
 

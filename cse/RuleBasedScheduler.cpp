@@ -86,11 +86,9 @@ RuleBasedScheduler::run(SchedulingContext* context) const
 void
 RuleBasedScheduler::initRun(SchedulingContext* context) const
 {
-    //     _context = context;
     _jobSid = 0;
     _opSid = 0;
     context->setComplete(false); //
-    //     _terminate = false;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -109,11 +107,8 @@ RuleBasedScheduler::init()
 {
     _jobSid = 0;
     _opSid = 0;
-    //     _context = nullptr;
-
     _opOrdering = nullptr;
     _setSid = false;
-    //     _terminate = false;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////

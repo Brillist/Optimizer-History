@@ -11,9 +11,11 @@ CSE_NS_BEGIN;
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
-   Summary operation.
+   Summary JobOp.
 
-   \author Adam McKee
+   A SummaryOp is a special type of JobOp that has a set of child JobOp%s.
+
+   \ingroup cse
 */
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -24,19 +26,14 @@ class SummaryOp : public JobOp
     UTL_CLASS_DEFID;
 
 public:
-    /** Copy another instance. */
     virtual void copy(const utl::Object& rhs);
 
+    virtual String toString() const;
+
+    /// \name Accessors (const)
     /** Get the set of direct child ops. */
     const jobop_set_id_t&
     childOps() const
-    {
-        return _childOps;
-    }
-
-    /** Get the set of direct child ops. */
-    jobop_set_id_t&
-    childOps()
     {
         return _childOps;
     }
@@ -45,12 +42,17 @@ public:
     const clp::CycleGroup*
     endCycleGroup() const
     {
-        cls::Activity* act = activity();
+        auto act = activity();
         ASSERTD(act != nullptr);
         return act->efBound().cycleGroup();
     }
+    //@}
 
-    String toString() const;
+    /** Add a child op. */
+    void addChildOp(JobOp* op)
+    {
+        _childOps.insert(op);
+    }
 
 private:
     jobop_set_id_t _childOps;
@@ -58,7 +60,7 @@ private:
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-typedef std::vector<SummaryOp*> summaryop_vect_t;
+using summaryop_vector_t = std::vector<SummaryOp*>;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 

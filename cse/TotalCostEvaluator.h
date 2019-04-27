@@ -20,56 +20,87 @@ class CapSpan;
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
-   Evaluate the total cost of the schedule.
+   Evaluate a schedule by calculating its total cost.
 
-   The total cost of the schedule has the following components:
+   The total cost of a fully constructed schedule has the following components:
 
-   <b>Interest Rate</b>
+   ##cls::DiscreteResource Utilization Cost
 
-   As expenditures are made during the course of the project, interest is
-   calculated on that money.  The "cost of money" is specified by the
-   following parameters:
+   The first step in costing cls::DiscreteResource utilization is to take **min-employment-time**
+   (ResourceCost::minEmploymentTime) and **max-idle-time** (ResourceCost::maxIdleTime) into account,
+   translating actually used resource capacity into effectively used capacity for costing.
+   In effect, these parameters cause some resource capacity that isn't used to still be costed.
+   **Min-employment-time** (if specified) means that when resource capacity is employed, it must
+   continue to be costed for the specified length of time (regardless of whether it's actually used).
+   **Max-idle-time** (if specified) requires a period of idleness not exceeding the specified
+   length to be costed.
 
-   - <b>interestRate</b> : interest rate
-   - <b>interestRatePeriod</b> : interest compounding period
+   After converting actual utilization into costed utilization as described above, the
+   cost of employing each cls::DiscreteResource is calculated using the cheapest of the available
+   rates:
 
-   <b>Opportunity Cost</b>
+   - hourly (ResourceCost::costPerHour)
+   - daily (ResourceCost::costPerDay)
+   - weekly (ResourceCost::costPerWeek)
+   - monthly (ResourceCost::costPerMonth)
 
-   Generally, a project will begin to earn income or provide a benefit
-   of some kind when it is completed.  If the project is completed ahead
-   of its due time, income from the project is assessed from the time
-   of project completion to the due time as a constant rate per time period,
-   as specified by the following parameters:
+   Also, if *cost-per-unit-hired* (ResourceCost::costPerUnitHired) is specified, that cost
+   is applied to each instance where the costed capacity increases.
 
-   - <b>opportunityCost</b> : opportunity cost
-   - <b>opportunityCostPeriod</b> : opportunity cost period
+   ##Job Opportunity, Inventory, Lateness Costs
 
-   <b>Lateness Cost</b>
+   Opportunity cost (if specified) is a negative cost that's assessed when a Job is completed
+   before its due time.  Opportunity cost is subtracted from the schedule's total cost at a
+   constant rate (Job::opportunityCost) per time period (Job::opportunityCostPeriod) from the
+   Job's completion time (Job::makespan) to its due time (Job::dueTime).
 
-   Generally, there is a cost associated with project lateness.  If
-   the project is completed later than its due time, lateness cost is
-   calculated as a constant rate per time period, as specified by the
-   following parameters:
+   Inventory cost (if specified) is a cost that's assessed when a Job is completed before its
+   due time.  Inventory cost is added to the schedule's total cost at a constant rate
+   (Job::inventoryCost) per time period (Job::inventoryCostPeriod) from the Job's completion
+   time (Job::makespan) to its due time (Job::dueTime).
+   
+   Lateness cost (if specified) is a cost that's assessed when a Job is completed after its
+   due time.  Lateness cost is added to the schedule's total cost at an initial rate of
+   Job::latenessCost per time period (Job::latenessCostPeriod) compounding by a factor of
+   of Job::latenessIncrement in each successive period.  This compounding cost reflects the
+   fact that lateness has a non-linear cost, so for example it's better for two Job%s to each
+   be one day late than for one Job to be two days late.
 
-   - <b>latenessCost</b> : lateness cost
-   - <b>latenessCostPeriod</b> : lateness cost period
-   // November 21, 2013 (Elisa)
-   - <b>latenessIncrement</b> : lateness cost increment
+   ##Job Overhead Cost
 
-   <b>Operation Cost</b>
+   Job overhead cost is assessed at a constant rate (Job::overheadCost) per time period
+   (Job::overheadCostPeriod) from the time work begins on the Job until its completion.
 
-   For some operations, there is a cost associated with beginning work.
+   ##Fixed Cost
 
-   <b>Resource Utilization</b>
+   Each JobOp may have a fixed cost (JobOp::cost) that is applied when it begins to execute.
+   Fixed cost is only applied to JobOp%s that are active (JobOp::active), non-summary
+   (JobOp::type), and unstarted (JobOp::status).
 
-   The cost of resource utilization is calculated using each resource's
-   associated cost information (see ResourceCost).
+   ##Resource Sequence Cost
 
-   <b>Overhead</b>
+   Resource sequence costs are assessed when a unary cse::DiscreteResource transitions between
+   specifically identified cse::JobOp%s (see cse::DiscreteResource::sequenceList,
+   cse::ResourceSequenceList).
 
-   The overhead cost is a constant multiple of the schedule's makespan.
+   ##Overhead Cost
 
-   \author Adam McKee
+   Overhead cost is assessed at a constant rate (TotalCostEvaluatorConfiguration::overheadCost)
+   per time period (TotalCostEvaluatorConfiguration::overheadCostPerPeriod) until the schedule's
+   makespan (SchedulingContext::makespan).
+
+   ##Interest Cost
+
+   Interest cost is calculated as the final step, when the total expenditure within each
+   interest compounding period is known.  Interest cost is assessed at the configured rate
+   (TotalCostEvaluatorConfiguration::interestRate), compounding in each period
+   (TotalCostEvaluatorconfiguration::interestRatePeriod).
+
+   \see TotalCostEvaluatorConfiguration
+   \see cse::DiscreteResource
+   \see cls::DiscreteResource
+   \see ResourceCost
+   \ingroup cse
 */
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -81,11 +112,7 @@ class TotalCostEvaluator : public ScheduleEvaluator
 public:
     virtual void copy(const utl::Object& rhs);
 
-    virtual std::string
-    name() const
-    {
-        return "TotalCost";
-    }
+    virtual std::string name() const;
 
     virtual void initialize(const gop::IndEvaluatorConfiguration* cf);
 
@@ -98,8 +125,9 @@ public:
     }
 
 private:
-    typedef utl::SpanCol<int> ispancol_t;
-    typedef std::list<CapSpan*> cslist_t;
+    using ispancol_t = utl::SpanCol<int>;
+    using cslist_t = std::deque<CapSpan*>;
+    using spanip_col_t = utl::TRBtree<utl::Span<int>>;
 
 private:
     void init();
@@ -110,34 +138,23 @@ private:
                      const cls::DiscreteResource& res,
                      cslist_t& cslist) const;
     void cslistDump(const cslist_t& cslist) const;
-    void cslistUnbuffer(cslist_t& cslist, cslist_t& cslist_buf, const CapSpan* endCS) const;
     void cslistCost(const SchedulingContext& context,
                     const cls::DiscreteResource& res,
                     const cslist_t& cslist) const;
 
     void calcLatenessCost(const SchedulingContext& context) const;
+    void calcJobOverheadCost(const SchedulingContext& context) const;
     void calcFixedCost(const SchedulingContext& context) const;
     void calcResourceSequenceCost(const SchedulingContext& context) const;
     void calcOverheadCost(const SchedulingContext& context) const;
     void calcInterestCost(const SchedulingContext& context) const;
 
     void calcPeriodCost(const utl::Span<int>& span, double costPerTS) const;
-    /* November 21, 2013 (Elisa) */
-    /* added the lateness cost increment to this function */
     void calcPeriodCost(const utl::Span<int>& span,
-                        double costPerTS,
-                        double incr,
-                        double pStep,
-                        double tStep) const;
-
-    /* January 3, 2014 (Elisa) */
-    /* calculate the overhead for each job */
-    void calcJobOverheadCost(const SchedulingContext& context) const;
-    void calcJobPeriodCost(const utl::Span<int>& span, double constPerTS) const;
-
-private:
-    typedef utl::TRBtree<utl::Span<int>> spanip_col_t;
-
+        double costPerTS,
+        double incrCost,
+        double periodSeconds,
+        double timeStep) const;
 private:
     mutable std::ostringstream* _os;
     int _originTS;
@@ -147,8 +164,9 @@ private:
     double _overheadCostPerTS;
     double _interestRate;
     uint_t _numIPs;
+    spanip_col_t _ipSpans;
+    mutable double* _ipCosts;
     mutable double _totalCost;
-    mutable double* _ipCost;
     mutable byte_t* _dayIsBreak;
     mutable size_t _dayIsBreakSize;
     mutable uint_t* _caps;
@@ -163,7 +181,6 @@ private:
     mutable size_t _dayCostsSize;
     mutable uint_t* _dayCostPeriods;
     mutable size_t _dayCostPeriodsSize;
-    spanip_col_t _spanIPs;
     mutable AuditReport* _auditReport;
     mutable std::map<uint_t, double> _auditIpCosts;
 };

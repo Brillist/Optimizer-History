@@ -61,13 +61,12 @@ InterestPeriodInfo::serialize(Stream& stream, uint_t io, uint_t)
 void
 ResourceInfo::copy(const Object& rhs)
 {
-    ASSERTD(rhs.isA(ResourceInfo));
-    const ResourceInfo& ri = (const ResourceInfo&)rhs;
+    auto& ri = utl::cast<ResourceInfo>(rhs);
     id = ri.id;
     name = ri.name;
-    rts = ri.rts;
-    mits = ri.mits;
-    mets = ri.mets;
+    resolutionSlots = ri.resolutionSlots;
+    maxIdleSlots = ri.maxIdleSlots;
+    minEmploySlots = ri.minEmploySlots;
     costPerUnitHired = ri.costPerUnitHired;
     costPerHour = ri.costPerHour;
     costPerDay = ri.costPerDay;
@@ -82,9 +81,9 @@ ResourceInfo::serialize(Stream& stream, uint_t io, uint_t)
 {
     utl::serialize(id, stream, io);
     lut::serialize(name, stream, io);
-    utl::serialize(rts, stream, io);
-    utl::serialize(mits, stream, io);
-    utl::serialize(mets, stream, io);
+    utl::serialize(resolutionSlots, stream, io);
+    utl::serialize(maxIdleSlots, stream, io);
+    utl::serialize(minEmploySlots, stream, io);
     utl::serialize(costPerUnitHired, stream, io);
     utl::serialize(costPerHour, stream, io);
     utl::serialize(costPerDay, stream, io);
@@ -337,8 +336,6 @@ LatenessCostInfo::serialize(Stream& stream, uint_t io, uint_t)
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-/* January 3, 2014 (Elisa) */
-/* added for job overhead cost information */
 /// JobOverheadCostInfo ////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 //
@@ -639,8 +636,6 @@ AuditReport::latenessCost(uint_t id)
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-// January 6, 2014 (Elisa)
-// added job overhead cost
 
 JobOverheadCostReport&
 AuditReport::joboverheadCost(uint_t id)

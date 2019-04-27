@@ -11,13 +11,9 @@ CSE_NS_BEGIN;
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
-   Total cost evaluator configuration.
+   Configuration parameters for TotalCostEvaluator.
 
-   TotalCostEvaluatorConfiguration stores configuration parameters
-   for TotalCostEvaluator.
-
-   \see TotalCostEvaluator
-   \author Adam McKee
+   \ingroup cse
 */
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -27,23 +23,15 @@ class TotalCostEvaluatorConfiguration : public ScheduleEvaluatorConfiguration
     UTL_CLASS_DECL(TotalCostEvaluatorConfiguration, ScheduleEvaluatorConfiguration);
 
 public:
-    /** Copy another instance. */
     virtual void copy(const utl::Object& rhs);
 
     virtual void serialize(utl::Stream& stream, uint_t io, uint_t mode = utl::ser_default);
 
-    /// \name Accessors
+    /// \name Accessors (const)
     //@{
     /** Get the interest rate. */
     double
     interestRate() const
-    {
-        return _interestRate;
-    }
-
-    /** Set the interest rate. */
-    double&
-    interestRate()
     {
         return _interestRate;
     }
@@ -55,23 +43,9 @@ public:
         return _interestRatePeriod;
     }
 
-    /** Set the interest compounding period. */
-    lut::period_t&
-    interestRatePeriod()
-    {
-        return _interestRatePeriod;
-    }
-
     /** Get the overhead cost. */
     double
     overheadCost() const
-    {
-        return _overheadCost;
-    }
-
-    /** Get the overhead cost. */
-    double&
-    overheadCost()
     {
         return _overheadCost;
     }
@@ -82,14 +56,39 @@ public:
     {
         return _overheadCostPeriod;
     }
+    //@}
 
-    /** Get the overhead cost period. */
-    lut::period_t&
-    overheadCostPeriod()
+    /// \name Accessors (non-const)
+    //@{
+    /** Set the interest rate. */
+    void
+    setInterestRate(double interestRate)
     {
-        return _overheadCostPeriod;
+        _interestRate = interestRate;
+    }
+
+    /** Set the interest compounding period. */
+    void
+    setInterestRatePeriod(lut::period_t interestRatePeriod)
+    {
+        _interestRatePeriod = interestRatePeriod;
+    }
+
+    /** Set the overhead cost. */
+    void
+    setOverheadCost(double overheadCost)
+    {
+        _overheadCost = overheadCost;
+    }
+
+    /** Set the overhead cost period. */
+    void
+    setOverheadCostPeriod(lut::period_t overheadCostPeriod)
+    {
+        _overheadCostPeriod = overheadCostPeriod;
     }
     //@}
+
 private:
     void init();
     void

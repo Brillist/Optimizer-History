@@ -19,8 +19,7 @@ CSE_NS_BEGIN;
 void
 TimeSlot::copy(const Object& rhs)
 {
-    ASSERTD(rhs.isA(TimeSlot));
-    const TimeSlot& ts = (const TimeSlot&)rhs;
+    auto& ts = utl::cast<TimeSlot>(rhs);
     _begin = ts._begin;
     _end = ts._end;
     _reqCap = ts._reqCap;

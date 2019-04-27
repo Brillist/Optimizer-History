@@ -243,32 +243,6 @@ Job::scheduleClear()
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-// void
-// Job::schedule(JobOp* op, bool forward)
-// {
-//     // get activity reference
-//     Activity* act = op->activity();
-//     ASSERTD(act != nullptr);
-
-//     // update makespan
-//     if (forward)
-//     {
-//         _makespan = utl::max(_makespan, act->ef() + 1);
-//     }
-//     else
-//     {
-//         _makespan = utl::max(_makespan, act->lf() + 1);
-//     }
-
-//     // frozen op : update frozen makespan
-//     if (op->frozen())
-//     {
-//         _frozenMakespan = _makespan;
-//     }
-// }
-
-////////////////////////////////////////////////////////////////////////////////////////////////////
-
 void
 Job::calculateMakespan(bool forward)
 {
@@ -449,8 +423,6 @@ Job::toString() const
     else
     {
         str << _dueTime;
-        //         time_t t = _dataSet->schedulerConfig()->timeSlotToTime(_dueTime);
-        //         str << Time(t).toString("$yyyy/$m/$d $h/$nn");
     }
     str << ", sid:";
     if (_serialId == uint_t_max)
@@ -488,6 +460,9 @@ Job::toString() const
         str << (*it)->id();
     }
     str << ", sops:";
+    for (auto sop : _allSops)
+    {
+    }
     for (jobop_set_id_t::const_iterator it = _allSops.begin(); it != _allSops.end(); it++)
     {
         if (it != _allSops.begin())

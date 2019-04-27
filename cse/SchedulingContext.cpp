@@ -398,7 +398,7 @@ SchedulingContext::store()
                 continue;
             }
 
-            // 
+            //
             auto& selectedResources = clsResReq->selectedResources();
             uint_t resId = selectedResources.value();
             auto resCapPts = clsResReq->resCapPts(resId);

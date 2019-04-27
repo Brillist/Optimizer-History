@@ -43,9 +43,9 @@ public:
        \param recording record commands? (default = false)
     */
     SEclient(Server* server,
-        utl::FDstream* socket,
-        const utl::InetHostAddress& addr,
-        bool recording = false);
+             utl::FDstream* socket,
+             const utl::InetHostAddress& addr,
+             bool recording = false);
 
     virtual void pause();
 

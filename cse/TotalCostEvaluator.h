@@ -151,10 +151,11 @@ private:
 
     void calcPeriodCost(const utl::Span<int>& span, double costPerTS) const;
     void calcPeriodCost(const utl::Span<int>& span,
-        double costPerTS,
-        double incrCost,
-        double periodSeconds,
-        double timeStep) const;
+                        double costPerTS,
+                        double incrCost,
+                        double periodSeconds,
+                        double timeStep) const;
+
 private:
     mutable std::ostringstream* _os;
     int _originTS;

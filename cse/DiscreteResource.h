@@ -265,7 +265,8 @@ public:
     }
 
     /** Set the cls-resource. */
-    void setCLSresource(cls::Resource* clsResource)
+    void
+    setCLSresource(cls::Resource* clsResource)
     {
         _clsResource = clsResource;
     }

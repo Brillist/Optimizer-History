@@ -118,8 +118,8 @@ Server::finishCmd(SEclient* client)
 
 void
 Server::initObjectives(SchedulerConfiguration* schedulerConfig,
-    const objective_vector_t& objectives,
-    Array& evalConfigs)
+                       const objective_vector_t& objectives,
+                       Array& evalConfigs)
 {
     uint_t objIdx = 0;
     for (auto evalConfig_ : evalConfigs)
@@ -135,13 +135,13 @@ Server::initObjectives(SchedulerConfiguration* schedulerConfig,
 
 void
 Server::initClevorDataSet(SchedulerConfiguration* schedulerConfig,
-    Array& jobs,
-    Array& jobGroups,
-    Array& precedenceCts,
-    Array& resources,
-    Array& resourceGroups,
-    Array& resourceSequenceLists,
-    ClevorDataSet& dataSet)
+                          Array& jobs,
+                          Array& jobGroups,
+                          Array& precedenceCts,
+                          Array& resources,
+                          Array& resourceGroups,
+                          Array& resourceSequenceLists,
+                          ClevorDataSet& dataSet)
 {
     dataSet.set(schedulerConfig->clone());
 
@@ -683,7 +683,7 @@ Server::handle_getBestSchedule(SEclient* client, const utl::Array& cmd)
         utl::serialize(resCost, socket, io_wr);
     }
 
-    // write end marker for resource costs: resId = uint_t_max, resCost = -1.0 
+    // write end marker for resource costs: resId = uint_t_max, resCost = -1.0
     resId = uint_t_max;
     resCost = -1.0;
     utl::serialize(resId, socket, io_wr);

@@ -50,6 +50,7 @@ struct CapCostRec
         , endTime(0)
     {
     }
+
 public:
     uint_t cap;
     uint_t capIdx;
@@ -112,6 +113,7 @@ struct CapSpan
     {
         return end - begin;
     }
+
 public:
     uint_t cap;
     int begin;
@@ -144,7 +146,8 @@ public:
     uint_t period;
 
 private:
-    void init()
+    void
+    init()
     {
         period = lut::period_undefined;
         setRelaxed(true);
@@ -525,8 +528,8 @@ TotalCostEvaluator::calcResourceCost(const SchedulingContext& context) const
 //       We will need to change this code to accommodate resCost->resolution > 1 hr.
 void
 TotalCostEvaluator::cslistBuild(const SchedulingContext& context,
-    const cls::DiscreteResource& res,
-    cslist_t& cslist) const
+                                const cls::DiscreteResource& res,
+                                cslist_t& cslist) const
 {
 #ifdef DEBUG_UNIT
     std::string myName("TotalCostEvaluator::cslistBuild(): ");
@@ -715,8 +718,8 @@ TotalCostEvaluator::cslistBuild(const SchedulingContext& context,
                     if (!alreadyIdle[capIdx])
                     {
                         idleStarts[capIdx] = tsSpan.begin();
-                        maxIdleEnds[capIdx] = res.getEndTimeForStartTime(idleStarts[capIdx],
-                                                                         maxIdleSlots);
+                        maxIdleEnds[capIdx] =
+                            res.getEndTimeForStartTime(idleStarts[capIdx], maxIdleSlots);
                         maxIdleEnds[capIdx] = res.getNonBreakTimeNext(maxIdleEnds[capIdx]);
                         alreadyIdle[capIdx] = true;
                     }
@@ -825,7 +828,7 @@ TotalCostEvaluator::cslistCost(const SchedulingContext& context,
         {
 #ifdef DEBUG_UNIT
             std::cout << myName << "lastSpan->end() > makespan.end() | " << lastSpan->end() << " > "
-                << makespan.getEnd() << std::endl;
+                      << makespan.getEnd() << std::endl;
 #endif
             makespan.setEnd(lastSpan->end);
         }
@@ -1705,7 +1708,7 @@ TotalCostEvaluator::calcJobOverheadCost(const SchedulingContext& context) const
         if (_audit)
         {
             *_os << "WorkOrder id = " << job->id() << " name = " << job->name() << ": "
-                << "Job Overhead Cost" << std::endl;
+                 << "Job Overhead Cost" << std::endl;
         }
 
         // calculate interest period costs for this job
@@ -2060,7 +2063,7 @@ TotalCostEvaluator::calcPeriodCost(const utl::Span<int>& p_span, double costPerT
         time_t beginTime = originTime + (span.begin() * timeStep);
         time_t endTime = originTime + (span.end() * timeStep);
         *_os << " => calcPeriodCost(" << time_str(beginTime) << ", " << time_str(endTime) << ", "
-            << "$" << costPerTS << ")" << std::endl;
+             << "$" << costPerTS << ")" << std::endl;
     }
 
     // iterate through SpanInterestPeriods that overlap with span
@@ -2102,10 +2105,10 @@ TotalCostEvaluator::calcPeriodCost(const utl::Span<int>& p_span, double costPerT
 
 void
 TotalCostEvaluator::calcPeriodCost(const utl::Span<int>& p_span,
-    double costPerTS,
-    double incrCost,
-    double periodSeconds,
-    double timeStep) const
+                                   double costPerTS,
+                                   double incrCost,
+                                   double periodSeconds,
+                                   double timeStep) const
 {
     // auditing -> clear interest period costs in audit
     if (_audit)
@@ -2130,8 +2133,8 @@ TotalCostEvaluator::calcPeriodCost(const utl::Span<int>& p_span,
         time_t beginTime = originTime + (span.begin() * timeStep);
         time_t endTime = originTime + (span.end() * timeStep);
         *_os << " => calcPeriodCost(" << time_str(beginTime) << ", " << time_str(endTime) << ", "
-            << "$" << costPerTS << ", "
-            << "%" << incrCost << ", " << periodSeconds << ", " << timeStep << ")" << std::endl;
+             << "$" << costPerTS << ", "
+             << "%" << incrCost << ", " << periodSeconds << ", " << timeStep << ")" << std::endl;
     }
 
     // iterate through SpanInterestPeriods that overlap with span

@@ -49,7 +49,8 @@ public:
     //@}
 
     /** Add a child op. */
-    void addChildOp(JobOp* op)
+    void
+    addChildOp(JobOp* op)
     {
         _childOps.insert(op);
     }
